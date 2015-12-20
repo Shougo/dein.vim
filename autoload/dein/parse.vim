@@ -29,6 +29,7 @@ set cpo&vim
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
         \ 'type': 'none',
+        \ 'orig_name': '',
         \ 'uri': '',
         \ 'rev': '',
         \ 'rtp': '',
@@ -54,10 +55,62 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ }
 
   call extend(plugin, a:plugin)
+
+  if !has_key(plugin, 'name')
+    let plugin.name = dein#parse#_name_conversion(plugin.orig_name)
+  endif
+
+  if !has_key(plugin, 'normalized_name')
+    let plugin.normalized_name = substitute(
+          \ fnamemodify(plugin.name, ':r'),
+          \ '\c^n\?vim[_-]\|[_-]n\?vim$', '', 'g')
+  endif
+
+  if !has_key(plugin, 'directory')
+    let plugin.directory = plugin.name
+
+    if plugin.rev != ''
+      let plugin.directory .= '_' . substitute(plugin.rev,
+            \ '[^[:alnum:]_-]', '_', 'g')
+    endif
+  endif
+
+  if plugin.base[0:] == '~'
+    let plugin.base = dein#_expand(plugin.base)
+  endif
+  if plugin.base[-1:] == '/' || plugin.base[-1:] == '\'
+    " Chomp.
+    let plugin.base = plugin.base[: -2]
+  endif
+
+  if !has_key(plugin, 'path')
+    let plugin.path = plugin.base.'/'.plugin.directory
+  endif
+
+  " Check relative path.
+  if plugin.rtp !~ '^\%([~/]\|\a\+:\)'
+    let plugin.rtp = plugin.path.'/'.plugin.rtp
+  endif
+  if plugin.rtp[0:] == '~'
+    let plugin.rtp = dein#_expand(plugin.rtp)
+  endif
+  if plugin.rtp[-1:] == '/' || plugin.rtp[-1:] == '\'
+    " Chomp.
+    let plugin.rtp = plugin.rtp[: -2]
+  endif
+
+  if !has_key(plugin, 'augroup')
+    let plugin.augroup = plugin.normalized_name
+  endif
+
   return plugin
 endfunction"}}}
 function! dein#parse#_list(plugins) abort "{{{
   return map(copy(a:plugins), 'dein#parse#_dict(v:val)')
+endfunction"}}}
+
+function! dein#parse#_name_conversion(path) "{{{
+  return fnamemodify(get(split(a:path, ':'), -1, ''), ':s?/$??:t:s?\c\.git\s*$??')
 endfunction"}}}
 
 let &cpo = s:save_cpo

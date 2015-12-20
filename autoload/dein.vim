@@ -98,6 +98,20 @@ function! dein#untap(name) abort "{{{
   
 endfunction"}}}
 
+let s:is_windows = has('win32') || has('win64')
+
+function! dein#_substitute_path(path) "{{{
+  return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
+endfunction"}}}
+function! dein#_expand(path) "{{{
+  let path = (a:path =~ '^\~') ? fnamemodify(a:path, ':p') :
+        \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
+        \               '^\$\h\w*', '\=eval(submatch(0))', '') :
+        \ a:path
+  return (s:is_windows && path =~ '\\') ?
+        \ dein#_substitute_path(path) : path
+endfunction"}}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

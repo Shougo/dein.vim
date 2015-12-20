@@ -70,4 +70,11 @@ function! s:suite.get() "{{{
   call dein#end()
 endfunction"}}}
 
+function! s:suite.expand() "{{{
+  call s:assert.equals(dein#_expand('~'),
+        \ dein#_substitute_path(fnamemodify('~', ':p')))
+  call s:assert.equals(dein#_expand('$HOME'),
+        \ dein#_substitute_path($HOME))
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:
