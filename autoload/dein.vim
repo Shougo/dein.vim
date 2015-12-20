@@ -47,20 +47,25 @@ endif
 "}}}
 
 function! dein#_init() abort "{{{
+  let s:base_path = ''
   let s:block_level = 0
   let g:dein#_plugins = {}
   let g:dein#hooks = {}
 endfunction"}}}
+function! dein#_get_base_path() abort "{{{
+  return s:base_path
+endfunction"}}}
 
 call dein#_init()
 
-function! dein#begin() abort "{{{
+function! dein#begin(path) abort "{{{
   if s:block_level != 0
     call dein#_error('Invalid begin/end block usage.')
     return 1
   endif
 
   let s:block_level += 1
+  let s:base_path = a:path
 endfunction"}}}
 
 function! dein#end() abort "{{{
@@ -78,7 +83,7 @@ function! dein#load(plugins) abort "{{{
     return 1
   endif
 
-  call extend(g:dein#_plugins, a:plugins)
+  call extend(g:dein#_plugins, dein#parse#_list(a:plugins))
 endfunction"}}}
 
 function! dein#get(...) abort "{{{
