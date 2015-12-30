@@ -38,6 +38,28 @@ if v:version < 704
   finish
 endif
 
+let s:is_windows = has('win32') || has('win64')
+
+function! dein#_substitute_path(path) abort "{{{
+  return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
+endfunction"}}}
+function! dein#_expand(path) abort "{{{
+  let path = (a:path =~ '^\~') ? fnamemodify(a:path, ':p') :
+        \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
+        \               '^\$\h\w*', '\=eval(submatch(0))', '') :
+        \ a:path
+  return (s:is_windows && path =~ '\\') ?
+        \ dein#_substitute_path(path) : path
+endfunction"}}}
+function! dein#_set_default(var, val, ...) abort "{{{
+  if !exists(a:var) || type({a:var}) != type(a:val)
+    let alternate_var = get(a:000, 0, '')
+
+    let {a:var} = exists(alternate_var) ?
+          \ {alternate_var} : a:val
+  endif
+endfunction"}}}
+
 " Global options definition." "{{{
 "}}}
 
@@ -93,28 +115,6 @@ endfunction"}}}
 
 function! dein#untap(name) abort "{{{
   
-endfunction"}}}
-
-let s:is_windows = has('win32') || has('win64')
-
-function! dein#_substitute_path(path) abort "{{{
-  return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
-endfunction"}}}
-function! dein#_expand(path) abort "{{{
-  let path = (a:path =~ '^\~') ? fnamemodify(a:path, ':p') :
-        \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
-        \               '^\$\h\w*', '\=eval(submatch(0))', '') :
-        \ a:path
-  return (s:is_windows && path =~ '\\') ?
-        \ dein#_substitute_path(path) : path
-endfunction"}}}
-function! dein#_set_default(var, val, ...) abort "{{{
-  if !exists(a:var) || type({a:var}) != type(a:val)
-    let alternate_var = get(a:000, 0, '')
-
-    let {a:var} = exists(alternate_var) ?
-          \ {alternate_var} : a:val
-  endif
 endfunction"}}}
 
 " vim: foldmethod=marker
