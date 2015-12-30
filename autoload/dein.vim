@@ -23,9 +23,6 @@
 " }}}
 "=============================================================================
 
-let s:save_cpo = &cpo
-set cpo&vim
-
 function! dein#_msg2list(expr) "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction"}}}
@@ -38,8 +35,6 @@ endfunction"}}}
 
 if v:version < 704
   call dein#_error('Does not work this version of Vim (' . v:version . ').')
-  let &cpo = s:save_cpo
-  unlet s:save_cpo
   finish
 endif
 
@@ -113,8 +108,5 @@ function! dein#_expand(path) "{{{
   return (s:is_windows && path =~ '\\') ?
         \ dein#_substitute_path(path) : path
 endfunction"}}}
-
-let &cpo = s:save_cpo
-unlet s:save_cpo
 
 " vim: foldmethod=marker

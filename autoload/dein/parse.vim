@@ -23,9 +23,6 @@
 " }}}
 "=============================================================================
 
-let s:save_cpo = &cpo
-set cpo&vim
-
 function! dein#parse#_init(repository, option) abort "{{{
   return extend({ 'name': a:repository }, a:option)
 endfunction"}}}
@@ -116,8 +113,5 @@ function! dein#parse#_name_conversion(path) "{{{
   return fnamemodify(get(split(a:path, ':'), -1, ''),
         \ ':s?/$??:t:s?\c\.git\s*$??')
 endfunction"}}}
-
-let &cpo = s:save_cpo
-unlet s:save_cpo
 
 " vim: foldmethod=marker
