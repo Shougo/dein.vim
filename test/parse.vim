@@ -3,11 +3,11 @@ let s:assert = themis#helper('assert')
 
 let s:path = 'dummy'
 
-function! s:suite.before_each() "{{{
+function! s:suite.before_each() abort "{{{
   call dein#_init()
 endfunction"}}}
 
-function! s:suite.parse_dict() "{{{
+function! s:suite.parse_dict() abort "{{{
   call dein#begin(s:path)
 
   let plugin = {'name': 'baz'}

@@ -3,11 +3,11 @@ let s:assert = themis#helper('assert')
 
 let s:path = ''
 
-function! s:suite.before_each() "{{{
+function! s:suite.before_each() abort "{{{
   call dein#_init()
 endfunction"}}}
 
-function! s:suite.block_normal() "{{{
+function! s:suite.block_normal() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
   call s:assert.equals(dein#end(), 0)
 
@@ -15,7 +15,7 @@ function! s:suite.block_normal() "{{{
   call s:assert.equals(dein#end(), 0)
 endfunction"}}}
 
-function! s:suite.begin_invalid() "{{{
+function! s:suite.begin_invalid() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
   call s:assert.equals(dein#begin(s:path), 1)
 
@@ -25,11 +25,11 @@ function! s:suite.begin_invalid() "{{{
   call s:assert.equals(dein#end(), 1)
 endfunction"}}}
 
-function! s:suite.end_invalid() "{{{
+function! s:suite.end_invalid() abort "{{{
   call s:assert.equals(dein#end(), 1)
 endfunction"}}}
 
-function! s:suite.add_normal() "{{{
+function! s:suite.add_normal() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
 
   call s:assert.equals(dein#add('foo', {}), 0)
@@ -40,11 +40,11 @@ function! s:suite.add_normal() "{{{
   call s:assert.equals(dein#end(), 0)
 endfunction"}}}
 
-function! s:suite.add_invalid() "{{{
+function! s:suite.add_invalid() abort "{{{
   call s:assert.equals(dein#add('foo'), 1)
 endfunction"}}}
 
-function! s:suite.add_ovewrite() "{{{
+function! s:suite.add_ovewrite() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
 
   call s:assert.equals(dein#add('foo', {}), 0)
@@ -56,7 +56,7 @@ function! s:suite.add_ovewrite() "{{{
   call s:assert.equals(dein#end(), 0)
 endfunction"}}}
 
-function! s:suite.get() "{{{
+function! s:suite.get() abort "{{{
   let plugins = { 'foo': {'name': 'bar'} }
 
   call dein#begin(s:path)
@@ -67,7 +67,7 @@ function! s:suite.get() "{{{
   call dein#end()
 endfunction"}}}
 
-function! s:suite.expand() "{{{
+function! s:suite.expand() abort "{{{
   call s:assert.equals(dein#_expand('~'),
         \ dein#_substitute_path(fnamemodify('~', ':p')))
   call s:assert.equals(dein#_expand('$HOME'),
