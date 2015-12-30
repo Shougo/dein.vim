@@ -39,7 +39,7 @@ let s:type = {
 function! s:type.init(repo, option) abort "{{{
   let protocol = matchstr(a:repo, '^.\{-}\ze://')
   let name = substitute(a:repo[len(protocol):],
-        \   '^://github.com/', '', '')
+        \   '^://[^/]*/', '', '')
 
   if protocol == ''
         \ || a:repo =~# '\<\%(gh\|github\|bb\|bitbucket\):\S\+'
@@ -64,7 +64,8 @@ function! s:type.init(repo, option) abort "{{{
     let uri .= '.git'
   endif
 
-  return { 'uri': uri, 'type': 'git' }
+  return { 'uri': uri, 'type': 'git',
+        \  'directory': substitute(uri, '.*:/*', '', '') }
 endfunction"}}}
 
 " vim: foldmethod=marker

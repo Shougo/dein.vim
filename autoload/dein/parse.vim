@@ -71,11 +71,11 @@ function! dein#parse#_dict(plugin) abort "{{{
 
   if !has_key(plugin, 'directory')
     let plugin.directory = plugin.name
+  endif
 
-    if plugin.rev != ''
-      let plugin.directory .= '_' . substitute(plugin.rev,
-            \ '[^[:alnum:]_-]', '_', 'g')
-    endif
+  if plugin.rev != ''
+    let plugin.directory .= '_' . substitute(plugin.rev,
+          \ '[^[:alnum:]_-]', '_', 'g')
   endif
 
   if plugin.base[0:] == '~'

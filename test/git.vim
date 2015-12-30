@@ -17,10 +17,16 @@ endfunction"}}}
 function! s:suite.init() abort "{{{
   call s:assert.equals(s:git.init(
         \ 'https://github.com/Shougo/dein.vim', {}),
-        \ { 'uri': 'https://github.com/Shougo/dein.vim.git', 'type': 'git' })
+        \ { 'uri': 'https://github.com/Shougo/dein.vim.git',
+        \   'type': 'git', 'directory': 'github.com/Shougo/dein.vim.git' })
   call s:assert.equals(s:git.init(
         \ 'Shougo/dein.vim', {}),
-        \ { 'uri': 'https://github.com/Shougo/dein.vim.git', 'type': 'git' })
+        \ { 'uri': 'https://github.com/Shougo/dein.vim.git',
+        \   'type': 'git', 'directory': 'github.com/Shougo/dein.vim.git' })
+  call s:assert.equals(s:git.init(
+        \ 'https://github.com:80/Shougo/dein.vim', {}),
+        \ { 'uri': 'https://github.com/Shougo/dein.vim.git',
+        \   'type': 'git', 'directory': 'github.com/Shougo/dein.vim.git' })
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:
