@@ -83,6 +83,13 @@ function! dein#begin(path) abort "{{{
 
   let s:block_level += 1
   let s:base_path = a:path
+
+  " Join to the tail in runtimepath.
+  execute 'set rtp-='.fnameescape(a:path)
+  let rtps = dein#_split_rtp(&runtimepath)
+  let n = index(rtps, $VIMRUNTIME)
+  let &runtimepath = dein#_join_rtp(
+        \ insert(rtps, a:path, n-1), &runtimepath, a:path)
 endfunction"}}}
 
 function! dein#end() abort "{{{
@@ -92,6 +99,20 @@ function! dein#end() abort "{{{
   endif
 
   let s:block_level -= 1
+
+  " Add runtimepath
+  let rtps = []
+  let rtps = dein#_split_rtp(&runtimepath)
+  let index = index(rtps, dein#_get_base_path())
+  for plugin in filter(values(g:dein#_plugins), 'isdirectory(v:val.rtp)')
+    let plugin.sourced = 1
+    call insert(rtps, plugin.rtp, index)
+    let index += 1
+    if isdirectory(plugin.rtp.'/after')
+      call add(rtps, plugin.rtp)
+    endif
+  endfor
+  let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
 endfunction"}}}
 
 function! dein#add(repo, ...) abort "{{{
@@ -117,7 +138,7 @@ function! dein#untap(name) abort "{{{
   
 endfunction"}}}
 
-function! dein#_has_vimproc() "{{{
+function! dein#_has_vimproc() abort "{{{
   if !exists('*vimproc#version')
     try
       call vimproc#version()
@@ -126,6 +147,25 @@ function! dein#_has_vimproc() "{{{
   endif
 
   return exists('*vimproc#version')
+endfunction"}}}
+
+function! dein#_split_rtp(runtimepath) abort "{{{
+  if stridx(a:runtimepath, '\,') < 0
+    return split(a:runtimepath, ',')
+  endif
+
+  let split = split(a:runtimepath, '\\\@<!\%(\\\\\)*\zs,')
+  return map(split,'substitute(v:val, ''\\\([\\,]\)'', "\\1", "g")')
+endfunction"}}}
+
+function! dein#_join_rtp(list, runtimepath, rtp) abort "{{{
+  return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
+        \ join(a:list, ',') : join(map(copy(a:list), 's:escape(v:val)'), ',')
+endfunction"}}}
+
+" Escape a path for runtimepath.
+function! s:escape(path) abort "{{{
+  return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
 endfunction"}}}
 
 " vim: foldmethod=marker
