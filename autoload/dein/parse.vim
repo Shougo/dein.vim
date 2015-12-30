@@ -26,6 +26,9 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! dein#parse#_init(repository, option) abort "{{{
+  return extend({ 'name': a:repository }, a:option)
+endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
         \ 'type': 'none',
@@ -110,7 +113,8 @@ function! dein#parse#_list(plugins) abort "{{{
 endfunction"}}}
 
 function! dein#parse#_name_conversion(path) "{{{
-  return fnamemodify(get(split(a:path, ':'), -1, ''), ':s?/$??:t:s?\c\.git\s*$??')
+  return fnamemodify(get(split(a:path, ':'), -1, ''),
+        \ ':s?/$??:t:s?\c\.git\s*$??')
 endfunction"}}}
 
 let &cpo = s:save_cpo

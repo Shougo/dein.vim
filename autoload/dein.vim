@@ -77,13 +77,15 @@ function! dein#end() abort "{{{
   let s:block_level -= 1
 endfunction"}}}
 
-function! dein#load(plugins) abort "{{{
+function! dein#add(repository, ...) abort "{{{
   if s:block_level != 1
-    call dein#_error('Invalid load usage.')
+    call dein#_error('Invalid add usage.')
     return 1
   endif
 
-  call extend(g:dein#_plugins, dein#parse#_list(a:plugins))
+  let plugin = dein#parse#_dict(
+        \ dein#parse#_init(a:repository, get(a:000, 0, {})))
+  let g:dein#_plugins[plugin.name] = plugin
 endfunction"}}}
 
 function! dein#get(...) abort "{{{
