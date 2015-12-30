@@ -13,7 +13,7 @@ function! s:suite.parse_dict() abort "{{{
   let plugin = {'name': 'baz'}
   let parsed_plugin = dein#parse#_dict(plugin)
   call s:assert.equals(parsed_plugin.name, 'baz')
-  call s:assert.equals(parsed_plugin.base, s:path)
+  call s:assert.equals(parsed_plugin.base, s:path.'/repos')
 
   let plugin = {'name': 'baz', 'rtp': 'foo/', 'base': 'bar/'}
   let parsed_plugin = dein#parse#_dict(plugin)
