@@ -117,4 +117,15 @@ function! dein#untap(name) abort "{{{
   
 endfunction"}}}
 
+function! dein#_has_vimproc() "{{{
+  if !exists('*vimproc#version')
+    try
+      call vimproc#version()
+    catch
+    endtry
+  endif
+
+  return exists('*vimproc#version')
+endfunction"}}}
+
 " vim: foldmethod=marker

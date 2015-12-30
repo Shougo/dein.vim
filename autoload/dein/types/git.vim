@@ -26,6 +26,12 @@
 " Global options definition. "{{{
 call dein#_set_default(
       \ 'g:dein#types#git#default_protocol', 'https')
+call dein#_set_default(
+      \ 'g:dein#types#git#command_path', 'git')
+call dein#util#set_default(
+      \ 'g:dein#types#git#clone_depth', 0)
+call dein#util#set_default(
+      \ 'g:dein#types#git#pull_command', 'pull --ff --ff-only')
 "}}}
 
 function! dein#types#git#define() abort "{{{
@@ -66,6 +72,35 @@ function! s:type.init(repo, option) abort "{{{
 
   return { 'uri': uri, 'type': 'git',
         \  'directory': substitute(uri, '.*:/*', '', '') }
+endfunction"}}}
+
+function! s:type.get_sync_command(plugin) "{{{
+  let git = g:dein#types#git#command_path
+  if !executable(git)
+    return 'E: "git" command is not installed.'
+  endif
+
+  if !isdirectory(a:plugin.path)
+    let cmd = 'clone'
+    let cmd .= ' --recursive'
+
+    let depth = get(a:plugin, 'type__depth',
+          \ g:dein#types#git#clone_depth)
+    if depth > 0 && a:plugin.rev == '' && a:plugin.uri !~ '^git@'
+      let cmd .= ' --depth=' . depth
+    endif
+
+    let cmd .= printf(' %s "%s"', a:plugin.uri, a:plugin.path)
+  else
+    let shell = fnamemodify(split(&shell)[0], ':t')
+    let and = (!dein#_has_vimproc() && shell ==# 'fish') ?
+          \ '; and ' : ' && '
+
+    let cmd = g:dein#types#git#pull_command
+    let cmd .= and . git . ' submodule update --init --recursive'
+  endif
+
+  return git . ' ' . cmd
 endfunction"}}}
 
 " vim: foldmethod=marker
