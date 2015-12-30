@@ -89,6 +89,8 @@ function! dein#begin(path) abort "{{{
     call mkdir(s:runtime_path, 'p')
   endif
 
+  call dein#_filetype_off()
+
   " Join to the tail in runtimepath.
   execute 'set rtp-='.fnameescape(s:runtime_path)
   let rtps = dein#_split_rtp(&runtimepath)
@@ -174,6 +176,34 @@ endfunction"}}}
 
 function! dein#_chomp(str) abort "{{{
   return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
+endfunction"}}}
+
+function! dein#_filetype_off() abort "{{{
+  let filetype_out = dein#_redir('filetype')
+
+  if filetype_out =~# 'plugin:ON'
+        \ || filetype_out =~# 'indent:ON'
+    filetype plugin indent off
+  endif
+
+  if filetype_out =~# 'detection:ON'
+    filetype off
+  endif
+
+  return filetype_out
+endfunction"}}}
+
+" Executes a command and returns its output.
+" This wraps Vim's `:redir`, and makes sure that the `verbose` settings have
+" no influence.
+function! dein#_redir(cmd) abort "{{{
+  let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
+  set verbose=0 verbosefile=
+  redir => res
+  silent! execute a:cmd
+  redir END
+  let [&verbose, &verbosefile] = [save_verbose, save_verbosefile]
+  return res
 endfunction"}}}
 
 " Escape a path for runtimepath.
