@@ -76,20 +76,25 @@ endfunction"}}}
 call dein#_init()
 
 function! dein#begin(path) abort "{{{
-  if s:block_level != 0
+  if a:path == '' || s:block_level != 0
     call dein#_error('Invalid begin/end block usage.')
     return 1
   endif
 
   let s:block_level += 1
-  let s:base_path = a:path
+  let s:base_path = dein#_chomp(dein#_expand(a:path))
+  let s:runtime_path = a:path . '/.dein'
+
+  if !isdirectory(s:runtime_path)
+    call mkdir(s:runtime_path, 'p')
+  endif
 
   " Join to the tail in runtimepath.
-  execute 'set rtp-='.fnameescape(a:path)
+  execute 'set rtp-='.fnameescape(s:runtime_path)
   let rtps = dein#_split_rtp(&runtimepath)
   let n = index(rtps, $VIMRUNTIME)
   let &runtimepath = dein#_join_rtp(
-        \ insert(rtps, a:path, n-1), &runtimepath, a:path)
+        \ insert(rtps, s:runtime_path, n-1), &runtimepath, s:runtime_path)
 endfunction"}}}
 
 function! dein#end() abort "{{{
@@ -103,7 +108,7 @@ function! dein#end() abort "{{{
   " Add runtimepath
   let rtps = []
   let rtps = dein#_split_rtp(&runtimepath)
-  let index = index(rtps, dein#_get_base_path())
+  let index = index(rtps, s:runtime_path)
   for plugin in filter(values(g:dein#_plugins), 'isdirectory(v:val.rtp)')
     let plugin.sourced = 1
     call insert(rtps, plugin.rtp, index)
@@ -138,6 +143,10 @@ function! dein#untap(name) abort "{{{
   
 endfunction"}}}
 
+function! dein#update(...) abort "{{{
+  call dein#installer#_update(get(a:000, 0, []))
+endfunction"}}}
+
 function! dein#_has_vimproc() abort "{{{
   if !exists('*vimproc#version')
     try
@@ -161,6 +170,10 @@ endfunction"}}}
 function! dein#_join_rtp(list, runtimepath, rtp) abort "{{{
   return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
         \ join(a:list, ',') : join(map(copy(a:list), 's:escape(v:val)'), ',')
+endfunction"}}}
+
+function! dein#_chomp(str) abort "{{{
+  return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
 endfunction"}}}
 
 " Escape a path for runtimepath.

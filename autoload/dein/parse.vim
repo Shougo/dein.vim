@@ -81,10 +81,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   if plugin.base[0:] == '~'
     let plugin.base = dein#_expand(plugin.base)
   endif
-  if plugin.base[-1:] == '/' || plugin.base[-1:] == '\'
-    " Chomp.
-    let plugin.base = plugin.base[: -2]
-  endif
+  let plugin.base = dein#_chomp(plugin.base)
 
   if !has_key(plugin, 'path')
     let plugin.path = plugin.base.'/'.plugin.directory
@@ -97,10 +94,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   if plugin.rtp[0:] == '~'
     let plugin.rtp = dein#_expand(plugin.rtp)
   endif
-  if plugin.rtp[-1:] == '/' || plugin.rtp[-1:] == '\'
-    " Chomp.
-    let plugin.rtp = plugin.rtp[: -2]
-  endif
+  let plugin.rtp = dein#_chomp(plugin.rtp)
 
   if !has_key(plugin, 'augroup')
     let plugin.augroup = plugin.normalized_name
