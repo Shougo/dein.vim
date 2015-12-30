@@ -23,13 +23,16 @@
 " }}}
 "=============================================================================
 
-function! dein#parse#_init(repository, option) abort "{{{
-  return extend({ 'name': a:repository }, a:option)
+let s:git = dein#types#git#define()
+
+function! dein#parse#_init(repo, option) abort "{{{
+  let plugin = s:git.init(a:repo, a:option)
+  let plugin.repo = a:repo
+  return extend(plugin, a:option)
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
         \ 'type': 'none',
-        \ 'orig_name': '',
         \ 'uri': '',
         \ 'rev': '',
         \ 'rtp': '',
@@ -57,7 +60,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   call extend(plugin, a:plugin)
 
   if !has_key(plugin, 'name')
-    let plugin.name = dein#parse#_name_conversion(plugin.orig_name)
+    let plugin.name = dein#parse#_name_conversion(plugin.repo)
   endif
 
   if !has_key(plugin, 'normalized_name')

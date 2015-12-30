@@ -72,14 +72,14 @@ function! dein#end() abort "{{{
   let s:block_level -= 1
 endfunction"}}}
 
-function! dein#add(repository, ...) abort "{{{
+function! dein#add(repo, ...) abort "{{{
   if s:block_level != 1
     call dein#_error('Invalid add usage.')
     return 1
   endif
 
   let plugin = dein#parse#_dict(
-        \ dein#parse#_init(a:repository, get(a:000, 0, {})))
+        \ dein#parse#_init(a:repo, get(a:000, 0, {})))
   let g:dein#_plugins[plugin.name] = plugin
 endfunction"}}}
 

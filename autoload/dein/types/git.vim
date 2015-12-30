@@ -36,13 +36,13 @@ let s:type = {
       \ 'name' : 'git',
       \ }
 
-function! s:type.init(repository, option) abort "{{{
-  let protocol = matchstr(a:repository, '^.\{-}\ze://')
-  let name = substitute(a:repository[len(protocol):],
+function! s:type.init(repo, option) abort "{{{
+  let protocol = matchstr(a:repo, '^.\{-}\ze://')
+  let name = substitute(a:repo[len(protocol):],
         \   '^://github.com/', '', '')
 
   if protocol == ''
-        \ || a:repository =~# '\<\%(gh\|github\|bb\|bitbucket\):\S\+'
+        \ || a:repo =~# '\<\%(gh\|github\|bb\|bitbucket\):\S\+'
         \ || has_key(a:option, 'type__protocol')
     let protocol = get(a:option, 'type__protocol',
           \ g:dein#types#git#default_protocol)
@@ -51,7 +51,7 @@ function! s:type.init(repository, option) abort "{{{
   if protocol !=# 'https' && protocol !=# 'ssh'
     call dein#_error(
           \ printf('Repo: %s The protocol "%s" is unsecure and invalid.',
-          \ a:repository, protocol))
+          \ a:repo, protocol))
     return {}
   endif
 
