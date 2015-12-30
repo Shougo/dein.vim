@@ -112,7 +112,7 @@ function! dein#parse#_list(plugins) abort "{{{
   return map(copy(a:plugins), 'dein#parse#_dict(v:val)')
 endfunction"}}}
 
-function! dein#parse#_name_conversion(path) "{{{
+function! dein#parse#_name_conversion(path) abort "{{{
   return fnamemodify(get(split(a:path, ':'), -1, ''),
         \ ':s?/$??:t:s?\c\.git\s*$??')
 endfunction"}}}

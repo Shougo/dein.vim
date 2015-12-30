@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! dein#_msg2list(expr) "{{{
+function! dein#_msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction"}}}
 

@@ -74,7 +74,7 @@ function! s:type.init(repo, option) abort "{{{
         \  'directory': substitute(uri, '.*:/*', '', '') }
 endfunction"}}}
 
-function! s:type.get_sync_command(plugin) "{{{
+function! s:type.get_sync_command(plugin) abort "{{{
   let git = g:dein#types#git#command_path
   if !executable(git)
     return 'E: "git" command is not installed.'
