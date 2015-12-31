@@ -25,10 +25,10 @@
 
 let s:git = dein#types#git#define()
 
-function! dein#parse#_init(repo, option) abort "{{{
-  let plugin = s:git.init(a:repo, a:option)
+function! dein#parse#_init(repo, options) abort "{{{
+  let plugin = s:git.init(a:repo, a:options)
   let plugin.repo = a:repo
-  return extend(plugin, a:option)
+  return extend(plugin, a:options)
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
