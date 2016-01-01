@@ -25,3 +25,19 @@ The features may be changed.
 
 * No Vundle/NeoBundle compatibility
 
+## Future works (not implemented yet)
+
+* Lazy loading
+
+* Unite support
+
+* Asynchronous plugins installer
+
+* Toml support
+
+* Cache support
+
+* Hooks
+
+* More tests
+
