@@ -25,9 +25,9 @@
 
 " Global options definition. "{{{
 call dein#_set_default(
-      \ 'g:dein#types#git#default_protocol', 'https')
-call dein#_set_default(
       \ 'g:dein#types#git#command_path', 'git')
+call dein#_set_default(
+      \ 'g:dein#types#git#default_protocol', 'https')
 call dein#_set_default(
       \ 'g:dein#types#git#clone_depth', 0)
 call dein#_set_default(
