@@ -52,7 +52,13 @@ function! dein#installer#_update(plugins) abort "{{{
   endtry
 endfunction"}}}
 
-function! s:system(command) "{{{
+function! s:get_progress_message(plugin, number, max) "{{{
+  return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
+        \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
+endfunction"}}}
+
+" Helper functions
+function! s:system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
   let output = dein#_has_vimproc() ?
@@ -65,25 +71,17 @@ endfunction"}}}
 function! s:get_last_status() abort "{{{
   return dein#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-
 function! s:cd(path) abort "{{{
   if isdirectory(a:path)
     execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
   endif
 endfunction"}}}
-
-" iconv() wrapper for safety.
 function! s:iconv(expr, from, to) abort "{{{
   if a:from == '' || a:to == '' || a:from ==? a:to
     return a:expr
   endif
   let result = iconv(a:expr, a:from, a:to)
   return result != '' ? result : a:expr
-endfunction"}}}
-
-function! s:get_progress_message(plugin, number, max) "{{{
-  return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
-        \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
 
 " vim: foldmethod=marker

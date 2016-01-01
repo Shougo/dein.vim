@@ -149,6 +149,7 @@ function! dein#update(...) abort "{{{
   call dein#installer#_update(get(a:000, 0, []))
 endfunction"}}}
 
+" Helper functions
 function! dein#_has_vimproc() abort "{{{
   if !exists('*vimproc#version')
     try
@@ -159,7 +160,6 @@ function! dein#_has_vimproc() abort "{{{
 
   return exists('*vimproc#version')
 endfunction"}}}
-
 function! dein#_split_rtp(runtimepath) abort "{{{
   if stridx(a:runtimepath, '\,') < 0
     return split(a:runtimepath, ',')
@@ -168,16 +168,13 @@ function! dein#_split_rtp(runtimepath) abort "{{{
   let split = split(a:runtimepath, '\\\@<!\%(\\\\\)*\zs,')
   return map(split,'substitute(v:val, ''\\\([\\,]\)'', "\\1", "g")')
 endfunction"}}}
-
 function! dein#_join_rtp(list, runtimepath, rtp) abort "{{{
   return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
         \ join(a:list, ',') : join(map(copy(a:list), 's:escape(v:val)'), ',')
 endfunction"}}}
-
 function! dein#_chomp(str) abort "{{{
   return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
 endfunction"}}}
-
 function! dein#_filetype_off() abort "{{{
   let filetype_out = dein#_redir('filetype')
 
