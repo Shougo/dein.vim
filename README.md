@@ -1,6 +1,6 @@
 ## About
 
-Dein.vim is a dark powerd Vim/Neovim plugin manager.
+Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 Requirements:
 * Vim 7.4 or above or NeoVim.
