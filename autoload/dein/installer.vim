@@ -28,7 +28,7 @@ let s:git = dein#types#git#define()
 function! dein#installer#_update(plugins) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
-        \ map(a:plugins, 'dein#get(v:val)<`2`>')
+        \ map(a:plugins, 'dein#get(v:val)')
 
   let laststatus = &g:laststatus
   let statusline = &l:statusline
