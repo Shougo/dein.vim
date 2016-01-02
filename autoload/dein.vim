@@ -33,7 +33,7 @@ function! dein#_error(msg) abort "{{{
   endfor
 endfunction"}}}
 
-if v:version < 704
+if v:version < 703
   call dein#_error('Does not work this version of Vim (' . v:version . ').')
   finish
 endif
