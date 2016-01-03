@@ -77,6 +77,12 @@ dein#update([{plugins}])			*dein#update()*
 
 		Note: It is not asynchronous currently.
 
+dein#check_install([{plugins}])			*dein#check_install()*
+		Check the plugins installation.
+		If the plugins are not installed, it will return non zero.
+		{plugins} is the check of the plugins name list.
+		If you omit it, dein will check all plugins installation.
+
 dein#get({plugin-name})				 *dein#get()*
 		Get the plugin options dictionary for {plugin-name}.
 

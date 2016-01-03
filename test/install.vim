@@ -26,6 +26,22 @@ function! s:suite.install() abort "{{{
   call s:assert.true(index(dein#_split_rtp(&runtimepath), plugin.rtp) >= 0)
 endfunction"}}}
 
+function! s:suite.check_install() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call s:assert.equals(dein#add('Shougo/vimshell.vim'), 0)
+
+  call s:assert.true(dein#check_install())
+  call s:assert.true(dein#check_install(['vimshell.vim']))
+  call s:assert.false(dein#check_install(['neocomplete.vim']))
+
+  call dein#end()
+endfunction"}}}
+
 function! s:suite.fetch() abort "{{{
   call dein#begin(s:path)
 

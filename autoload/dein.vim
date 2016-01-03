@@ -155,6 +155,21 @@ function! dein#update(...) abort "{{{
   call dein#installer#_update(get(a:000, 0, []))
 endfunction"}}}
 
+function! dein#check_install(...) abort "{{{
+  let plugins = empty(a:000) ?
+        \ values(dein#get()) :
+        \ map(copy(a:1), 'dein#get(v:val)')
+
+  call filter(plugins, '!isdirectory(v:val.path)')
+  if empty(plugins)
+    return 0
+  endif
+
+  echomsg 'Not installed plugins: '
+        \ string(map(copy(plugins), 'v:val.name'))
+  return 1
+endfunction"}}}
+
 " Helper functions
 function! dein#_has_vimproc() abort "{{{
   if !exists('*vimproc#version')
