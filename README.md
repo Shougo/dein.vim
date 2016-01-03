@@ -3,7 +3,7 @@
 Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 Requirements:
-* Vim 7.3 or above or NeoVim.
+* Vim 7.4 or above or NeoVim.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
 
 Recommends:

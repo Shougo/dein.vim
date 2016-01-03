@@ -1,6 +1,7 @@
 language: viml
 
 sudo: false
+dist: trusty
 
 before_script:
     - vim --version
