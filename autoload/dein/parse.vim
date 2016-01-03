@@ -88,7 +88,8 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   " Check relative path.
-  if plugin.rtp !~ '^\%([~/]\|\a\+:\)'
+  if (!has_key(a:plugin, 'rtp') || a:plugin.rtp != '')
+        \ && plugin.rtp !~ '^\%([~/]\|\a\+:\)'
     let plugin.rtp = plugin.path.'/'.plugin.rtp
   endif
   if plugin.rtp[0:] == '~'
