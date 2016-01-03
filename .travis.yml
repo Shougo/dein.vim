@@ -1,6 +1,6 @@
 language: viml
 
-sudo: false
+sudo: required
 dist: trusty
 
 before_script:
