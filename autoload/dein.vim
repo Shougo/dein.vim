@@ -112,12 +112,18 @@ function! dein#end() abort "{{{
   let rtps = dein#_split_rtp(&runtimepath)
   let index = index(rtps, s:runtime_path)
   for plugin in filter(values(g:dein#_plugins), 'isdirectory(v:val.rtp)')
-    let plugin.sourced = 1
+    if plugin.sourced
+      " Remove old plugin's runtimepath
+      let rtps = filter(dein#_split_rtp(&runtimepath),
+            \ "v:val !=# plugin.rtp && v:val !=# plugin.rtp.'/after'")
+    endif
+
     call insert(rtps, plugin.rtp, index)
     let index += 1
     if isdirectory(plugin.rtp.'/after')
-      call add(rtps, plugin.rtp)
+      call add(rtps, plugin.rtp.'/after')
     endif
+    let plugin.sourced = 1
   endfor
   let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
 endfunction"}}}
