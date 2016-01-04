@@ -83,6 +83,11 @@ dein#check_install([{plugins}])			*dein#check_install()*
 		{plugins} is the check of the plugins name list.
 		If you omit it, dein will check all plugins installation.
 
+dein#source([{plugins}])			*dein#source()*
+		|:source|  the plugins specified by {plugins}.
+		{plugins} is the plugins name list.
+		If you omit it, dein will source all plugins.
+
 dein#get({plugin-name})				 *dein#get()*
 		Get the plugin options dictionary for {plugin-name}.
 
@@ -120,6 +125,42 @@ g:dein#types#git#pull_command
 OPTIONS 					*dein-options*
 		The {options} accepts the following keys:
 
+						*dein-options-name*
+		name			(String)
+		Specify the name of the plugin.  This is used for dein
+		management and other functions.  If it is omitted, the tail of
+		the repository name will be used.
+		Note: Must be unique across the all plugin.  If the plugin
+		name conflicts with another plugin, dein will overwrite the
+		previous settings with the new one.  If the repo tail is bound
+		to conflict, you can set the "name" option manually to prevent
+		overwriting an existing plugin setting.
+
+						*dein-options-rtp*
+		rtp			(String)
+		Specify the runtime path.
+		You can use it when the repository has the Vim plugin in a
+		subdirectory.
+		For example: https://github.com/rstacruz/sparkup
+		If it is empty string, dein will not add the path to
+		'runtimepath'
+
+		Example:
+>
+		call dein#add('rstacruz/sparkup', {'rtp': 'vim'})
+<
+						*dein-options-lazy*
+		lazy			(Number)
+		If set to non-zero, dein doesn't add the path to 'runtimepath'
+		automatically.
+		If you don't set it, dein will set it automatically when the
+		conditions are met.
+
+						*dein-options-on_i*
+		on_i		(Number)
+		If set to non-zero, dein will call |dein#source()| on
+		|InsertEnter| autocmd.
+
 ==============================================================================
 EXAMPLES					*dein-examples*
 >
@@ -132,6 +173,7 @@ EXAMPLES					*dein-examples*
 
 	call dein#begin(expand('~/.cache/dein'))
 
+	call dein#add('Shougo/dein.vim', 'rtp': '')
 	call dein#add('Shougo/neocomplete.vim')
 	...
 
@@ -141,6 +183,11 @@ EXAMPLES					*dein-examples*
 <
 ==============================================================================
 FAQ						*dein-faq*
+
+Q: Where is |:NeoBundleFetch|?
+
+A: You can use |dein-options-rtp|. >
+	call dein#add('Shougo/dein.vim', {'rtp': ''})
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:
