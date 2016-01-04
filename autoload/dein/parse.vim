@@ -36,7 +36,7 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'uri': '',
         \ 'rev': '',
         \ 'rtp': '',
-        \ 'if': '',
+        \ 'if': 1,
         \ 'sourced': 0,
         \ 'local': 0,
         \ 'base': dein#_get_base_path() . '/repos',
@@ -87,7 +87,7 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.path = plugin.base.'/'.plugin.directory
   endif
 
-  " Check relative path.
+  " Check relative path
   if (!has_key(a:plugin, 'rtp') || a:plugin.rtp != '')
         \ && plugin.rtp !~ '^\%([~/]\|\a\+:\)'
     let plugin.rtp = plugin.path.'/'.plugin.rtp
@@ -108,6 +108,11 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
           \ || !empty(plugin.on_unite)  || !empty(plugin.on_path)
           \ || !empty(plugin.on_source)
+  endif
+
+  " Set if flag
+  if has_key(a:plugin, 'if') && type(a:plugin.if) == type('')
+    sandbox let plugin.if = eval(a:plugin.if)
   endif
 
   return plugin

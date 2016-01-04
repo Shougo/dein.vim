@@ -143,9 +143,10 @@ function! dein#add(repo, ...) abort "{{{
 
   let plugin = dein#parse#_dict(
         \ dein#parse#_init(a:repo, get(a:000, 0, {})))
-  if has_key(g:dein#_plugins, plugin.name)
-        \ && g:dein#_plugins[plugin.name].sourced
-    " Skip loaded plugin
+  if (has_key(g:dein#_plugins, plugin.name)
+        \ && g:dein#_plugins[plugin.name].sourced)
+        \ || !plugin.if
+    " Skip already loaded or not enabled plugin.
     return
   endif
 

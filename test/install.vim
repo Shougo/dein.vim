@@ -84,6 +84,26 @@ function! s:suite.reload() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
+function! s:suite.if() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ {'if': 0}), 0)
+
+  call s:assert.equals(dein#get('neocomplete.vim'), {})
+
+  call dein#end()
+
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ {'if': '1+1'}), 0)
+
+  call s:assert.equals(dein#get('neocomplete.vim').if, 2)
+
+  call dein#end()
+endfunction"}}}
+
 function! s:suite.lazy_manual() abort "{{{
   call dein#begin(s:path)
 

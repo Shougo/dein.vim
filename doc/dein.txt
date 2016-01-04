@@ -149,6 +149,12 @@ OPTIONS 					*dein-options*
 >
 		call dein#add('rstacruz/sparkup', {'rtp': 'vim'})
 <
+						*dein-options-if*
+		if			(Number) or (String)
+		If set to zero, dein doesn't register the plugin.
+		If it is String, dein will eval it.
+		If you don't set it, dein will register the plugin.
+
 						*dein-options-lazy*
 		lazy			(Number)
 		If set to non-zero, dein doesn't add the path to 'runtimepath'
