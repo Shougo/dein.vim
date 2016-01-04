@@ -55,5 +55,13 @@ function! dein#autoload#_on_i() abort "{{{
         \ '!v:val.sourced && v:val.on_i')
   call dein#autoload#_source(plugins)
 endfunction"}}}
+function! dein#autoload#_on_ft() abort "{{{
+  for filetype in split(&l:filetype, '\.')
+    let plugins = filter(values(dein#get()),
+          \ '!v:val.sourced && index(v:val.on_ft, filetype) >= 0')
+    echomsg filetype
+    call dein#autoload#_source(plugins)
+  endfor
+endfunction"}}}
 
 " vim: foldmethod=marker

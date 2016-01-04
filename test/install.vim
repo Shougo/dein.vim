@@ -1,12 +1,16 @@
+" set verbose=1
+
 let s:suite = themis#suite('install')
 let s:assert = themis#helper('assert')
 
 let s:path = '.cache'
 let s:runtimepath_save = &runtimepath
+let s:filetype_save = &l:filetype
 
 function! s:suite.before_each() abort "{{{
   call dein#_init()
   let &runtimepath = s:runtimepath_save
+  let &l:filetype = s:filetype_save
 endfunction"}}}
 
 function! s:suite.install() abort "{{{
@@ -144,6 +148,37 @@ function! s:suite.lazy_on_i() abort "{{{
         \     'v:val ==# plugin.rtp')), 0)
 
   call dein#autoload#_on_i()
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
+function! s:suite.lazy_on_ft() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'on_ft': 'cpp' }), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('neocomplete.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  set filetype=c
+  call dein#autoload#_on_ft()
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  set filetype=cpp
+  call dein#autoload#_on_ft()
 
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),

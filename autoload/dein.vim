@@ -72,6 +72,7 @@ function! dein#_init() abort "{{{
   augroup dein
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
+    autocmd FileType * call dein#autoload#_on_ft()
   augroup END
 endfunction"}}}
 function! dein#_get_base_path() abort "{{{

@@ -167,6 +167,10 @@ OPTIONS 					*dein-options*
 		If set to non-zero, dein will call |dein#source()| on
 		|InsertEnter| autocmd.
 
+						*dein-options-on_ft*
+		on_ft	(List) or (String)
+		If it is matched to 'filetype', dein will call |dein#source()|.
+
 ==============================================================================
 EXAMPLES					*dein-examples*
 >

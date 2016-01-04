@@ -101,6 +101,16 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.augroup = plugin.normalized_name
   endif
 
+  " Auto convert2list.
+  for key in filter([
+        \ 'on_ft', 'on_path', 'on_cmd',
+        \ 'on_func', 'on_map', 'on_unite',
+        \ 'on_source', 'pre_cmd', 'pre_func',
+        \ ], "type(plugin[v:val]) != type([])
+        \")
+    let plugin[key] = [plugin[key]]
+  endfor
+
   " Set lazy flag
   if !has_key(a:plugin, 'lazy')
     let plugin.lazy = plugin.on_i
