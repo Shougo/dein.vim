@@ -1,4 +1,4 @@
-let s:suite = themis#suite('parse')
+let s:suite = themis#suite('base')
 let s:assert = themis#helper('assert')
 
 let s:path = '.cache'

@@ -1,4 +1,4 @@
-let s:suite = themis#suite('parse')
+let s:suite = themis#suite('git')
 let s:assert = themis#helper('assert')
 
 let s:git = dein#types#git#define()
