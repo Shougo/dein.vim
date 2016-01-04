@@ -68,6 +68,11 @@ function! dein#_init() abort "{{{
   let s:block_level = 0
   let g:dein#_plugins = {}
   let g:dein#hooks = {}
+
+  augroup dein
+    autocmd!
+    autocmd InsertEnter * call dein#autoload#_on_i()
+  augroup END
 endfunction"}}}
 function! dein#_get_base_path() abort "{{{
   return s:base_path

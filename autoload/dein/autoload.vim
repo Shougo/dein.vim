@@ -50,4 +50,10 @@ function! dein#autoload#_source(plugins) abort "{{{
   let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
 endfunction"}}}
 
+function! dein#autoload#_on_i() abort "{{{
+  let plugins = filter(values(dein#get()),
+        \ '!v:val.sourced && v:val.on_i')
+  call dein#autoload#_source(plugins)
+endfunction"}}}
+
 " vim: foldmethod=marker

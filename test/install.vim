@@ -87,7 +87,8 @@ endfunction"}}}
 function! s:suite.lazy_manual() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim', { 'lazy': 1 }), 0)
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'lazy': 1 }), 0)
 
   call s:assert.equals(dein#update(), 0)
 
@@ -100,6 +101,29 @@ function! s:suite.lazy_manual() abort "{{{
         \     'v:val ==# plugin.rtp')), 0)
 
   call s:assert.equals(dein#source(['neocomplete.vim']), 0)
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
+function! s:suite.lazy_on_i() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'on_i': 1 }), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('neocomplete.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  call dein#autoload#_on_i()
 
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
