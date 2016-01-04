@@ -2,9 +2,11 @@ let s:suite = themis#suite('parse')
 let s:assert = themis#helper('assert')
 
 let s:path = '.cache'
+let s:runtimepath_save = &runtimepath
 
 function! s:suite.before_each() abort "{{{
   call dein#_init()
+  let &runtimepath = s:runtimepath_save
 endfunction"}}}
 
 function! s:suite.install() abort "{{{
@@ -56,6 +58,30 @@ function! s:suite.fetch() abort "{{{
   call dein#end()
 
   call s:assert.true(index(dein#_split_rtp(&runtimepath), plugin.rtp) < 0)
+endfunction"}}}
+
+function! s:suite.reload() abort "{{{
+  " 1st load
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  " 2nd load
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('neocomplete.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:

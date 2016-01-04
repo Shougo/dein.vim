@@ -119,7 +119,6 @@ function! dein#end() abort "{{{
     endif
 
     call insert(rtps, plugin.rtp, index)
-    let index += 1
     if isdirectory(plugin.rtp.'/after')
       call add(rtps, plugin.rtp.'/after')
     endif
@@ -136,6 +135,12 @@ function! dein#add(repo, ...) abort "{{{
 
   let plugin = dein#parse#_dict(
         \ dein#parse#_init(a:repo, get(a:000, 0, {})))
+  if has_key(g:dein#_plugins, plugin.name)
+        \ && g:dein#_plugins[plugin.name].sourced
+    " Skip loaded plugin
+    return
+  endif
+
   let g:dein#_plugins[plugin.name] = plugin
 endfunction"}}}
 
