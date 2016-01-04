@@ -72,6 +72,9 @@ endfunction"}}}
 function! dein#_get_base_path() abort "{{{
   return s:base_path
 endfunction"}}}
+function! dein#_get_runtime_path() abort "{{{
+  return s:runtime_path
+endfunction"}}}
 
 call dein#_init()
 
@@ -108,10 +111,10 @@ function! dein#end() abort "{{{
   let s:block_level -= 1
 
   " Add runtimepath
-  let rtps = []
   let rtps = dein#_split_rtp(&runtimepath)
   let index = index(rtps, s:runtime_path)
-  for plugin in filter(values(g:dein#_plugins), 'isdirectory(v:val.rtp)')
+  for plugin in filter(values(g:dein#_plugins),
+        \ '!v:val.lazy && isdirectory(v:val.rtp)')
     if plugin.sourced
       " Remove old plugin's runtimepath
       let rtps = filter(dein#_split_rtp(&runtimepath),
@@ -146,6 +149,12 @@ endfunction"}}}
 
 function! dein#get(...) abort "{{{
   return empty(a:000) ? copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
+endfunction"}}}
+
+function! dein#source(...) abort "{{{
+  let plugins = empty(a:000) ? copy(g:dein#_plugins)
+        \ : map(copy(a:1), 'get(g:dein#_plugins, v:val, {})')
+  return dein#autoload#_source(plugins)
 endfunction"}}}
 
 function! dein#tap(name) abort "{{{

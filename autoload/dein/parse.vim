@@ -101,6 +101,15 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.augroup = plugin.normalized_name
   endif
 
+  " Set lazy flag
+  if !has_key(a:plugin, 'lazy')
+    let plugin.lazy =
+          \    !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
+          \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
+          \ || !empty(plugin.on_unite)  || !empty(plugin.on_path)
+          \ || !empty(plugin.on_source)
+  endif
+
   return plugin
 endfunction"}}}
 function! dein#parse#_list(plugins) abort "{{{
