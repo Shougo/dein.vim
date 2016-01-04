@@ -103,8 +103,8 @@ function! dein#parse#_dict(plugin) abort "{{{
 
   " Set lazy flag
   if !has_key(a:plugin, 'lazy')
-    let plugin.lazy =
-          \    !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
+    let plugin.lazy = plugin.on_i
+          \ || !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
           \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
           \ || !empty(plugin.on_unite)  || !empty(plugin.on_path)
           \ || !empty(plugin.on_source)
