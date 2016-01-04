@@ -210,6 +210,12 @@ function! dein#_filetype_off() abort "{{{
 
   return filetype_out
 endfunction"}}}
+function! dein#_convert2list(expr) abort "{{{
+  return type(a:expr) ==# type([]) ? a:expr :
+        \ type(a:expr) ==# type('') ?
+        \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
+        \ : [a:expr]
+endfunction"}}}
 
 " Executes a command and returns its output.
 " This wraps Vim's `:redir`, and makes sure that the `verbose` settings have

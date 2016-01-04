@@ -40,8 +40,7 @@ function! dein#installer#_update(plugins) abort "{{{
     for plugin in plugins
       call s:cd(plugin.path)
       let command = s:git.get_sync_command(plugin)
-      let &l:statusline = s:get_progress_message(plugin, cnt, max)
-      redrawstatus
+      call s:print_message(s:get_progress_message(plugin, cnt, max))
       call s:system(command)
       let cnt += 1
     endfor
@@ -83,5 +82,60 @@ function! s:iconv(expr, from, to) abort "{{{
   let result = iconv(a:expr, a:from, a:to)
   return result != '' ? result : a:expr
 endfunction"}}}
+function! s:print_message(msg) abort "{{{
+  if !has('vim_starting')
+    let &l:statusline = a:msg
+    redrawstatus
+  else
+    call s:echo(a:msg, 'echo')
+  endif
+endfunction"}}}
+
+function! s:echo(expr, mode) "{{{
+  let msg = map(dein#_convert2list(a:expr), "'[dein] ' .  v:val")
+  if empty(msg)
+    return
+  endif
+
+  if has('vim_starting')
+    let m = join(msg, "\n")
+    call s:echo_mode(m, a:mode)
+    return
+  endif
+
+  let more_save = &more
+  let showcmd_save = &showcmd
+  let ruler_save = &ruler
+  try
+    set nomore
+    set noshowcmd
+    set noruler
+
+    let height = max([1, &cmdheight])
+    echo ''
+    for i in range(0, len(msg)-1, height)
+      redraw
+
+      let m = join(msg[i : i+height-1], "\n")
+      call s:echo_mode(m, a:mode)
+    endfor
+  finally
+    let &more = more_save
+    let &showcmd = showcmd_save
+    let &ruler = ruler_save
+  endtry
+endfunction"}}}
+function! s:echo_mode(m, mode) abort "{{{
+  for m in split(a:m, '\r\?\n', 1)
+    if a:mode ==# 'error'
+      echohl WarningMsg | echomsg m | echohl None
+    elseif a:mode ==# 'echomsg'
+      echomsg m
+    else
+      echo m
+    endif
+  endfor
+endfunction"}}}
+
 
 " vim: foldmethod=marker
