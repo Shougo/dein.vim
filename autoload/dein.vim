@@ -104,6 +104,10 @@ function! dein#begin(path) abort "{{{
   execute 'set rtp-='.fnameescape(s:runtime_path)
   let rtps = dein#_split_rtp(&runtimepath)
   let n = index(rtps, $VIMRUNTIME)
+  if n < 0
+    call dein#_error('Invalid runtimepath.')
+    return 1
+  endif
   let &runtimepath = dein#_join_rtp(
         \ insert(rtps, s:runtime_path, n-1), &runtimepath, s:runtime_path)
 endfunction"}}}
@@ -119,6 +123,10 @@ function! dein#end() abort "{{{
   " Add runtimepath
   let rtps = dein#_split_rtp(&runtimepath)
   let index = index(rtps, s:runtime_path)
+  if index < 0
+    call dein#_error('Invalid runtimepath.')
+    return 1
+  endif
   for plugin in filter(values(g:dein#_plugins),
         \ '!v:val.lazy && isdirectory(v:val.rtp)')
     if plugin.sourced
