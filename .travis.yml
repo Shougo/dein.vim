@@ -11,4 +11,5 @@ before_script:
 
 script:
     - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -e EVL103=1 -e EVL102.l:_=1 autoload
-    - vim-themis/bin/themis --reporter spec
+    - vim-themis/bin/themis --reporter spec test/base.vim
+    - vim-themis/bin/themis --reporter spec test/git.vim test/install.vim test/parse.vim
