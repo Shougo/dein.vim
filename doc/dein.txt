@@ -149,6 +149,19 @@ OPTIONS 					*dein-options*
 >
 		call dein#add('rstacruz/sparkup', {'rtp': 'vim'})
 <
+						*dein-options-directory*
+		directory		(String)
+		Specify relative directory path from the base directory (set
+		by |dein#begin()| or "base" option). If omitted, the "name"
+		option will be used.
+		Note: If you set rev "foo" when the name key is "dein",
+		the directory key is "dein_foo".
+
+		Example:
+>
+		call dein#add('https://github.com/Shougo/unite.vim.git',
+		   \ {'directory' : 'unite'})
+<
 						*dein-options-if*
 		if			(Number) or (String)
 		If set to zero, dein doesn't register the plugin.
