@@ -127,13 +127,7 @@ function! dein#end() abort "{{{
     return 1
   endif
   for plugin in filter(values(g:dein#_plugins),
-        \ '!v:val.lazy && isdirectory(v:val.rtp)')
-    if plugin.sourced
-      " Remove old plugin's runtimepath
-      let rtps = filter(dein#_split_rtp(&runtimepath),
-            \ "v:val !=# plugin.rtp && v:val !=# plugin.rtp.'/after'")
-    endif
-
+        \ '!v:val.lazy && !plugin.sourced && isdirectory(v:val.rtp)')
     call insert(rtps, plugin.rtp, index)
     if isdirectory(plugin.rtp.'/after')
       call add(rtps, plugin.rtp.'/after')
