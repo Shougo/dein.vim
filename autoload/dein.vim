@@ -127,7 +127,26 @@ function! dein#end() abort "{{{
     return 1
   endif
   for plugin in filter(values(g:dein#_plugins),
-        \ '!v:val.lazy && !plugin.sourced && isdirectory(v:val.rtp)')
+        \ '!v:val.lazy && !v:val.sourced && isdirectory(v:val.rtp)')
+    " Load dependencies
+    for name in plugin.depends
+      if !has_key(g:dein#_plugins, name)
+        call dein#_error(printf('Plugin name "%s" is not found.', name))
+        return 1
+      endif
+
+      let depend = g:dein#_plugins[name]
+      if depend.sourced
+        continue
+      endif
+
+      call insert(rtps, depend.rtp, index)
+      if isdirectory(depend.rtp.'/after')
+        call add(rtps, depend.rtp.'/after')
+      endif
+      let depend.sourced = 1
+    endfor
+
     call insert(rtps, plugin.rtp, index)
     if isdirectory(plugin.rtp.'/after')
       call add(rtps, plugin.rtp.'/after')

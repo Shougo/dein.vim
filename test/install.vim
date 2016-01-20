@@ -23,7 +23,7 @@ function! s:suite.install() abort "{{{
   let plugin = dein#get('neocomplete.vim')
 
   call s:assert.equals(plugin.rtp,
-        \ s:path.'/repos/github.com/Shougo/neocomplete.vim.git')
+        \ s:path.'/repos/github.com/Shougo/neocomplete.vim')
 
   call s:assert.true(isdirectory(plugin.rtp))
 
@@ -194,6 +194,76 @@ function! s:suite.invalide_runtimepath() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
   let &runtimepath = ''
   call s:assert.equals(dein#end(), 1)
+endfunction"}}}
+
+function! s:suite.depends() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'depends': 'vimproc.vim' }), 0)
+  call s:assert.equals(dein#add('Shougo/vimproc.vim'), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('vimproc.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
+function! s:suite.depends_lazy() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'depends': 'vimproc.vim', 'lazy': 1 }), 0)
+  call s:assert.equals(dein#add('Shougo/vimproc.vim', {'lazy': 1}), 0)
+
+  let plugin = dein#get('vimproc.vim')
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  call s:assert.equals(plugin.sourced, 0)
+  call s:assert.equals(isdirectory(plugin.rtp), 1)
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  call s:assert.equals(dein#source(['neocomplete.vim']), 0)
+
+  call s:assert.equals(plugin.sourced, 1)
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
+function! s:suite.depends_error() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'depends': 'vimfiler.vim'}), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call s:assert.equals(dein#end(), 1)
+endfunction"}}}
+
+function! s:suite.depends_error_lazy() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'depends': 'vimfiler.vim', 'lazy': 1 }), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call s:assert.equals(dein#end(), 0)
+
+  call s:assert.equals(dein#source(['neocomplete.vim']), 1)
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:

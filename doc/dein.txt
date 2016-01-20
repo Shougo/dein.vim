@@ -162,6 +162,12 @@ OPTIONS 					*dein-options*
 		call dein#add('https://github.com/Shougo/unite.vim.git',
 		   \ {'directory' : 'unite'})
 <
+						*dein-options-depends*
+		depends			(List or String)
+		Specify a list of plugins a plugin depends on.
+		List items are '{plugin-name}'.
+		Those specified in the list are NOT installed automatically.
+
 						*dein-options-if*
 		if			(Number) or (String)
 		If set to zero, dein doesn't register the plugin.

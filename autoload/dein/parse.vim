@@ -125,6 +125,10 @@ function! dein#parse#_dict(plugin) abort "{{{
     sandbox let plugin.if = eval(a:plugin.if)
   endif
 
+  if has_key(a:plugin, 'depends')
+    let plugin.depends = dein#_convert2list(a:plugin.depends)
+  endif
+
   return plugin
 endfunction"}}}
 function! dein#parse#_list(plugins) abort "{{{

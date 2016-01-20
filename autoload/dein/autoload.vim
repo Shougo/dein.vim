@@ -29,22 +29,9 @@ function! dein#autoload#_source(plugins) abort "{{{
 
   for plugin in filter(copy(a:plugins),
         \ '!empty(v:val) && !v:val.sourced && isdirectory(v:val.rtp)')
-    call insert(rtps, plugin.rtp, index)
-    if isdirectory(plugin.rtp.'/after')
-      call add(rtps, plugin.rtp.'/after')
+    if s:source_plugin(rtps, index, plugin)
+      return 1
     endif
-
-    " Reload script files.
-    for directory in filter(['plugin', 'after/plugin'],
-          \ "isdirectory(plugin.rtp.'/'.v:val)")
-      for file in split(glob(plugin.rtp.'/'.directory.'/**/*.vim'), '\n')
-        " Note: "silent!" is required to ignore E122, E174 and E227.
-        "       "unsilent" then displays any messages while sourcing.
-        execute 'silent! unsilent source' fnameescape(file)
-      endfor
-    endfor
-
-    let plugin.sourced = 1
   endfor
 
   let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
@@ -63,5 +50,35 @@ function! dein#autoload#_on_ft() abort "{{{
     call dein#autoload#_source(plugins)
   endfor
 endfunction"}}}
+function! s:source_plugin(rtps, index, plugin) abort
+  let a:plugin.sourced = 1
+
+  " Load dependencies
+  for name in a:plugin.depends
+    if !has_key(g:dein#_plugins, name)
+      call dein#_error(printf('Plugin name "%s" is not found.', name))
+      return 1
+    endif
+
+    if s:source_plugin(a:rtps, a:index, g:dein#_plugins[name])
+      return 1
+    endif
+  endfor
+
+  call insert(a:rtps, a:plugin.rtp, a:index)
+  if isdirectory(a:plugin.rtp.'/after')
+    call add(a:rtps, a:plugin.rtp.'/after')
+  endif
+
+  " Reload script files.
+  for directory in filter(['plugin', 'after/plugin'],
+        \ "isdirectory(a:plugin.rtp.'/'.v:val)")
+    for file in split(glob(a:plugin.rtp.'/'.directory.'/**/*.vim'), '\n')
+      " Note: "silent!" is required to ignore E122, E174 and E227.
+      "       "unsilent" then displays any messages while sourcing.
+      execute 'silent! unsilent source' fnameescape(file)
+    endfor
+  endfor
+endfunction
 
 " vim: foldmethod=marker
