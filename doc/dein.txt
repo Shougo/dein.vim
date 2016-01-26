@@ -193,12 +193,10 @@ OPTIONS 					*dein-options*
 ==============================================================================
 EXAMPLES					*dein-examples*
 >
-	if has('vim_starting')
-	  if &compatible
-	    set nocompatible
-	  endif
-	  set runtimepath+={path to dein.vim directory}
+	if &compatible
+	  set nocompatible
 	endif
+	set runtimepath^={path to dein.vim directory}
 
 	call dein#begin(expand('~/.cache/dein'))
 
