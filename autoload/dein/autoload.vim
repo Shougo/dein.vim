@@ -118,6 +118,38 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "
     execute a:command.a:bang a:args
   endtry
 endfunction"}}}
+function! dein#autoload#_on_map(mapping, name, mode) abort "{{{
+  let cnt = v:count > 0 ? v:count : ''
+
+  let input = s:get_input()
+
+  call dein#source(a:name)
+
+  if a:mode ==# 'v' || a:mode ==# 'x'
+    call feedkeys('gv', 'n')
+  elseif a:mode ==# 'o'
+    " TODO: omap
+    " v:prevcount?
+    " Cancel waiting operator mode.
+    call feedkeys(v:operator, 'm')
+  endif
+
+  call feedkeys(cnt, 'n')
+
+  let mapping = a:mapping
+  while mapping =~ '<[[:alnum:]-]\+>'
+    let mapping = substitute(mapping, '\c<Leader>',
+          \ get(g:, 'mapleader', '\'), 'g')
+    let mapping = substitute(mapping, '\c<LocalLeader>',
+          \ get(g:, 'maplocalleader', '\'), 'g')
+    let ctrl = matchstr(mapping, '<\zs[[:alnum:]-]\+\ze>')
+    execute 'let mapping = substitute(
+          \ mapping, "<' . ctrl . '>", "\<' . ctrl . '>", "")'
+  endwhile
+  call feedkeys(mapping . input, 'm')
+
+  return ''
+endfunction"}}}
 
 function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort "{{{
   " Load plugins
@@ -175,6 +207,29 @@ function! s:set_function_prefixes(plugins) abort "{{{
           \   dein#_substitute_path(fnamemodify(v:val, ':r')),
           \         '/autoload/\\zs.*$'), '/', '#', 'g').'#'"))
   endfor
+endfunction"}}}
+function! s:get_input() abort "{{{
+  let input = ''
+  let termstr = "<M-_>"
+
+  call feedkeys(termstr, 'n')
+
+  let type_num = type(0)
+  while 1
+    let char = getchar()
+    let input .= (type(char) == type_num) ? nr2char(char) : char
+
+    let idx = stridx(input, termstr)
+    if idx >= 1
+      let input = input[: idx - 1]
+      break
+    elseif idx == 0
+      let input = ''
+      break
+    endif
+  endwhile
+
+  return input
 endfunction"}}}
 
 " vim: foldmethod=marker

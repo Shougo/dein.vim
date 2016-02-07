@@ -212,6 +212,30 @@ OPTIONS 					*dein-options*
 		If it is matched to the executed command, dein will call
 		|dein#source()|.
 
+						*dein-options-on_map*
+		on_map		(List) or (String)
+		It is the mappings list. The items are {mapping} or
+		[{mode}, {mapping1}, [{mapping2}, ...]].  If {mode} is
+		omitted, "nxo" is used.
+		Note: You can use plugin prefix mappings.
+		For example, you can use "<Plug>(ref-" instead of
+		"<Plug>(ref-back)" and so on.
+
+		Note: You can use "<Plug>" keyword as {mapping}. If
+		{mapping} is "<Plug>", "<Plug>(normalized_name" is
+		used.
+		For example: >
+		" It is same as "'mappings' : '<Plug>(anzu'
+		call dein#add('osyo-manga/vim-anzu', {'on_map': '<Plug>'})
+<
+		Note: You cannot use lazy <Plug> mappings twice.
+		For example: >
+		call dein#add('osyo-manga/vim-anzu',
+		\ {'on_map': '<Plug>(anzu-'}
+		" Not working!!
+		nmap n <Plug>(anzu-jump-n)<Plug>(anzu-echo-search-status)zv
+		nmap N <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
+<
 						*dein-options-pre_cmd*
 		pre_cmd		(List) or (String)
 		The autoload command prefix in the commands.

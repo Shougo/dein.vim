@@ -124,6 +124,7 @@ function! s:suite.lazy_manual() abort "{{{
 
   call s:assert.equals(dein#source(['neocomplete.vim']), 0)
 
+  call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
@@ -147,6 +148,7 @@ function! s:suite.lazy_on_i() abort "{{{
 
   call dein#autoload#_on_i()
 
+  call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
@@ -178,6 +180,7 @@ function! s:suite.lazy_on_ft() abort "{{{
   set filetype=cpp
   call dein#autoload#_on_ft()
 
+  call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
@@ -201,6 +204,7 @@ function! s:suite.lazy_on_path() abort "{{{
 
   execut 'edit' tempname()
 
+  call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
@@ -226,6 +230,7 @@ function! s:suite.lazy_on_source() abort "{{{
 
   call dein#source('neocomplete.vim')
 
+  call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
@@ -264,6 +269,7 @@ function! s:suite.lazy_on_func() abort "{{{
 
   call vimshell#version()
 
+  call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
         \     'v:val ==# plugin2.rtp')), 1)
@@ -289,7 +295,32 @@ function! s:suite.lazy_on_cmd() abort "{{{
   NeoCompleteDisable
 
   call s:assert.equals(plugin.sourced, 1)
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
 
+function! s:suite.lazy_on_map() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/unite.vim',
+        \ { 'lazy': 1 }), 0)
+  call s:assert.equals(dein#add('Shougo/vimfiler.vim',
+        \ { 'on_map': '<Plug>', 'depends': 'unite.vim' }), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('vimfiler.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  call dein#autoload#_on_map('', 'vimfiler.vim', 'n')
+
+  call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)

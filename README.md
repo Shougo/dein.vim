@@ -27,8 +27,6 @@ The features may be changed.
 
 ## Future works (not implemented yet)
 
-* Lazy loading (on\_map, on\_func)
-
 * Unite support
 
 * Asynchronous plugins installer

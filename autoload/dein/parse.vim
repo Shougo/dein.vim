@@ -132,8 +132,14 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.depends = dein#_convert2list(a:plugin.depends)
   endif
 
-  if plugin.lazy && !empty(plugin.on_cmd)
-    call s:add_dummy_commands(plugin)
+  if plugin.lazy
+    if !empty(plugin.on_cmd)
+      call s:add_dummy_commands(plugin)
+    endif
+
+    if !empty(plugin.on_map)
+      call s:add_dummy_mappings(plugin)
+    endif
   endif
 
   return plugin
@@ -159,6 +165,39 @@ function! s:add_dummy_commands(plugin) abort "{{{
           \   string(name), string(a:plugin.name))
 
     call add(a:plugin.dummy_commands, name)
+  endfor
+endfunction"}}}
+
+function! s:add_dummy_mappings(plugin) "{{{
+  let a:plugin.dummy_mappings = []
+  for [modes, mappings] in map(copy(a:plugin.on_map), "
+        \   type(v:val) == type([]) ?
+        \     [v:val[0], v:val[1:]] : ['nxo', [v:val]]
+        \ ")
+    if mappings ==# ['<Plug>']
+      " Use plugin name.
+      let mappings = ['<Plug>(' . a:plugin.normalized_name]
+      if stridx(a:plugin.normalized_name, '-') >= 0
+        " The plugin mappings may use "_" instead of "-".
+        call add(mappings, '<Plug>(' .
+              \ substitute(a:plugin.normalized_name, '-', '_', 'g'))
+      endif
+    endif
+
+    for mapping in mappings
+      " Define dummy mappings.
+      for mode in filter(split(modes, '\zs'),
+            \ "index(['n', 'v', 'x', 'o', 'i', 'c'], v:val) >= 0")
+        let mapping_str = substitute(mapping, '<', '<lt>', 'g')
+        silent! execute mode.'noremap <unique><silent>' mapping printf(
+              \ (mode ==# 'c' ? "\<C-r>=" :
+              \  (mode ==# 'i' ? "\<C-o>:" : ":\<C-u>")."call ").
+              \   "dein#autoload#_on_map(%s, %s, %s)<CR>",
+              \   string(mapping_str), string(a:plugin.name), string(mode))
+
+        call add(a:plugin.dummy_mappings, [mode, mapping])
+      endfor
+    endfor
   endfor
 endfunction"}}}
 
