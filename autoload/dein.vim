@@ -90,6 +90,7 @@ function! dein#_init() abort "{{{
     autocmd FileType * call dein#autoload#_on_ft()
     autocmd FuncUndefined *
           \ call dein#autoload#_on_func(expand('<amatch>'))
+    autocmd VimEnter * call dein#_call_hook('post_source')
   augroup END
 
   if exists('##CmdUndefined')
@@ -158,6 +159,8 @@ function! dein#end() abort "{{{
     call dein#_error('Invalid runtimepath.')
     return 1
   endif
+
+  let sourced = []
   for plugin in filter(values(g:dein#_plugins),
         \ '!v:val.lazy && !v:val.sourced && isdirectory(v:val.rtp)')
     " Load dependencies
@@ -184,8 +187,11 @@ function! dein#end() abort "{{{
       call add(rtps, plugin.rtp.'/after')
     endif
     let plugin.sourced = 1
+    call add(sourced, plugin)
   endfor
   let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
+
+  call dein#_call_hook('source', sourced)
 endfunction"}}}
 
 function! dein#add(repo, ...) abort "{{{
@@ -320,6 +326,26 @@ function! dein#_reset_ftplugin() abort "{{{
   " Recall FileType autocmd
   execute 'doautocmd FileType' &filetype
 endfunction"}}}
+function! dein#_call_hook(hook_name, ...) abort "{{{
+  let plugins = dein#_tsort(filter(dein#_convert2list(
+        \ (empty(a:000) ? dein#get() : a:1)), 'v:val.sourced'))
+
+  for plugin in plugins
+    let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
+    if exists('#User#' . autocmd)
+      execute 'doautocmd User' autocmd
+    endif
+  endfor
+endfunction"}}}
+function! dein#_tsort(plugins) "{{{
+  let sorted = []
+  let mark = {}
+  for target in a:plugins
+    call s:tsort_impl(target, mark, sorted)
+  endfor
+
+  return sorted
+endfunction"}}}
 
 " Executes a command and returns its output.
 " This wraps Vim's `:redir`, and makes sure that the `verbose` settings have
@@ -337,6 +363,19 @@ endfunction"}}}
 " Escape a path for runtimepath.
 function! s:escape(path) abort "{{{
   return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
+endfunction"}}}
+
+function! s:tsort_impl(target, mark, sorted) "{{{
+  if has_key(a:mark, a:target.name)
+    return
+  endif
+
+  let a:mark[a:target.name] = 1
+  for depend in a:target.depends
+    call s:tsort_impl(dein#get(depend), a:mark, a:sorted)
+  endfor
+
+  call add(a:sorted, a:target)
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -198,6 +198,8 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     call add(a:rtps, a:plugin.rtp.'/after')
   endif
 
+  call dein#_call_hook('source', a:plugin)
+
   for on_source in filter(dein#_get_lazy_plugins(),
         \ "index(v:val.on_source, a:plugin.name) >= 0")
     if s:source_plugin(a:rtps, a:index, on_source)
@@ -226,6 +228,10 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
       execute 'silent! unsilent source' fnameescape(file)
     endfor
   endfor
+
+  if !has('vim_starting')
+    call dein#_call_hook('post_source', a:plugin)
+  endif
 endfunction"}}}
 function! s:set_function_prefixes(plugins) abort "{{{
   for plugin in filter(copy(a:plugins), "empty(v:val.pre_func)")

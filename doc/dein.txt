@@ -31,6 +31,7 @@ Interface		|dein-interface|
   Functions		  |dein-functions|
   Variables		  |dein-variables|
   Options		  |dein-options|
+  Hooks			  |dein-hooks|
 Configuration Examples	|dein-examples|
 FAQ			|dein-faq|
 
@@ -243,6 +244,23 @@ OPTIONS 					*dein-options*
 		Example: If you use "unite.vim", "Unite" command
 		prefix is used.
 		Note: It requires Vim 7.4.414 or above.
+
+------------------------------------------------------------------------------
+HOOKS 						*dein-hooks*
+		You can define the hook autocmds.  The following autocmds are
+		defined:
+
+						*dein-hooks-source*
+		User#dein#source#{name}
+		Called or sourced before scripts are sourced. It is
+		useful for plugin initialization in lazy plugins.
+		Note: You must set the autocmd before |dein#end()|.
+
+						*dein-hooks-post_source*
+		User#dein#source#{name}
+		Called or sourced after scripts are sourced.
+		Note: In Vim initializing, calling the hooks are
+		delayed until |VimEnter|.
 
 ==============================================================================
 EXAMPLES					*dein-examples*

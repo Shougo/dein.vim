@@ -434,4 +434,20 @@ function! s:suite.depends_error_lazy() abort "{{{
   call s:assert.equals(dein#source(['neocomplete.vim']), 1)
 endfunction"}}}
 
+function! s:suite.hooks() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+
+  let s:test = 0
+
+  autocmd User dein#source#neocomplete.vim let s:test = 1
+
+  call s:assert.equals(dein#update(), 0)
+
+  call s:assert.equals(dein#end(), 0)
+
+  call s:assert.equals(s:test, 1)
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:
