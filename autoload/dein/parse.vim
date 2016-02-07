@@ -182,7 +182,7 @@ function! s:add_dummy_commands(plugin) abort "{{{
   for name in a:plugin.on_cmd
     " Define dummy commands.
     silent! execute 'command '
-          \ . ('-complete=customlist,dein#autoload#_dummy_complete'))
+          \ . '-complete=customlist,dein#autoload#_dummy_complete'
           \ . ' -bang -bar -range -nargs=*' name printf(
           \ "call dein#autoload#_on_cmd(%s, %s, <q-args>,
           \  expand('<bang>'), expand('<line1>'), expand('<line2>'))",
