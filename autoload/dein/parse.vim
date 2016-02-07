@@ -50,7 +50,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'on_cmd': [],
         \ 'on_func': [],
         \ 'on_map': [],
-        \ 'on_unite': [],
         \ 'on_path': [],
         \ 'on_source': [],
         \ 'pre_cmd': [],
@@ -104,7 +103,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   " Auto convert2list.
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd',
-        \ 'on_func', 'on_map', 'on_unite',
+        \ 'on_func', 'on_map',
         \ 'on_source', 'pre_cmd', 'pre_func',
         \ ], "type(plugin[v:val]) != type([])
         \")
@@ -116,8 +115,7 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.lazy = plugin.on_i
           \ || !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
           \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
-          \ || !empty(plugin.on_unite)  || !empty(plugin.on_path)
-          \ || !empty(plugin.on_source)
+          \ || !empty(plugin.on_path)   || !empty(plugin.on_source)
   endif
 
   " Set if flag
