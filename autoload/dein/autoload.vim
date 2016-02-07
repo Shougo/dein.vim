@@ -41,15 +41,13 @@ function! dein#autoload#_source(plugins) abort "{{{
 endfunction"}}}
 
 function! dein#autoload#_on_i() abort "{{{
-  let plugins = filter(values(dein#get()),
-        \ '!v:val.sourced && v:val.on_i')
-  call dein#autoload#_source(plugins)
+  call dein#autoload#_source(filter(
+        \ dein#_get_lazy_plugins(), 'v:val.on_i'))
 endfunction"}}}
 function! dein#autoload#_on_ft() abort "{{{
   for filetype in split(&l:filetype, '\.')
-    let plugins = filter(values(dein#get()),
-          \ '!v:val.sourced && index(v:val.on_ft, filetype) >= 0')
-    call dein#autoload#_source(plugins)
+    call dein#autoload#_source(filter(dein#_get_lazy_plugins(),
+          \ 'index(v:val.on_ft, filetype) >= 0'))
   endfor
 endfunction"}}}
 
@@ -65,9 +63,8 @@ function! dein#autoload#_on_path(path, event) abort "{{{
   endif
 
   let path = dein#_expand(path)
-  let plugins = filter(values(dein#get()),
-        \ "!v:val.sourced &&
-        \  !empty(filter(copy(v:val.on_path), 'path =~? v:val'))")
+  let plugins = filter(dein#_get_lazy_plugins(),
+        \ "!empty(filter(copy(v:val.on_path), 'path =~? v:val'))")
   if empty(plugins)
     return
   endif
@@ -91,7 +88,7 @@ function! dein#autoload#_on_func(name) abort "{{{
     return
   endif
 
-  let lazy_plugins = filter(values(dein#get()), "!v:val.sourced")
+  let lazy_plugins = dein#_get_lazy_plugins()
   call s:set_function_prefixes(lazy_plugins)
 
   call dein#autoload#_source(filter(lazy_plugins,
@@ -121,8 +118,8 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     endif
   endfor
 
-  for on_source in filter(values(dein#get()),
-        \ "!v:val.sourced && index(v:val.on_source, a:plugin.name) >= 0")
+  for on_source in filter(dein#_get_lazy_plugins(),
+        \ "index(v:val.on_source, a:plugin.name) >= 0")
     if s:source_plugin(a:rtps, a:index, on_source)
       return 1
     endif
