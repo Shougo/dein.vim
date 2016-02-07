@@ -34,7 +34,6 @@ let s:source = {
       \ }
 
 function! s:source.hooks.on_init(args, context) abort "{{{
-  let plugin_names = filter(copy(a:args), 'v:val != "!"')
   let a:context.source__bang = index(a:args, '!') >= 0
   let a:context.source__plugins = values(dein#get())
 endfunction"}}}
