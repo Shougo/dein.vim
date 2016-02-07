@@ -88,8 +88,14 @@ function! dein#_init() abort "{{{
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
     autocmd FileType * call dein#autoload#_on_ft()
-    autocmd FuncUndefined * call dein#autoload#_on_func(expand('<amatch>'))
+    autocmd FuncUndefined *
+          \ call dein#autoload#_on_func(expand('<amatch>'))
   augroup END
+
+  if exists('##CmdUndefined')
+    autocmd CmdUndefined *
+          \ call dein#autoload#_on_pre_cmd(expand('<amatch>'))
+  endif
 
   for event in [
         \ 'BufRead', 'BufCreate', 'BufEnter',
@@ -279,6 +285,9 @@ function! dein#_convert2list(expr) abort "{{{
         \ type(a:expr) ==# type('') ?
         \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
         \ : [a:expr]
+endfunction"}}}
+function! dein#_get_lazy_plugins() abort "{{{
+  return filter(values(g:dein#_plugins), '!v:val.sourced')
 endfunction"}}}
 
 " Executes a command and returns its output.

@@ -207,6 +207,14 @@ OPTIONS 					*dein-options*
 		on_source	(List) or (String)
 		Load the plugin after the list plugins are loaded.
 
+						*dein-options-pre_cmd*
+		pre_cmd		(List) or (String)
+		The autoload command prefix in the commands.
+		If omitted it, automatically generated prefix is used.
+		Example: If you use "unite.vim", "Unite" command
+		prefix is used.
+		Note: It requires Vim 7.4.414 or above.
+
 ==============================================================================
 EXAMPLES					*dein-examples*
 >

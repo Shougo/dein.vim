@@ -118,6 +118,11 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ || !empty(plugin.on_path)   || !empty(plugin.on_source)
   endif
 
+  if empty(plugin.pre_cmd)
+    let plugin.pre_cmd = [substitute(
+          \ plugin.normalized_name, '[_-]', '', 'g')]
+  endif
+
   " Set if flag
   if has_key(a:plugin, 'if') && type(a:plugin.if) == type('')
     sandbox let plugin.if = eval(a:plugin.if)

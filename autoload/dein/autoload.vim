@@ -99,6 +99,13 @@ function! dein#autoload#_on_func(name) abort "{{{
         \   || (index(v:val.on_func, a:name) >= 0)"))
 endfunction"}}}
 
+function! dein#autoload#_on_pre_cmd(name) abort "{{{
+  call dein#autoload#_source(
+        \ filter(dein#_get_lazy_plugins(),
+        \ "!empty(filter(map(copy(v:val.pre_cmd), 'tolower(v:val)'),
+        \   'stridx(tolower(a:name), v:val) == 0'))"))
+endfunction"}}}
+
 function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1
 

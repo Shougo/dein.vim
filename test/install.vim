@@ -269,6 +269,32 @@ function! s:suite.lazy_on_func() abort "{{{
         \     'v:val ==# plugin2.rtp')), 1)
 endfunction"}}}
 
+function! s:suite.lazy_on_pre_cmd() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'lazy': 1 }), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('neocomplete.vim')
+
+  call s:assert.equals(plugin.pre_cmd, ['neocomplete'])
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  call dein#autoload#_on_pre_cmd('NeoCompleteDisable')
+
+  call s:assert.equals(plugin.sourced, 1)
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
 function! s:suite.invalide_runtimepath() abort "{{{
   let &runtimepath = ''
   call s:assert.equals(dein#begin(s:path), 1)
