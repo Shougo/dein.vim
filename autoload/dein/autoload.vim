@@ -164,6 +164,9 @@ endfunction"}}}
 function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1
 
+  let filetype_before = dein#_redir('autocmd FileType')
+  let reset_ftplugin = 0
+
   " Load dependencies
   for name in a:plugin.depends
     if !has_key(g:dein#_plugins, name)
@@ -176,6 +179,25 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     endif
   endfor
 
+  if !empty(a:plugin.dummy_commands)
+    for command in a:plugin.dummy_commands
+      silent! execute 'delcommand' command
+    endfor
+    let a:plugin.dummy_commands = []
+  endif
+
+  if !empty(a:plugin.dummy_mappings)
+    for [mode, mapping] in a:plugin.dummy_mappings
+      silent! execute mode.'unmap' mapping
+    endfor
+    let a:plugin.dummy_mappings = []
+  endif
+
+  call insert(a:rtps, a:plugin.rtp, a:index)
+  if isdirectory(a:plugin.rtp.'/after')
+    call add(a:rtps, a:plugin.rtp.'/after')
+  endif
+
   for on_source in filter(dein#_get_lazy_plugins(),
         \ "index(v:val.on_source, a:plugin.name) >= 0")
     if s:source_plugin(a:rtps, a:index, on_source)
@@ -183,9 +205,16 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     endif
   endfor
 
-  call insert(a:rtps, a:plugin.rtp, a:index)
-  if isdirectory(a:plugin.rtp.'/after')
-    call add(a:rtps, a:plugin.rtp.'/after')
+  if !reset_ftplugin
+    let reset_ftplugin = s:is_reset_ftplugin(&filetype, a:plugin.rtp)
+  endif
+
+  let filetype_after = dein#_redir('autocmd FileType')
+
+  if reset_ftplugin
+    call dein#_reset_ftplugin()
+  elseif filetype_before !=# filetype_after
+    execute 'doautocmd FileType' &filetype
   endif
 
   " Reload script files.
@@ -230,6 +259,23 @@ function! s:get_input() abort "{{{
   endwhile
 
   return input
+endfunction"}}}
+
+function! s:is_reset_ftplugin(filetype, rtp) abort "{{{
+  for filetype in split(a:filetype, '\.')
+    for directory in ['ftplugin', 'indent', 'syntax',
+          \ 'after/ftplugin', 'after/indent', 'after/syntax']
+      let base = a:rtp . '/' . directory
+      if filereadable(base.'/'.filetype.'.vim') ||
+            \ (directory =~# 'ftplugin$' &&
+            \   isdirectory(base . '/' . filetype) ||
+            \   glob(base.'/'.filetype.'_*.vim') != '')
+        return 1
+      endif
+    endfor
+  endfor
+
+  return 0
 endfunction"}}}
 
 " vim: foldmethod=marker

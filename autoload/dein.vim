@@ -266,6 +266,15 @@ endfunction"}}}
 function! dein#_chomp(str) abort "{{{
   return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
 endfunction"}}}
+function! dein#_convert2list(expr) abort "{{{
+  return type(a:expr) ==# type([]) ? copy(a:expr) :
+        \ type(a:expr) ==# type('') ?
+        \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
+        \ : [a:expr]
+endfunction"}}}
+function! dein#_get_lazy_plugins() abort "{{{
+  return filter(values(g:dein#_plugins), '!v:val.sourced')
+endfunction"}}}
 function! dein#_filetype_off() abort "{{{
   let filetype_out = dein#_redir('filetype')
 
@@ -280,14 +289,36 @@ function! dein#_filetype_off() abort "{{{
 
   return filetype_out
 endfunction"}}}
-function! dein#_convert2list(expr) abort "{{{
-  return type(a:expr) ==# type([]) ? copy(a:expr) :
-        \ type(a:expr) ==# type('') ?
-        \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
-        \ : [a:expr]
-endfunction"}}}
-function! dein#_get_lazy_plugins() abort "{{{
-  return filter(values(g:dein#_plugins), '!v:val.sourced')
+function! dein#_reset_ftplugin() abort "{{{
+  let filetype_out = dein#_filetype_off()
+
+  if filetype_out =~# 'detection:ON'
+        \ && filetype_out =~# 'plugin:ON'
+        \ && filetype_out =~# 'indent:ON'
+    silent! filetype plugin indent on
+  else
+    if filetype_out =~# 'detection:ON'
+      silent! filetype on
+    endif
+
+    if filetype_out =~# 'plugin:ON'
+      silent! filetype plugin on
+    endif
+
+    if filetype_out =~# 'indent:ON'
+      silent! filetype indent on
+    endif
+  endif
+
+  if filetype_out =~# 'detection:ON'
+    filetype detect
+  endif
+
+  " Reload filetype plugins.
+  let &l:filetype = &l:filetype
+
+  " Recall FileType autocmd
+  execute 'doautocmd FileType' &filetype
 endfunction"}}}
 
 " Executes a command and returns its output.
