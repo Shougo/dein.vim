@@ -207,6 +207,11 @@ OPTIONS 					*dein-options*
 		on_source	(List) or (String)
 		Load the plugin after the list plugins are loaded.
 
+						*dein-options-on_cmd*
+		on_cmd		(List) or (String)
+		If it is matched to the executed command, dein will call
+		|dein#source()|.
+
 						*dein-options-pre_cmd*
 		pre_cmd		(List) or (String)
 		The autoload command prefix in the commands.

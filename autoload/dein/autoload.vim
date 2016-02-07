@@ -50,7 +50,6 @@ function! dein#autoload#_on_ft() abort "{{{
           \ 'index(v:val.on_ft, filetype) >= 0'))
   endfor
 endfunction"}}}
-
 function! dein#autoload#_on_path(path, event) abort "{{{
   if a:path == ''
     return
@@ -79,7 +78,6 @@ function! dein#autoload#_on_path(path, event) abort "{{{
     let s:loaded_path = 1
   endif
 endfunction"}}}
-
 function! dein#autoload#_on_func(name) abort "{{{
   let function_prefix = substitute(a:name, '[^#]*$', '', '')
   if function_prefix =~# '^dein#'
@@ -95,12 +93,40 @@ function! dein#autoload#_on_func(name) abort "{{{
         \  "index(v:val.pre_func, function_prefix) >= 0
         \   || (index(v:val.on_func, a:name) >= 0)"))
 endfunction"}}}
-
 function! dein#autoload#_on_pre_cmd(name) abort "{{{
   call dein#autoload#_source(
         \ filter(dein#_get_lazy_plugins(),
         \ "!empty(filter(map(copy(v:val.pre_cmd), 'tolower(v:val)'),
         \   'stridx(tolower(a:name), v:val) == 0'))"))
+endfunction"}}}
+function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "{{{
+  call dein#source(a:name)
+
+  if !exists(':' . a:command)
+    call dein#_error(printf('command %s is not found.', a:command))
+    return
+  endif
+
+  let range = (a:line1 == a:line2) ? '' :
+        \ (a:line1 == line("'<") && a:line2 == line("'>")) ?
+        \ "'<,'>" : a:line1.",".a:line2
+
+  try
+    execute range.a:command.a:bang a:args
+  catch /^Vim\%((\a\+)\)\=:E481/
+    " E481: No range allowed
+    execute a:command.a:bang a:args
+  endtry
+endfunction"}}}
+
+function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort "{{{
+  " Load plugins
+  call dein#autoload#_on_pre_cmd(
+        \ tolower(matchstr(a:cmdline, '\a\S*')))
+
+  " Print the candidates
+  call feedkeys("\<C-d>", 'n')
+  return ['']
 endfunction"}}}
 
 function! s:source_plugin(rtps, index, plugin) abort "{{{

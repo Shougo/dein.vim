@@ -132,6 +132,10 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.depends = dein#_convert2list(a:plugin.depends)
   endif
 
+  if plugin.lazy && !empty(plugin.on_cmd)
+    call s:add_dummy_commands(plugin)
+  endif
+
   return plugin
 endfunction"}}}
 function! dein#parse#_list(plugins) abort "{{{
@@ -141,6 +145,21 @@ endfunction"}}}
 function! dein#parse#_name_conversion(path) abort "{{{
   return fnamemodify(get(split(a:path, ':'), -1, ''),
         \ ':s?/$??:t:s?\c\.git\s*$??')
+endfunction"}}}
+
+function! s:add_dummy_commands(plugin) abort "{{{
+  let a:plugin.dummy_commands = []
+  for name in a:plugin.on_cmd
+    " Define dummy commands.
+    silent! execute 'command '
+          \ . ('-complete=customlist,dein#autoload#_dummy_complete'))
+          \ . ' -bang -bar -range -nargs=*' name printf(
+          \ "call dein#autoload#_on_cmd(%s, %s, <q-args>,
+          \  expand('<bang>'), expand('<line1>'), expand('<line2>'))",
+          \   string(name), string(a:plugin.name))
+
+    call add(a:plugin.dummy_commands, name)
+  endfor
 endfunction"}}}
 
 " vim: foldmethod=marker
