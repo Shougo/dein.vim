@@ -1,0 +1,25 @@
+let s:suite = themis#suite('toml')
+let s:assert = themis#helper('assert')
+
+function! s:suite.before_each()
+  let g:temp = tempname()
+endfunction
+
+function! s:suite.after_each()
+  call delete(g:temp)
+endfunction
+
+function! s:suite.normal() abort "{{{
+  call writefile([
+        \ '# This is a TOML document.',
+        \ '',
+        \ 'title = "TOML Example"',
+        \ '',
+        \ '[owner]',
+        \ 'name = "Tom Preston-Werner"',
+        \ 'dob = 1979 # First class dates',
+        \ ], g:temp)
+  call s:assert.equals(dein#toml#parse_file(g:temp),
+        \ {'title': 'TOML Example',
+        \  'owner': {'name': 'Tom Preston-Werner', 'dob': 1979}})
+endfunction"}}}

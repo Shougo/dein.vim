@@ -147,6 +147,30 @@ endfunction"}}}
 function! dein#parse#_list(plugins) abort "{{{
   return map(copy(a:plugins), 'dein#parse#_dict(v:val)')
 endfunction"}}}
+function! dein#parse#_load_toml(filename, default) abort "{{{
+  try
+    let toml = dein#toml#parse_file(dein#_expand(a:filename))
+  catch /vital: Text.TOML:/
+    call dein#_error('Invalid toml format: ' . a:filename)
+    call dein#_error(v:exception)
+    return 1
+  endtry
+  if type(toml) != type({}) || !has_key(toml, 'plugins')
+    call dein#_error('Invalid toml file: ' . a:filename)
+    return 1
+  endif
+
+  " Parse.
+  for plugin in toml.plugins
+    if !has_key(plugin, 'repo')
+      call dein#_error('No repository plugin data: ' . a:filename)
+      return 1
+    endif
+
+    let options = extend(plugin, a:default, 'keep')
+    call dein#add(plugin.repo, options)
+  endfor
+endfunction"}}}
 
 function! dein#parse#_name_conversion(path) abort "{{{
   return fnamemodify(get(split(a:path, ':'), -1, ''),

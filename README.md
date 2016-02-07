@@ -29,8 +29,6 @@ The features may be changed.
 
 * Asynchronous plugins installer
 
-* Toml support
-
 * Cache support
 
 * Build support

@@ -246,6 +246,10 @@ function! dein#check_install(...) abort "{{{
   return 1
 endfunction"}}}
 
+function! dein#load_toml(filename, ...) abort "{{{
+  return dein#parse#_load_toml(a:filename, get(a:000, 0, {}))
+endfunction"}}}
+
 " Helper functions
 function! dein#_has_vimproc() abort "{{{
   if !exists('*vimproc#version')

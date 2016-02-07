@@ -72,6 +72,32 @@ dein#add({repo}[, {options}])			*dein#add()*
 		set in {options}.
 		Note: You must call it in |dein#begin()| block.
 
+dein#load_toml({filename}, [{options}])		*dein#load_toml()*
+		Load TOML plugin configurations from {filename}.  See
+		|dein-options| for keys to set in {options}.
+		Note: TOML parser is slow.
+
+		TOML file format specification:
+		https://github.com/toml-lang/toml
+		Note: Original TOML parser is created by kamichidu.
+		https://github.com/kamichidu
+>
+		" Load toml from "~/.vim/bundle.toml".
+		call dein#load_toml("~/.vim/bundle.toml", {})
+<
+		TOML file sample is here:
+>
+		# TOML sample
+		[[plugins]]
+		# repository name is required.
+		repo = 'kana/vim-niceblock'
+		on_map = '<Plug>'
+
+		[[plugins]]
+		repo = 'Shougo/neosnippet.vim'
+		on_i = 1
+		on_ft = 'snippet'
+<
 dein#update([{plugins}])			*dein#update()*
 		Install/Update the plugins.
 		{plugins} is the plugins name list.

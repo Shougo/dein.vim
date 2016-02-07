@@ -11,6 +11,7 @@ function! s:suite.before_each() abort "{{{
   call dein#_init()
   let &runtimepath = s:runtimepath_save
   let &l:filetype = s:filetype_save
+  let g:temp = tempname()
 endfunction"}}}
 
 function! s:suite.install() abort "{{{
@@ -449,5 +450,57 @@ function! s:suite.hooks() abort "{{{
 
   call s:assert.equals(s:test, 1)
 endfunction"}}}
+
+function! s:suite.no_toml() abort "{{{
+  call dein#begin(s:path)
+
+  call writefile([
+        \ 'foobar'
+        \ ], g:temp)
+  call s:assert.equals(dein#load_toml(g:temp, {}), 1)
+
+  call s:assert.equals(dein#end(), 0)
+endfunction"}}}
+
+function! s:suite.no_plugins() abort "{{{
+  call dein#begin(s:path)
+
+  call writefile([], g:temp)
+  call s:assert.equals(dein#load_toml(g:temp), 1)
+
+  call s:assert.equals(dein#end(), 0)
+endfunction"}}}
+
+function! s:suite.no_repository() abort "{{{
+  call dein#begin(s:path)
+
+  call writefile([
+        \ "[[plugins]]",
+        \ "filetypes = 'all'",
+        \ "[[plugins]]",
+        \ "filetypes = 'all'"
+        \ ], g:temp)
+  call s:assert.equals(dein#load_toml(g:temp), 1)
+
+  call s:assert.equals(dein#end(), 0)
+endfunction"}}}
+
+function! s:suite.normal() abort "{{{
+  call dein#begin(s:path)
+
+  call writefile([
+        \ "[[plugins]]",
+        \ "repo = 'Shougo/neocomplete.vim'",
+        \ "on_ft = 'all'",
+        \ ], g:temp)
+  call s:assert.equals(dein#load_toml(g:temp, {'frozen': 1}), 0)
+
+  let plugin = dein#get('neocomplete.vim')
+  call s:assert.equals(plugin.frozen, 1)
+  call s:assert.equals(plugin.on_ft, ['all'])
+
+  call s:assert.equals(dein#end(), 0)
+endfunction"}}}
+
 
 " vim:foldmethod=marker:fen:
