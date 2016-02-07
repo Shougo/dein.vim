@@ -59,11 +59,27 @@ function! dein#_set_default(var, val, ...) abort "{{{
           \ {alternate_var} : a:val
   endif
 endfunction"}}}
+function! dein#_uniq(list, ...) abort "{{{
+  let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
+  let i = 0
+  let seen = {}
+  while i < len(list)
+    let key = string(a:0 ? list[i][1] : list[i])
+    if has_key(seen, key)
+      call remove(list, i)
+    else
+      let seen[key] = 1
+      let i += 1
+    endif
+  endwhile
+  return a:0 ? map(list, 'v:val[0]') : list
+endfunction"}}}
 
 " Global options definition." "{{{
 "}}}
 
 function! dein#_init() abort "{{{
+  let s:runtime_path = ''
   let s:base_path = ''
   let s:block_level = 0
   let g:dein#_plugins = {}
@@ -72,7 +88,7 @@ function! dein#_init() abort "{{{
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
     autocmd FileType * call dein#autoload#_on_ft()
-    autocmd FileType * call dein#autoload#_on_ft()
+    autocmd FuncUndefined * call dein#autoload#_on_func(expand('<amatch>'))
   augroup END
 
   for event in [
@@ -208,7 +224,7 @@ function! dein#check_install(...) abort "{{{
         \ values(dein#get()) :
         \ map(copy(a:1), 'dein#get(v:val)')
 
-  call filter(plugins, '!isdirectory(v:val.path)')
+  call filter(plugins, '!empty(v:val) && !isdirectory(v:val.path)')
   if empty(plugins)
     return 0
   endif

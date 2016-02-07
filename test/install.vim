@@ -39,10 +39,8 @@ function! s:suite.check_install() abort "{{{
 
   call s:assert.equals(dein#update(), 0)
 
-  call s:assert.equals(dein#add('Shougo/vimshell.vim'), 0)
-
-  call s:assert.true(dein#check_install())
-  call s:assert.true(dein#check_install(['vimshell.vim']))
+  call s:assert.false(dein#check_install())
+  call s:assert.false(dein#check_install(['vimshell.vim']))
   call s:assert.false(dein#check_install(['neocomplete.vim']))
 
   call dein#end()
@@ -233,6 +231,44 @@ function! s:suite.lazy_on_source() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
+function! s:suite.lazy_on_func() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/vimshell.vim',
+        \ { 'lazy': 1 }), 0)
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'on_func': 'neocomplete#initialize' }), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('neocomplete.vim')
+  let plugin2 = dein#get('vimshell.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin2.rtp')), 0)
+
+  call dein#autoload#_on_func('neocomplete#initialize')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin2.rtp')), 0)
+
+  call vimshell#version()
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin2.rtp')), 1)
+endfunction"}}}
+
 function! s:suite.invalide_runtimepath() abort "{{{
   let &runtimepath = ''
   call s:assert.equals(dein#begin(s:path), 1)
@@ -248,14 +284,14 @@ function! s:suite.depends() abort "{{{
   call dein#begin(s:path)
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'depends': 'vimproc.vim' }), 0)
-  call s:assert.equals(dein#add('Shougo/vimproc.vim'), 0)
+        \ { 'depends': 'vimshell.vim' }), 0)
+  call s:assert.equals(dein#add('Shougo/vimshell.vim'), 0)
 
   call s:assert.equals(dein#update(), 0)
 
   call dein#end()
 
-  let plugin = dein#get('vimproc.vim')
+  let plugin = dein#get('vimshell.vim')
 
   call s:assert.equals(
         \ len(filter(dein#_split_rtp(&runtimepath),
@@ -266,10 +302,11 @@ function! s:suite.depends_lazy() abort "{{{
   call dein#begin(s:path)
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'depends': 'vimproc.vim', 'lazy': 1 }), 0)
-  call s:assert.equals(dein#add('Shougo/vimproc.vim', {'lazy': 1}), 0)
+        \ { 'depends': 'vimshell.vim', 'lazy': 1 }), 0)
+  call s:assert.equals(dein#add('Shougo/vimshell.vim',
+        \ { 'lazy': 1 }), 0)
 
-  let plugin = dein#get('vimproc.vim')
+  let plugin = dein#get('vimshell.vim')
 
   call s:assert.equals(dein#update(), 0)
 

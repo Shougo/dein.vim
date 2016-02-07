@@ -103,8 +103,8 @@ function! dein#parse#_dict(plugin) abort "{{{
   " Auto convert2list.
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd',
-        \ 'on_func', 'on_map',
-        \ 'on_source', 'pre_cmd', 'pre_func',
+        \ 'on_func', 'on_map', 'on_source',
+        \ 'pre_cmd', 'pre_func',
         \ ], "type(plugin[v:val]) != type([])
         \")
     let plugin[key] = [plugin[key]]

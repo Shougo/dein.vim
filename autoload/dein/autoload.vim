@@ -26,6 +26,9 @@
 function! dein#autoload#_source(plugins) abort "{{{
   let rtps = dein#_split_rtp(&runtimepath)
   let index = index(rtps, dein#_get_runtime_path())
+  if index < 0
+    return 1
+  endif
 
   for plugin in filter(copy(a:plugins),
         \ '!empty(v:val) && !v:val.sourced && isdirectory(v:val.rtp)')
@@ -80,6 +83,22 @@ function! dein#autoload#_on_path(path, event) abort "{{{
   endif
 endfunction"}}}
 
+function! dein#autoload#_on_func(name) abort "{{{
+  let function_prefix = substitute(a:name, '[^#]*$', '', '')
+  if function_prefix =~# '^dein#'
+        \ || function_prefix ==# 'vital#'
+        \ || has('vim_starting')
+    return
+  endif
+
+  let lazy_plugins = filter(values(dein#get()), "!v:val.sourced")
+  call s:set_function_prefixes(lazy_plugins)
+
+  call dein#autoload#_source(filter(lazy_plugins,
+        \  "index(v:val.pre_func, function_prefix) >= 0
+        \   || (index(v:val.on_func, a:name) >= 0)"))
+endfunction"}}}
+
 function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1
 
@@ -115,6 +134,16 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
       "       "unsilent" then displays any messages while sourcing.
       execute 'silent! unsilent source' fnameescape(file)
     endfor
+  endfor
+endfunction"}}}
+function! s:set_function_prefixes(plugins) abort "{{{
+  for plugin in filter(copy(a:plugins), "empty(v:val.pre_func)")
+    let plugin.pre_func =
+          \ dein#_uniq(map(split(globpath(
+          \  plugin.path, 'autoload/**/*.vim', 1), "\n"),
+          \  "substitute(matchstr(
+          \   dein#_substitute_path(fnamemodify(v:val, ':r')),
+          \         '/autoload/\\zs.*$'), '/', '#', 'g').'#'"))
   endfor
 endfunction"}}}
 

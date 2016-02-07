@@ -126,7 +126,7 @@ OPTIONS 					*dein-options*
 		The {options} accepts the following keys:
 
 						*dein-options-name*
-		name			(String)
+		name		(String)
 		Specify the name of the plugin.  This is used for dein
 		management and other functions.  If it is omitted, the tail of
 		the repository name will be used.
@@ -137,7 +137,7 @@ OPTIONS 					*dein-options*
 		overwriting an existing plugin setting.
 
 						*dein-options-rtp*
-		rtp			(String)
+		rtp		(String)
 		Specify the runtime path.
 		You can use it when the repository has the Vim plugin in a
 		subdirectory.
@@ -150,7 +150,7 @@ OPTIONS 					*dein-options*
 		call dein#add('rstacruz/sparkup', {'rtp': 'vim'})
 <
 						*dein-options-directory*
-		directory		(String)
+		directory	(String)
 		Specify relative directory path from the base directory (set
 		by |dein#begin()| or "base" option). If omitted, the "name"
 		option will be used.
@@ -163,19 +163,19 @@ OPTIONS 					*dein-options*
 		   \ {'directory' : 'unite'})
 <
 						*dein-options-depends*
-		depends			(List or String)
+		depends		(List or String)
 		Specify a list of plugins a plugin depends on.
 		List items are '{plugin-name}'.
 		Those specified in the list are NOT installed automatically.
 
 						*dein-options-if*
-		if			(Number) or (String)
+		if		(Number) or (String)
 		If set to zero, dein doesn't register the plugin.
 		If it is String, dein will eval it.
 		If you don't set it, dein will register the plugin.
 
 						*dein-options-lazy*
-		lazy			(Number)
+		lazy		(Number)
 		If set to non-zero, dein doesn't add the path to 'runtimepath'
 		automatically.
 		If you don't set it, dein will set it automatically when the
@@ -187,16 +187,21 @@ OPTIONS 					*dein-options*
 		|InsertEnter| autocmd.
 
 						*dein-options-on_ft*
-		on_ft	(List) or (String)
+		on_ft		(List) or (String)
 		If it is matched to 'filetype', dein will call |dein#source()|.
 
 						*dein-options-on_path*
-		on_path		(String) or (List)
+		on_path		(List) or (String)
 		If set to ".*", dein will call |dein#source()| on editing all
 		files.  Otherwise, dein will call |dein#source()| if the
 		buffer name is matched the string pattern.
 		Note: It is useful for explorer behavior plugins.
 		Ex: vimfiler, metarw, vim-gnupg ...
+
+						*dein-options-on_func*
+		on_func		(List) or (String)
+		If it is matched to the called function, dein will call
+		|dein#source()|.
 
 						*dein-options-on_source*
 		on_source	(List) or (String)
