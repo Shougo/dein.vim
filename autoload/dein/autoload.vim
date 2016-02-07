@@ -50,7 +50,7 @@ function! dein#autoload#_on_ft() abort "{{{
     call dein#autoload#_source(plugins)
   endfor
 endfunction"}}}
-function! s:source_plugin(rtps, index, plugin) abort
+function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1
 
   " Load dependencies
@@ -79,6 +79,6 @@ function! s:source_plugin(rtps, index, plugin) abort
       execute 'silent! unsilent source' fnameescape(file)
     endfor
   endfor
-endfunction
+endfunction"}}}
 
 " vim: foldmethod=marker
