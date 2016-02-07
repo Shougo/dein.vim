@@ -72,7 +72,17 @@ function! dein#_init() abort "{{{
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
     autocmd FileType * call dein#autoload#_on_ft()
+    autocmd FileType * call dein#autoload#_on_ft()
   augroup END
+
+  for event in [
+        \ 'BufRead', 'BufCreate', 'BufEnter',
+        \ 'BufWinEnter', 'BufNew', 'VimEnter'
+        \ ]
+    execute 'autocmd dein' event
+          \ "* call dein#autoload#_on_path(expand('<afile>'), "
+          \ .string(event) . ")"
+  endfor
 endfunction"}}}
 function! dein#_get_base_path() abort "{{{
   return s:base_path

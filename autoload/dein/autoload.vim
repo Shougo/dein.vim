@@ -46,9 +46,38 @@ function! dein#autoload#_on_ft() abort "{{{
   for filetype in split(&l:filetype, '\.')
     let plugins = filter(values(dein#get()),
           \ '!v:val.sourced && index(v:val.on_ft, filetype) >= 0')
-    echomsg filetype
     call dein#autoload#_source(plugins)
   endfor
+endfunction"}}}
+
+function! dein#autoload#_on_path(path, event) abort "{{{
+  if a:path == ''
+    return
+  endif
+
+  let path = a:path
+  " For ":edit ~".
+  if fnamemodify(path, ':t') ==# '~'
+    let path = '~'
+  endif
+
+  let path = dein#_expand(path)
+  let plugins = filter(values(dein#get()),
+        \ "!v:val.sourced &&
+        \  !empty(filter(copy(v:val.on_path), 'path =~? v:val'))")
+  if empty(plugins)
+    return
+  endif
+
+  call dein#autoload#_source(plugins)
+  execute 'doautocmd' a:event
+
+  if !exists('s:loaded_path') && has('vim_starting')
+        \ && dein#_redir('filetype') =~# 'detection:ON'
+    " Force enable auto detection if path plugins are loaded
+    autocmd dein VimEnter * filetype detect
+    let s:loaded_path = 1
+  endif
 endfunction"}}}
 function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1

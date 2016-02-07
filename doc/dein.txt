@@ -190,6 +190,14 @@ OPTIONS 					*dein-options*
 		on_ft	(List) or (String)
 		If it is matched to 'filetype', dein will call |dein#source()|.
 
+						*dein-options-on_path*
+		on_path		(String) or (List)
+		If set to ".*", dein will call |dein#source()| on editing all
+		files.  Otherwise, dein will call |dein#source()| if the
+		buffer name is matched the string pattern.
+		Note: It is useful for explorer behavior plugins.
+		Ex: vimfiler, metarw, vim-gnupg ...
+
 ==============================================================================
 EXAMPLES					*dein-examples*
 >
