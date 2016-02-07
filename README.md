@@ -27,8 +27,6 @@ The features may be changed.
 
 ## Future works (not implemented yet)
 
-* Unite support
-
 * Asynchronous plugins installer
 
 * Toml support
