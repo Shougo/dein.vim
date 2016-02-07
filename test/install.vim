@@ -208,6 +208,31 @@ function! s:suite.lazy_on_path() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
+function! s:suite.lazy_on_source() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neopairs.vim',
+        \ { 'on_source': ['neocomplete.vim'] }), 0)
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ { 'lazy': 1 }), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('neopairs.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  call dein#source('neocomplete.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
 function! s:suite.invalide_runtimepath() abort "{{{
   let &runtimepath = ''
   call s:assert.equals(dein#begin(s:path), 1)

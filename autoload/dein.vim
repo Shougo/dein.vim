@@ -190,7 +190,7 @@ endfunction"}}}
 
 function! dein#source(...) abort "{{{
   let plugins = empty(a:000) ? copy(g:dein#_plugins)
-        \ : map(copy(a:1), 'get(g:dein#_plugins, v:val, {})')
+        \ : map(dein#_convert2list(a:1), 'get(g:dein#_plugins, v:val, {})')
   return dein#autoload#_source(plugins)
 endfunction"}}}
 
@@ -259,7 +259,7 @@ function! dein#_filetype_off() abort "{{{
   return filetype_out
 endfunction"}}}
 function! dein#_convert2list(expr) abort "{{{
-  return type(a:expr) ==# type([]) ? a:expr :
+  return type(a:expr) ==# type([]) ? copy(a:expr) :
         \ type(a:expr) ==# type('') ?
         \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
         \ : [a:expr]

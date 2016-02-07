@@ -79,6 +79,7 @@ function! dein#autoload#_on_path(path, event) abort "{{{
     let s:loaded_path = 1
   endif
 endfunction"}}}
+
 function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1
 
@@ -90,6 +91,13 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     endif
 
     if s:source_plugin(a:rtps, a:index, g:dein#_plugins[name])
+      return 1
+    endif
+  endfor
+
+  for on_source in filter(values(dein#get()),
+        \ "!v:val.sourced && index(v:val.on_source, a:plugin.name) >= 0")
+    if s:source_plugin(a:rtps, a:index, on_source)
       return 1
     endif
   endfor

@@ -198,6 +198,10 @@ OPTIONS 					*dein-options*
 		Note: It is useful for explorer behavior plugins.
 		Ex: vimfiler, metarw, vim-gnupg ...
 
+						*dein-options-on_source*
+		on_source	(List) or (String)
+		Load the plugin after the list plugins are loaded.
+
 ==============================================================================
 EXAMPLES					*dein-examples*
 >
