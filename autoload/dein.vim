@@ -328,7 +328,7 @@ function! dein#_reset_ftplugin() abort "{{{
 endfunction"}}}
 function! dein#_call_hook(hook_name, ...) abort "{{{
   let plugins = dein#_tsort(filter(dein#_convert2list(
-        \ (empty(a:000) ? dein#get() : a:1)), 'v:val.sourced'))
+        \ (empty(a:000) ? dein#get() : a:1)), "get(v:val, 'sourced', 0)"))
 
   for plugin in plugins
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name

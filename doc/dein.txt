@@ -32,6 +32,7 @@ Interface		|dein-interface|
   Variables		  |dein-variables|
   Options		  |dein-options|
   Hooks			  |dein-hooks|
+Unite Sources		|dein-unite-sources|
 Configuration Examples	|dein-examples|
 FAQ			|dein-faq|
 
@@ -261,6 +262,18 @@ HOOKS 						*dein-hooks*
 		Called or sourced after scripts are sourced.
 		Note: In Vim initializing, calling the hooks are
 		delayed until |VimEnter|.
+
+==============================================================================
+UNITE SOURCES					*dein-unite-sources*
+
+Here let me explain about a source for |unite| provided in neobundle.
+
+						*dein-unite-source-dein*
+dein
+		Nominates dein plugins as candidates.
+
+		Note:
+		If argument is bang(!), print plugins status.
 
 ==============================================================================
 EXAMPLES					*dein-examples*
