@@ -51,7 +51,7 @@ function! dein#installer#_update(plugins) abort "{{{
   endtry
 endfunction"}}}
 
-function! s:get_progress_message(plugin, number, max) "{{{
+function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
@@ -91,7 +91,7 @@ function! s:print_message(msg) abort "{{{
   endif
 endfunction"}}}
 
-function! s:echo(expr, mode) "{{{
+function! s:echo(expr, mode) abort "{{{
   let msg = map(dein#_convert2list(a:expr), "'[dein] ' .  v:val")
   if empty(msg)
     return

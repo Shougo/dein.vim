@@ -192,7 +192,7 @@ function! s:add_dummy_commands(plugin) abort "{{{
   endfor
 endfunction"}}}
 
-function! s:add_dummy_mappings(plugin) "{{{
+function! s:add_dummy_mappings(plugin) abort "{{{
   let a:plugin.dummy_mappings = []
   for [modes, mappings] in map(copy(a:plugin.on_map), "
         \   type(v:val) == type([]) ?

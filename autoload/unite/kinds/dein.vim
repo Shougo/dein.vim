@@ -39,7 +39,7 @@ let s:kind.action_table.preview = {
       \ 'description': 'view the plugin documentation',
       \ 'is_quit': 0,
       \ }
-function! s:kind.action_table.preview.func(candidate) "{{{
+function! s:kind.action_table.preview.func(candidate) abort "{{{
   " Search help files.
   let readme = get(split(globpath(
         \ a:candidate.action__path, 'doc/*.?*', 1), '\n'), 0, '')

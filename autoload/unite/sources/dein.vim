@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! unite#sources#dein#define() "{{{
+function! unite#sources#dein#define() abort "{{{
   return s:source
 endfunction"}}}
 

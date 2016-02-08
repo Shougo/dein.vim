@@ -1,11 +1,11 @@
 let s:suite = themis#suite('toml')
 let s:assert = themis#helper('assert')
 
-function! s:suite.before_each()
+function! s:suite.before_each() abort
   let g:temp = tempname()
 endfunction
 
-function! s:suite.after_each()
+function! s:suite.after_each() abort
   call delete(g:temp)
 endfunction
 

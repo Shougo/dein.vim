@@ -341,7 +341,7 @@ function! dein#_call_hook(hook_name, ...) abort "{{{
     endif
   endfor
 endfunction"}}}
-function! dein#_tsort(plugins) "{{{
+function! dein#_tsort(plugins) abort "{{{
   let sorted = []
   let mark = {}
   for target in a:plugins
@@ -369,7 +369,7 @@ function! s:escape(path) abort "{{{
   return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
 endfunction"}}}
 
-function! s:tsort_impl(target, mark, sorted) "{{{
+function! s:tsort_impl(target, mark, sorted) abort "{{{
   if has_key(a:mark, a:target.name)
     return
   endif

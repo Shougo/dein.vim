@@ -104,14 +104,14 @@ function! s:type.get_sync_command(plugin) abort "{{{
   return git . ' ' . cmd
 endfunction"}}}
 
-function! s:type.get_revision_number_command(plugin) "{{{
+function! s:type.get_revision_number_command(plugin) abort "{{{
   if !executable(g:dein#types#git#command_path)
     return ''
   endif
 
   return g:dein#types#git#command_path .' rev-parse HEAD'
 endfunction"}}}
-function! s:type.get_revision_pretty_command(plugin) "{{{
+function! s:type.get_revision_pretty_command(plugin) abort "{{{
   if !executable(g:dein#types#git#command_path)
     return ''
   endif
