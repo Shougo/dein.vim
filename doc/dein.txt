@@ -311,7 +311,7 @@ EXAMPLES					*dein-examples*
 
 	call dein#begin(expand('~/.cache/dein'))
 
-	call dein#add('Shougo/dein.vim', 'rtp': '')
+	call dein#add('Shougo/dein.vim', {'rtp': ''})
 	call dein#add('Shougo/neocomplete.vim')
 	...
 
