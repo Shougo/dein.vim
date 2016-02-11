@@ -113,6 +113,17 @@ endfunction"}}}
 function! dein#_get_runtime_path() abort "{{{
   return s:runtime_path
 endfunction"}}}
+function! dein#_get_tags_path() abort "{{{
+  if s:runtime_path == '' || dein#_is_sudo()
+    return ''
+  endif
+
+  let dir = s:runtime_path . '/doc'
+  if !isdirectory(dir)
+    call mkdir(dir, 'p')
+  endif
+  return dir
+endfunction"}}}
 
 call dein#_init()
 
@@ -349,6 +360,24 @@ function! dein#_tsort(plugins) abort "{{{
   endfor
 
   return sorted
+endfunction"}}}
+function! dein#_is_sudo() abort "{{{
+  return $SUDO_USER != '' && $USER !=# $SUDO_USER
+      \ && $HOME !=# expand('~'.$USER)
+      \ && $HOME ==# expand('~'.$SUDO_USER)
+endfunction"}}}
+function! dein#_writefile(path, list) abort "{{{
+  if dein#_is_sudo() || !filewritable(dein#_get_runtime_path())
+    return 1
+  endif
+
+  let path = dein#_get_runtime_path() . '/' . a:path
+  let dir = fnamemodify(path, ':h')
+  if !isdirectory(dir)
+    call mkdir(dir, 'p')
+  endif
+
+  return writefile(a:list, path)
 endfunction"}}}
 
 " Executes a command and returns its output.

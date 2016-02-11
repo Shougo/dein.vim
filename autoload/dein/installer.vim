@@ -49,6 +49,14 @@ function! dein#installer#_update(plugins) abort "{{{
     let &l:statusline = statusline
     let &g:laststatus = laststatus
   endtry
+
+  call dein#installer#_helptags(plugins)
+
+  let lazy_plugins = filter(values(dein#get()), 'v:val.lazy')
+  call s:merge_files(
+        \ lazy_plugins, 'ftdetect')
+  call s:merge_files(
+        \ lazy_plugins, 'after/ftdetect')
 endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
@@ -75,6 +83,32 @@ endfunction"}}}
 function! dein#installer#_get_last_status() abort "{{{
   return dein#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction"}}}
+function! dein#installer#_helptags(plugins) abort "{{{
+  if dein#_is_sudo()
+    call s:error('"sudo vim" is detected. This feature is disabled.')
+    return
+  endif
+
+  let help_dirs = filter(copy(a:plugins), 's:has_doc(v:val.rtp)')
+  if empty(help_dirs)
+    return
+  endif
+
+  try
+    call s:update_tags()
+    if !has('vim_starting')
+      call s:print_message('Helptags: done. '
+            \ .len(help_dirs).' plugins processed')
+    endif
+  catch
+    call s:error('Error generating helptags:')
+    call s:error(v:exception)
+    call s:error(v:throwpoint)
+  endtry
+
+  return help_dirs
+endfunction"}}}
+
 function! s:iconv(expr, from, to) abort "{{{
   if a:from == '' || a:to == '' || a:from ==? a:to
     return a:expr
@@ -89,6 +123,62 @@ function! s:print_message(msg) abort "{{{
   else
     call s:echo(a:msg, 'echo')
   endif
+endfunction"}}}
+function! s:error(msg) abort "{{{
+  call s:echo(a:msg, 'error')
+endfunction"}}}
+function! s:update_tags() abort "{{{
+  let plugins = [{ 'rtp' : dein#_get_runtime_path()}] + values(dein#get())
+  call s:copy_files(plugins, 'doc')
+
+  call dein#_writefile('tags_info',
+        \ sort(map(values(dein#get()), 'v:val.name')))
+
+  silent execute 'helptags' fnameescape(dein#_get_tags_path())
+endfunction"}}}
+function! s:copy_files(plugins, directory) abort "{{{
+  " Delete old files.
+  call s:cleandir(a:directory)
+
+  let files = {}
+  for plugins in a:plugins
+    for file in filter(split(globpath(
+          \ plugins.rtp, a:directory.'/**', 1), '\n'),
+          \ '!isdirectory(v:val)')
+      let filename = fnamemodify(file, ':t')
+      let files[filename] = readfile(file)
+    endfor
+  endfor
+
+  for [filename, list] in items(files)
+    if filename =~# '^tags\%(-.*\)\?$'
+      call sort(list)
+    endif
+    call dein#_writefile(a:directory . '/' . filename, list)
+  endfor
+endfunction"}}}
+function! s:merge_files(plugins, directory) abort "{{{
+  " Delete old files.
+  call s:cleandir(a:directory)
+
+  let files = []
+  for plugin in a:plugins
+    for file in filter(split(globpath(
+          \ plugin.rtp, a:directory.'/**', 1), '\n'),
+          \ '!isdirectory(v:val)')
+      let files += readfile(file, ':t')
+    endfor
+  endfor
+
+  call dein#_writefile(a:directory.'/'.a:directory . '.vim', files)
+endfunction"}}}
+function! s:cleandir(path) abort "{{{
+  let path = dein#_get_runtime_path() . '/' . a:path
+
+  for file in filter(split(globpath(path, '*', 1), '\n'),
+        \ '!isdirectory(v:val)')
+    call delete(file)
+  endfor
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{
@@ -137,5 +227,15 @@ function! s:echo_mode(m, mode) abort "{{{
   endfor
 endfunction"}}}
 
+function! s:has_doc(path) abort "{{{
+  return a:path != '' &&
+        \ isdirectory(a:path.'/doc')
+        \   && (!filereadable(a:path.'/doc/tags')
+        \       || filewritable(a:path.'/doc/tags'))
+        \   && (!filereadable(a:path.'/doc/tags-??')
+        \       || filewritable(a:path.'/doc/tags-??'))
+        \   && (glob(a:path.'/doc/*.txt') != ''
+        \       || glob(a:path.'/doc/*.??x') != '')
+endfunction"}}}
 
 " vim: foldmethod=marker
