@@ -241,6 +241,18 @@ endfunction"}}}
 function! dein#update(...) abort "{{{
   call dein#installer#_update(get(a:000, 0, []))
 endfunction"}}}
+function! dein#remote_plugins() abort "{{{
+  if !has('nvim')
+    return
+  endif
+
+  " Load not loaded neovim remote plugins
+  call dein#autoload#_source(filter(
+        \ values(dein#get()),
+        \ "isdirectory(v:val.rtp . '/rplugin')"))
+
+  UpdateRemotePlugins
+endfunction"}}}
 
 function! dein#check_install(...) abort "{{{
   let plugins = empty(a:000) ?

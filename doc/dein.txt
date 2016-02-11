@@ -105,6 +105,13 @@ dein#update([{plugins}])			*dein#update()*
 
 		Note: It is not asynchronous currently.
 
+						*dein#remote_plugins()*
+dein#remote_plugins()
+		Load not loaded neovim |:remote-plugin| and execute
+		|:UpdateRemotePlugins| command.
+		It is better than |:UpdateRemotePlugins| for dein.
+		Note: It is valid in neovim.
+
 dein#check_install([{plugins}])			*dein#check_install()*
 		Check the plugins installation.
 		If the plugins are not installed, it will return non zero.

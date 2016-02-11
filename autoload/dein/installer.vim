@@ -50,6 +50,8 @@ function! dein#installer#_update(plugins) abort "{{{
     let &g:laststatus = laststatus
   endtry
 
+  call dein#remote_plugins()
+
   call dein#installer#_helptags(plugins)
 
   let lazy_plugins = filter(values(dein#get()), 'v:val.lazy')
