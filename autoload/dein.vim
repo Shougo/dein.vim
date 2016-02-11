@@ -247,10 +247,10 @@ function! dein#tap(name) abort "{{{
 endfunction"}}}
 
 function! dein#install(...) abort "{{{
-  call dein#installer#_update(get(a:000, 0, []), 0)
+  call dein#install#_update(get(a:000, 0, []), 0)
 endfunction"}}}
 function! dein#update(...) abort "{{{
-  call dein#installer#_update(get(a:000, 0, []), 1)
+  call dein#install#_update(get(a:000, 0, []), 1)
 endfunction"}}}
 function! dein#remote_plugins() abort "{{{
   if !has('nvim')

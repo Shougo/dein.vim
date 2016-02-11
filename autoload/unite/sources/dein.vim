@@ -110,15 +110,15 @@ function! s:get_commit_status(plugin) abort "{{{
 
   let cwd = getcwd()
   try
-    call dein#installer#_cd(a:plugin.path)
-    let output = dein#installer#_system(cmd)
+    call dein#install#_cd(a:plugin.path)
+    let output = dein#install#_system(cmd)
   finally
-    call dein#installer#_cd(cwd)
+    call dein#install#_cd(cwd)
   endtry
 
-  if dein#installer#_get_last_status()
+  if dein#install#_get_last_status()
     return printf('Error(%d) occurred when executing "%s"',
-          \ dein#installer#_get_last_status(), cmd)
+          \ dein#install#_get_last_status(), cmd)
   endif
 
   return output

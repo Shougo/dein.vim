@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: installer.vim
+" FILE: install.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! dein#installer#_update(plugins, bang) abort "{{{
+function! dein#install#_update(plugins, bang) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
         \ map(copy(a:plugins), 'dein#get(v:val)')
@@ -36,7 +36,7 @@ function! dein#installer#_update(plugins, bang) abort "{{{
 
   call dein#remote_plugins()
 
-  call dein#installer#_helptags(plugins)
+  call dein#install#_helptags(plugins)
 
   let lazy_plugins = filter(values(dein#get()), 'v:val.lazy')
   call s:merge_files(
@@ -70,12 +70,12 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{
 endfunction"}}}
 
 " Helper functions
-function! dein#installer#_cd(path) abort "{{{
+function! dein#install#_cd(path) abort "{{{
   if isdirectory(a:path)
     execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
   endif
 endfunction"}}}
-function! dein#installer#_system(command) abort "{{{
+function! dein#install#_system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
   let output = dein#_has_vimproc() ?
@@ -85,10 +85,10 @@ function! dein#installer#_system(command) abort "{{{
 
   return substitute(output, '\n$', '', '')
 endfunction"}}}
-function! dein#installer#_get_last_status() abort "{{{
+function! dein#install#_get_last_status() abort "{{{
   return dein#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-function! dein#installer#_helptags(plugins) abort "{{{
+function! dein#install#_helptags(plugins) abort "{{{
   if dein#_is_sudo()
     call s:error('"sudo vim" is detected. This feature is disabled.')
     return
@@ -156,7 +156,7 @@ function! s:install(bang, plugins) abort "{{{
       endif
     endwhile
   finally
-    call dein#installer#_cd(cwd)
+    call dein#install#_cd(cwd)
     let &l:statusline = statusline
     let &g:laststatus = laststatus
   endtry
@@ -201,7 +201,7 @@ function! s:sync(plugin, context) abort "{{{
     let $LANG = 'C'
 
     " Cd to plugin path.
-    call dein#installer#_cd(a:plugin.path)
+    call dein#install#_cd(a:plugin.path)
 
     let process = {
           \ 'number' : num,
@@ -220,12 +220,12 @@ function! s:sync(plugin, context) abort "{{{
       call process.proc.stdin.close()
       call process.proc.stderr.close()
     else
-      let process.output = dein#installer#_system(cmd)
-      let process.status = dein#installer#_get_last_status()
+      let process.output = dein#install#_system(cmd)
+      let process.status = dein#install#_get_last_status()
     endif
   finally
     let $LANG = lang_save
-    call dein#installer#_cd(cwd)
+    call dein#install#_cd(cwd)
   endtry
 
   call add(a:context.processes, process)
