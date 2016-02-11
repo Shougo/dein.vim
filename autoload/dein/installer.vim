@@ -23,12 +23,16 @@
 " }}}
 "=============================================================================
 
-function! dein#installer#_update(plugins) abort "{{{
+function! dein#installer#_update(plugins, bang) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
         \ map(copy(a:plugins), 'dein#get(v:val)')
 
-  call s:install(1, plugins)
+  if !a:bang
+    let plugins = filter(plugins, '!isdirectory(v:val.path)')
+  endif
+
+  call s:install(a:bang, plugins)
 
   call dein#remote_plugins()
 
