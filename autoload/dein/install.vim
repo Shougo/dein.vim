@@ -49,13 +49,11 @@ function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
-function! s:get_sync_command(bang, plugin, number, max) abort "{{{
+function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
   let type = dein#types#git#define()
   if empty(type)
     return ['E: Unknown Type', '']
   endif
-
-  let is_directory = isdirectory(a:plugin.path)
 
   let cmd = type.get_sync_command(a:plugin)
 
@@ -169,9 +167,6 @@ function! s:sync(plugin, context) abort "{{{
 
   let num = a:context.number
   let max = a:context.max_plugins
-
-  let before_one_day = localtime() - 60 * 60 * 24
-  let before_one_week = localtime() - 60 * 60 * 24 * 7
 
   if a:context.bang == 1 && a:plugin.frozen
     let [cmd, message] = ['', 'is frozen.']
