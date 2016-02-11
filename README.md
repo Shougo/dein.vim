@@ -27,8 +27,6 @@ The features may be changed.
 
 ## Future works (not implemented yet)
 
-* Asynchronous plugins installer
-
 * Cache support
 
 * Build support

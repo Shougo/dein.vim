@@ -42,7 +42,7 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'base': dein#_get_base_path() . '/repos',
         \ 'frozen': 0,
         \ 'depends': [],
-        \ 'hooks': {},
+        \ 'timeout': g:dein#install_process_timeout,
         \ 'dummy_commands': [],
         \ 'dummy_mappings': [],
         \ 'on_i': 0,

@@ -76,6 +76,10 @@ function! dein#_uniq(list, ...) abort "{{{
 endfunction"}}}
 
 " Global options definition." "{{{
+let g:dein#install_max_processes =
+      \ get(g:, 'dein#install_max_processes', 8)
+let g:dein#install_process_timeout =
+      \ get(g:, 'dein#install_process_timeout', 8)
 "}}}
 
 function! dein#_init() abort "{{{

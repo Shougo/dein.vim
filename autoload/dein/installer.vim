@@ -23,32 +23,12 @@
 " }}}
 "=============================================================================
 
-let s:git = dein#types#git#define()
-
 function! dein#installer#_update(plugins) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
         \ map(copy(a:plugins), 'dein#get(v:val)')
 
-  let laststatus = &g:laststatus
-  let statusline = &l:statusline
-  let cwd = getcwd()
-  try
-    set laststatus=2
-    let max = len(plugins)
-    let cnt = 1
-    for plugin in plugins
-      call dein#installer#_cd(plugin.path)
-      let command = s:git.get_sync_command(plugin)
-      call s:print_message(s:get_progress_message(plugin, cnt, max))
-      call dein#installer#_system(command)
-      let cnt += 1
-    endfor
-  finally
-    call dein#installer#_cd(cwd)
-    let &l:statusline = statusline
-    let &g:laststatus = laststatus
-  endtry
+  call s:install(1, plugins)
 
   call dein#remote_plugins()
 
@@ -64,6 +44,25 @@ endfunction"}}}
 function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
+endfunction"}}}
+function! s:get_sync_command(bang, plugin, number, max) abort "{{{
+  let type = dein#types#git#define()
+  if empty(type)
+    return ['E: Unknown Type', '']
+  endif
+
+  let is_directory = isdirectory(a:plugin.path)
+
+  let cmd = type.get_sync_command(a:plugin)
+
+  if cmd == ''
+    return ['', 'Not supported sync action.']
+  endif
+
+  let message = printf('(%'.len(a:max).'d/%d): |%s| %s',
+        \ a:number, a:max, a:plugin.name, cmd)
+
+  return [cmd, message]
 endfunction"}}}
 
 " Helper functions
@@ -110,6 +109,171 @@ function! dein#installer#_helptags(plugins) abort "{{{
 
   return help_dirs
 endfunction"}}}
+
+function! s:install(bang, plugins) abort "{{{
+  " Set context.
+  let context = {}
+  let context.bang = a:bang
+  let context.synced_plugins = []
+  let context.errored_plugins = []
+  let context.processes = []
+  let context.number = 0
+  let context.plugins = a:plugins
+  let context.max_plugins =
+        \ len(context.plugins)
+
+  let laststatus = &g:laststatus
+  let statusline = &l:statusline
+  let cwd = getcwd()
+  try
+    set laststatus=2
+
+    while 1
+      while context.number < context.max_plugins
+            \ && len(context.processes) < g:dein#install_max_processes
+
+        let plugin = context.plugins[context.number]
+        call s:sync(context.plugins[context.number], context)
+        call s:print_message(
+              \ s:get_progress_message(plugin,
+              \   context.number, context.max_plugins))
+      endwhile
+
+      for process in context.processes
+        call s:check_output(context, process)
+      endfor
+
+      " Filter eof processes.
+      call filter(context.processes, '!v:val.eof')
+
+      if empty(context.processes)
+            \ && context.number == context.max_plugins
+        break
+      endif
+    endwhile
+  finally
+    call dein#installer#_cd(cwd)
+    let &l:statusline = statusline
+    let &g:laststatus = laststatus
+  endtry
+
+  return [context.synced_plugins,
+        \ context.errored_plugins]
+endfunction"}}}
+function! s:sync(plugin, context) abort "{{{
+  let a:context.number += 1
+
+  let num = a:context.number
+  let max = a:context.max_plugins
+
+  let before_one_day = localtime() - 60 * 60 * 24
+  let before_one_week = localtime() - 60 * 60 * 24 * 7
+
+  if a:context.bang == 1 && a:plugin.frozen
+    let [cmd, message] = ['', 'is frozen.']
+  else
+    let [cmd, message] = s:get_sync_command(
+          \   a:context.bang, a:plugin,
+          \   a:context.number, a:context.max_plugins)
+  endif
+
+  if cmd =~# '^E: '
+    " Errored.
+
+    call s:print_message(
+          \ printf('(%'.len(max).'d/%d): |%s| %s',
+          \ num, max, a:plugin.name, 'Error'))
+    call s:error(cmd[3:])
+    call add(a:context.errored_plugins,
+          \ a:plugin)
+    return
+  endif
+
+  call s:print_message(message)
+
+  let cwd = getcwd()
+  try
+    let lang_save = $LANG
+    let $LANG = 'C'
+
+    " Cd to plugin path.
+    call dein#installer#_cd(a:plugin.path)
+
+    let process = {
+          \ 'number' : num,
+          \ 'plugin' : a:plugin,
+          \ 'output' : '',
+          \ 'status' : -1,
+          \ 'eof' : 0,
+          \ 'start_time' : localtime(),
+          \ }
+
+    if dein#_has_vimproc()
+      let process.proc = vimproc#pgroup_open(vimproc#util#iconv(
+            \            cmd, &encoding, 'char'), 0, 2)
+
+      " Close handles.
+      call process.proc.stdin.close()
+      call process.proc.stderr.close()
+    else
+      let process.output = dein#installer#_system(cmd)
+      let process.status = dein#installer#_get_last_status()
+    endif
+  finally
+    let $LANG = lang_save
+    call dein#installer#_cd(cwd)
+  endtry
+
+  call add(a:context.processes, process)
+endfunction"}}}
+function! s:check_output(context, process) abort "{{{
+  if dein#_has_vimproc() && has_key(a:process, 'proc')
+    let is_timeout = (localtime() - a:process.start_time)
+          \             >= a:process.plugin.install_process_timeout
+    let output = vimproc#util#iconv(
+          \ a:process.proc.stdout.read(-1, 300), 'char', &encoding)
+    if output != ''
+      let a:process.output .= output
+      call s:print_message(output)
+    endif
+    if !a:process.proc.stdout.eof && !is_timeout
+      return
+    endif
+    call a:process.proc.stdout.close()
+
+    let status = a:process.proc.waitpid()[1]
+  else
+    let is_timeout = 0
+    let status = a:process.status
+  endif
+
+  let num = a:process.number
+  let max = a:context.max_plugins
+  let plugin = a:process.plugin
+
+  if is_timeout || status
+    let message = printf('(%'.len(max).'d/%d): |%s| %s',
+          \ num, max, plugin.name, 'Error')
+    call s:print_message(message)
+    call s:error(plugin.path)
+
+    call s:error(
+          \ (is_timeout ? 'Process timeout.' :
+          \    split(a:process.output, '\n')))
+
+    call add(a:context.errored_plugins,
+          \ plugin)
+  else
+    call s:print_message(
+          \ printf('(%'.len(max).'d/%d): |%s| %s',
+          \ num, max, plugin.name, 'Updated'))
+
+    call add(a:context.synced_plugins, plugin)
+  endif
+
+  let a:process.eof = 1
+endfunction"}}}
+
 
 function! s:iconv(expr, from, to) abort "{{{
   if a:from == '' || a:to == '' || a:from ==? a:to

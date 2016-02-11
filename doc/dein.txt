@@ -129,6 +129,19 @@ dein#get({plugin-name})				 *dein#get()*
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 
+						*g:dein#install_max_processes*
+g:dein#install_max_processes
+		The max number of processes used for dein/install source
+		asynchronous update.
+
+		Defaults: "8".
+
+						*g:dein#install_process_timeout*
+g:dein#install_process_timeout
+		The time of timeout seconds when updating/installing plugins.
+
+		Defaults: "120".
+
 					*g:dein#types#git#command_path*
 g:dein#types#git#command_path
 		The "git" command path used for git type.
@@ -208,6 +221,12 @@ OPTIONS 					*dein-options*
 		If set to zero, dein doesn't register the plugin.
 		If it is String, dein will eval it.
 		If you don't set it, dein will register the plugin.
+
+						*dein-options-timeout*
+		timeout		 (Number)
+		The time of timeout seconds when updating/installing plugins.
+		If omit it, |g:dein#install_process_timeout| will be used.
+		Note: This feature is available if you installed |vimproc|.
 
 						*dein-options-lazy*
 		lazy		(Number)
@@ -299,7 +318,7 @@ HOOKS 						*dein-hooks*
 ==============================================================================
 UNITE SOURCES					*dein-unite-sources*
 
-Here let me explain about a source for |unite| provided in neobundle.
+Here let me explain about a source for |unite| provided in dein.
 
 						*dein-unite-source-dein*
 dein
@@ -329,7 +348,7 @@ EXAMPLES					*dein-examples*
 ==============================================================================
 FAQ						*dein-faq*
 
-Q: Where is |:NeoBundleFetch|?
+Q: Where is |:NeoBundleFetch| in dein features?
 
 A: You can use |dein-options-rtp|. >
 	call dein#add('Shougo/dein.vim', {'rtp': ''})
