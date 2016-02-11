@@ -3,7 +3,8 @@
 let s:suite = themis#suite('install')
 let s:assert = themis#helper('assert')
 
-let s:path = '.cache'
+let s:path = fnamemodify('.cache', ':p')
+let s:path2 = fnamemodify('.cache2', ':p')
 let s:runtimepath_save = &runtimepath
 let s:filetype_save = &l:filetype
 
@@ -24,7 +25,28 @@ function! s:suite.install() abort "{{{
   let plugin = dein#get('neocomplete.vim')
 
   call s:assert.equals(plugin.rtp,
-        \ s:path.'/repos/github.com/Shougo/neocomplete.vim')
+        \ s:path.'repos/github.com/Shougo/neocomplete.vim')
+
+  call s:assert.true(isdirectory(plugin.rtp))
+
+  call dein#end()
+
+  call s:assert.true(index(dein#_split_rtp(&runtimepath), plugin.rtp) >= 0)
+endfunction"}}}
+
+function! s:suite.update() abort "{{{
+  call dein#begin(s:path2)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+
+  call s:assert.equals(dein#add('Shougo/neopairs.vim'), 0)
+
+  call s:assert.equals(dein#update(), 0)
+
+  let plugin = dein#get('neopairs.vim')
+
+  call s:assert.equals(plugin.rtp,
+        \ s:path2.'repos/github.com/Shougo/neopairs.vim')
 
   call s:assert.true(isdirectory(plugin.rtp))
 
@@ -502,5 +524,29 @@ function! s:suite.normal() abort "{{{
   call s:assert.equals(dein#end(), 0)
 endfunction"}}}
 
+function! s:suite.local() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim', {'frozen': 1}), 0)
+  call s:assert.equals(dein#get('neocomplete.vim').orig_opts, {'frozen': 1})
+
+  call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1 })
+
+  call s:assert.equals(dein#get('neocomplete.vim').sourced, 0)
+  call s:assert.equals(dein#get('neopairs.vim').timeout, 1)
+  call s:assert.equals(dein#get('neocomplete.vim').timeout, 1)
+
+  call s:assert.equals(dein#end(), 0)
+
+  let plugin = dein#get('neocomplete.vim')
+  let plugin2 = dein#get('neopairs.vim')
+
+  call s:assert.equals(plugin.rtp,
+        \ s:path2.'repos/github.com/Shougo/neocomplete.vim')
+  call s:assert.equals(plugin2.rtp,
+        \ s:path2.'repos/github.com/Shougo/neopairs.vim')
+
+  call s:assert.equals(plugin.frozen, 1)
+endfunction"}}}
 
 " vim:foldmethod=marker:fen:

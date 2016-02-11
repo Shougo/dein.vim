@@ -28,6 +28,7 @@ let s:git = dein#types#git#define()
 function! dein#parse#_init(repo, options) abort "{{{
   let plugin = s:git.init(a:repo, a:options)
   let plugin.repo = a:repo
+  let plugin.orig_opts = deepcopy(a:options)
   return extend(plugin, a:options)
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
@@ -71,6 +72,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   if !has_key(plugin, 'directory')
     let plugin.directory = plugin.name
   endif
+  let plugin.directory = dein#_chomp(plugin.directory)
 
   if plugin.rev != ''
     let plugin.directory .= '_' . substitute(plugin.rev,
@@ -85,6 +87,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   if !has_key(plugin, 'path')
     let plugin.path = plugin.base.'/'.plugin.directory
   endif
+  let plugin.path = dein#_chomp(plugin.path)
 
   " Check relative path
   if (!has_key(a:plugin, 'rtp') || a:plugin.rtp != '')
@@ -169,6 +172,33 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
 
     let options = extend(plugin, a:default, 'keep')
     call dein#add(plugin.repo, options)
+  endfor
+endfunction"}}}
+function! dein#parse#_local(localdir, options, includes) abort "{{{
+  let base = fnamemodify(dein#_expand(a:localdir), ':p')
+  let directories = []
+  for glob in a:includes
+    let directories += map(filter(split(glob(base . glob), '\n'),
+          \ "isdirectory(v:val)"), "
+          \ substitute(dein#_substitute_path(
+          \   fnamemodify(v:val, ':p')), '/$', '', '')")
+  endfor
+
+  for dir in dein#_uniq(directories)
+    let options = extend({ 'local': 1, 'base': base,
+          \ 'name': fnamemodify(dir, ':t') }, a:options)
+
+    let plugin = dein#get(options.name)
+    if !empty(plugin)
+      if plugin.sourced
+        " Ignore already sourced plugins
+        continue
+      endif
+
+      call extend(options, copy(plugin.orig_opts), 'keep')
+    endif
+
+    call dein#add(dir, options)
   endfor
 endfunction"}}}
 

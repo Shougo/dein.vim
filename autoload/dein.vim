@@ -227,6 +227,10 @@ function! dein#add(repo, ...) abort "{{{
   let g:dein#_plugins[plugin.name] = plugin
 endfunction"}}}
 
+function! dein#local(dir, ...) abort "{{{
+  return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))
+endfunction"}}}
+
 function! dein#get(...) abort "{{{
   return empty(a:000) ? copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
 endfunction"}}}

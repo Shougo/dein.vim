@@ -98,6 +98,20 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		on_i = 1
 		on_ft = 'snippet'
 <
+						 *dein#local()*
+dein#local({directory}, [{options}, [{names}]])
+		Adds the subdirectories in {directory} to 'runtimepath', like
+		|pathogen| does. See |dein-options| for keys to set in
+		{options}.
+		If {names} is given, {names} directories are only loaded.
+		{names} is |wildcards| list.
+>
+		" Load plugin from "~/.vim/bundle".
+		call dein#local("~/.vim/bundle")
+		" Load plugin1 and plugin2 from "~/.vim/bundle".
+		call dein#local("~/.vim/bundle", {},
+		\ ['plugin1', 'plugin2', 'vim-*', '*.vim'])
+<
 dein#install([{plugins}])			*dein#install()*
 		Install the plugins.
 		{plugins} is the plugins name list.

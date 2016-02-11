@@ -31,4 +31,3 @@ The features may be changed.
 
 * Build support
 
-* Local plugins loading support

@@ -1,6 +1,7 @@
 "=============================================================================
 " FILE: git.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
+"          Robert Nelson     <robert@rnelson.ca>
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,6 +44,13 @@ let s:type = {
       \ }
 
 function! s:type.init(repo, option) abort "{{{
+  if a:repo =~ '^/\|^\a:/' && s:is_git_dir(a:repo.'/.git')
+    " Local repository.
+    return { 'uri' : a:repo, 'type' : 'git' }
+  elseif isdirectory(a:repo)
+    return {}
+  endif
+
   let protocol = matchstr(a:repo, '^.\{-}\ze://')
   let name = substitute(a:repo[len(protocol):],
         \   '^://[^/]*/', '', '')
@@ -119,5 +127,91 @@ function! s:type.get_revision_pretty_command(plugin) abort "{{{
   return g:dein#types#git#command_path .
         \ ' log -1 --pretty=format:"%h [%cr] %s"'
 endfunction"}}}
+
+function! s:is_git_dir(path) abort "{{{
+  if isdirectory(a:path)
+    let git_dir = a:path
+  elseif filereadable(a:path)
+    " check if this is a gitdir file
+    " File starts with "gitdir: " and all text after this string is treated
+    " as the path. Any CR or NLs are stripped off the end of the file.
+    let buf = join(readfile(a:path, 'b'), "\n")
+    let matches = matchlist(buf, '\C^gitdir: \(\_.*[^\r\n]\)[\r\n]*$')
+    if empty(matches)
+      return 0
+    endif
+    let path = fnamemodify(a:path, ':h')
+    if fnamemodify(a:path, ':t') == ''
+      " if there's no tail, the path probably ends in a directory separator
+      let path = fnamemodify(path, ':h')
+    endif
+    let git_dir = neobundle#util#join_paths(path, matches[1])
+    if !isdirectory(git_dir)
+      return 0
+    endif
+  else
+    return 0
+  endif
+
+  " Git only considers it to be a git dir if a few required files/dirs exist
+  " and are accessible inside the directory.
+  " Note: we can't actually test file permissions the way we'd like to, since
+  " getfperm() gives the mode string but doesn't tell us whether the user or
+  " group flags apply to us. Instead, just check if dirname/. is a directory.
+  " This should also check if we have search permissions.
+  " I'm assuming here that dirname/. works on windows, since I can't test.
+  " Note: Git also accepts having the GIT_OBJECT_DIRECTORY env var set instead
+  " of using .git/objects, but we don't care about that.
+  for name in ['objects', 'refs']
+    if !isdirectory(s:join_paths(git_dir, name))
+      return 0
+    endif
+  endfor
+
+  " Git also checks if HEAD is a symlink or a properly-formatted file.
+  " We don't really care to actually validate this, so let's just make
+  " sure the file exists and is readable.
+  " Note: it may also be a symlink, which can point to a path that doesn't
+  " necessarily exist yet.
+  let head = s:join_paths(git_dir, 'HEAD')
+  if !filereadable(head) && getftype(head) != 'link'
+    return 0
+  endif
+
+  " Sure looks like a git directory. There's a few subtleties where we'll
+  " accept a directory that git itself won't, but I think we can safely ignore
+  " those edge cases.
+  return 1
+endfunction "}}}
+
+let s:is_windows = has('win32')
+
+function! s:join_paths(path1, path2) abort "{{{
+  " Joins two paths together, handling the case where the second path
+  " is an absolute path.
+  if s:is_absolute(a:path2)
+    return a:path2
+  endif
+  if a:path1 =~ (s:is_windows ? '[\\/]$' : '/$') ||
+        \ a:path2 =~ (s:is_windows ? '^[\\/]' : '^/')
+    " the appropriate separator already exists
+    return a:path1 . a:path2
+  else
+    " note: I'm assuming here that '/' is always valid as a directory
+    " separator on Windows. I know Windows has paths that start with \\?\ that
+    " diasble behavior like that, but I don't know how Vim deals with that.
+    return a:path1 . '/' . a:path2
+  endif
+endfunction "}}}
+
+if s:is_windows
+  function! s:is_absolute(path) abort "{{{
+    return a:path =~ '^[\\/]\|^\a:'
+  endfunction "}}}
+else
+  function! s:is_absolute(path) abort "{{{
+    return a:path =~ '^/'
+  endfunction "}}}
+endif
 
 " vim: foldmethod=marker
