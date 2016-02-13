@@ -265,7 +265,9 @@ function! dein#remote_plugins() abort "{{{
         \ values(dein#get()),
         \ "isdirectory(v:val.rtp . '/rplugin')"))
 
-  UpdateRemotePlugins
+  if exists(':UpdateRemotePlugins')
+    UpdateRemotePlugins
+  endif
 endfunction"}}}
 
 function! dein#check_install(...) abort "{{{
