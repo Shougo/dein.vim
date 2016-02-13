@@ -228,7 +228,7 @@ endfunction"}}}
 function! s:check_output(context, process) abort "{{{
   if dein#_has_vimproc() && has_key(a:process, 'proc')
     let is_timeout = (localtime() - a:process.start_time)
-          \             >= a:process.plugin.install_process_timeout
+          \             >= a:process.plugin.timeout
     let output = vimproc#util#iconv(
           \ a:process.proc.stdout.read(-1, 300), 'char', &encoding)
     if output != ''
