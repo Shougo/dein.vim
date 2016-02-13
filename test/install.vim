@@ -549,4 +549,19 @@ function! s:suite.local() abort "{{{
   call s:assert.equals(plugin.frozen, 1)
 endfunction"}}}
 
+function! s:suite.force() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim', {'force': 1}), 0)
+
+  let plugin = dein#get('neocomplete.vim')
+  call s:assert.equals(plugin.sourced, 1)
+
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+
+  call s:assert.equals(dein#end(), 0)
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:

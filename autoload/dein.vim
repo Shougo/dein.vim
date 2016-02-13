@@ -225,6 +225,9 @@ function! dein#add(repo, ...) abort "{{{
   endif
 
   let g:dein#_plugins[plugin.name] = plugin
+  if plugin.force
+    call dein#autoload#_source([plugin])
+  endif
 endfunction"}}}
 
 function! dein#local(dir, ...) abort "{{{
