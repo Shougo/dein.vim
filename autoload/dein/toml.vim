@@ -25,8 +25,7 @@ endfunction
 "
 " private api
 "
-" work around: '[^\r\n]*' doesn't work well in old-vim, but "[^\r\n]*" works
-" well
+" work around: '[^\r\n]*' doesn't work well in old-vim, but "[^\r\n]*" works well
 let s:skip_pattern = '\C^\%(\_s\+\|' . "#[^\r\n]*" . '\)'
 let s:table_name_pattern = '\%([^ [:tab:]#.[\]=]\+\)'
 let s:table_key_pattern = s:table_name_pattern
@@ -37,9 +36,16 @@ function! s:_skip(input) abort
   endwhile
 endfunction
 
+" XXX: old engine is faster than NFA engine (in this context).
+if exists('+regexpengine')
+  let s:regex_prefix = '\%#=1\C^'
+else
+  let s:regex_prefix = '\C^'
+endif
+
 function! s:_consume(input, pattern) abort
   call s:_skip(a:input)
-  let end = matchend(a:input.text, '\C^' . a:pattern, a:input.p)
+  let end = matchend(a:input.text, s:regex_prefix . a:pattern, a:input.p)
 
   if end == -1
     call s:_error(a:input)
@@ -53,7 +59,7 @@ function! s:_consume(input, pattern) abort
 endfunction
 
 function! s:_match(input, pattern) abort
-  return match(a:input.text, '\C^' . a:pattern, a:input.p) != -1
+  return match(a:input.text, s:regex_prefix . a:pattern, a:input.p) != -1
 endfunction
 
 function! s:_eof(input) abort
@@ -63,14 +69,12 @@ endfunction
 function! s:_error(input) abort
   let buf = []
   let offset = 0
-  while (a:input.p + offset) < a:input.length
-        \ && a:input.text[a:input.p + offset] !~# "[\r\n]"
+  while (a:input.p + offset) < a:input.length && a:input.text[a:input.p + offset] !~# "[\r\n]"
     let buf += [a:input.text[a:input.p + offset]]
     let offset += 1
   endwhile
 
-  throw printf("vital: Text.TOML: Illegal toml format at `%s'.",
-        \ join(buf, ''))
+  throw printf("vital: Text.TOML: Illegal toml format at `%s'.", join(buf, ''))
 endfunction
 
 function! s:_parse(input) abort
@@ -211,9 +215,7 @@ endfunction
 " Datetime
 "
 function! s:_datetime(input) abort
-  let s = s:_consume(a:input,
-        \ '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(Z'
-        \ .'\|-\?\d\{2}:\d\{2}\|\.\d\+-\d\{2}:\d\{2}\)')
+  let s = s:_consume(a:input, '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(Z\|-\?\d\{2}:\d\{2}\|\.\d\+-\d\{2}:\d\{2}\)')
   return s
 endfunction
 
@@ -238,11 +240,10 @@ endfunction
 "
 function! s:_table(input) abort
   let tbl = {}
-  let name = s:_consume(a:input,
-        \ '\[\s*' . s:table_name_pattern
-        \ . '\%(\s*\.\s*' . s:table_name_pattern . '\)*\s*\]')
+  let name = s:_consume(a:input, '\[\s*' . s:table_name_pattern . '\%(\s*\.\s*' . s:table_name_pattern . '\)*\s*\]')
   let name = name[1 : -2]
   call s:_skip(a:input)
+  " while !s:_eof(a:input) && !s:_match(a:input, '\[\{1,2}[a-zA-Z0-9.]\+\]\{1,2}')
   while !s:_eof(a:input) && !s:_match(a:input, '\[')
     let key = s:_key(a:input)
     call s:_equals(a:input)
@@ -261,11 +262,10 @@ endfunction
 "
 function! s:_array_of_tables(input) abort
   let tbl = {}
-  let name = s:_consume(a:input,
-        \ '\[\[\s*' . s:table_name_pattern
-        \ . '\%(\s*\.\s*' . s:table_name_pattern . '\)*\s*\]\]')
+  let name = s:_consume(a:input, '\[\[\s*' . s:table_name_pattern . '\%(\s*\.\s*' . s:table_name_pattern . '\)*\s*\]\]')
   let name = name[2 : -3]
   call s:_skip(a:input)
+  " while !s:_eof(a:input) && !s:_match(a:input, '\[\{1,2}[a-zA-Z0-9.]\+\]\{1,2}')
   while !s:_eof(a:input) && !s:_match(a:input, '\[')
     let key = s:_key(a:input)
     call s:_equals(a:input)
@@ -287,12 +287,10 @@ function! s:_unescape(text) abort
   let text = substitute(text, '\\n', "\n", 'g')
   let text = substitute(text, '\\f', "\f", 'g')
   let text = substitute(text, '\\r', "\r", 'g')
-  let text = substitute(text, '\\/', "/", 'g')
+  let text = substitute(text, '\\/', '/', 'g')
   let text = substitute(text, '\\\\', '\', 'g')
-  let text = substitute(text, '\C\\u\(\x\{4}\)',
-        \ '\=s:_nr2char("0x" . submatch(1))', 'g')
-  let text = substitute(text, '\C\\U\(\x\{8}\)',
-        \ '\=s:_nr2char("0x" . submatch(1))', 'g')
+  let text = substitute(text, '\C\\u\(\x\{4}\)', '\=s:_nr2char("0x" . submatch(1))', 'g')
+  let text = substitute(text, '\C\\U\(\x\{8}\)', '\=s:_nr2char("0x" . submatch(1))', 'g')
   return text
 endfunction
 
