@@ -36,13 +36,14 @@ function! dein#autoload#_source(plugins) abort "{{{
       return 1
     endif
   endfor
-
-  let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
 endfunction"}}}
 
 function! dein#autoload#_on_i() abort "{{{
-  call dein#autoload#_source(filter(
-        \ dein#_get_lazy_plugins(), 'v:val.on_i'))
+  let plugins = filter(dein#_get_lazy_plugins(), 'v:val.on_i')
+  if !empty(plugins)
+    call dein#autoload#_source(plugins)
+    doautocmd InsertEnter
+  endif
 endfunction"}}}
 function! dein#autoload#_on_ft() abort "{{{
   for filetype in split(&l:filetype, '\.')
@@ -197,6 +198,8 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
   if isdirectory(a:plugin.rtp.'/after')
     call add(a:rtps, a:plugin.rtp.'/after')
   endif
+
+  let &runtimepath = dein#_join_rtp(a:rtps, &runtimepath, '')
 
   call dein#_call_hook('source', a:plugin)
 
