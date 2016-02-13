@@ -92,13 +92,13 @@ function! dein#_init() abort "{{{
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
     autocmd FileType * call s:on_ft()
-    autocmd FuncUndefined * call s:on_func(expand('<amatch>'))
+    autocmd FuncUndefined * call s:on_func(expand('<afile>'))
     autocmd VimEnter * call dein#_call_hook('post_source')
   augroup END
 
   if exists('##CmdUndefined')
     autocmd CmdUndefined *
-          \ call dein#autoload#_on_pre_cmd(expand('<amatch>'))
+          \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
   endif
 
   for event in [
