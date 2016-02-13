@@ -52,10 +52,6 @@ function! dein#autoload#_on_ft() abort "{{{
   endfor
 endfunction"}}}
 function! dein#autoload#_on_path(path, event) abort "{{{
-  if a:path == ''
-    return
-  endif
-
   let path = a:path
   " For ":edit ~".
   if fnamemodify(path, ':t') ==# '~'
@@ -81,11 +77,6 @@ function! dein#autoload#_on_path(path, event) abort "{{{
 endfunction"}}}
 function! dein#autoload#_on_func(name) abort "{{{
   let function_prefix = substitute(a:name, '[^#]*$', '', '')
-  if function_prefix =~# '^dein#'
-        \ || function_prefix ==# 'vital#'
-        \ || has('vim_starting')
-    return
-  endif
 
   let lazy_plugins = dein#_get_lazy_plugins()
   call s:set_function_prefixes(lazy_plugins)

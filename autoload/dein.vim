@@ -91,9 +91,8 @@ function! dein#_init() abort "{{{
   augroup dein
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
-    autocmd FileType * call dein#autoload#_on_ft()
-    autocmd FuncUndefined *
-          \ call dein#autoload#_on_func(expand('<amatch>'))
+    autocmd FileType * call s:on_ft()
+    autocmd FuncUndefined * call s:on_func(expand('<amatch>'))
     autocmd VimEnter * call dein#_call_hook('post_source')
   augroup END
 
@@ -107,8 +106,7 @@ function! dein#_init() abort "{{{
         \ 'BufWinEnter', 'BufNew', 'VimEnter'
         \ ]
     execute 'autocmd dein' event
-          \ "* call dein#autoload#_on_path(expand('<afile>'), "
-          \ .string(event) . ")"
+          \ "* call s:on_path(expand('<afile>'), " .string(event) . ")"
   endfor
 endfunction"}}}
 function! dein#_get_base_path() abort "{{{
@@ -437,6 +435,31 @@ function! s:tsort_impl(target, mark, sorted) abort "{{{
   endfor
 
   call add(a:sorted, a:target)
+endfunction"}}}
+
+function! s:on_path(path, event) abort "{{{
+  if a:path == ''
+    return
+  endif
+
+  call dein#autoload#_on_path(a:path, a:event)
+endfunction"}}}
+function! s:on_ft() abort "{{{
+  if &filetype == ''
+    return
+  endif
+
+  call dein#autoload#_on_ft()
+endfunction"}}}
+function! s:on_func(name) abort "{{{
+  let function_prefix = substitute(a:name, '[^#]*$', '', '')
+  if function_prefix =~# '^dein#'
+        \ || function_prefix ==# 'vital#'
+        \ || has('vim_starting')
+    return
+  endif
+
+  call dein#autoload#_on_func(a:name)
 endfunction"}}}
 
 " vim: foldmethod=marker
