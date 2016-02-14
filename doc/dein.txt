@@ -171,6 +171,10 @@ dein#save_cache()
 		Save plugins configuration in the cache file.
 		Note: It is available when loading .vimrc.
 
+						*dein#clear_cache()*
+dein#clear_cache()
+		Clear the cache file manually.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 
