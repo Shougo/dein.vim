@@ -307,8 +307,14 @@ function! dein#load_cache(...) abort "{{{
         call dein#autoload#_source([plugin])
       endif
     endfor
-    for plugin in dein#_get_lazy_plugins()
-      call dein#parse#_add_dummy(plugin)
+    for plugin in filter(dein#_get_lazy_plugins(),
+          \ '!empty(v:val.on_cmd) || !empty(v:val.on_map)')
+      if !empty(plugin.on_cmd)
+        call dein#_add_dummy_commands(plugin)
+      endif
+      if !empty(plugin.on_map)
+        call dein#_add_dummy_mappings(plugin)
+      endif
     endfor
   catch
     call dein#_error('Error occurred while loading cache : ' . v:exception)
@@ -491,6 +497,53 @@ function! dein#_writefile(path, list) abort "{{{
 
   return writefile(a:list, path)
 endfunction"}}}
+function! dein#_add_dummy_commands(plugin) abort "{{{
+  let a:plugin.dummy_commands = []
+  for name in a:plugin.on_cmd
+    " Define dummy commands.
+    silent! execute 'command '
+          \ . '-complete=customlist,dein#autoload#_dummy_complete'
+          \ . ' -bang -bar -range -nargs=*' name printf(
+          \ "call dein#autoload#_on_cmd(%s, %s, <q-args>,
+          \  expand('<bang>'), expand('<line1>'), expand('<line2>'))",
+          \   string(name), string(a:plugin.name))
+
+    call add(a:plugin.dummy_commands, name)
+  endfor
+endfunction"}}}
+function! dein#_add_dummy_mappings(plugin) abort "{{{
+  let a:plugin.dummy_mappings = []
+  for [modes, mappings] in map(copy(a:plugin.on_map), "
+        \   type(v:val) == type([]) ?
+        \     [v:val[0], v:val[1:]] : ['nxo', [v:val]]
+        \ ")
+    if mappings ==# ['<Plug>']
+      " Use plugin name.
+      let mappings = ['<Plug>(' . a:plugin.normalized_name]
+      if stridx(a:plugin.normalized_name, '-') >= 0
+        " The plugin mappings may use "_" instead of "-".
+        call add(mappings, '<Plug>(' .
+              \ substitute(a:plugin.normalized_name, '-', '_', 'g'))
+      endif
+    endif
+
+    for mapping in mappings
+      " Define dummy mappings.
+      for mode in filter(split(modes, '\zs'),
+            \ "index(['n', 'v', 'x', 'o', 'i', 'c'], v:val) >= 0")
+        let mapping_str = substitute(mapping, '<', '<lt>', 'g')
+        silent! execute mode.'noremap <unique><silent>' mapping printf(
+              \ (mode ==# 'c' ? "\<C-r>=" :
+              \  (mode ==# 'i' ? "\<C-o>:" : ":\<C-u>")."call ").
+              \   "dein#autoload#_on_map(%s, %s, %s)<CR>",
+              \   string(mapping_str), string(a:plugin.name), string(mode))
+
+        call add(a:plugin.dummy_mappings, [mode, mapping])
+      endfor
+    endfor
+  endfor
+endfunction"}}}
+
 
 " Executes a command and returns its output.
 " This wraps Vim's `:redir`, and makes sure that the `verbose` settings have
@@ -511,7 +564,7 @@ function! s:escape(path) abort "{{{
 endfunction"}}}
 
 function! s:tsort_impl(target, mark, sorted) abort "{{{
-  if has_key(a:mark, a:target.name)
+  if empty(a:target) || has_key(a:mark, a:target.name)
     return
   endif
 

@@ -137,19 +137,15 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   if plugin.lazy
-    call dein#parse#_add_dummy(plugin)
+    if !empty(plugin.on_cmd)
+      call dein#_add_dummy_commands(plugin)
+    endif
+    if !empty(plugin.on_map)
+      call dein#_add_dummy_mappings(plugin)
+    endif
   endif
 
   return plugin
-endfunction"}}}
-function! dein#parse#_add_dummy(plugin) abort "{{{
-  if !empty(a:plugin.on_cmd)
-    call s:add_dummy_commands(a:plugin)
-  endif
-
-  if !empty(a:plugin.on_map)
-    call s:add_dummy_mappings(a:plugin)
-  endif
 endfunction"}}}
 function! dein#parse#_load_toml(filename, default) abort "{{{
   try
@@ -206,54 +202,6 @@ endfunction"}}}
 function! dein#parse#_name_conversion(path) abort "{{{
   return fnamemodify(get(split(a:path, ':'), -1, ''),
         \ ':s?/$??:t:s?\c\.git\s*$??')
-endfunction"}}}
-
-function! s:add_dummy_commands(plugin) abort "{{{
-  let a:plugin.dummy_commands = []
-  for name in a:plugin.on_cmd
-    " Define dummy commands.
-    silent! execute 'command '
-          \ . '-complete=customlist,dein#autoload#_dummy_complete'
-          \ . ' -bang -bar -range -nargs=*' name printf(
-          \ "call dein#autoload#_on_cmd(%s, %s, <q-args>,
-          \  expand('<bang>'), expand('<line1>'), expand('<line2>'))",
-          \   string(name), string(a:plugin.name))
-
-    call add(a:plugin.dummy_commands, name)
-  endfor
-endfunction"}}}
-
-function! s:add_dummy_mappings(plugin) abort "{{{
-  let a:plugin.dummy_mappings = []
-  for [modes, mappings] in map(copy(a:plugin.on_map), "
-        \   type(v:val) == type([]) ?
-        \     [v:val[0], v:val[1:]] : ['nxo', [v:val]]
-        \ ")
-    if mappings ==# ['<Plug>']
-      " Use plugin name.
-      let mappings = ['<Plug>(' . a:plugin.normalized_name]
-      if stridx(a:plugin.normalized_name, '-') >= 0
-        " The plugin mappings may use "_" instead of "-".
-        call add(mappings, '<Plug>(' .
-              \ substitute(a:plugin.normalized_name, '-', '_', 'g'))
-      endif
-    endif
-
-    for mapping in mappings
-      " Define dummy mappings.
-      for mode in filter(split(modes, '\zs'),
-            \ "index(['n', 'v', 'x', 'o', 'i', 'c'], v:val) >= 0")
-        let mapping_str = substitute(mapping, '<', '<lt>', 'g')
-        silent! execute mode.'noremap <unique><silent>' mapping printf(
-              \ (mode ==# 'c' ? "\<C-r>=" :
-              \  (mode ==# 'i' ? "\<C-o>:" : ":\<C-u>")."call ").
-              \   "dein#autoload#_on_map(%s, %s, %s)<CR>",
-              \   string(mapping_str), string(a:plugin.name), string(mode))
-
-        call add(a:plugin.dummy_mappings, [mode, mapping])
-      endfor
-    endfor
-  endfor
 endfunction"}}}
 
 " vim: foldmethod=marker
