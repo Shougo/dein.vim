@@ -1,5 +1,7 @@
 ## About
 
+[![Join the chat at https://gitter.im/Shougo/dein.vim](https://badges.gitter.im/Shougo/dein.vim.svg)](https://gitter.im/Shougo/dein.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 Requirements:
