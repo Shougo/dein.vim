@@ -189,13 +189,13 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
 
   if !empty(a:plugin.dummy_commands)
     for command in a:plugin.dummy_commands
-      silent! execute 'delcommand' command
+      silent! execute 'delcommand' command[0]
     endfor
     let a:plugin.dummy_commands = []
   endif
 
   if !empty(a:plugin.dummy_mappings)
-    for [mode, mapping] in a:plugin.dummy_mappings
+    for [mode, mapping, raw_map] in a:plugin.dummy_mappings
       silent! execute mode.'unmap' mapping
     endfor
     let a:plugin.dummy_mappings = []

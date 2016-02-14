@@ -323,7 +323,7 @@ function! dein#load_cache(...) abort "{{{
   endtry
 endfunction"}}}
 function! dein#clear_cache() abort "{{{
-  let cache = dein#get_cache_file()
+  let cache = dein#_get_cache_file()
   if !filereadable(cache)
     return
   endif
@@ -498,24 +498,39 @@ function! dein#_writefile(path, list) abort "{{{
   return writefile(a:list, path)
 endfunction"}}}
 function! dein#_add_dummy_commands(plugin) abort "{{{
-  let a:plugin.dummy_commands = []
+  if empty(a:plugin.dummy_commands)
+    call s:generate_dummy_commands(a:plugin)
+  endif
+  for command in a:plugin.dummy_commands
+    silent! execute command[1]
+  endfor
+endfunction"}}}
+function! s:generate_dummy_commands(plugin) abort "{{{
   for name in a:plugin.on_cmd
     " Define dummy commands.
-    silent! execute 'command '
+    let raw_cmd = 'command '
           \ . '-complete=customlist,dein#autoload#_dummy_complete'
-          \ . ' -bang -bar -range -nargs=*' name printf(
-          \ "call dein#autoload#_on_cmd(%s, %s, <q-args>,
+          \ . ' -bang -bar -range -nargs=* '. name
+          \ . printf(" call dein#autoload#_on_cmd(%s, %s, <q-args>,
           \  expand('<bang>'), expand('<line1>'), expand('<line2>'))",
           \   string(name), string(a:plugin.name))
 
-    call add(a:plugin.dummy_commands, name)
+    call add(a:plugin.dummy_commands, [name, raw_cmd])
   endfor
 endfunction"}}}
 function! dein#_add_dummy_mappings(plugin) abort "{{{
-  let a:plugin.dummy_mappings = []
+  if empty(a:plugin.dummy_mappings)
+    call s:generate_dummy_mappings(a:plugin)
+  endif
+  for mapping in a:plugin.dummy_mappings
+    silent! execute mapping[2]
+  endfor
+endfunction"}}}
+function! s:generate_dummy_mappings(plugin) abort "{{{
   for [modes, mappings] in map(copy(a:plugin.on_map), "
         \   type(v:val) == type([]) ?
-        \     [v:val[0], v:val[1:]] : ['nxo', [v:val]]
+        \     [split(v:val[0], '\\zs'), v:val[1:]] :
+        \     [['n', 'x', 'o'], [v:val]]
         \ ")
     if mappings ==# ['<Plug>']
       " Use plugin name.
@@ -529,16 +544,15 @@ function! dein#_add_dummy_mappings(plugin) abort "{{{
 
     for mapping in mappings
       " Define dummy mappings.
-      for mode in filter(split(modes, '\zs'),
-            \ "index(['n', 'v', 'x', 'o', 'i', 'c'], v:val) >= 0")
-        let mapping_str = substitute(mapping, '<', '<lt>', 'g')
-        silent! execute mode.'noremap <unique><silent>' mapping printf(
-              \ (mode ==# 'c' ? "\<C-r>=" :
-              \  (mode ==# 'i' ? "\<C-o>:" : ":\<C-u>")."call ").
-              \   "dein#autoload#_on_map(%s, %s, %s)<CR>",
-              \   string(mapping_str), string(a:plugin.name), string(mode))
-
-        call add(a:plugin.dummy_mappings, [mode, mapping])
+      let prefix = printf("call dein#autoload#_on_map(%s, %s,",
+            \ string(substitute(mapping, '<', '<lt>', 'g')),
+            \ string(a:plugin.name))
+      for mode in modes
+        let raw_map = mode.'noremap <unique><silent> '.mapping
+            \ . (mode ==# 'c' ? " \<C-r>=" :
+            \    mode ==# 'i' ? " \<C-o>:" : " :\<C-u>") . prefix
+            \ . string(mode) . ")<CR>"
+        call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
       endfor
     endfor
   endfor
