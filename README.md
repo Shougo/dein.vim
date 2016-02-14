@@ -29,3 +29,7 @@ The features may be changed.
 
 * Build support
 
+* More optimizing
+
+* Neovim asynchronous support
+
