@@ -137,19 +137,19 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   if plugin.lazy
-    if !empty(plugin.on_cmd)
-      call s:add_dummy_commands(plugin)
-    endif
-
-    if !empty(plugin.on_map)
-      call s:add_dummy_mappings(plugin)
-    endif
+    call dein#parse#_add_dummy(plugin)
   endif
 
   return plugin
 endfunction"}}}
-function! dein#parse#_list(plugins) abort "{{{
-  return map(copy(a:plugins), 'dein#parse#_dict(v:val)')
+function! dein#parse#_add_dummy(plugin) abort "{{{
+  if !empty(a:plugin.on_cmd)
+    call s:add_dummy_commands(a:plugin)
+  endif
+
+  if !empty(a:plugin.on_map)
+    call s:add_dummy_mappings(a:plugin)
+  endif
 endfunction"}}}
 function! dein#parse#_load_toml(filename, default) abort "{{{
   try

@@ -8,6 +8,8 @@ let s:path2 = fnamemodify('.cache2', ':p') . '/'
 let s:runtimepath_save = &runtimepath
 let s:filetype_save = &l:filetype
 
+let s:this_script = fnamemodify(expand('<sfile>'), ':p')
+
 function! s:suite.before_each() abort "{{{
   call dein#_init()
   let &runtimepath = s:runtimepath_save
@@ -562,6 +564,34 @@ function! s:suite.force() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 
   call s:assert.equals(dein#end(), 0)
+endfunction"}}}
+
+function! s:suite.cache() abort "{{{
+  call dein#begin(s:path)
+  call delete(dein#_get_cache_file())
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call s:assert.equals(dein#load_cache(), 1)
+  call s:assert.equals(dein#save_cache(), 0)
+  call s:assert.equals(dein#end(), 0)
+
+  call dein#_init()
+  let &runtimepath = s:runtimepath_save
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#get('neocomplete.vim'), {})
+  call s:assert.not_equals(readfile(dein#_get_cache_file()), [])
+
+  call s:assert.equals(dein#load_cache(), 0)
+
+  let plugin = dein#get('neocomplete.vim')
+
+  call s:assert.equals(dein#end(), 0)
+
+  call s:assert.not_equals(dein#get('neocomplete.vim'), {})
+  call s:assert.equals(plugin.sourced, 1)
+  call s:assert.equals(
+        \ len(filter(dein#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:

@@ -27,7 +27,5 @@ The features may be changed.
 
 ## Future works (not implemented yet)
 
-* Cache support
-
 * Build support
 

@@ -82,8 +82,8 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		Note: Original TOML parser is created by kamichidu.
 		https://github.com/kamichidu
 >
-		" Load toml from "~/.vim/bundle.toml".
-		call dein#load_toml("~/.vim/bundle.toml", {})
+		" Load toml from "~/.vim/plugins.toml".
+		call dein#load_toml("~/.vim/plugins.toml", {})
 <
 		TOML file sample is here:
 >
@@ -142,6 +142,34 @@ dein#source([{plugins}])			*dein#source()*
 
 dein#get({plugin-name})				 *dein#get()*
 		Get the plugin options dictionary for {plugin-name}.
+
+dein#load_cache([{vimrcs}])			 *dein#load_cache()*
+		Load plugins configuration from the cache file,
+		which is located in `dein#_get_runtime_path() . '/cache'`.
+		{vimrcs} is a list of compared .vimrc and/or other
+		configuration files. The default is |$MYVIMRC|.
+
+		It returns 1, if the cache file is old or invalid or not
+		found.
+>
+	if dein#load_cache()
+	  " My plugins here:
+	  " ...
+	  call dein#save_cache()
+	endif
+<
+		If you use multiple configuration files,
+>
+	if dein#load_cache([$MYVIMRC, 'plugin.vim', 'plugin.toml'])
+	  " My plugins here or other files spcified as arguments
+	  " ...
+	  call dein#save_cache()
+	endif
+<
+						*dein#save_cache()*
+dein#save_cache()
+		Save plugins configuration in the cache file.
+		Note: It is available when loading .vimrc.
 
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*

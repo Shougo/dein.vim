@@ -45,12 +45,14 @@ function! dein#autoload#_on_i() abort "{{{
     doautocmd InsertEnter
   endif
 endfunction"}}}
+
 function! dein#autoload#_on_ft() abort "{{{
   for filetype in split(&l:filetype, '\.')
     call dein#autoload#_source(filter(dein#_get_lazy_plugins(),
           \ 'index(v:val.on_ft, filetype) >= 0'))
   endfor
 endfunction"}}}
+
 function! dein#autoload#_on_path(path, event) abort "{{{
   let path = a:path
   " For ":edit ~".
@@ -75,22 +77,35 @@ function! dein#autoload#_on_path(path, event) abort "{{{
     let s:loaded_path = 1
   endif
 endfunction"}}}
+
 function! dein#autoload#_on_func(name) abort "{{{
   let function_prefix = substitute(a:name, '[^#]*$', '', '')
 
   let lazy_plugins = dein#_get_lazy_plugins()
-  call s:set_function_prefixes(lazy_plugins)
+  call dein#autoload#_set_function_prefixes(lazy_plugins)
 
   call dein#autoload#_source(filter(lazy_plugins,
         \  "index(v:val.pre_func, function_prefix) >= 0
         \   || (index(v:val.on_func, a:name) >= 0)"))
 endfunction"}}}
+function! dein#autoload#_set_function_prefixes(plugins) abort "{{{
+  for plugin in filter(copy(a:plugins), "empty(v:val.pre_func)")
+    let plugin.pre_func =
+          \ dein#_uniq(map(split(globpath(
+          \  plugin.path, 'autoload/**/*.vim', 1), "\n"),
+          \  "substitute(matchstr(
+          \   dein#_substitute_path(fnamemodify(v:val, ':r')),
+          \         '/autoload/\\zs.*$'), '/', '#', 'g').'#'"))
+  endfor
+endfunction"}}}
+
 function! dein#autoload#_on_pre_cmd(name) abort "{{{
   call dein#autoload#_source(
         \ filter(dein#_get_lazy_plugins(),
         \ "!empty(filter(map(copy(v:val.pre_cmd), 'tolower(v:val)'),
         \   'stridx(tolower(a:name), v:val) == 0'))"))
 endfunction"}}}
+
 function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "{{{
   call dein#source(a:name)
 
@@ -110,6 +125,7 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "
     execute a:command.a:bang a:args
   endtry
 endfunction"}}}
+
 function! dein#autoload#_on_map(mapping, name, mode) abort "{{{
   let cnt = v:count > 0 ? v:count : ''
 
@@ -226,16 +242,6 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
   if !has('vim_starting')
     call dein#_call_hook('post_source', a:plugin)
   endif
-endfunction"}}}
-function! s:set_function_prefixes(plugins) abort "{{{
-  for plugin in filter(copy(a:plugins), "empty(v:val.pre_func)")
-    let plugin.pre_func =
-          \ dein#_uniq(map(split(globpath(
-          \  plugin.path, 'autoload/**/*.vim', 1), "\n"),
-          \  "substitute(matchstr(
-          \   dein#_substitute_path(fnamemodify(v:val, ':r')),
-          \         '/autoload/\\zs.*$'), '/', '#', 'g').'#'"))
-  endfor
 endfunction"}}}
 function! s:get_input() abort "{{{
   let input = ''

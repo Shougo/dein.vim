@@ -247,6 +247,92 @@ function! dein#tap(name) abort "{{{
         \ && isdirectory(g:dein#_plugins[a:name].path)
 endfunction"}}}
 
+function! dein#save_cache() abort "{{{
+  if dein#_get_runtime_path() == '' || !exists('s:vimrcs')
+    " Ignore
+    return 1
+  endif
+
+  " Set function prefixes before save cache
+  call dein#autoload#_set_function_prefixes(dein#_get_lazy_plugins())
+
+  let plugins = dein#_tsort(deepcopy(values(dein#get())))
+  for plugin in plugins
+    let plugin.sourced = 0
+  endfor
+
+  let current_vim = dein#_redir('version')
+
+  call writefile([s:get_cache_version(),
+        \ current_vim, string(s:vimrcs), string(plugins)],
+        \ dein#_get_cache_file())
+endfunction"}}}
+function! dein#load_cache(...) abort "{{{
+  let s:vimrcs = len(a:000) == 0 ? [$MYVIMRC] : a:1
+
+  let cache = dein#_get_cache_file()
+  if !filereadable(cache) | return 1 | endif
+
+  if !empty(filter(map(copy(s:vimrcs), 'getftime(v:val)'),
+        \ 'getftime(cache) < v:val'))
+    return 1
+  endif
+
+  let current_vim = dein#_redir('version')
+
+  try
+    let list = readfile(cache)
+    let ver = list[0]
+    let vim = get(list, 1, '')
+    let vimrcs = get(list, 2, '')
+
+    if len(list) != 4
+          \ || ver !=# s:get_cache_version()
+          \ || current_vim !=# vim
+          \ || string(s:vimrcs) !=# vimrcs
+      call dein#clear_cache()
+      return 1
+    endif
+
+    sandbox let plugins = eval(list[3])
+
+    if type(plugins) != type([])
+      call dein#clear_cache()
+      return 1
+    endif
+
+    for plugin in plugins
+      let g:dein#_plugins[plugin.name] = plugin
+      if plugin.force
+        call dein#autoload#_source([plugin])
+      endif
+    endfor
+    for plugin in dein#_get_lazy_plugins()
+      call dein#parse#_add_dummy(plugin)
+    endfor
+  catch
+    call dein#_error('Error occurred while loading cache : ' . v:exception)
+    call dein#clear_cache()
+    return 1
+  endtry
+endfunction"}}}
+function! dein#clear_cache() abort "{{{
+  let cache = dein#get_cache_file()
+  if !filereadable(cache)
+    return
+  endif
+
+  call delete(cache)
+endfunction"}}}
+function! dein#_get_cache_file() abort "{{{
+  return dein#_get_runtime_path() . '/cache_' . v:progname
+endfunction"}}}
+let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
+      \ . '/dein/parser.vim'
+function! s:get_cache_version() abort "{{{
+  return getftime(s:parser_vim_path)
+endfunction "}}}
+
 function! dein#install(...) abort "{{{
   call dein#install#_update(get(a:000, 0, []), 0)
 endfunction"}}}
