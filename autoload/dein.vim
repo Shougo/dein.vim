@@ -256,8 +256,8 @@ function! dein#save_cache() abort "{{{
   " Set function prefixes before save cache
   call dein#autoload#_set_function_prefixes(dein#_get_lazy_plugins())
 
-  let plugins = dein#_tsort(deepcopy(values(dein#get())))
-  for plugin in plugins
+  let plugins = deepcopy(dein#get())
+  for plugin in values(plugins)
     let plugin.sourced = 0
   endfor
 
@@ -296,17 +296,16 @@ function! dein#load_cache(...) abort "{{{
 
     sandbox let plugins = eval(list[3])
 
-    if type(plugins) != type([])
+    if type(plugins) != type({})
       call dein#clear_cache()
       return 1
     endif
 
-    for plugin in plugins
-      let g:dein#_plugins[plugin.name] = plugin
-      if plugin.force
-        call dein#autoload#_source([plugin])
-      endif
-    endfor
+    let g:dein#_plugins = plugins
+    let forced_plugins = filter(values(g:dein#_plugins), 'v:val.force')
+    if !empty(forced_plugins)
+      call dein#autoload#_source(forced_plugins)
+    endif
     for plugin in filter(dein#_get_lazy_plugins(),
           \ '!empty(v:val.on_cmd) || !empty(v:val.on_map)')
       if !empty(plugin.on_cmd)
