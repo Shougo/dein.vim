@@ -73,7 +73,7 @@ dein#add({repo}[, {options}])			*dein#add()*
 		Note: You must call it in |dein#begin()| block.
 
 dein#load_toml({filename}, [{options}])		*dein#load_toml()*
-		Load TOML plugin configurations from {filename}.  See
+		Load TOML plugin configuration from {filename}.  See
 		|dein-options| for keys to set in {options}.
 		Note: TOML parser is slow.
 
@@ -148,6 +148,8 @@ dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		which is located in `dein#_get_runtime_path() . '/cache'`.
 		{vimrcs} is a list of compared .vimrc and/or other
 		configuration files. The default is |$MYVIMRC|.
+		Note: You must call it after |dein#begin()|.  It clears
+		current plugin configuration.
 
 		It returns 1, if the cache file is old or invalid or not
 		found.
