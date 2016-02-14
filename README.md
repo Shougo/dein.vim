@@ -33,3 +33,7 @@ The features may be changed.
 
 * Neovim asynchronous support
 
+* Revision lock
+
+* Rollback
+
