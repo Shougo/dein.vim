@@ -4,16 +4,15 @@
 
 Dein.vim is a dark powered Vim/Neovim plugin manager.
 
-Requirements:
+## Requirements
+
 * Vim 7.4 or above or NeoVim.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
 
-Recommends:
+## Recommends
+
 * [vimproc](https://github.com/Shougo/vimproc.vim) if you want to
   install/update asynchronously in Unite interface.
-
-Note: This is a vaporware currently.  Most features are not implemented.
-The features may be changed.
 
 ## Concept
 
