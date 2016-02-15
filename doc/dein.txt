@@ -366,7 +366,7 @@ HOOKS 						*dein-hooks*
 		Note: You must set the autocmd before |dein#end()|.
 
 						*dein-hooks-post_source*
-		User#dein#source#{name}
+		User#dein#post_source#{name}
 		Called or sourced after scripts are sourced.
 		Note: In Vim initializing, calling the hooks are
 		delayed until |VimEnter|.
