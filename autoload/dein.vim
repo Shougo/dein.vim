@@ -205,6 +205,10 @@ function! dein#end() abort "{{{
   let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
 
   call dein#_call_hook('source', sourced)
+
+  if !has('vim_starting')
+    call dein#_call_hook('post_source')
+  endif
 endfunction"}}}
 
 function! dein#add(repo, ...) abort "{{{
