@@ -208,6 +208,7 @@ function! dein#end() abort "{{{
 
   if !has('vim_starting')
     call dein#_call_hook('post_source')
+    call dein#_reset_ftplugin()
   endif
 endfunction"}}}
 
