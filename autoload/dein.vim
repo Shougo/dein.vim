@@ -561,6 +561,9 @@ function! s:generate_dummy_mappings(plugin) abort "{{{
     endfor
   endfor
 endfunction"}}}
+function! dein#_get_type(name) abort "{{{
+  return get({'git': dein#types#git#define()}, a:name, {})
+endfunction"}}}
 
 
 " Executes a command and returns its output.

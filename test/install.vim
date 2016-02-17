@@ -551,6 +551,12 @@ function! s:suite.local() abort "{{{
   call s:assert.equals(plugin.frozen, 1)
 endfunction"}}}
 
+function! s:suite.local_nongit() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#end(), 0)
+endfunction"}}}
+
 function! s:suite.force() abort "{{{
   call dein#begin(s:path)
 

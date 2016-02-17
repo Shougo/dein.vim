@@ -27,6 +27,9 @@ let s:git = dein#types#git#define()
 
 function! dein#parse#_init(repo, options) abort "{{{
   let plugin = s:git.init(a:repo, a:options)
+  if empty(plugin)
+    let plugin.type = 'none'
+  endif
   let plugin.repo = a:repo
   let plugin.orig_opts = deepcopy(a:options)
   return extend(plugin, a:options)

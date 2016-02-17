@@ -50,12 +50,10 @@ function! s:get_progress_message(plugin, number, max) abort "{{{
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
 function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
-  let type = dein#types#git#define()
-  if empty(type)
-    return ['E: Unknown Type', '']
-  endif
+  let type = dein#_get_type(a:plugin.type)
 
-  let cmd = type.get_sync_command(a:plugin)
+  let cmd = has_key(type, 'get_sync_command') ?
+        \ type.get_sync_command(a:plugin) : ''
 
   if cmd == ''
     return ['', 'Not supported sync action.']
