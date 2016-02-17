@@ -284,6 +284,11 @@ OPTIONS 					*dein-options*
 		If set to 1, dein will load plugin files in the plugin
 		repository forcedly.
 
+						*dein-options-frozen*
+		frozen		(Number)
+		If set to 1, dein doesn't update it automatically. It is
+		useful for outdated plugins that can no longer be updated.
+
 						*dein-options-lazy*
 		lazy		(Number)
 		If set to non-zero, dein doesn't add the path to 'runtimepath'
