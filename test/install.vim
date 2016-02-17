@@ -41,7 +41,7 @@ function! s:suite.update() abort "{{{
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
 
-  call s:assert.equals(dein#add('Shougo/neopairs.vim'), 0)
+  call s:assert.equals(dein#add('Shougo/neopairs.vim', {'frozen': 1}), 0)
 
   call s:assert.equals(dein#update(), 0)
 

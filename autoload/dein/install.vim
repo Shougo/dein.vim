@@ -169,7 +169,11 @@ function! s:sync(plugin, context) abort "{{{
   let max = a:context.max_plugins
 
   if a:context.bang == 1 && a:plugin.frozen
-    let [cmd, message] = ['', 'is frozen.']
+    " Skip frozen plugin
+    call s:print_message(
+          \ printf('(%'.len(max).'d/%d): |%s| %s',
+          \ num, max, a:plugin.name, 'is frozen.'))
+    return
   else
     let [cmd, message] = s:get_sync_command(
           \   a:context.bang, a:plugin,
