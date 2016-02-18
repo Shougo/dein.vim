@@ -321,6 +321,7 @@ OPTIONS 					*dein-options*
 						*dein-options-on_source*
 		on_source	(List) or (String)
 		Load the plugin after the list plugins are loaded.
+		Note: The plugins must be lazy loaded plugins.
 
 						*dein-options-on_cmd*
 		on_cmd		(List) or (String)
