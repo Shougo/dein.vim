@@ -166,7 +166,7 @@ function! s:sync(plugin, context) abort "{{{
   let num = a:context.number
   let max = a:context.max_plugins
 
-  if a:context.bang == 1 && a:plugin.frozen
+  if isdirectory(a:plugin.path) && a:plugin.frozen
     " Skip frozen plugin
     call s:print_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
