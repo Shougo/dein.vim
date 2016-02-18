@@ -137,7 +137,7 @@ function! dein#begin(path) abort "{{{
 
   let s:block_level += 1
   let s:base_path = dein#_chomp(dein#_expand(a:path))
-  let s:runtime_path = a:path . '/.dein'
+  let s:runtime_path = s:base_path . '/.dein'
 
   if !isdirectory(s:runtime_path)
     call mkdir(s:runtime_path, 'p')
