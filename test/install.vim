@@ -552,9 +552,15 @@ function! s:suite.local() abort "{{{
 endfunction"}}}
 
 function! s:suite.local_nongit() abort "{{{
+  let temp = tempname()
+  call mkdir(temp.'/plugin', 'p')
   call dein#begin(s:path)
 
+  call dein#local(temp, {}, ['plugin'])
+
   call s:assert.equals(dein#end(), 0)
+
+  call s:assert.equals(dein#update(), 0)
 endfunction"}}}
 
 function! s:suite.force() abort "{{{
