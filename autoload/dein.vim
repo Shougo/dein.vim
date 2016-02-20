@@ -473,7 +473,7 @@ function! dein#_reset_ftplugin() abort "{{{
   execute 'doautocmd FileType' &filetype
 endfunction"}}}
 function! dein#_call_hook(hook_name, ...) abort "{{{
-  let prefix = '#User#dein#'.a:hook_name.'#'
+  let prefix = '##User#dein#'.a:hook_name.'#'
   let plugins = filter(dein#_convert2list(
         \ (empty(a:000) ? dein#get() : a:1)),
         \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
