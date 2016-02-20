@@ -145,6 +145,7 @@ dein#check_lazy_plugins()			 *dein#check_lazy_plugins()*
 dein#recache_runtimepath()			 *dein#recache_runtimepath()*
 		Re-make the dein runtimepath cache and execute |:helptags|.
 		It is called automatically after the installation.
+		Note: You must call it manually if you have disabled plugins.
 
 dein#source([{plugins}])			*dein#source()*
 		|:source|  the plugins specified by {plugins}.
