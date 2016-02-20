@@ -360,6 +360,9 @@ function! dein#remote_plugins() abort "{{{
     UpdateRemotePlugins
   endif
 endfunction"}}}
+function! dein#recache_runtimepath() abort "{{{
+  call dein#install#_recache_runtimepath()
+endfunction"}}}
 
 function! dein#check_install(...) abort "{{{
   let plugins = empty(a:000) ?
@@ -374,6 +377,15 @@ function! dein#check_install(...) abort "{{{
   echomsg 'Not installed plugins: '
         \ string(map(copy(plugins), 'v:val.name'))
   return 1
+endfunction"}}}
+function! dein#check_lazy_plugins() abort "{{{
+  let no_meaning_plugins = map(filter(dein#_get_lazy_plugins(),
+        \   "!v:val.local && isdirectory(v:val.rtp)
+        \    && !isdirectory(v:val.rtp . '/plugin')
+        \    && !isdirectory(v:val.rtp . '/after/plugin')"),
+        \   'v:val.name')
+  echomsg 'No meaning lazy plugins: ' string(no_meaning_plugins)
+  return len(no_meaning_plugins)
 endfunction"}}}
 
 function! dein#load_toml(filename, ...) abort "{{{

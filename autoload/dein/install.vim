@@ -34,7 +34,7 @@ function! dein#install#_update(plugins, bang) abort "{{{
 
   call s:install(a:bang, plugins)
 
-  call s:post_update_plugins(plugins)
+  call dein#install#_recache_runtimepath()
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
   let plugins = map(dein#_convert2list(a:plugins), 'dein#get(v:val)')
@@ -346,9 +346,7 @@ endfunction"}}}
 function! s:error(msg) abort "{{{
   call s:echo(a:msg, 'error')
 endfunction"}}}
-function! s:post_update_plugins(plugins) abort "{{{
-  call dein#remote_plugins()
-
+function! dein#install#_recache_runtimepath() abort "{{{
   " Clear runtime path.
   call dein#install#_rm(dein#_get_runtime_path())
   call mkdir(dein#_get_runtime_path(), 'p')
@@ -363,6 +361,8 @@ function! s:post_update_plugins(plugins) abort "{{{
         \ lazy_plugins, 'ftdetect')
   call s:merge_files(
         \ lazy_plugins, 'after/ftdetect')
+
+  call dein#remote_plugins()
 endfunction"}}}
 function! s:update_tags() abort "{{{
   let plugins = [{ 'rtp' : dein#_get_runtime_path()}]

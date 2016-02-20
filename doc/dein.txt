@@ -139,6 +139,13 @@ dein#check_install([{plugins}])			*dein#check_install()*
 		{plugins} is the check of the plugins name list.
 		If you omit it, dein will check all plugins installation.
 
+dein#check_lazy_plugins()			 *dein#check_lazy_plugins()*
+		Check the no meaning lazy plugins.
+
+dein#recache_runtimepath()			 *dein#recache_runtimepath()*
+		Re-make the dein runtimepath cache and execute |:helptags|.
+		It is called automatically after the installation.
+
 dein#source([{plugins}])			*dein#source()*
 		|:source|  the plugins specified by {plugins}.
 		{plugins} is the plugins name list.
@@ -302,7 +309,8 @@ OPTIONS 					*dein-options*
 		conditions are met.
 		Note: You should not specify the plugins which have not
 		"plugin/" directory as lazy load plugins.  It no means and
-		just increases the overhead.
+		just increases the overhead.  You can get the no meaning lazy
+		plugins by |dein#check_lazy_plugins()|.
 
 						*dein-options-on_i*
 		on_i		(Number)
