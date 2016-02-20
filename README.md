@@ -30,8 +30,6 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 * Build support
 
-* More optimizing
-
 * Neovim asynchronous support
 
 * Revision lock
