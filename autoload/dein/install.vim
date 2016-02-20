@@ -113,7 +113,7 @@ function! dein#install#_rm(path) abort "{{{
   if has('patch-7.4.1120')
     call delete(a:path, 'rf')
   else
-    let cmdline = '"' . a:path . '"'
+    let cmdline = ' "' . a:path . '"'
     if dein#_is_windows()
       " Note: In rm command, must use "\" instead of "/".
       let cmdline = substitute(cmdline, '/', '\\\\', 'g')
@@ -121,10 +121,24 @@ function! dein#install#_rm(path) abort "{{{
 
     " Use system instead of vimproc#system()
     let rm_command = dein#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
-    let result = system(rm_command . ' ' . cmdline)
+    let result = system(rm_command . cmdline)
     if v:shell_error
       call dein#_error(result)
     endif
+  endif
+endfunction"}}}
+function! dein#install#_cp(src, dest) abort "{{{
+  let cmdline = printf(' "%s" "%s"', a:src, a:dest)
+  if dein#_is_windows()
+    " Note: In xcopy command, must use "\" instead of "/".
+    let cmdline = substitute(cmdline, '/', '\\\\', 'g')
+  endif
+
+  " Use system instead of vimproc#system()
+  let cp_command = dein#_is_windows() ? 'xcopy /E /H /I /R /Y' : 'cp -R'
+  let result = system(cp_command . cmdline)
+  if v:shell_error
+    call dein#_error(result)
   endif
 endfunction"}}}
 
@@ -322,24 +336,13 @@ function! s:update_tags() abort "{{{
   silent execute 'helptags' fnameescape(dein#_get_tags_path())
 endfunction"}}}
 function! s:copy_files(plugins, directory) abort "{{{
+  let runtimepath = dein#_get_runtime_path()
+
   " Delete old files.
-  call dein#install#_rm(dein#_get_runtime_path() . '/' . a:directory)
+  call dein#install#_rm(runtimepath . '/' . a:directory)
 
-  let files = {}
   for plugins in a:plugins
-    for file in filter(split(globpath(
-          \ plugins.rtp, a:directory.'/**', 1), '\n'),
-          \ '!isdirectory(v:val)')
-      let filename = fnamemodify(file, ':t')
-      let files[filename] = readfile(file)
-    endfor
-  endfor
-
-  for [filename, list] in items(files)
-    if filename =~# '^tags\%(-.*\)\?$'
-      call sort(list)
-    endif
-    call dein#_writefile(a:directory . '/' . filename, list)
+    call dein#install#_cp(plugins.rtp . '/' . a:directory, runtimepath)
   endfor
 endfunction"}}}
 function! s:merge_files(plugins, directory) abort "{{{

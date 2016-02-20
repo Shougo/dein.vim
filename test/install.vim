@@ -617,4 +617,17 @@ function! s:suite.rm() abort "{{{
   call s:assert.equals(filereadable(temp), 0)
 endfunction"}}}
 
+function! s:suite.cp() abort "{{{
+  let temp = tempname()
+  let temp2 = tempname()
+
+  call mkdir(temp)
+  call writefile([], temp.'/foo')
+
+  call dein#install#_cp(temp, temp2)
+
+  call s:assert.true(isdirectory(temp2))
+  call s:assert.true(filereadable(temp2.'/foo'))
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:
