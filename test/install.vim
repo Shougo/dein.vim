@@ -36,6 +36,18 @@ function! s:suite.install() abort "{{{
   call s:assert.true(index(dein#_split_rtp(&runtimepath), plugin.rtp) >= 0)
 endfunction"}}}
 
+function! s:suite.reinstall() abort "{{{
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+
+  call s:assert.equals(dein#install(), 0)
+
+  call dein#end()
+
+  call s:assert.equals(dein#reinstall('neocomplete.vim'), 0)
+endfunction"}}}
+
 function! s:suite.update() abort "{{{
   call dein#begin(s:path2)
 

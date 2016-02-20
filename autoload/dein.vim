@@ -352,6 +352,9 @@ endfunction"}}}
 function! dein#update(...) abort "{{{
   call dein#install#_update(get(a:000, 0, []), 1)
 endfunction"}}}
+function! dein#reinstall(plugins) abort "{{{
+  call dein#install#_reinstall(a:plugins)
+endfunction"}}}
 function! dein#remote_plugins() abort "{{{
   if !has('nvim')
     return

@@ -44,6 +44,30 @@ function! dein#install#_update(plugins, bang) abort "{{{
   call s:merge_files(
         \ lazy_plugins, 'after/ftdetect')
 endfunction"}}}
+function! dein#install#_reinstall(plugins) abort "{{{
+  let plugins = map(dein#_convert2list(a:plugins), 'dein#get(v:val)')
+
+  for plugin in plugins
+    " Remove the plugin
+    if plugin.type ==# 'none'
+          \ || plugin.local
+          \ || (plugin.sourced &&
+          \     index(['dein', 'vimproc'], plugin.normalized_name) >= 0)
+      call dein#_error(
+            \ printf('|%s| Cannot reinstall the plugin!', plugin.name))
+      continue
+    endif
+
+    " Reinstall.
+    call s:print_message(printf('|%s| Reinstalling...', plugin.name))
+
+    if isdirectory(plugin.path)
+      call dein#install#_rm(plugin.path)
+    endif
+  endfor
+
+  call dein#install#_update(dein#_convert2list(a:plugins), 0)
+endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
@@ -307,7 +331,6 @@ function! s:check_output(context, process) abort "{{{
   let a:process.eof = 1
 endfunction"}}}
 
-
 function! s:iconv(expr, from, to) abort "{{{
   if a:from == '' || a:to == '' || a:from ==? a:to
     return a:expr
@@ -341,8 +364,9 @@ function! s:copy_files(plugins, directory) abort "{{{
   " Delete old files.
   call dein#install#_rm(runtimepath . '/' . a:directory)
 
-  for plugins in a:plugins
-    call dein#install#_cp(plugins.rtp . '/' . a:directory, runtimepath)
+  for src in filter(map(copy(a:plugins),
+        \ "v:val.rtp . '/' . a:directory"), 'isdirectory(v:val)')
+    call dein#install#_cp(src, runtimepath)
   endfor
 endfunction"}}}
 function! s:merge_files(plugins, directory) abort "{{{

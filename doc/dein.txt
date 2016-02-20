@@ -122,6 +122,10 @@ dein#update([{plugins}])			*dein#update()*
 		{plugins} is the plugins name list.
 		If you omit it, dein will update all plugins.
 
+dein#reinstall([{plugins}])			*dein#reinstall()*
+		Reinstall the plugins.
+		{plugins} is the plugins name list.
+
 						*dein#remote_plugins()*
 dein#remote_plugins()
 		Load not loaded neovim |:remote-plugin| and execute
