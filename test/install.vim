@@ -608,4 +608,13 @@ function! s:suite.cache() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
+function! s:suite.rm() abort "{{{
+  let temp = tempname()
+  call writefile([], temp)
+
+  call dein#install#_rm(temp)
+
+  call s:assert.equals(filereadable(temp), 0)
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:

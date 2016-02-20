@@ -109,6 +109,24 @@ function! dein#install#_helptags(plugins) abort "{{{
 
   return help_dirs
 endfunction"}}}
+function! dein#install#_rm(path) abort "{{{
+  if has('patch-7.4.1120')
+    call delete(a:path, 'rf')
+  else
+    let cmdline = '"' . a:path . '"'
+    if dein#_is_windows()
+      " Note: In rm command, must use "\" instead of "/".
+      let cmdline = substitute(cmdline, '/', '\\\\', 'g')
+    endif
+
+    " Use system instead of vimproc#system()
+    let rm_command = dein#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
+    let result = system(rm_command . ' ' . cmdline)
+    if v:shell_error
+      call dein#_error(result)
+    endif
+  endif
+endfunction"}}}
 
 function! s:install(bang, plugins) abort "{{{
   " Set context.
@@ -305,7 +323,7 @@ function! s:update_tags() abort "{{{
 endfunction"}}}
 function! s:copy_files(plugins, directory) abort "{{{
   " Delete old files.
-  call s:cleandir(a:directory)
+  call dein#install#_rm(dein#_get_runtime_path() . '/' . a:directory)
 
   let files = {}
   for plugins in a:plugins
@@ -326,7 +344,7 @@ function! s:copy_files(plugins, directory) abort "{{{
 endfunction"}}}
 function! s:merge_files(plugins, directory) abort "{{{
   " Delete old files.
-  call s:cleandir(a:directory)
+  call dein#install#_rm(dein#_get_runtime_path() . '/' . a:directory)
 
   let files = []
   for plugin in a:plugins
@@ -338,14 +356,6 @@ function! s:merge_files(plugins, directory) abort "{{{
   endfor
 
   call dein#_writefile(a:directory.'/'.a:directory . '.vim', files)
-endfunction"}}}
-function! s:cleandir(path) abort "{{{
-  let path = dein#_get_runtime_path() . '/' . a:path
-
-  for file in filter(split(globpath(path, '*', 1), '\n'),
-        \ '!isdirectory(v:val)')
-    call delete(file)
-  endfor
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{

@@ -74,6 +74,9 @@ function! dein#_uniq(list, ...) abort "{{{
   endwhile
   return a:0 ? map(list, 'v:val[0]') : list
 endfunction"}}}
+function! dein#_is_windows() abort "{{{
+  return s:is_windows
+endfunction"}}}
 
 " Global options definition." "{{{
 let g:dein#install_max_processes =
@@ -253,7 +256,7 @@ function! dein#tap(name) abort "{{{
 endfunction"}}}
 
 function! dein#save_cache() abort "{{{
-  if dein#_get_runtime_path() == '' || !exists('s:vimrcs')
+  if dein#_get_base_path() == '' || !exists('s:vimrcs')
     " Ignore
     return 1
   endif
@@ -335,7 +338,7 @@ function! dein#clear_cache() abort "{{{
   call delete(cache)
 endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
-  return dein#_get_runtime_path() . '/cache_' . v:progname
+  return dein#_get_base_path() . '/cache_' . v:progname
 endfunction"}}}
 let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
       \ . '/dein/parser.vim'
@@ -489,11 +492,11 @@ function! dein#_is_sudo() abort "{{{
       \ && $HOME ==# expand('~'.$SUDO_USER)
 endfunction"}}}
 function! dein#_writefile(path, list) abort "{{{
-  if dein#_is_sudo() || !filewritable(dein#_get_runtime_path())
+  if dein#_is_sudo() || !filewritable(dein#_get_base_path())
     return 1
   endif
 
-  let path = dein#_get_runtime_path() . '/' . a:path
+  let path = dein#_get_base_path() . '/' . a:path
   let dir = fnamemodify(path, ':h')
   if !isdirectory(dir)
     call mkdir(dir, 'p')
