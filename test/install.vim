@@ -636,7 +636,7 @@ function! s:suite.cp() abort "{{{
   call mkdir(temp)
   call writefile([], temp.'/foo')
 
-  call dein#install#_cp(temp, temp2)
+  call dein#install#_cp([temp], temp2)
 
   call s:assert.true(isdirectory(temp2))
   call s:assert.true(filereadable(temp2.'/foo'))

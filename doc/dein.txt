@@ -299,6 +299,9 @@ OPTIONS 					*dein-options*
 		automatically.
 		If you don't set it, dein will set it automatically when the
 		conditions are met.
+		Note: You should not specify the plugins which have not
+		"plugin/" directory as lazy load plugins.  It no means and
+		just increases the overhead.
 
 						*dein-options-on_i*
 		on_i		(Number)

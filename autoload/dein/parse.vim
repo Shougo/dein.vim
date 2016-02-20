@@ -125,6 +125,11 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ || !empty(plugin.on_path)   || !empty(plugin.on_source)
   endif
 
+  if !has_key(a:plugin, 'merged')
+    let plugin.merged = !plugin.lazy && !plugin.local
+          \ && stridx(plugin.rtp, dein#_get_base_path()) == 0
+  endif
+
   if empty(plugin.pre_cmd)
     let plugin.pre_cmd = [substitute(
           \ plugin.normalized_name, '[_-]', '', 'g')]

@@ -34,15 +34,7 @@ function! dein#install#_update(plugins, bang) abort "{{{
 
   call s:install(a:bang, plugins)
 
-  call dein#remote_plugins()
-
-  call dein#install#_helptags(plugins)
-
-  let lazy_plugins = filter(values(dein#get()), 'v:val.lazy')
-  call s:merge_files(
-        \ lazy_plugins, 'ftdetect')
-  call s:merge_files(
-        \ lazy_plugins, 'after/ftdetect')
+  call s:post_update_plugins(plugins)
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
   let plugins = map(dein#_convert2list(a:plugins), 'dein#get(v:val)')
@@ -151,8 +143,13 @@ function! dein#install#_rm(path) abort "{{{
     endif
   endif
 endfunction"}}}
-function! dein#install#_cp(src, dest) abort "{{{
-  let cmdline = printf(' "%s" "%s"', a:src, a:dest)
+function! dein#install#_cp(srcs, dest) abort "{{{
+  if empty(a:srcs)
+    return
+  endif
+
+  let cmdline = printf(' %s "%s"',
+        \ join(map(a:srcs, '''"''.v:val.''"''')), a:dest)
   if dein#_is_windows()
     " Note: In xcopy command, must use "\" instead of "/".
     let cmdline = substitute(cmdline, '/', '\\\\', 'g')
@@ -349,30 +346,38 @@ endfunction"}}}
 function! s:error(msg) abort "{{{
   call s:echo(a:msg, 'error')
 endfunction"}}}
-function! s:update_tags() abort "{{{
-  let plugins = [{ 'rtp' : dein#_get_runtime_path()}] + values(dein#get())
-  call s:copy_files(plugins, 'doc')
+function! s:post_update_plugins(plugins) abort "{{{
+  call dein#remote_plugins()
 
-  call dein#_writefile('tags_info',
-        \ sort(map(values(dein#get()), 'v:val.name')))
+  " Clear runtime path.
+  call dein#install#_rm(dein#_get_runtime_path())
+  call mkdir(dein#_get_runtime_path(), 'p')
+
+  let lazy_plugins = dein#_get_lazy_plugins()
+
+  call dein#install#_helptags(lazy_plugins)
+
+  call s:merge_files(
+        \ lazy_plugins, 'ftdetect')
+  call s:merge_files(
+        \ lazy_plugins, 'after/ftdetect')
+endfunction"}}}
+function! s:update_tags() abort "{{{
+  let plugins = [{ 'rtp' : dein#_get_runtime_path()}]
+        \ + dein#_get_lazy_plugins()
+  call s:copy_files(plugins, 'doc')
 
   silent execute 'helptags' fnameescape(dein#_get_tags_path())
 endfunction"}}}
-function! s:copy_files(plugins, directory) abort "{{{
+function! s:copy_files(plugins, glob) abort "{{{
   let runtimepath = dein#_get_runtime_path()
 
-  " Delete old files.
-  call dein#install#_rm(runtimepath . '/' . a:directory)
-
-  for src in filter(map(copy(a:plugins),
-        \ "v:val.rtp . '/' . a:directory"), 'isdirectory(v:val)')
-    call dein#install#_cp(src, runtimepath)
+  for srcs in map(map(copy(a:plugins),
+        \ "glob(v:val.rtp . '/' . a:glob)"), 'split(v:val, "\n")')
+    call dein#install#_cp(srcs, runtimepath)
   endfor
 endfunction"}}}
 function! s:merge_files(plugins, directory) abort "{{{
-  " Delete old files.
-  call dein#install#_rm(dein#_get_runtime_path() . '/' . a:directory)
-
   let files = []
   for plugin in a:plugins
     for file in filter(split(globpath(
