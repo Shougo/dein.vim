@@ -32,8 +32,6 @@ function! s:suite.install() abort "{{{
   call s:assert.true(isdirectory(plugin.rtp))
 
   call dein#end()
-
-  call s:assert.true(index(dein#_split_rtp(&runtimepath), plugin.rtp) >= 0)
 endfunction"}}}
 
 function! s:suite.reinstall() abort "{{{
@@ -65,8 +63,6 @@ function! s:suite.update() abort "{{{
   call s:assert.true(isdirectory(plugin.rtp))
 
   call dein#end()
-
-  call s:assert.true(index(dein#_split_rtp(&runtimepath), plugin.rtp) >= 0)
 endfunction"}}}
 
 function! s:suite.check_install() abort "{{{
@@ -117,10 +113,6 @@ function! s:suite.reload() abort "{{{
   call dein#end()
 
   let plugin = dein#get('neocomplete.vim')
-
-  call s:assert.equals(
-        \ len(filter(dein#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
 function! s:suite.if() abort "{{{
@@ -405,7 +397,7 @@ function! s:suite.depends() abort "{{{
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim',
         \ { 'depends': 'vimshell.vim' }), 0)
-  call s:assert.equals(dein#add('Shougo/vimshell.vim'), 0)
+  call s:assert.equals(dein#add('Shougo/vimshell.vim', {'merged': 0}), 0)
 
   call s:assert.equals(dein#install(), 0)
 
@@ -615,9 +607,6 @@ function! s:suite.cache() abort "{{{
 
   call s:assert.not_equals(dein#get('neocomplete.vim'), {})
   call s:assert.equals(plugin.sourced, 1)
-  call s:assert.equals(
-        \ len(filter(dein#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
 function! s:suite.rm() abort "{{{

@@ -357,6 +357,8 @@ function! s:post_update_plugins(plugins) abort "{{{
 
   call dein#install#_helptags(lazy_plugins)
 
+  call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '*')
+
   call s:merge_files(
         \ lazy_plugins, 'ftdetect')
   call s:merge_files(

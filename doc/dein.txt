@@ -287,6 +287,7 @@ OPTIONS 					*dein-options*
 		force			(Number)
 		If set to 1, dein will load plugin files in the plugin
 		repository forcedly.
+		Note:  It increases the loading overhead.
 
 						*dein-options-frozen*
 		frozen		(Number)

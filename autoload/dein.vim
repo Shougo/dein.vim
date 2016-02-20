@@ -181,27 +181,18 @@ function! dein#end() abort "{{{
         \ '!v:val.lazy && !v:val.sourced && isdirectory(v:val.rtp)')
     " Load dependencies
     for name in plugin.depends
-      if !has_key(g:dein#_plugins, name)
-        call dein#_error(printf('Plugin name "%s" is not found.', name))
+      if s:load_depend(name, rtps, index)
         return 1
       endif
-
-      let depend = g:dein#_plugins[name]
-      if depend.sourced
-        continue
-      endif
-
-      call insert(rtps, depend.rtp, index)
-      if isdirectory(depend.rtp.'/after')
-        call add(rtps, depend.rtp.'/after')
-      endif
-      let depend.sourced = 1
     endfor
 
-    call insert(rtps, plugin.rtp, index)
-    if isdirectory(plugin.rtp.'/after')
-      call add(rtps, plugin.rtp.'/after')
+    if !plugin.merged
+      call insert(rtps, plugin.rtp, index)
+      if isdirectory(plugin.rtp.'/after')
+        call add(rtps, plugin.rtp.'/after')
+      endif
     endif
+
     let plugin.sourced = 1
     call add(sourced, plugin)
   endfor
@@ -626,6 +617,32 @@ function! s:on_func(name) abort "{{{
   endif
 
   call dein#autoload#_on_func(a:name)
+endfunction"}}}
+
+function! s:load_depend(name, rtps, index) abort "{{{
+  if !has_key(g:dein#_plugins, a:name)
+    call dein#_error(printf('Plugin name "%s" is not found.', a:name))
+    return 1
+  endif
+
+  let depend = g:dein#_plugins[a:name]
+  if depend.sourced
+    return
+  endif
+
+  let depend.sourced = 1
+
+  " Load dependencies
+  for name in depend.depends
+    call s:load_depend(name, a:rtps, a:index)
+  endfor
+
+  if !depend.merged
+    call insert(a:rtps, depend.rtp, a:index)
+    if isdirectory(depend.rtp.'/after')
+      call add(a:rtps, depend.rtp.'/after')
+    endif
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker
