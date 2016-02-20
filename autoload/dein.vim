@@ -473,14 +473,13 @@ function! dein#_reset_ftplugin() abort "{{{
   execute 'doautocmd FileType' &filetype
 endfunction"}}}
 function! dein#_call_hook(hook_name, ...) abort "{{{
-  let plugins = dein#_tsort(filter(dein#_convert2list(
-        \ (empty(a:000) ? dein#get() : a:1)), "get(v:val, 'sourced', 0)"))
+  let prefix = '#User#dein#'.a:hook_name.'#'
+  let plugins = filter(dein#_convert2list(
+        \ (empty(a:000) ? dein#get() : a:1)),
+        \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
 
-  for plugin in plugins
-    let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
-    if exists('#User#' . autocmd)
-      execute 'doautocmd User' autocmd
-    endif
+  for plugin in dein#_tsort(plugins)
+    execute 'doautocmd User dein#' . a:hook_name . '#' . plugin.name
   endfor
 endfunction"}}}
 function! dein#_tsort(plugins) abort "{{{
