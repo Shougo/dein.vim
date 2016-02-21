@@ -564,6 +564,8 @@ function! s:suite.local_nongit() abort "{{{
 
   call s:assert.equals(dein#end(), 0)
 
+  call s:assert.equals(dein#get('plugin').type, 'none')
+
   call s:assert.equals(dein#update(), 0)
 endfunction"}}}
 

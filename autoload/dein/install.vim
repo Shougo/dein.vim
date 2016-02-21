@@ -231,6 +231,14 @@ function! s:sync(plugin, context) abort "{{{
           \   a:context.number, a:context.max_plugins)
   endif
 
+  if cmd == ''
+    " Skip
+    call s:print_message(
+          \ printf('(%'.len(max).'d/%d): |%s| %s',
+          \ num, max, a:plugin.name, message))
+    return
+  endif
+
   if cmd =~# '^E: '
     " Errored.
 
