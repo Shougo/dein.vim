@@ -91,8 +91,6 @@ function! s:suite.fetch() abort "{{{
   call s:assert.equals(plugin.rtp, '')
 
   call dein#end()
-
-  call s:assert.true(index(dein#_split_rtp(&runtimepath), plugin.rtp) < 0)
 endfunction"}}}
 
 function! s:suite.reload() abort "{{{
