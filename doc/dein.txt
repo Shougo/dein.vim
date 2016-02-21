@@ -189,6 +189,10 @@ dein#save_cache()
 dein#clear_cache()
 		Clear the cache file manually.
 
+dein#tap({plugin-name})				 *dein#tap()*
+		It returns non-zero if {plugin-name} is exists and not
+		disabled.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 
