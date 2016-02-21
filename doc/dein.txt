@@ -394,6 +394,31 @@ HOOKS 						*dein-hooks*
 		Note: In Vim initializing, calling the hooks are
 		delayed until |VimEnter|.
 
+		Example: >
+
+	if dein#tap('open-browser.vim')
+	  nmap gs <Plug>(open-browser-wwwsearch)
+	
+	  function! s:open_browser_on_source() abort
+	    nnoremap <Plug>(open-browser-wwwsearch)
+	          \ :<C-u>call <SID>www_search()<CR>
+	    function! s:www_search() abort
+	      let search_word = input('Please input search word: ')
+	      if search_word != ''
+	        execute 'OpenBrowserSearch' escape(search_word, '"')
+	      endif
+	    endfunction
+	  endfunction
+	  autocmd MyAutoCmd User dein#source#open-browser.vim
+	        \ call s:open_browser_on_source()
+	endif
+
+	if dein#tap('deoplete.nvim') && has('nvim')
+	  let g:deoplete#enable_at_startup = 1
+	  autocmd MyAutoCmd User dein#source#deoplete.nvim
+	        \ source ~/.vim/rc/plugins/deoplete.rc.vim
+	endif
+<
 ==============================================================================
 UNITE SOURCES					*dein-unite-sources*
 
