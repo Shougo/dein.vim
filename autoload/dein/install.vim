@@ -61,6 +61,35 @@ function! dein#install#_reinstall(plugins) abort "{{{
   call dein#install#_update(dein#_convert2list(a:plugins), 0)
 endfunction"}}}
 
+function! dein#install#_recache_runtimepath() abort "{{{
+  if dein#_is_sudo()
+    call s:error('"sudo vim" is detected. This feature is disabled.')
+    return
+  endif
+
+  " Clear runtime path.
+  call dein#install#_rm(dein#_get_runtime_path())
+  call mkdir(dein#_get_runtime_path(), 'p')
+
+  call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '*')
+
+  call s:helptags()
+
+  let lazy_plugins = dein#_get_lazy_plugins()
+
+  call s:merge_files(lazy_plugins, 'ftdetect')
+  call s:merge_files(lazy_plugins, 'after/ftdetect')
+
+  silent! runtime! ftdetect/**/*.vim
+  silent! runtime! after/ftdetect/**/*.vim
+  silent! runtime! plugin/**/*.vim
+  silent! runtime! after/plugin/**/*.vim
+
+  call dein#remote_plugins()
+
+  call dein#_call_hook('post_source')
+endfunction"}}}
+
 function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
@@ -99,31 +128,6 @@ function! dein#install#_system(command) abort "{{{
 endfunction"}}}
 function! dein#install#_get_last_status() abort "{{{
   return dein#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
-endfunction"}}}
-function! dein#install#_helptags(plugins) abort "{{{
-  if dein#_is_sudo()
-    call s:error('"sudo vim" is detected. This feature is disabled.')
-    return
-  endif
-
-  let help_dirs = filter(copy(a:plugins), 's:has_doc(v:val.rtp)')
-  if empty(help_dirs)
-    return
-  endif
-
-  try
-    call s:update_tags()
-    if !has('vim_starting')
-      call s:print_message('Helptags: done. '
-            \ .len(help_dirs).' plugins processed')
-    endif
-  catch
-    call s:error('Error generating helptags:')
-    call s:error(v:exception)
-    call s:error(v:throwpoint)
-  endtry
-
-  return help_dirs
 endfunction"}}}
 function! dein#install#_rm(path) abort "{{{
   if has('patch-7.4.1120')
@@ -354,35 +358,18 @@ endfunction"}}}
 function! s:error(msg) abort "{{{
   call s:echo(a:msg, 'error')
 endfunction"}}}
-function! dein#install#_recache_runtimepath() abort "{{{
-  " Clear runtime path.
-  call dein#install#_rm(dein#_get_runtime_path())
-  call mkdir(dein#_get_runtime_path(), 'p')
+function! s:helptags() abort "{{{
+  try
+    let plugins = dein#_get_lazy_plugins()
+    call s:copy_files(plugins, 'doc')
 
-  let lazy_plugins = dein#_get_lazy_plugins()
-
-  call dein#install#_helptags(lazy_plugins)
-
-  call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '*')
-
-  call s:merge_files(lazy_plugins, 'ftdetect')
-  call s:merge_files(lazy_plugins, 'after/ftdetect')
-
-  silent! runtime! ftdetect/**/*.vim
-  silent! runtime! after/ftdetect/**/*.vim
-  silent! runtime! plugin/**/*.vim
-  silent! runtime! after/plugin/**/*.vim
-
-  call dein#remote_plugins()
-
-  call dein#_call_hook('post_source')
-endfunction"}}}
-function! s:update_tags() abort "{{{
-  let plugins = [{ 'rtp' : dein#_get_runtime_path()}]
-        \ + dein#_get_lazy_plugins()
-  call s:copy_files(plugins, 'doc')
-
-  silent execute 'helptags' fnameescape(dein#_get_tags_path())
+    silent execute 'helptags' fnameescape(dein#_get_runtime_path())
+    silent execute 'helptags' fnameescape(dein#_get_tags_path())
+  catch
+    call s:error('Error generating helptags:')
+    call s:error(v:exception)
+    call s:error(v:throwpoint)
+  endtry
 endfunction"}}}
 function! s:copy_files(plugins, glob) abort "{{{
   let runtimepath = dein#_get_runtime_path()
@@ -402,7 +389,8 @@ function! s:merge_files(plugins, directory) abort "{{{
     endfor
   endfor
 
-  call dein#_writefile(a:directory.'/'.a:directory . '.vim', files)
+  call dein#_writefile(printf('.dein/%s/%s.vim',
+        \ a:directory, a:directory), files)
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{
@@ -449,17 +437,6 @@ function! s:echo_mode(m, mode) abort "{{{
       echo m
     endif
   endfor
-endfunction"}}}
-
-function! s:has_doc(path) abort "{{{
-  return a:path != '' &&
-        \ isdirectory(a:path.'/doc')
-        \   && (!filereadable(a:path.'/doc/tags')
-        \       || filewritable(a:path.'/doc/tags'))
-        \   && (!filereadable(a:path.'/doc/tags-??')
-        \       || filewritable(a:path.'/doc/tags-??'))
-        \   && (glob(a:path.'/doc/*.txt') != ''
-        \       || glob(a:path.'/doc/*.??x') != '')
 endfunction"}}}
 
 " vim: foldmethod=marker
