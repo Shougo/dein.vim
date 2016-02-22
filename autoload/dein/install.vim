@@ -365,12 +365,17 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '*')
 
-  call s:merge_files(
-        \ lazy_plugins, 'ftdetect')
-  call s:merge_files(
-        \ lazy_plugins, 'after/ftdetect')
+  call s:merge_files(lazy_plugins, 'ftdetect')
+  call s:merge_files(lazy_plugins, 'after/ftdetect')
+
+  silent! runtime! ftdetect/**/*.vim
+  silent! runtime! after/ftdetect/**/*.vim
+  silent! runtime! plugin/**/*.vim
+  silent! runtime! after/plugin/**/*.vim
 
   call dein#remote_plugins()
+
+  call dein#_call_hook('post_source')
 endfunction"}}}
 function! s:update_tags() abort "{{{
   let plugins = [{ 'rtp' : dein#_get_runtime_path()}]
