@@ -31,7 +31,7 @@ function! dein#autoload#_source(plugins) abort "{{{
   endif
 
   for plugin in filter(copy(a:plugins),
-        \ '!empty(v:val) && !v:val.sourced && isdirectory(v:val.rtp)')
+        \ "!empty(v:val) && !v:val.sourced && v:val.rtp != ''")
     if s:source_plugin(rtps, index, plugin)
       return 1
     endif

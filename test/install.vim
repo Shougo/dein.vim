@@ -91,6 +91,8 @@ function! s:suite.fetch() abort "{{{
   call s:assert.equals(plugin.rtp, '')
 
   call dein#end()
+
+  call s:assert.equals(plugin.sourced, 0)
 endfunction"}}}
 
 function! s:suite.reload() abort "{{{

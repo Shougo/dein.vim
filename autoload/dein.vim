@@ -178,7 +178,7 @@ function! dein#end() abort "{{{
 
   let sourced = []
   for plugin in filter(values(g:dein#_plugins),
-        \ '!v:val.lazy && !v:val.sourced')
+        \ "!v:val.lazy && !v:val.sourced && v:val.rtp != ''")
     " Load dependencies
     if !empty(plugin.depends)
       if s:load_depends(plugin, rtps, index)
