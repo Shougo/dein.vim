@@ -360,10 +360,8 @@ function! s:error(msg) abort "{{{
 endfunction"}}}
 function! s:helptags() abort "{{{
   try
-    let plugins = dein#_get_lazy_plugins()
-    call s:copy_files(plugins, 'doc')
+    call s:copy_files(values(dein#get()), 'doc')
 
-    silent execute 'helptags' fnameescape(dein#_get_runtime_path())
     silent execute 'helptags' fnameescape(dein#_get_tags_path())
   catch
     call s:error('Error generating helptags:')
