@@ -35,7 +35,15 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
   " Set context.
   let context = s:init_context(plugins, a:bang, a:async)
 
-  call s:install_blocking(context)
+  if a:async
+    let s:async_context = context
+    call s:install_async(context)
+    augroup dein-install
+      autocmd CursorHold * call s:install_async(s:async_context)
+    augroup END
+  else
+    call s:install_blocking(context)
+  endif
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
   let plugins = map(dein#_convert2list(a:plugins), 'dein#get(v:val)')
@@ -112,6 +120,29 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
 
   return [cmd, message]
 endfunction"}}}
+function! s:get_updated_message(plugins) abort "{{{
+  let msg = ''
+
+  if !empty(a:plugins)
+    let msg .= "\nUpdated plugins:\n".
+        \ join(map(copy(a:plugins), "'  ' .  v:val.name"), "\n")
+  endif
+
+  return msg
+endfunction"}}}
+function! s:get_errored_message(plugins) abort "{{{
+  if empty(a:plugins)
+    return ''
+  endif
+
+  let msg = "\nError installing plugins:\n".join(
+        \ map(copy(a:plugins), "'  ' . v:val.name"), "\n")
+  let msg .= "\n"
+  let msg .= "Please read the error message log with the :message command.\n"
+
+  return msg
+endfunction"}}}
+
 
 " Helper functions
 function! dein#install#_cd(path) abort "{{{
@@ -182,17 +213,34 @@ function! s:install_blocking(context) abort "{{{
 
   call dein#install#_recache_runtimepath()
 
-  return [a:context.synced_plugins, a:context.errored_plugins]
+  call s:print_message(
+        \ s:get_updated_message(a:context.synced_plugins))
+
+  call s:print_message(
+        \ s:get_errored_message(a:context.errored_plugins))
+
+  return len(a:context.errored_plugins)
 endfunction"}}}
 function! s:install_async(context) abort "{{{
   call s:check_loop(a:context)
 
-  if empty(context.processes)
-        \ && context.number == context.max_plugins
+  if empty(a:context.processes)
+        \ && a:context.number == a:context.max_plugins
     call dein#install#_recache_runtimepath()
+
+    " Disable installation handler
+    augroup dein-install
+      autocmd!
+    augroup END
   endif
 
-  return [context.synced_plugins, context.errored_plugins]
+  call s:print_message(
+        \ s:get_updated_message(a:context.synced_plugins))
+
+  call s:print_message(
+        \ s:get_errored_message(a:context.errored_plugins))
+
+  return len(a:context.errored_plugins)
 endfunction"}}}
 function! s:check_loop(context) abort "{{{
   let laststatus = &g:laststatus
@@ -265,6 +313,8 @@ function! s:job_handler(job_id, data, event) abort "{{{
   endif
 
   let candidates += map(lines, "iconv(v:val, 'char', &encoding)")
+
+  call s:install_async(s:async_context)
 endfunction"}}}
 
 
@@ -354,7 +404,7 @@ endfunction"}}}
 function! s:check_output(context, process) abort "{{{
   if has('nvim') && a:context.async && has_key(a:process, 'proc')
     let is_timeout = (localtime() - a:process.start_time)
-          \             >= a:process.bundle.install_process_timeout
+          \             >= a:process.plugin.timeout
 
     if !has_key(s:job_info, a:process.proc)
       return
@@ -447,7 +497,9 @@ function! s:iconv(expr, from, to) abort "{{{
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
   if !has('vim_starting')
-    let &l:statusline = a:msg
+    let &l:statusline =
+          \ (type(a:msg) == type('')) ?
+          \ a:msg : join(a:msg, "\n")
     redrawstatus
   else
     call s:echo(a:msg, 'echo')
@@ -558,8 +610,7 @@ function! s:build(plugin) abort "{{{
     endif
   catch
     " Build error from vimproc.
-    let message = (v:exception !~# '^Vim:')?
-          \ v:exception : v:exception . ' ' . v:throwpoint
+    let message = v:exception . ' ' . v:throwpoint
     call s:error(message)
 
     return 1
