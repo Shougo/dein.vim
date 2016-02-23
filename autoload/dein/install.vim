@@ -157,12 +157,14 @@ function! dein#install#_copy_directory(src, dest) abort "{{{
   endif
 
   " Use system instead of vimproc#system()
-  let cp_command = dein#_is_windows() ? 'xcopy /E /H /I /R /Y' : 'cp -R'
-  let result = system(cp_command . cmdline)
+  let cmdline = dein#_is_windows() ?
+        \ printf('xcopy %s /E /H /I /R /Y', cmdline) :
+        \ 'cp -R ' . cmdline
+  let result = system(cmdline)
   if v:shell_error
     call dein#_error('copy command failed.')
     call dein#_error(result)
-    call dein#_error('cmdline: ' . cp_command . cmdline)
+    call dein#_error('cmdline: ' . cmdline)
     return 1
   endif
 endfunction"}}}
