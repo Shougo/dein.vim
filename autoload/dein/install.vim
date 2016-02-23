@@ -23,6 +23,7 @@
 " }}}
 "=============================================================================
 
+let s:async_context = {}
 function! dein#install#_update(plugins, bang, async) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
@@ -36,11 +37,16 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
   let context = s:init_context(plugins, a:bang, a:async)
 
   if a:async
-    let s:async_context = context
-    call s:install_async(context)
-    augroup dein-install
-      autocmd CursorHold * call s:install_async(s:async_context)
-    augroup END
+    if empty(s:async_context) ||
+          \ confirm('The installation has not finished. Cancel now?',
+          \         "yes\nNo", 2) == 1
+      let s:async_context = context
+      call s:install_async(context)
+      augroup dein-install
+        autocmd!
+        autocmd CursorHold * call s:install_async(s:async_context)
+      augroup END
+    endif
   else
     call s:install_blocking(context)
   endif
@@ -229,6 +235,7 @@ function! s:install_async(context) abort "{{{
     call dein#install#_recache_runtimepath()
 
     " Disable installation handler
+    let s:async_context = {}
     augroup dein-install
       autocmd!
     augroup END
@@ -314,7 +321,9 @@ function! s:job_handler(job_id, data, event) abort "{{{
 
   let candidates += map(lines, "iconv(v:val, 'char', &encoding)")
 
-  call s:install_async(s:async_context)
+  if !empty(s:async_context)
+    call s:install_async(s:async_context)
+  endif
 endfunction"}}}
 
 
