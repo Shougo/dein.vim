@@ -153,8 +153,7 @@ function! dein#install#_copy_directory(src, dest) abort "{{{
   let cmdline = printf(' "%s/"* "%s"', a:src, a:dest)
   if dein#_is_windows()
     " Note: In xcopy command, must use "\" instead of "/".
-    let cmdline = substitute(cmdline, '/\ze[^"]', '\\\\', 'g')
-    let cmdline = substitute(cmdline, '/\ze"', '\\', 'g')
+    let cmdline = substitute(cmdline, '/', '\\', 'g')
   endif
 
   " Use system instead of vimproc#system()
