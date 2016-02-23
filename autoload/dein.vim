@@ -347,10 +347,10 @@ function! s:get_cache_version() abort "{{{
 endfunction "}}}
 
 function! dein#install(...) abort "{{{
-  call dein#install#_update(get(a:000, 0, []), 0)
+  call dein#install#_update(get(a:000, 0, []), 0, 1)
 endfunction"}}}
 function! dein#update(...) abort "{{{
-  call dein#install#_update(get(a:000, 0, []), 1)
+  call dein#install#_update(get(a:000, 0, []), 1, 1)
 endfunction"}}}
 function! dein#reinstall(plugins) abort "{{{
   call dein#install#_reinstall(a:plugins)

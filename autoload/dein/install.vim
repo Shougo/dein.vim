@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! dein#install#_update(plugins, bang) abort "{{{
+function! dein#install#_update(plugins, bang, block) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
         \ map(copy(a:plugins), 'dein#get(v:val)')
@@ -32,9 +32,7 @@ function! dein#install#_update(plugins, bang) abort "{{{
     let plugins = filter(plugins, '!isdirectory(v:val.path)')
   endif
 
-  call s:install(a:bang, plugins)
-
-  call dein#install#_recache_runtimepath()
+  call s:install_block(a:bang, plugins)
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
   let plugins = map(dein#_convert2list(a:plugins), 'dein#get(v:val)')
@@ -58,7 +56,7 @@ function! dein#install#_reinstall(plugins) abort "{{{
     endif
   endfor
 
-  call dein#install#_update(dein#_convert2list(a:plugins), 0)
+  call dein#install#_update(dein#_convert2list(a:plugins), 0, 1)
 endfunction"}}}
 
 function! dein#install#_recache_runtimepath() abort "{{{
@@ -169,17 +167,9 @@ function! dein#install#_copy_directory(src, dest) abort "{{{
   endif
 endfunction"}}}
 
-function! s:install(bang, plugins) abort "{{{
+function! s:install_block(bang, plugins) abort "{{{
   " Set context.
-  let context = {}
-  let context.bang = a:bang
-  let context.synced_plugins = []
-  let context.errored_plugins = []
-  let context.processes = []
-  let context.number = 0
-  let context.plugins = a:plugins
-  let context.max_plugins =
-        \ len(context.plugins)
+  let context = s:init_context(a:plugins, a:bang)
 
   let laststatus = &g:laststatus
   let statusline = &l:statusline
@@ -216,8 +206,21 @@ function! s:install(bang, plugins) abort "{{{
     let &g:laststatus = laststatus
   endtry
 
-  return [context.synced_plugins,
-        \ context.errored_plugins]
+  call dein#install#_recache_runtimepath()
+
+  return [context.synced_plugins, context.errored_plugins]
+endfunction"}}}
+function! s:init_context(plugins, bang) abort "{{{
+  let context = {}
+  let context.bang = a:bang
+  let context.synced_plugins = []
+  let context.errored_plugins = []
+  let context.processes = []
+  let context.number = 0
+  let context.plugins = a:plugins
+  let context.max_plugins =
+        \ len(context.plugins)
+  return context
 endfunction"}}}
 function! s:sync(plugin, context) abort "{{{
   let a:context.number += 1
