@@ -50,6 +50,7 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'timeout': g:dein#install_process_timeout,
         \ 'dummy_commands': [],
         \ 'dummy_mappings': [],
+        \ 'build': {},
         \ 'on_i': 0,
         \ 'on_ft': [],
         \ 'on_cmd': [],

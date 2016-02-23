@@ -634,4 +634,25 @@ function! s:suite.copy_directory() abort "{{{
   call s:assert.true(filereadable(temp2.'/foo'))
 endfunction"}}}
 
+function! s:suite.build() abort "{{{
+  call dein#begin(s:path)
+
+  call dein#add('Shougo/vimproc.vim', {
+        \ 'build': {
+        \     'windows': 'tools\\update-dll-mingw',
+        \     'cygwin': 'make -f make_cygwin.mak',
+        \     'mac': 'make -f make_mac.mak',
+        \     'linux': 'make',
+        \     'unix': 'gmake',
+        \    },
+        \ })
+
+  call s:assert.equals(dein#update(), 0)
+
+  call dein#end()
+
+  call vimproc#version()
+  call s:assert.true(filereadable(g:vimproc#dll_path))
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:

@@ -336,6 +336,14 @@ function! s:check_output(context, process) abort "{{{
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Updated'))
 
+    if s:build(plugin)
+          \ && confirm('Build failed. Uninstall "'
+          \   .plugin.name.'" now?', "yes\nNo", 2) == 1
+      " Remove.
+      call dein#install#_rm(plugin.path)
+    else
+      call add(a:context.synced_plugins, plugin)
+    endif
     call add(a:context.synced_plugins, plugin)
   endif
 
@@ -398,6 +406,80 @@ function! s:merge_files(plugins, directory) abort "{{{
 endfunction"}}}
 function! s:list_directory(directory) abort "{{{
   return split(glob(a:directory, '/*'), "\n")
+endfunction"}}}
+function! s:vimproc_system(cmd) abort "{{{
+  let proc = vimproc#pgroup_open(a:cmd)
+
+  " Close handles.
+  call proc.stdin.close()
+
+  while !proc.stdout.eof
+    if !proc.stderr.eof
+      " Print error.
+      call s:error(proc.stderr.read_lines(-1, 100))
+    endif
+
+    call s:print_message(proc.stdout.read_lines(-1, 100))
+  endwhile
+
+  if !proc.stderr.eof
+    " Print error.
+    call s:error(proc.stderr.read_lines(-1, 100))
+  endif
+
+  call proc.waitpid()
+endfunction"}}}
+function! s:build(plugin) abort "{{{
+  " Environment check.
+  let build = a:plugin.build
+  if type(build) == type('')
+    let cmd = build
+  elseif dein#_is_windows() && has_key(build, 'windows')
+    let cmd = build.windows
+  elseif dein#_is_mac() && has_key(build, 'mac')
+    let cmd = build.mac
+  elseif dein#_is_cygwin() && has_key(build, 'cygwin')
+    let cmd = build.cygwin
+  elseif !dein#_is_windows() && has_key(build, 'linux')
+        \ && !executable('gmake')
+    let cmd = build.linux
+  elseif !dein#_is_windows() && has_key(build, 'unix')
+    let cmd = build.unix
+  elseif has_key(build, 'others')
+    let cmd = build.others
+  else
+    return 0
+  endif
+
+  call s:print_message('Building...')
+
+  let cwd = getcwd()
+  try
+    call dein#install#_cd(a:plugin.path)
+
+    if !dein#_has_vimproc()
+      let result = system(cmd)
+
+      if dein#install#_get_last_status()
+        call s:error(result)
+      else
+        call s:print_message(result)
+      endif
+    else
+      call s:vimproc_system(cmd)
+    endif
+  catch
+    " Build error from vimproc.
+    let message = (v:exception !~# '^Vim:')?
+          \ v:exception : v:exception . ' ' . v:throwpoint
+    call s:error(message)
+
+    return 1
+  finally
+    call dein#install#_cd(cwd)
+  endtry
+
+  return dein#install#_get_last_status()
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{

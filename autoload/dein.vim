@@ -77,6 +77,14 @@ endfunction"}}}
 function! dein#_is_windows() abort "{{{
   return s:is_windows
 endfunction"}}}
+function! dein#_is_mac() abort "{{{
+  return !s:is_windows && !has('win32unix')
+      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
+      \   (!isdirectory('/proc') && executable('sw_vers')))
+endfunction"}}}
+function! dein#_is_cygwin() abort "{{{
+  return has('win32unix')
+endfunction"}}}
 
 " Global options definition." "{{{
 let g:dein#install_max_processes =

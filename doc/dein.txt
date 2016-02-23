@@ -324,7 +324,7 @@ OPTIONS 					*dein-options*
 		Example:
 >
 		call dein#add('https://github.com/Shougo/unite.vim.git',
-		   \ {'directory' : 'unite'})
+		   \ {'directory': 'unite'})
 <
 						*dein-options-depends*
 		depends		(List or String)
@@ -355,6 +355,56 @@ OPTIONS 					*dein-options*
 		If set to 1, dein doesn't update it automatically. It is
 		useful for outdated plugins that can no longer be updated.
 
+						*dein-options-build*
+		build			(Dictionary or String)
+		Specify the build script.
+		This command is executed by |system()| or |vimproc#system()|
+		in the plugin runtimepath.
+		Note: Type String is the syntax sugar for the Dictionary of
+		{"others": "cmd"}.
+
+		This dictionary accepts the following keys:
+
+			windows		(String)
+			Specify Windows environment build script.
+
+			mac		(String)
+			Specify Mac OS X environment build script.
+
+			cygwin		(String)
+			Specify Cygwin environment build script.
+
+			linux		(String)
+			Specify Linux environment build script.
+			Note: It is detected if "gmake" command is not
+			executable.
+
+			unix		(String)
+			Specify Unix environment build script.
+
+			others		(String)
+			Specify others environment build script.
+			If you don't specify other keys, it means "all".
+
+		Example:
+>
+		call dein#add('Shougo/vimproc.vim', {
+		\ 'build': {
+		\     'windows': 'tools\\update-dll-mingw',
+		\     'cygwin': 'make -f make_cygwin.mak',
+		\     'mac': 'make -f make_mac.mak',
+		\     'linux': 'make',
+		\     'unix': 'gmake',
+		\    },
+		\ })
+<
+		Note: The command is executed in plugin top directory.
+		If you need cd command, you must use "sh -c". >
+		call dein#add('wincent/command-t', {
+		\ 'build':
+		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
+		\ })
+<
 						*dein-options-lazy*
 		lazy		(Number)
 		If set to non-zero, dein doesn't add the path to 'runtimepath'
@@ -411,7 +461,7 @@ OPTIONS 					*dein-options*
 		{mapping} is "<Plug>", "<Plug>(normalized_name" is
 		used.
 		For example: >
-		" It is same as "'mappings' : '<Plug>(anzu'
+		" It is same as "'mappings': '<Plug>(anzu'
 		call dein#add('osyo-manga/vim-anzu', {'on_map': '<Plug>'})
 <
 		Note: You cannot use lazy <Plug> mappings twice.
