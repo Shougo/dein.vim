@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! dein#install#_update(plugins, bang, block) abort "{{{
+function! dein#install#_update(plugins, bang, async) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
         \ map(copy(a:plugins), 'dein#get(v:val)')
@@ -32,7 +32,10 @@ function! dein#install#_update(plugins, bang, block) abort "{{{
     let plugins = filter(plugins, '!isdirectory(v:val.path)')
   endif
 
-  call s:install_block(a:bang, plugins)
+  " Set context.
+  let context = s:init_context(plugins, a:bang, a:async)
+
+  call s:install_blocking(context)
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
   let plugins = map(dein#_convert2list(a:plugins), 'dein#get(v:val)')
@@ -167,52 +170,63 @@ function! dein#install#_copy_directory(src, dest) abort "{{{
   endif
 endfunction"}}}
 
-function! s:install_block(bang, plugins) abort "{{{
-  " Set context.
-  let context = s:init_context(a:plugins, a:bang)
+function! s:install_blocking(context) abort "{{{
+  while 1
+    call s:check_loop(a:context)
 
+    if empty(a:context.processes)
+          \ && a:context.number == a:context.max_plugins
+      break
+    endif
+  endwhile
+
+  call dein#install#_recache_runtimepath()
+
+  return [a:context.synced_plugins, a:context.errored_plugins]
+endfunction"}}}
+function! s:install_async(context) abort "{{{
+  call s:check_loop(a:context)
+
+  if empty(context.processes)
+        \ && context.number == context.max_plugins
+    call dein#install#_recache_runtimepath()
+  endif
+
+  return [context.synced_plugins, context.errored_plugins]
+endfunction"}}}
+function! s:check_loop(context) abort "{{{
   let laststatus = &g:laststatus
   let statusline = &l:statusline
   let cwd = getcwd()
   try
     set laststatus=2
 
-    while 1
-      while context.number < context.max_plugins
-            \ && len(context.processes) < g:dein#install_max_processes
+    while a:context.number < a:context.max_plugins
+          \ && len(a:context.processes) < g:dein#install_max_processes
 
-        let plugin = context.plugins[context.number]
-        call s:sync(context.plugins[context.number], context)
-        call s:print_message(
-              \ s:get_progress_message(plugin,
-              \   context.number, context.max_plugins))
-      endwhile
-
-      for process in context.processes
-        call s:check_output(context, process)
-      endfor
-
-      " Filter eof processes.
-      call filter(context.processes, '!v:val.eof')
-
-      if empty(context.processes)
-            \ && context.number == context.max_plugins
-        break
-      endif
+      let plugin = a:context.plugins[a:context.number]
+      call s:sync(a:context.plugins[a:context.number], a:context)
+      call s:print_message(
+            \ s:get_progress_message(plugin,
+            \   a:context.number, a:context.max_plugins))
     endwhile
+
+    for process in a:context.processes
+      call s:check_output(a:context, process)
+    endfor
+
+    " Filter eof processes.
+    call filter(a:context.processes, '!v:val.eof')
   finally
     call dein#install#_cd(cwd)
     let &l:statusline = statusline
     let &g:laststatus = laststatus
   endtry
-
-  call dein#install#_recache_runtimepath()
-
-  return [context.synced_plugins, context.errored_plugins]
 endfunction"}}}
-function! s:init_context(plugins, bang) abort "{{{
+function! s:init_context(plugins, bang, async) abort "{{{
   let context = {}
   let context.bang = a:bang
+  let context.async = a:async
   let context.synced_plugins = []
   let context.errored_plugins = []
   let context.processes = []
@@ -222,6 +236,38 @@ function! s:init_context(plugins, bang) abort "{{{
         \ len(context.plugins)
   return context
 endfunction"}}}
+
+let s:job_info = {}
+function! s:job_handler(job_id, data, event) abort "{{{
+  if !has_key(s:job_info, a:job_id)
+    let s:job_info[a:job_id] = {
+          \ 'candidates' : [],
+          \ 'eof' : 0,
+          \ 'status' : -1,
+          \ }
+  endif
+
+  let job = s:job_info[a:job_id]
+
+  if a:event ==# 'exit'
+    let job.eof = 1
+    let job.status = a:data
+    return
+  endif
+
+  let lines = a:data
+
+  let candidates = job.candidates
+  if !empty(lines) && lines[0] != "\n" && !empty(job.candidates)
+    " Join to the previous line
+    let candidates[-1] .= lines[0]
+    call remove(lines, 0)
+  endif
+
+  let candidates += map(lines, "iconv(v:val, 'char', &encoding)")
+endfunction"}}}
+
+
 function! s:sync(plugin, context) abort "{{{
   let a:context.number += 1
 
@@ -279,7 +325,15 @@ function! s:sync(plugin, context) abort "{{{
           \ 'start_time' : localtime(),
           \ }
 
-    if dein#_has_vimproc()
+    if has('nvim') && a:context.async
+      " Use neovim async jobs
+      let process.proc = jobstart(
+            \          iconv(cmd, &encoding, 'char'), {
+            \ 'on_stdout' : function('s:job_handler'),
+            \ 'on_stderr' : function('s:job_handler'),
+            \ 'on_exit' : function('s:job_handler'),
+            \ })
+    elseif dein#_has_vimproc()
       let process.proc = vimproc#pgroup_open(vimproc#util#iconv(
             \            cmd, &encoding, 'char'), 0, 2)
 
@@ -298,7 +352,38 @@ function! s:sync(plugin, context) abort "{{{
   call add(a:context.processes, process)
 endfunction"}}}
 function! s:check_output(context, process) abort "{{{
-  if dein#_has_vimproc() && has_key(a:process, 'proc')
+  if has('nvim') && a:context.async && has_key(a:process, 'proc')
+    let is_timeout = (localtime() - a:process.start_time)
+          \             >= a:process.bundle.install_process_timeout
+
+    if !has_key(s:job_info, a:process.proc)
+      return
+    endif
+
+    let job = s:job_info[a:process.proc]
+
+    if !job.eof && !is_timeout
+      let output = join(job.candidates[: -2], "\n")
+      if output != ''
+        let a:process.output .= output
+        call s:print_message(output)
+      endif
+      let job.candidates = job.candidates[-1:]
+      return
+    else
+      if is_timeout
+        call jobstop(a:process.proc)
+      endif
+      let output = join(job.candidates, "\n")
+      if output != ''
+        let a:process.output .= output
+        call s:print_message(output)
+      endif
+      let job.candidates = []
+    endif
+
+    let status = job.status
+  elseif dein#_has_vimproc() && has_key(a:process, 'proc')
     let is_timeout = (localtime() - a:process.start_time)
           \             >= a:process.plugin.timeout
     let output = vimproc#util#iconv(
