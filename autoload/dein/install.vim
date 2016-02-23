@@ -362,6 +362,10 @@ function! s:error(msg) abort "{{{
   call s:echo(a:msg, 'error')
 endfunction"}}}
 function! s:helptags() abort "{{{
+  if empty(s:list_directory(dein#_get_tags_path()))
+    return
+  endif
+
   try
     call s:copy_files(values(dein#get()), 'doc')
 
@@ -392,6 +396,9 @@ function! s:merge_files(plugins, directory) abort "{{{
 
   call dein#_writefile(printf('.dein/%s/%s.vim',
         \ a:directory, a:directory), files)
+endfunction"}}}
+function! s:list_directory(directory) abort "{{{
+  return split(glob(a:directory, '/*'), "\n")
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{
