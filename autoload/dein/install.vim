@@ -71,7 +71,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call dein#install#_rm(dein#_get_runtime_path())
   call mkdir(dein#_get_runtime_path(), 'p')
 
-  call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '*')
+  call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '')
 
   call s:helptags()
 
@@ -88,6 +88,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call dein#remote_plugins()
 
   call dein#_call_hook('post_source')
+
+  echomsg 'Update done: ' . strftime('(%Y/%m/%d %H:%M:%S)')
 endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
@@ -147,13 +149,8 @@ function! dein#install#_rm(path) abort "{{{
     endif
   endif
 endfunction"}}}
-function! dein#install#_cp(srcs, dest) abort "{{{
-  if empty(a:srcs)
-    return
-  endif
-
-  let cmdline = printf(' %s "%s"',
-        \ join(map(a:srcs, '''"''.v:val.''"''')), a:dest)
+function! dein#install#_copy_directory(src, dest) abort "{{{
+  let cmdline = printf(' "%s/"* "%s"', a:src, a:dest)
   if dein#_is_windows()
     " Note: In xcopy command, must use "\" instead of "/".
     let cmdline = substitute(cmdline, '/', '\\\\', 'g')
@@ -163,7 +160,10 @@ function! dein#install#_cp(srcs, dest) abort "{{{
   let cp_command = dein#_is_windows() ? 'xcopy /E /H /I /R /Y' : 'cp -R'
   let result = system(cp_command . cmdline)
   if v:shell_error
+    call dein#_error('copy command failed.')
     call dein#_error(result)
+    call dein#_error('cmdline: ' . cp_command . cmdline)
+    return 1
   endif
 endfunction"}}}
 
@@ -369,12 +369,12 @@ function! s:helptags() abort "{{{
     call s:error(v:throwpoint)
   endtry
 endfunction"}}}
-function! s:copy_files(plugins, glob) abort "{{{
-  let runtimepath = dein#_get_runtime_path()
-
-  for srcs in map(map(copy(a:plugins),
-        \ "glob(v:val.rtp . '/' . a:glob)"), 'split(v:val, "\n")')
-    call dein#install#_cp(srcs, runtimepath)
+function! s:copy_files(plugins, directory) abort "{{{
+  let directory = (a:directory == '' ? '' : '/' . a:directory)
+  for src in filter(map(copy(a:plugins), "v:val.rtp . directory"),
+        \ 'isdirectory(v:val)')
+    call dein#install#_copy_directory(src,
+          \ dein#_get_runtime_path() . directory)
   endfor
 endfunction"}}}
 function! s:merge_files(plugins, directory) abort "{{{
