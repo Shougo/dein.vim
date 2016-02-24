@@ -360,6 +360,10 @@ function! s:job_handler(job_id, data, event) abort "{{{
   endif
 
   let candidates += map(lines, "iconv(v:val, 'char', &encoding)")
+
+  if empty(s:async_context)
+    call s:install_async(s:async_context)
+  endif
 endfunction"}}}
 
 
