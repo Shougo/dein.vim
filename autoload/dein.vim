@@ -404,10 +404,10 @@ function! dein#load_toml(filename, ...) abort "{{{
 endfunction"}}}
 
 function! dein#get_log() abort "{{{
-  return dein#install#_get_log()
+  return join(dein#install#_get_log(), "\n")
 endfunction"}}}
 function! dein#get_updates_log() abort "{{{
-  return dein#install#_get_updates_log()
+  return join(dein#install#_get_updates_log(), "\n")
 endfunction"}}}
 
 " Helper functions
