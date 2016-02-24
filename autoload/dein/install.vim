@@ -83,8 +83,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
   endif
 
   " Clear runtime path.
-  call dein#install#_rm(dein#_get_runtime_path())
-  call mkdir(dein#_get_runtime_path(), 'p')
+  call s:clear_runtimepath()
 
   call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '')
 
@@ -105,6 +104,28 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call dein#_call_hook('post_source')
 
   echomsg 'Update done: ' . strftime('(%Y/%m/%d %H:%M:%S)')
+endfunction"}}}
+function! s:clear_runtimepath() abort "{{{
+  let dest = printf('%s/temp/%d/%s', dein#_get_base_path(), getpid(),
+        \ strftime('%Y%m%d%H%M%S'))
+  if !isdirectory(dest)
+    call mkdir(dest, 'p')
+  endif
+  if rename(dein#_get_runtime_path(), dest)
+    call dein#_error('Rename failed.')
+    call dein#_error('src=' . dein#_get_runtime_path())
+    call dein#_error('dest=' . dest)
+    return
+  endif
+
+  " Dummy call to create runtime path
+  call dein#_get_runtime_path()
+
+  " Remove previous runtime path
+  for path in filter(split(glob(dein#_get_base_path().'/temp/*'), "\n"),
+        \ "fnamemodify(v:val, ':t') !=# getpid()")
+    call dein#install#_rm(path)
+  endfor
 endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{

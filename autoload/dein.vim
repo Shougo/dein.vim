@@ -124,6 +124,10 @@ function! dein#_get_base_path() abort "{{{
   return s:base_path
 endfunction"}}}
 function! dein#_get_runtime_path() abort "{{{
+  if !isdirectory(s:runtime_path)
+    call mkdir(s:runtime_path, 'p')
+  endif
+
   return s:runtime_path
 endfunction"}}}
 function! dein#_get_tags_path() abort "{{{
@@ -149,10 +153,6 @@ function! dein#begin(path) abort "{{{
   let s:block_level += 1
   let s:base_path = dein#_chomp(dein#_expand(a:path))
   let s:runtime_path = s:base_path . '/.dein'
-
-  if !isdirectory(s:runtime_path)
-    call mkdir(s:runtime_path, 'p')
-  endif
 
   call dein#_filetype_off()
 
