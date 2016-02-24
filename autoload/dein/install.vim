@@ -85,14 +85,18 @@ function! dein#install#_recache_runtimepath() abort "{{{
   " Clear runtime path.
   call s:clear_runtimepath()
 
-  call s:copy_files(filter(values(dein#get()), 'v:val.merged'), '')
+  let plugins = values(dein#get())
+
+  call s:copy_files(filter(copy(plugins), 'v:val.merged'), '')
 
   call s:helptags()
 
-  let lazy_plugins = dein#_get_lazy_plugins()
+  " Clear ftdetect and after/ftdetect directories.
+  call dein#install#_rm(dein#_get_runtime_path().'/ftdetect')
+  call dein#install#_rm(dein#_get_runtime_path().'/after/ftdetect')
 
-  call s:merge_files(lazy_plugins, 'ftdetect')
-  call s:merge_files(lazy_plugins, 'after/ftdetect')
+  call s:merge_files(plugins, 'ftdetect')
+  call s:merge_files(plugins, 'after/ftdetect')
 
   silent! runtime! ftdetect/**/*.vim
   silent! runtime! after/ftdetect/**/*.vim
@@ -191,6 +195,10 @@ function! dein#install#_get_last_status() abort "{{{
   return dein#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction"}}}
 function! dein#install#_rm(path) abort "{{{
+  if !isdirectory(a:path) && !filereadable(a:path)
+    return
+  endif
+
   if has('patch-7.4.1120')
     call delete(a:path, 'rf')
   else
