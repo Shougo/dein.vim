@@ -403,6 +403,13 @@ function! dein#load_toml(filename, ...) abort "{{{
   return dein#parse#_load_toml(a:filename, get(a:000, 0, {}))
 endfunction"}}}
 
+function! dein#get_log() abort "{{{
+  return dein#install#_get_log()
+endfunction"}}}
+function! dein#get_updates_log() abort "{{{
+  return dein#install#_get_updates_log()
+endfunction"}}}
+
 " Helper functions
 function! dein#_has_vimproc() abort "{{{
   if !exists('*vimproc#version')

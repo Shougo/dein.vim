@@ -23,7 +23,12 @@
 " }}}
 "=============================================================================
 
+" Variables
 let s:async_context = {}
+let s:log = []
+let s:updates_log = []
+let s:job_info = {}
+
 function! dein#install#_update(plugins, bang, async) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
@@ -130,6 +135,13 @@ function! s:clear_runtimepath() abort "{{{
         \ "fnamemodify(v:val, ':t') !=# getpid()")
     call dein#install#_rm(path)
   endfor
+endfunction"}}}
+
+function! dein#install#_get_log() abort "{{{
+  return s:log
+endfunction"}}}
+function! dein#install#_get_updates_log() abort "{{{
+  return s:log
 endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
@@ -321,7 +333,6 @@ function! s:init_context(plugins, bang, async) abort "{{{
   return context
 endfunction"}}}
 
-let s:job_info = {}
 function! s:job_handler(job_id, data, event) abort "{{{
   if !has_key(s:job_info, a:job_id)
     let s:job_info[a:job_id] = {
@@ -516,7 +527,6 @@ function! s:check_output(context, process) abort "{{{
     else
       call add(a:context.synced_plugins, plugin)
     endif
-    call add(a:context.synced_plugins, plugin)
   endif
 
   let a:process.eof = 1
@@ -530,20 +540,41 @@ function! s:iconv(expr, from, to) abort "{{{
   return result != '' ? result : a:expr
 endfunction"}}}
 function! s:print_progress_message(msg) abort "{{{
+  let msg = dein#_convert2list(a:msg)
+  if empty(msg)
+    return
+  endif
+
   if !has('vim_starting')
-    let &l:statusline =
-          \ (type(a:msg) == type('')) ?
-          \ a:msg : join(a:msg, "\n")
+    let &l:statusline = join(msg, "\n")
     redrawstatus
   else
-    call s:echo(a:msg, 'echo')
+    call s:echo(msg, 'echo')
   endif
+
+  let s:log += msg
+  let s:updates_log += msg
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
-  call s:echo(a:msg, 'echo')
+  let msg = dein#_convert2list(a:msg)
+  if empty(msg)
+    return
+  endif
+
+  call s:echo(msg, 'echo')
+
+  let s:log += msg
 endfunction"}}}
 function! s:error(msg) abort "{{{
-  call s:echo(a:msg, 'error')
+  let msg = dein#_convert2list(a:msg)
+  if empty(msg)
+    return
+  endif
+
+  call s:echo(msg, 'error')
+
+  let s:log += msg
+  let s:updates_log += msg
 endfunction"}}}
 function! s:helptags() abort "{{{
   if empty(s:list_directory(dein#_get_tags_path()))

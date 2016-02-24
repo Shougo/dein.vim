@@ -242,6 +242,12 @@ dein#tap({plugin-name})				 *dein#tap()*
 		It returns non-zero if {plugin-name} is exists and not
 		disabled.
 
+dein#get_log() 					*dein#get_log()*
+		Prints all previous install logs.
+
+dein#get_updates_log() 				*dein#get_updates_log()*
+		Prints previous update logs.
+
 
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
