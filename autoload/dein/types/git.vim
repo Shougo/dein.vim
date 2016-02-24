@@ -69,9 +69,17 @@ function! s:type.init(repo, option) abort "{{{
     return {}
   endif
 
-  let uri = (protocol ==# 'ssh') ?
-        \ 'git@github.com:' . name :
-        \ protocol . '://github.com/' . name
+  if a:repo !~ '/'
+    " www.vim.org Vim scripts.
+    let uri  = (protocol ==# 'ssh') ?
+          \ 'git@github.com:vim-scripts/' :
+          \ protocol . '://github.com/vim-scripts/'
+    let uri .= name
+  else
+    let uri = (protocol ==# 'ssh') ?
+          \ 'git@github.com:' . name :
+          \ protocol . '://github.com/' . name
+  endif
 
   if uri !~ '\.git\s*$'
     " Add .git suffix.

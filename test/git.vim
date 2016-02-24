@@ -27,6 +27,11 @@ function! s:suite.init() abort "{{{
         \ 'https://github.com:80/Shougo/dein.vim', {}),
         \ { 'uri': 'https://github.com/Shougo/dein.vim.git',
         \   'type': 'git', 'directory': 'github.com/Shougo/dein.vim' })
+
+  call s:assert.equals(s:git.init(
+        \ 'L9', {}),
+        \ { 'uri': 'https://github.com/vim-scripts/L9.git',
+        \   'type': 'git', 'directory': 'github.com/vim-scripts/L9' })
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:
