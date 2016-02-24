@@ -44,7 +44,7 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
       call s:install_async(context)
       augroup dein-install
         autocmd!
-        autocmd CursorHold * call s:install_async(s:async_context)
+        autocmd CursorHold * call s:on_hold()
       augroup END
     endif
   else
@@ -66,7 +66,7 @@ function! dein#install#_reinstall(plugins) abort "{{{
     endif
 
     " Reinstall.
-    call s:print_message(printf('|%s| Reinstalling...', plugin.name))
+    call s:print_progress_message(printf('|%s| Reinstalling...', plugin.name))
 
     if isdirectory(plugin.path)
       call dein#install#_rm(plugin.path)
@@ -268,13 +268,13 @@ function! s:install_async(context) abort "{{{
     augroup dein-install
       autocmd!
     augroup END
+
+    call s:print_message(
+          \ s:get_updated_message(a:context.synced_plugins))
+
+    call s:print_message(
+          \ s:get_errored_message(a:context.errored_plugins))
   endif
-
-  call s:print_message(
-        \ s:get_updated_message(a:context.synced_plugins))
-
-  call s:print_message(
-        \ s:get_errored_message(a:context.errored_plugins))
 
   return len(a:context.errored_plugins)
 endfunction"}}}
@@ -290,7 +290,7 @@ function! s:check_loop(context) abort "{{{
 
       let plugin = a:context.plugins[a:context.number]
       call s:sync(a:context.plugins[a:context.number], a:context)
-      call s:print_message(
+      call s:print_progress_message(
             \ s:get_progress_message(plugin,
             \   a:context.number, a:context.max_plugins))
     endwhile
@@ -360,7 +360,7 @@ function! s:sync(plugin, context) abort "{{{
 
   if isdirectory(a:plugin.path) && a:plugin.frozen
     " Skip frozen plugin
-    call s:print_message(
+    call s:print_progress_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, a:plugin.name, 'is frozen.'))
     return
@@ -372,7 +372,7 @@ function! s:sync(plugin, context) abort "{{{
 
   if cmd == ''
     " Skip
-    call s:print_message(
+    call s:print_progress_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, a:plugin.name, message))
     return
@@ -381,7 +381,7 @@ function! s:sync(plugin, context) abort "{{{
   if cmd =~# '^E: '
     " Errored.
 
-    call s:print_message(
+    call s:print_progress_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, a:plugin.name, 'Error'))
     call s:error(cmd[3:])
@@ -390,7 +390,7 @@ function! s:sync(plugin, context) abort "{{{
     return
   endif
 
-  call s:print_message(message)
+  call s:print_progress_message(message)
 
   let cwd = getcwd()
   try
@@ -456,7 +456,7 @@ function! s:check_output(context, process) abort "{{{
       return
     else
       if is_timeout
-        call jobstop(a:process.proc)
+        silent! call jobstop(a:process.proc)
       endif
       let output = join(job.candidates, "\n")
       if output != ''
@@ -494,7 +494,7 @@ function! s:check_output(context, process) abort "{{{
   if is_timeout || status
     let message = printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Error')
-    call s:print_message(message)
+    call s:print_progress_message(message)
     call s:error(plugin.path)
 
     call s:error(
@@ -504,7 +504,7 @@ function! s:check_output(context, process) abort "{{{
     call add(a:context.errored_plugins,
           \ plugin)
   else
-    call s:print_message(
+    call s:print_progress_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Updated'))
 
@@ -529,7 +529,7 @@ function! s:iconv(expr, from, to) abort "{{{
   let result = iconv(a:expr, a:from, a:to)
   return result != '' ? result : a:expr
 endfunction"}}}
-function! s:print_message(msg) abort "{{{
+function! s:print_progress_message(msg) abort "{{{
   if !has('vim_starting')
     let &l:statusline =
           \ (type(a:msg) == type('')) ?
@@ -538,6 +538,9 @@ function! s:print_message(msg) abort "{{{
   else
     call s:echo(a:msg, 'echo')
   endif
+endfunction"}}}
+function! s:print_message(msg) abort "{{{
+  call s:echo(a:msg, 'echo')
 endfunction"}}}
 function! s:error(msg) abort "{{{
   call s:echo(a:msg, 'error')
@@ -625,7 +628,7 @@ function! s:build(plugin) abort "{{{
     return 0
   endif
 
-  call s:print_message('Building...')
+  call s:print_progress_message('Building...')
 
   let cwd = getcwd()
   try
@@ -656,7 +659,8 @@ function! s:build(plugin) abort "{{{
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{
-  let msg = map(dein#_convert2list(a:expr), "'[dein] ' .  v:val")
+  let msg = map(filter(dein#_convert2list(a:expr), "v:val != ''"),
+        \ "'[dein] ' .  v:val")
   if empty(msg)
     return
   endif
@@ -699,6 +703,11 @@ function! s:echo_mode(m, mode) abort "{{{
       echo m
     endif
   endfor
+endfunction"}}}
+
+function! s:on_hold() abort "{{{
+  call s:install_async(s:async_context)
+  call feedkeys("g\<ESC>", 'n')
 endfunction"}}}
 
 " vim: foldmethod=marker
