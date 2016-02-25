@@ -29,6 +29,7 @@ function! dein#parse#_init(repo, options) abort "{{{
   let plugin = s:git.init(a:repo, a:options)
   if empty(plugin)
     let plugin.type = 'none'
+    let plugin.local = 1
   endif
   let plugin.repo = a:repo
   let plugin.orig_opts = deepcopy(a:options)
