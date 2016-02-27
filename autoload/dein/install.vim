@@ -248,14 +248,18 @@ function! dein#install#_copy_directory(src, dest) abort "{{{
 endfunction"}}}
 
 function! s:install_blocking(context) abort "{{{
-  while 1
-    call s:check_loop(a:context)
+  try
+    while 1
+      call s:check_loop(a:context)
 
-    if empty(a:context.processes)
-          \ && a:context.number == a:context.max_plugins
-      break
-    endif
-  endwhile
+      if empty(a:context.processes)
+            \ && a:context.number == a:context.max_plugins
+        break
+      endif
+    endwhile
+  finally
+    call s:restore_view(a:context)
+  endtry
 
   call dein#install#_recache_runtimepath()
 
@@ -272,6 +276,8 @@ function! s:install_async(context) abort "{{{
 
   if empty(a:context.processes)
         \ && a:context.number == a:context.max_plugins
+    call s:restore_view(a:context)
+
     call dein#install#_recache_runtimepath()
 
     " Disable installation handler
@@ -290,31 +296,26 @@ function! s:install_async(context) abort "{{{
   return len(a:context.errored_plugins)
 endfunction"}}}
 function! s:check_loop(context) abort "{{{
-  let laststatus = &g:laststatus
-  let statusline = &l:statusline
-  try
-    set laststatus=2
+  while a:context.number < a:context.max_plugins
+        \ && len(a:context.processes) < g:dein#install_max_processes
 
-    while a:context.number < a:context.max_plugins
-          \ && len(a:context.processes) < g:dein#install_max_processes
+    let plugin = a:context.plugins[a:context.number]
+    call s:sync(a:context.plugins[a:context.number], a:context)
+    call s:print_progress_message(
+          \ s:get_progress_message(plugin,
+          \   a:context.number, a:context.max_plugins))
+  endwhile
 
-      let plugin = a:context.plugins[a:context.number]
-      call s:sync(a:context.plugins[a:context.number], a:context)
-      call s:print_progress_message(
-            \ s:get_progress_message(plugin,
-            \   a:context.number, a:context.max_plugins))
-    endwhile
+  for process in a:context.processes
+    call s:check_output(a:context, process)
+  endfor
 
-    for process in a:context.processes
-      call s:check_output(a:context, process)
-    endfor
-
-    " Filter eof processes.
-    call filter(a:context.processes, '!v:val.eof')
-  finally
-    let &l:statusline = statusline
-    let &g:laststatus = laststatus
-  endtry
+  " Filter eof processes.
+  call filter(a:context.processes, '!v:val.eof')
+endfunction"}}}
+function! s:restore_view(context) abort "{{{
+  let &l:statusline = a:context.statusline
+  let &g:laststatus = a:context.laststatus
 endfunction"}}}
 function! s:init_context(plugins, bang, async) abort "{{{
   let context = {}
@@ -329,6 +330,13 @@ function! s:init_context(plugins, bang, async) abort "{{{
         \ len(context.plugins)
   let context.updates_log = []
   let context.log = []
+  let context.progress_type = g:dein#install_progress_type
+  if (context.progress_type ==# 'statusline' && a:async)
+        \ || has('vim_starting')
+    let context.progress_type = 'echo'
+  endif
+  let context.laststatus = &g:laststatus
+  let context.statusline = &l:statusline
   return context
 endfunction"}}}
 
@@ -548,7 +556,8 @@ function! s:print_progress_message(msg) abort "{{{
     return
   endif
 
-  if !has('vim_starting')
+  if s:async_context.progress_type ==# 'statusline'
+    set laststatus=2
     let &l:statusline = join(msg, "\n")
     redrawstatus
   else
