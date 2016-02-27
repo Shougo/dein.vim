@@ -75,6 +75,11 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ '\c^n\?vim[_-]\|[_-]n\?vim$', '', 'g')
   endif
 
+  if !has_key(a:plugin, 'name') && g:dein#enable_name_conversion
+    " Use normalized name.
+    let plugin.name = plugin.normalized_name
+  endif
+
   if !has_key(plugin, 'directory')
     let plugin.directory = plugin.name
   endif

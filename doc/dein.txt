@@ -266,6 +266,12 @@ VARIABLES 					*dein-variables*
 g:dein#name
 		Current plugin name set by |dein#tap()|.
 
+	 					*g:dein#enable_name_conversion*
+g:dein#enable_name_conversion
+		If you set it to 1 and omit plugin name,
+		|plugin-options-normalized_name| is used as plugin name.
+		It is useful for absorbing difference of repository name.
+
 						*g:dein#install_max_processes*
 g:dein#install_max_processes
 		The max number of processes used for dein/install source
@@ -363,6 +369,17 @@ OPTIONS 					*dein-options*
 >
 		call dein#add('https://github.com/Shougo/unite.vim.git',
 		   \ {'directory': 'unite'})
+<
+						*dein-options-normalized_name*
+		normalized_name			(String)
+		Specify the normalized name of the plugin.  If omitted, dein
+		will normalize the tail of the repository name.
+		Note: Must be unique across all plugins.
+		Normalized name example:
+		name            : normalized name
+>
+		unite.vim         unite
+		vim-quickrun      quickrun
 <
 						*dein-options-rev*
 		rev			(String)

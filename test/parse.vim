@@ -37,4 +37,27 @@ function! s:suite.parse_dict() abort "{{{
   call dein#end()
 endfunction"}}}
 
+function! s:suite.name_conversion() abort "{{{
+  let g:dein#enable_name_conversion = 1
+
+  let plugin = dein#parse#_dict({'repo':
+        \ 'https://github.com/Shougo/dein.vim.git'})
+  call s:assert.equals(plugin.name, 'dein')
+
+  let plugin = dein#parse#_dict({'repo':
+        \ 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git'})
+  call s:assert.equals(plugin.name, 'qt-syntax')
+
+  let plugin = dein#parse#_dict({'repo':
+        \ 'https://bitbucket.org/kh3phr3n/qt-syntax-vim.git'})
+  call s:assert.equals(plugin.name, 'qt-syntax')
+
+  let plugin = dein#parse#_dict({'repo':
+        \ 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git',
+        \ 'name': 'vim-qt-syntax'})
+  call s:assert.equals(plugin.name, 'vim-qt-syntax')
+
+  let g:dein#enable_name_conversion = 0
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:
