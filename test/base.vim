@@ -1,5 +1,7 @@
 let s:suite = themis#suite('base')
 let s:assert = themis#helper('assert')
+let s:is_windows = has('win16') || has('win32') || has('win64')
+let s:path_separator = s:is_windows ? '\' : '/'
 
 let s:path = tempname()
 
@@ -64,6 +66,15 @@ function! s:suite.get() abort "{{{
   call s:assert.equals(dein#get('bar').name, 'bar')
   call s:assert.equals(dein#add('foo'), 0)
   call s:assert.equals(dein#get('foo').name, 'foo')
+  call dein#end()
+endfunction"}}}
+
+function! s:suite.tap() abort "{{{
+  call dein#begin(s:path)
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call s:assert.equals(dein#tap('neocomplete.vim'), 0)
+  call s:assert.equals(dein#install(), 0)
+  call s:assert.equals(dein#tap('neocomplete.vim'), 1)
   call dein#end()
 endfunction"}}}
 
