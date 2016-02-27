@@ -405,7 +405,7 @@ function! s:check_loop(context) abort "{{{
         \ && len(a:context.processes) < g:dein#install_max_processes
 
     let plugin = a:context.plugins[a:context.number]
-    call s:sync(a:context.plugins[a:context.number], a:context)
+    call s:sync(plugin, a:context)
     call s:print_progress_message(
           \ s:get_progress_message(plugin,
           \   a:context.number, a:context.max_plugins))
@@ -484,10 +484,6 @@ function! s:job_handler(job_id, data, event) abort "{{{
   endif
 
   let candidates += map(lines, "iconv(v:val, 'char', &encoding)")
-
-  if empty(s:async_context)
-    call s:install_async(s:async_context)
-  endif
 endfunction"}}}
 
 
