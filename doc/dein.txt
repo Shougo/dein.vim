@@ -272,6 +272,8 @@ g:dein#enable_name_conversion
 		|plugin-options-normalized_name| is used as plugin name.
 		It is useful for absorbing difference of repository name.
 
+		Defaults: "0".
+
 						*g:dein#install_max_processes*
 g:dein#install_max_processes
 		The max number of processes used for dein/install source

@@ -87,6 +87,8 @@ function! dein#_is_cygwin() abort "{{{
 endfunction"}}}
 
 " Global options definition." "{{{
+let g:dein#enable_name_conversion =
+      \ get(g:, 'dein#enable_name_conversion', 0)
 let g:dein#install_max_processes =
       \ get(g:, 'dein#install_max_processes', 8)
 let g:dein#install_process_timeout =
