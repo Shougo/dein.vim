@@ -135,6 +135,51 @@ function! s:type.get_revision_pretty_command(plugin) abort "{{{
   return g:dein#types#git#command_path .
         \ ' log -1 --pretty=format:"%h [%cr] %s"'
 endfunction"}}}
+function! s:type.get_commit_date_command(plugin) abort "{{{
+  if !executable(g:dein#types#git#command_path)
+    return ''
+  endif
+
+  return g:dein#types#git#command_path .
+        \ ' log -1 --pretty=format:"%ct"'
+endfunction"}}}
+function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
+  if !executable(g:dein#types#git#command_path)
+        \ || a:new_rev == '' || a:old_rev == ''
+    return ''
+  endif
+
+  " Note: If the a:old_rev is not the ancestor of two branchs. Then do not use
+  " %s^.  use %s^ will show one commit message which already shown last time.
+  let is_not_ancestor = dein#util#system(
+        \ g:dein#types#git#command_path . ' merge-base '
+        \ . a:old_rev . ' ' . a:new_rev) ==# a:old_rev
+  return printf(g:dein#types#git#command_path .
+        \ ' log %s%s..%s --graph --pretty=format:"%%h [%%cr] %%s"',
+        \ a:old_rev, (is_not_ancestor ? '' : '^'), a:new_rev)
+
+  " Test.
+  " return g:dein#types#git#command_path .
+  "      \ ' log HEAD^^^^..HEAD --graph --pretty=format:"%h [%cr] %s"'
+endfunction"}}}
+function! s:type.get_revision_lock_command(plugin) abort "{{{
+  if !executable(g:dein#types#git#command_path)
+    return ''
+  endif
+
+  let rev = a:plugin.rev
+  if rev ==# 'release'
+    " Use latest released tag
+    let rev = get(split(dein#util#system(g:dein#types#git#command_path
+          \ . ' tag --list --sort -version:refname'), "\n"), 0, '')
+  endif
+  if rev == ''
+    " Fix detach HEAD.
+    let rev = 'master'
+  endif
+
+  return g:dein#types#git#command_path . ' checkout ' . rev
+endfunction"}}}
 
 function! s:is_git_dir(path) abort "{{{
   if isdirectory(a:path)
@@ -153,7 +198,7 @@ function! s:is_git_dir(path) abort "{{{
       " if there's no tail, the path probably ends in a directory separator
       let path = fnamemodify(path, ':h')
     endif
-    let git_dir = neobundle#util#join_paths(path, matches[1])
+    let git_dir = dein#util#join_paths(path, matches[1])
     if !isdirectory(git_dir)
       return 0
     endif
@@ -192,7 +237,7 @@ function! s:is_git_dir(path) abort "{{{
   return 1
 endfunction "}}}
 
-let s:is_windows = has('win32')
+let s:is_windows = dein#_is_windows()
 
 function! s:join_paths(path1, path2) abort "{{{
   " Joins two paths together, handling the case where the second path
