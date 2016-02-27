@@ -25,8 +25,6 @@
 
 " Variables
 let s:async_context = {}
-let s:log = []
-let s:updates_log = []
 let s:job_info = {}
 
 function! dein#install#_update(plugins, bang, async) abort "{{{
@@ -40,6 +38,7 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
 
   " Set context.
   let context = s:init_context(plugins, a:bang, a:async)
+  let s:async_context = context
 
   if a:async
     if empty(s:async_context) ||
@@ -138,10 +137,10 @@ function! s:clear_runtimepath() abort "{{{
 endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
-  return s:log
+  return get(s:async_context, 'log', [])
 endfunction"}}}
 function! dein#install#_get_updates_log() abort "{{{
-  return s:log
+  return get(s:async_context, 'updates_log', [])
 endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
@@ -328,6 +327,8 @@ function! s:init_context(plugins, bang, async) abort "{{{
   let context.plugins = a:plugins
   let context.max_plugins =
         \ len(context.plugins)
+  let context.updates_log = []
+  let context.log = []
   return context
 endfunction"}}}
 
@@ -554,8 +555,8 @@ function! s:print_progress_message(msg) abort "{{{
     call s:echo(msg, 'echo')
   endif
 
-  let s:log += msg
-  let s:updates_log += msg
+  let s:async_context.updates_log += msg
+  let s:async_context.log += msg
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
@@ -565,7 +566,7 @@ function! s:print_message(msg) abort "{{{
 
   call s:echo(msg, 'echo')
 
-  let s:log += msg
+  let s:async_context.log += msg
 endfunction"}}}
 function! s:error(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
@@ -575,8 +576,8 @@ function! s:error(msg) abort "{{{
 
   call s:echo(msg, 'error')
 
-  let s:log += msg
-  let s:updates_log += msg
+  let s:async_context.updates_log += msg
+  let s:async_context.log += msg
 endfunction"}}}
 function! s:helptags() abort "{{{
   if empty(s:list_directory(dein#_get_tags_path()))
