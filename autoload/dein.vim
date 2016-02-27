@@ -255,6 +255,10 @@ function! dein#tap(name) abort "{{{
         \ && isdirectory(g:dein#_plugins[a:name].path)
 endfunction"}}}
 
+function! dein#is_sourced(name) abort "{{{
+  return dein#tap(a:name) && dein#get(a:name).sourced
+endfunction"}}}
+
 function! dein#save_cache() abort "{{{
   if dein#_get_base_path() == '' || !exists('s:vimrcs')
     " Ignore
