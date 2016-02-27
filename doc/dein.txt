@@ -243,9 +243,13 @@ dein#save_cache()
 dein#clear_cache()
 		Clear the cache file manually.
 
-dein#tap({plugin-name})				 *dein#tap()*
+dein#tap({plugin-name})				*dein#tap()*
 		It returns non-zero if {plugin-name} is exists and not
 		disabled.
+
+dein#is_sourced({plugin-name})			*dein#is_sourced()*
+		It returns non-zero if {plugin-name} is exists and sourced.
+		See |dein#source()| and |dein#tap()| as well.
 
 dein#get_log() 					*dein#get_log()*
 		Prints all previous install logs.
