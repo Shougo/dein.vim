@@ -1,7 +1,5 @@
 let s:suite = themis#suite('base')
 let s:assert = themis#helper('assert')
-let s:is_windows = has('win16') || has('win32') || has('win64')
-let s:path_separator = s:is_windows ? '\' : '/'
 
 let s:path = tempname()
 
