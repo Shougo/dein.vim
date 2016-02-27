@@ -23,21 +23,16 @@ function! s:suite.install() abort "{{{
 
   call dein#begin(s:path)
 
-  let rev = '583f3ecdb8f0868dd3a320ac3d534c367fc75e74'
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ {'rev': rev}), 0)
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
 
   call s:assert.equals(dein#install(), 0)
 
   let plugin = dein#get('neocomplete.vim')
 
   call s:assert.equals(plugin.rtp,
-        \ s:path.'repos/github.com/Shougo/neocomplete.vim_'.rev)
+        \ s:path.'repos/github.com/Shougo/neocomplete.vim')
 
   call s:assert.true(isdirectory(plugin.rtp))
-
-  call s:assert.equals(
-        \ s:get_revision(plugin), rev)
 
   call dein#end()
 endfunction"}}}
@@ -73,6 +68,9 @@ function! s:suite.update() abort "{{{
 
   call s:assert.equals(plugin.rtp,
         \ s:path2.'repos/github.com/Shougo/neopairs.vim')
+
+  call s:assert.equals(plugin2.rtp,
+        \ s:path2.'repos/github.com/Shougo/neobundle.vim_release')
 
   call s:assert.true(isdirectory(plugin.rtp))
 
@@ -556,10 +554,9 @@ function! s:suite.local() abort "{{{
   call s:assert.equals(dein#add('Shougo/neocomplete.vim', {'frozen': 1}), 0)
   call s:assert.equals(dein#get('neocomplete.vim').orig_opts, {'frozen': 1})
 
-  call dein#local(s:path2.'repos/github.com/Shougo/', {'foo': 1 })
+  call dein#local(s:path2.'repos/github.com/Shougo/', {'frozen': 0 })
 
   call s:assert.equals(dein#get('neocomplete.vim').sourced, 0)
-  call s:assert.equals(dein#get('neocomplete.vim').foo, 1)
 
   call s:assert.equals(dein#end(), 0)
 
@@ -571,7 +568,7 @@ function! s:suite.local() abort "{{{
   call s:assert.equals(plugin2.rtp,
         \ s:path2.'repos/github.com/Shougo/neopairs.vim')
 
-  call s:assert.equals(plugin.frozen, 1)
+  call s:assert.equals(plugin.frozen, 0)
 endfunction"}}}
 
 function! s:suite.local_nongit() abort "{{{
