@@ -15,9 +15,12 @@ function! s:suite.before_each() abort "{{{
   let &runtimepath = s:runtimepath_save
   let &l:filetype = s:filetype_save
   let g:temp = tempname()
+  let g:dein#install_progress_type = 'echo'
 endfunction"}}}
 
 function! s:suite.install() abort "{{{
+  let g:dein#install_progress_type = 'title'
+
   call dein#begin(s:path)
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
@@ -35,6 +38,8 @@ function! s:suite.install() abort "{{{
 endfunction"}}}
 
 function! s:suite.reinstall() abort "{{{
+  let g:dein#install_progress_type = 'statusline'
+
   call dein#begin(s:path)
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
@@ -47,6 +52,8 @@ function! s:suite.reinstall() abort "{{{
 endfunction"}}}
 
 function! s:suite.update() abort "{{{
+  let g:dein#install_progress_type = 'echo'
+
   call dein#begin(s:path2)
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
@@ -66,6 +73,8 @@ function! s:suite.update() abort "{{{
 endfunction"}}}
 
 function! s:suite.check_install() abort "{{{
+  let g:dein#install_progress_type = 'tabline'
+
   call dein#begin(s:path)
 
   call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)

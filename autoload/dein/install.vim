@@ -314,8 +314,16 @@ function! s:check_loop(context) abort "{{{
   call filter(a:context.processes, '!v:val.eof')
 endfunction"}}}
 function! s:restore_view(context) abort "{{{
-  let &l:statusline = a:context.statusline
-  let &g:laststatus = a:context.laststatus
+  if a:context.progress_type ==# 'statusline'
+    let &l:statusline = a:context.statusline
+    let &g:laststatus = a:context.laststatus
+  elseif a:context.progress_type ==# 'tabline'
+    let &g:showtabline = a:context.showtabline
+    let &g:tabline = a:context.tabline
+  elseif a:context.progress_type ==# 'title'
+    let &g:title = a:context.title
+    let &g:titlestring = a:context.titlestring
+  endif
 endfunction"}}}
 function! s:init_context(plugins, bang, async) abort "{{{
   let context = {}
@@ -337,6 +345,10 @@ function! s:init_context(plugins, bang, async) abort "{{{
   endif
   let context.laststatus = &g:laststatus
   let context.statusline = &l:statusline
+  let context.showtabline = &g:showtabline
+  let context.tabline = &g:tabline
+  let context.title = &g:title
+  let context.titlestring = &g:titlestring
   return context
 endfunction"}}}
 
@@ -560,6 +572,12 @@ function! s:print_progress_message(msg) abort "{{{
     set laststatus=2
     let &l:statusline = join(msg, "\n")
     redrawstatus
+  elseif s:async_context.progress_type ==# 'tabline'
+    set showtabline=2
+    let &g:tabline = join(msg, "\n")
+  elseif s:async_context.progress_type ==# 'title'
+    set title
+    let &g:titlestring = join(msg, "\n")
   else
     call s:echo(msg, 'echo')
   endif

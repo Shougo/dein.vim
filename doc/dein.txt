@@ -274,6 +274,22 @@ g:dein#install_process_timeout
 
 		Defaults: "120".
 
+						*g:dein#install_progress_type*
+g:dein#install_progress_type
+		The output type of the progress bar in the installer.
+
+		"echo":
+			Displayed in the echo area.
+		"statusline":
+			Displayed in the |statusline|.  It is disabled in the
+			asynchronous installer.
+		"tabline":
+			Displayed in the |tabline|.
+		"title":
+			Displayed in the |titlestring|.
+
+		Defaults: "statusline".
+
 					*g:dein#types#git#command_path*
 g:dein#types#git#command_path
 		The "git" command path used for git type.
