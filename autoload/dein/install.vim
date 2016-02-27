@@ -460,9 +460,9 @@ endfunction"}}}
 function! s:job_handler(job_id, data, event) abort "{{{
   if !has_key(s:job_info, a:job_id)
     let s:job_info[a:job_id] = {
-          \ 'candidates' : [],
-          \ 'eof' : 0,
-          \ 'status' : -1,
+          \ 'candidates': [],
+          \ 'eof': 0,
+          \ 'status': -1,
           \ }
   endif
 

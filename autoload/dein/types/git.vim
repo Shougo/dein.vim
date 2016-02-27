@@ -40,7 +40,7 @@ function! dein#types#git#define() abort "{{{
 endfunction"}}}
 
 let s:type = {
-      \ 'name' : 'git',
+      \ 'name': 'git',
       \ }
 
 function! s:type.init(repo, option) abort "{{{
