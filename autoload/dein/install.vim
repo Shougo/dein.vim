@@ -162,15 +162,74 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
 
   return [cmd, message]
 endfunction"}}}
-function! s:get_updated_message(plugins) abort "{{{
-  let msg = ''
+function! s:get_revision_number(plugin) abort "{{{
+  let cwd = getcwd()
+  let type = dein#_get_type(a:plugin.type)
 
-  if !empty(a:plugins)
-    let msg .= "\nUpdated plugins:\n".
-        \ join(map(copy(a:plugins), "'  ' .  v:val.name"), "\n")
+  if !isdirectory(a:plugin.path)
+        \ || !has_key(type, 'get_revision_number_command')
+    return ''
   endif
 
-  return msg
+  let cmd = type.get_revision_number_command(a:plugin)
+  if cmd == ''
+    return ''
+  endif
+
+  try
+    call dein#install#_cd(a:plugin.path)
+
+    let rev = dein#install#_system(cmd)
+
+    if type.name ==# 'vba' || type.name ==# 'raw'
+      " If rev is ok, the output is the checksum followed by the filename
+      " separated by two spaces.
+      let pat = '^[0-9a-f]\+  ' . a:plugin.path . '/' .
+            \ fnamemodify(a:plugin.uri, ':t') . '$'
+      return (rev =~# pat) ? matchstr(rev, '^[0-9a-f]\+') : ''
+    else
+      " If rev contains spaces, it is error message
+      return (rev !~ '\s') ? rev : ''
+    endif
+  finally
+    call dein#install#_cd(cwd)
+  endtry
+endfunction"}}}
+function! s:get_updated_log_message(plugin, new_rev, old_rev) abort "{{{
+  let cwd = getcwd()
+  try
+    let type = dein#_get_types(a:plugin.type)
+
+    call dein#install#_cd(a:plugin.path)
+
+    let log_command = has_key(type, 'get_log_command') ?
+          \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
+    let log = (log_command != '' ?
+          \ dein#install#_system(log_command) : '')
+    return log != '' ? log :
+          \            (a:old_rev  == a:new_rev) ? ''
+          \            : printf('%s -> %s', a:old_rev, a:new_rev)
+  finally
+    call dein#install#_cd(cwd)
+  endtry
+endfunction"}}}
+function! s:get_updated_message(plugins) abort "{{{
+  if empty(a:plugins)
+    return ''
+  endif
+
+  return "\nUpdated plugins:\n".
+        \ join(map(a:plugins,
+        \ "'  ' . v:val.name . (v:val.commit_count == 0 ? ''
+        \                     : printf('(%d change%s)',
+        \                              v:val.commit_count,
+        \                              (v:val.commit_count == 1 ? '' : 's')))
+        \    . (v:val.uri =~ '^\\h\\w*://github.com/' ? \"\\n\"
+        \      . printf('    %s/compare/%s...%s',
+        \        substitute(substitute(v:val.uri, '\\.git$', '', ''),
+        \          '^\\h\\w*:', 'https:', ''),
+        \        v:val.old_rev, v:val.new_rev) : '')")
+        \ , "\n")
 endfunction"}}}
 function! s:get_errored_message(plugins) abort "{{{
   if empty(a:plugins)
@@ -431,25 +490,27 @@ function! s:sync(plugin, context) abort "{{{
     let lang_save = $LANG
     let $LANG = 'C'
 
-    " Cd to plugin path.
     call dein#install#_cd(a:plugin.path)
 
+    let rev = s:get_revision_number(a:plugin)
+
     let process = {
-          \ 'number' : num,
-          \ 'plugin' : a:plugin,
-          \ 'output' : '',
-          \ 'status' : -1,
-          \ 'eof' : 0,
-          \ 'start_time' : localtime(),
+          \ 'number': num,
+          \ 'rev': rev,
+          \ 'plugin': a:plugin,
+          \ 'output': '',
+          \ 'status': -1,
+          \ 'eof': 0,
+          \ 'start_time': localtime(),
           \ }
 
     if has('nvim') && a:context.async
       " Use neovim async jobs
       let process.proc = jobstart(
             \          iconv(cmd, &encoding, 'char'), {
-            \ 'on_stdout' : function('s:job_handler'),
-            \ 'on_stderr' : function('s:job_handler'),
-            \ 'on_exit' : function('s:job_handler'),
+            \ 'on_stdout': function('s:job_handler'),
+            \ 'on_stderr': function('s:job_handler'),
+            \ 'on_exit': function('s:job_handler'),
             \ })
     elseif dein#_has_vimproc()
       let process.proc = vimproc#pgroup_open(vimproc#util#iconv(
@@ -525,22 +586,41 @@ function! s:check_output(context, process) abort "{{{
   let max = a:context.max_plugins
   let plugin = a:process.plugin
 
+  let new_rev = s:get_revision_number(plugin)
+
   if is_timeout || status
     let message = printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Error')
     call s:print_progress_message(message)
     call s:error(plugin.path)
 
-    call s:error(
-          \ (is_timeout ? 'Process timeout.' :
+    call s:error((is_timeout ? 'Process timeout.' :
           \    split(a:process.output, '\n')))
 
     call add(a:context.errored_plugins,
           \ plugin)
+  elseif a:process.rev ==# new_rev
+    call s:print_progress_message(
+          \ printf('(%'.len(max).'d/%d): |%s| %s',
+          \ num, max, plugin.name, 'Same revision'))
   else
     call s:print_progress_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Updated'))
+
+    if a:process.rev != ''
+      let log_messages = split(s:get_updated_log_message(
+            \   plugin, new_rev, a:process.rev), '\n')
+      let plugin.commit_count = len(log_messages)
+      call s:print_message(
+            \  map(log_messages, "printf('|%s| ' .
+            \   substitute(v:val, '%', '%%', 'g'), plugin.name)"))
+    else
+      let plugin.commit_count = 0
+    endif
+
+    let plugin.old_rev = a:process.rev
+    let plugin.new_rev = new_rev
 
     if s:build(plugin)
           \ && confirm('Build failed. Uninstall "'
