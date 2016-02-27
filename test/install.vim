@@ -560,7 +560,7 @@ function! s:suite.local() abort "{{{
   call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1 })
 
   call s:assert.equals(dein#get('neocomplete.vim').sourced, 0)
-  call s:assert.equals(dein#get('neocomplete.vim').timeout, 1)
+  call s:assert.equals(dein#get('neocomplete.vim').frozen, 0)
 
   call s:assert.equals(dein#end(), 0)
 
@@ -571,8 +571,6 @@ function! s:suite.local() abort "{{{
         \ s:path2.'repos/github.com/Shougo/neocomplete.vim')
   call s:assert.equals(plugin2.rtp,
         \ s:path2.'repos/github.com/Shougo/neopairs.vim')
-
-  call s:assert.equals(plugin.frozen, 1)
 endfunction"}}}
 
 function! s:suite.local_nongit() abort "{{{
