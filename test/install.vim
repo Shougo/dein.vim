@@ -554,20 +554,18 @@ endfunction"}}}
 function! s:suite.local() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim', {'frozen': 1}), 0)
-  call s:assert.equals(dein#get('neocomplete.vim').orig_opts, {'frozen': 1})
+  call s:assert.equals(dein#add('Shougo/neopairs.vim', {'frozen': 1}), 0)
+  call s:assert.equals(dein#get('neopairs.vim').orig_opts, {'frozen': 1})
 
-  call dein#local(s:path2.'repos/github.com/Shougo/')
+  call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1})
 
-  call s:assert.equals(dein#get('neocomplete.vim').sourced, 0)
+  call s:assert.equals(dein#get('neopairs.vim').sourced, 0)
+  call s:assert.equals(dein#get('neopairs.vim').timeout, 1)
 
   call s:assert.equals(dein#end(), 0)
 
-  let plugin = dein#get('neocomplete.vim')
   let plugin2 = dein#get('neopairs.vim')
 
-  call s:assert.equals(plugin.rtp,
-        \ s:path2.'repos/github.com/Shougo/neocomplete.vim')
   call s:assert.equals(plugin2.rtp,
         \ s:path2.'repos/github.com/Shougo/neopairs.vim')
 endfunction"}}}
