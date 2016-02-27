@@ -100,6 +100,7 @@ function! dein#_init() abort "{{{
   let s:base_path = ''
   let s:block_level = 0
   let g:dein#_plugins = {}
+  let g:dein#name = ''
 
   augroup dein
     autocmd!
@@ -253,8 +254,13 @@ function! dein#source(...) abort "{{{
 endfunction"}}}
 
 function! dein#tap(name) abort "{{{
-  return has_key(g:dein#_plugins, a:name)
-        \ && isdirectory(g:dein#_plugins[a:name].path)
+  if !has_key(g:dein#_plugins, a:name)
+        \ || !isdirectory(g:dein#_plugins[a:name].path)
+    return 0
+  endif
+
+  let g:dein#name = a:name
+  return 1
 endfunction"}}}
 
 function! dein#is_sourced(name) abort "{{{

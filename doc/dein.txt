@@ -246,6 +246,7 @@ dein#clear_cache()
 dein#tap({plugin-name})				*dein#tap()*
 		It returns non-zero if {plugin-name} is exists and not
 		disabled.
+		It initializes |dein#name| variable as {plugin-name}.
 
 dein#is_sourced({plugin-name})			*dein#is_sourced()*
 		It returns non-zero if {plugin-name} is exists and sourced.
@@ -260,6 +261,10 @@ dein#get_updates_log() 				*dein#get_updates_log()*
 
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
+
+						*g:dein#name*
+g:dein#name
+		Current plugin name set by |dein#tap()|.
 
 						*g:dein#install_max_processes*
 g:dein#install_max_processes
@@ -535,6 +540,7 @@ HOOKS 						*dein-hooks*
 		Called or sourced before scripts are sourced. It is
 		useful for plugin initialization in lazy plugins.
 		Note: You must set the autocmd before |dein#end()|.
+		Note: You can use |g:dein#name| as {name} in |dein#tap()| block.
 
 						*dein-hooks-post_source*
 		User#dein#post_source#{name}
@@ -557,14 +563,14 @@ HOOKS 						*dein-hooks*
 	      endif
 	    endfunction
 	  endfunction
-	  autocmd MyAutoCmd User dein#source#open-browser.vim
-	        \ call s:open_browser_on_source()
+	  execute 'autocmd MyAutoCmd User' 'dein#source#'.g:dein#name
+	        \ 'call s:open_browser_on_source()'
 	endif
 
 	if dein#tap('deoplete.nvim') && has('nvim')
 	  let g:deoplete#enable_at_startup = 1
-	  autocmd MyAutoCmd User dein#source#deoplete.nvim
-	        \ source ~/.vim/rc/plugins/deoplete.rc.vim
+	  execute 'autocmd MyAutoCmd User' 'dein#source#'.g:dein#name
+	        \ 'source ~/.vim/rc/plugins/deoplete.rc.vim'
 	endif
 <
 
