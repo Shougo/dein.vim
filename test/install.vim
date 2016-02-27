@@ -23,7 +23,7 @@ function! s:suite.install() abort "{{{
 
   call dein#begin(s:path)
 
-  let rev = '07f1d54c3d3207e4a3494a6ca1d5d5a91526fa9f'
+  let rev = '583f3ecdb8f0868dd3a320ac3d534c367fc75e74'
   call s:assert.equals(dein#add('Shougo/neocomplete.vim',
         \ {'rev': rev}), 0)
 
@@ -556,10 +556,10 @@ function! s:suite.local() abort "{{{
   call s:assert.equals(dein#add('Shougo/neocomplete.vim', {'frozen': 1}), 0)
   call s:assert.equals(dein#get('neocomplete.vim').orig_opts, {'frozen': 1})
 
-  call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1 })
+  call dein#local(s:path2.'repos/github.com/Shougo/', {'foo': 1 })
 
   call s:assert.equals(dein#get('neocomplete.vim').sourced, 0)
-  call s:assert.equals(dein#get('neocomplete.vim').timeout, 1)
+  call s:assert.equals(dein#get('neocomplete.vim').foo, 1)
 
   call s:assert.equals(dein#end(), 0)
 
