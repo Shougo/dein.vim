@@ -198,7 +198,7 @@ endfunction"}}}
 function! s:get_updated_log_message(plugin, new_rev, old_rev) abort "{{{
   let cwd = getcwd()
   try
-    let type = dein#_get_types(a:plugin.type)
+    let type = dein#_get_type(a:plugin.type)
 
     call dein#install#_cd(a:plugin.path)
 
