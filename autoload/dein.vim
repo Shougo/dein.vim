@@ -256,7 +256,7 @@ function! dein#tap(name) abort "{{{
 endfunction"}}}
 
 function! dein#is_sourced(name) abort "{{{
-  return dein#tap(a:name) && dein#get(a:name).sourced
+  return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
 endfunction"}}}
 
 function! dein#save_cache() abort "{{{
