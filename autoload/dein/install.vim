@@ -293,7 +293,6 @@ endfunction"}}}
 function! s:check_loop(context) abort "{{{
   let laststatus = &g:laststatus
   let statusline = &l:statusline
-  let cwd = getcwd()
   try
     set laststatus=2
 
@@ -314,7 +313,6 @@ function! s:check_loop(context) abort "{{{
     " Filter eof processes.
     call filter(a:context.processes, '!v:val.eof')
   finally
-    call dein#install#_cd(cwd)
     let &l:statusline = statusline
     let &g:laststatus = laststatus
   endtry
