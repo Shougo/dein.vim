@@ -24,7 +24,7 @@
 "=============================================================================
 
 " Variables
-let s:async_context = {}
+let s:global_context = {}
 let s:job_info = {}
 
 function! dein#install#_update(plugins, bang, async) abort "{{{
@@ -38,13 +38,12 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
 
   " Set context.
   let context = s:init_context(plugins, a:bang, a:async)
-  let s:async_context = context
 
   if a:async
-    if empty(s:async_context) ||
+    if empty(s:global_context) ||
           \ confirm('The installation has not finished. Cancel now?',
           \         "yes\nNo", 2) == 1
-      let s:async_context = context
+      let s:global_context = context
       call s:install_async(context)
       augroup dein-install
         autocmd!
@@ -52,6 +51,7 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
       augroup END
     endif
   else
+    let s:global_context = context
     call s:install_blocking(context)
   endif
 endfunction"}}}
@@ -137,10 +137,10 @@ function! s:clear_runtimepath() abort "{{{
 endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
-  return get(s:async_context, 'log', [])
+  return get(s:global_context, 'log', [])
 endfunction"}}}
 function! dein#install#_get_updates_log() abort "{{{
-  return get(s:async_context, 'updates_log', [])
+  return get(s:global_context, 'updates_log', [])
 endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
@@ -386,7 +386,7 @@ function! s:install_async(context) abort "{{{
     call dein#install#_recache_runtimepath()
 
     " Disable installation handler
-    let s:async_context = {}
+    let s:global_context = {}
     augroup dein-install
       autocmd!
     augroup END
@@ -471,6 +471,9 @@ function! s:job_handler(job_id, data, event) abort "{{{
   if a:event ==# 'exit'
     let job.eof = 1
     let job.status = a:data
+    if !empty(s:global_context)
+      call s:install_async(s:global_context)
+    endif
     return
   endif
 
@@ -708,22 +711,22 @@ function! s:print_progress_message(msg) abort "{{{
     return
   endif
 
-  if s:async_context.progress_type ==# 'statusline'
+  if s:global_context.progress_type ==# 'statusline'
     set laststatus=2
     let &l:statusline = join(msg, "\n")
     redrawstatus
-  elseif s:async_context.progress_type ==# 'tabline'
+  elseif s:global_context.progress_type ==# 'tabline'
     set showtabline=2
     let &g:tabline = join(msg, "\n")
-  elseif s:async_context.progress_type ==# 'title'
+  elseif s:global_context.progress_type ==# 'title'
     set title
     let &g:titlestring = join(msg, "\n")
   else
     call s:echo(msg, 'echo')
   endif
 
-  let s:async_context.updates_log += msg
-  let s:async_context.log += msg
+  let s:global_context.updates_log += msg
+  let s:global_context.log += msg
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
@@ -733,7 +736,7 @@ function! s:print_message(msg) abort "{{{
 
   call s:echo(msg, 'echo')
 
-  let s:async_context.log += msg
+  let s:global_context.log += msg
 endfunction"}}}
 function! s:error(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
@@ -743,8 +746,8 @@ function! s:error(msg) abort "{{{
 
   call s:echo(msg, 'error')
 
-  let s:async_context.updates_log += msg
-  let s:async_context.log += msg
+  let s:global_context.updates_log += msg
+  let s:global_context.log += msg
 endfunction"}}}
 function! s:helptags() abort "{{{
   if empty(s:list_directory(dein#_get_tags_path()))
@@ -907,7 +910,7 @@ function! s:echo_mode(m, mode) abort "{{{
 endfunction"}}}
 
 function! s:on_hold() abort "{{{
-  call s:install_async(s:async_context)
+  call s:install_async(s:global_context)
   call feedkeys("g\<ESC>", 'n')
 endfunction"}}}
 
