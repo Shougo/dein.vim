@@ -30,3 +30,7 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 * Rollback
 
+* Channel/Job asynchronous installer
+
+* Other types support
+
