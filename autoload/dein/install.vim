@@ -213,6 +213,54 @@ function! s:get_updated_log_message(plugin, new_rev, old_rev) abort "{{{
     call dein#install#_cd(cwd)
   endtry
 endfunction"}}}
+function! s:lock_revision(process, context) abort "{{{
+  let num = a:process.number
+  let max = a:context.max_plugins
+  let plugin = a:process.plugin
+
+  let plugin.new_rev = s:get_revision_number(plugin)
+
+  let type = dein#_get_type(plugin.type)
+  if !has_key(type, 'get_revision_lock_command')
+    return 0
+  endif
+
+  let cmd = type.get_revision_lock_command(plugin)
+
+  if cmd == '' || plugin.new_rev ==# plugin.rev
+    " Skipped.
+    return 0
+  elseif cmd =~# '^E: '
+    " Errored.
+    call s:error(plugin.path)
+    call s:error(cmd[3:])
+    return -1
+  endif
+
+  if plugin.rev != ''
+    call s:print_message(
+          \ printf('(%'.len(max).'d/%d): |%s| %s',
+          \ num, max, plugin.name, 'Locked'))
+
+    call s:print_message(message)
+  endif
+
+  let cwd = getcwd()
+  try
+    call dein#install#_cd(plugin.path)
+
+    let result = dein#install#_system(cmd)
+    let status = dein#install#_get_last_status()
+  finally
+    call dein#install#_cd(cwd)
+  endtry
+
+  if status
+    call s:error(plugin.path)
+    call s:error(result)
+    return -1
+  endif
+endfunction"}}}
 function! s:get_updated_message(plugins) abort "{{{
   if empty(a:plugins)
     return ''
@@ -504,6 +552,19 @@ function! s:sync(plugin, context) abort "{{{
           \ 'start_time': localtime(),
           \ }
 
+    if isdirectory(a:plugin.path) && a:plugin.rev != '' && !a:plugin.local
+      let rev_save = a:plugin.rev
+      try
+        " Force checkout HEAD revision.
+        " The repository may be checked out.
+        let a:plugin.rev = ''
+
+        call s:lock_revision(process, a:context)
+      finally
+        let a:plugin.rev = rev_save
+      endtry
+    endif
+
     if has('nvim') && a:context.async
       " Use neovim async jobs
       let process.proc = jobstart(
@@ -585,6 +646,16 @@ function! s:check_output(context, process) abort "{{{
   let num = a:process.number
   let max = a:context.max_plugins
   let plugin = a:process.plugin
+
+  if isdirectory(plugin.path) && plugin.rev != '' && !plugin.local
+    " Restore revision.
+    let rev_save = plugin.rev
+    try
+      call s:lock_revision(a:process, a:context)
+    finally
+      let plugin.rev = rev_save
+    endtry
+  endif
 
   let new_rev = s:get_revision_number(plugin)
 
