@@ -557,10 +557,9 @@ function! s:suite.local() abort "{{{
   call s:assert.equals(dein#add('Shougo/neocomplete.vim', {'frozen': 1}), 0)
   call s:assert.equals(dein#get('neocomplete.vim').orig_opts, {'frozen': 1})
 
-  call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1 })
+  call dein#local(s:path2.'repos/github.com/Shougo/')
 
   call s:assert.equals(dein#get('neocomplete.vim').sourced, 0)
-  call s:assert.equals(dein#get('neocomplete.vim').frozen, 0)
 
   call s:assert.equals(dein#end(), 0)
 
