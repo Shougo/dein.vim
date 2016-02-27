@@ -162,7 +162,7 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
 
   return [cmd, message]
 endfunction"}}}
-function! dein#install#_get_revision_number(plugin) abort "{{{
+function! s:get_revision_number(plugin) abort "{{{
   let cwd = getcwd()
   let type = dein#_get_type(a:plugin.type)
 
@@ -218,7 +218,7 @@ function! s:lock_revision(process, context) abort "{{{
   let max = a:context.max_plugins
   let plugin = a:process.plugin
 
-  let plugin.new_rev = dein#install#_get_revision_number(plugin)
+  let plugin.new_rev = s:get_revision_number(plugin)
 
   let type = dein#_get_type(plugin.type)
   if !has_key(type, 'get_revision_lock_command')
@@ -538,7 +538,7 @@ function! s:sync(plugin, context) abort "{{{
 
     call dein#install#_cd(a:plugin.path)
 
-    let rev = dein#install#_get_revision_number(a:plugin)
+    let rev = s:get_revision_number(a:plugin)
 
     let process = {
           \ 'number': num,
@@ -650,7 +650,7 @@ function! s:check_output(context, process) abort "{{{
     call s:lock_revision(a:process, a:context)
   endif
 
-  let new_rev = dein#install#_get_revision_number(plugin)
+  let new_rev = s:get_revision_number(plugin)
 
   if is_timeout || status
     let message = printf('(%'.len(max).'d/%d): |%s| %s',
