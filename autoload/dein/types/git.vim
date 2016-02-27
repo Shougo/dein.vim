@@ -151,7 +151,7 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
 
   " Note: If the a:old_rev is not the ancestor of two branchs. Then do not use
   " %s^.  use %s^ will show one commit message which already shown last time.
-  let is_not_ancestor = dein#util#system(
+  let is_not_ancestor = dein#install#_system(
         \ g:dein#types#git#command_path . ' merge-base '
         \ . a:old_rev . ' ' . a:new_rev) ==# a:old_rev
   return printf(g:dein#types#git#command_path .
@@ -170,7 +170,7 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
   let rev = a:plugin.rev
   if rev ==# 'release'
     " Use latest released tag
-    let rev = get(split(dein#util#system(g:dein#types#git#command_path
+    let rev = get(split(dein#install#_system(g:dein#types#git#command_path
           \ . ' tag --list --sort -version:refname'), "\n"), 0, '')
   endif
   if rev == ''

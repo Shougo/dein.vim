@@ -162,7 +162,7 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
 
   return [cmd, message]
 endfunction"}}}
-function! s:get_revision_number(plugin) abort "{{{
+function! dein#install#_get_revision_number(plugin) abort "{{{
   let cwd = getcwd()
   let type = dein#_get_type(a:plugin.type)
 
@@ -218,36 +218,34 @@ function! s:lock_revision(process, context) abort "{{{
   let max = a:context.max_plugins
   let plugin = a:process.plugin
 
-  let plugin.new_rev = s:get_revision_number(plugin)
+  let plugin.new_rev = dein#install#_get_revision_number(plugin)
 
   let type = dein#_get_type(plugin.type)
   if !has_key(type, 'get_revision_lock_command')
     return 0
   endif
 
-  let cmd = type.get_revision_lock_command(plugin)
-
-  if cmd == '' || plugin.new_rev ==# plugin.rev
-    " Skipped.
-    return 0
-  elseif cmd =~# '^E: '
-    " Errored.
-    call s:error(plugin.path)
-    call s:error(cmd[3:])
-    return -1
-  endif
-
-  if plugin.rev != ''
-    call s:print_message(
-          \ printf('(%'.len(max).'d/%d): |%s| %s',
-          \ num, max, plugin.name, 'Locked'))
-
-    call s:print_message(message)
-  endif
-
   let cwd = getcwd()
   try
     call dein#install#_cd(plugin.path)
+
+    let cmd = type.get_revision_lock_command(plugin)
+
+    if cmd == '' || plugin.new_rev ==# plugin.rev
+      " Skipped.
+      return 0
+    elseif cmd =~# '^E: '
+      " Errored.
+      call s:error(plugin.path)
+      call s:error(cmd[3:])
+      return -1
+    endif
+
+    if plugin.rev != ''
+      call s:print_message(
+            \ printf('(%'.len(max).'d/%d): |%s| %s',
+            \ num, max, plugin.name, 'Locked'))
+    endif
 
     let result = dein#install#_system(cmd)
     let status = dein#install#_get_last_status()
@@ -540,7 +538,7 @@ function! s:sync(plugin, context) abort "{{{
 
     call dein#install#_cd(a:plugin.path)
 
-    let rev = s:get_revision_number(a:plugin)
+    let rev = dein#install#_get_revision_number(a:plugin)
 
     let process = {
           \ 'number': num,
@@ -649,15 +647,10 @@ function! s:check_output(context, process) abort "{{{
 
   if isdirectory(plugin.path) && plugin.rev != '' && !plugin.local
     " Restore revision.
-    let rev_save = plugin.rev
-    try
-      call s:lock_revision(a:process, a:context)
-    finally
-      let plugin.rev = rev_save
-    endtry
+    call s:lock_revision(a:process, a:context)
   endif
 
-  let new_rev = s:get_revision_number(plugin)
+  let new_rev = dein#install#_get_revision_number(plugin)
 
   if is_timeout || status
     let message = printf('(%'.len(max).'d/%d): |%s| %s',

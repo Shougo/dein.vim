@@ -56,18 +56,32 @@ function! s:suite.update() abort "{{{
 
   call dein#begin(s:path2)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  let rev = '07f1d54c3d3207e4a3494a6ca1d5d5a91526fa9f'
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
+        \ {'rev': rev}), 0)
 
   call s:assert.equals(dein#add('Shougo/neopairs.vim', {'frozen': 1}), 0)
+
+  call s:assert.equals(dein#add('Shougo/neobundle.vim',
+        \ {'rev': 'release'}), 0)
 
   call s:assert.equals(dein#update(), 0)
 
   let plugin = dein#get('neopairs.vim')
+  let plugin2 = dein#get('neocomplete.vim')
+  let plugin3 = dein#get('neobundle.vim')
 
   call s:assert.equals(plugin.rtp,
         \ s:path2.'repos/github.com/Shougo/neopairs.vim')
 
   call s:assert.true(isdirectory(plugin.rtp))
+
+  call s:assert.equals(
+        \ s:get_revision(plugin2), rev)
+
+  " Latest neobundle release is 3.2
+  call s:assert.equals(s:get_revision(plugin3),
+        \ '47576978549f16ef21784a6d15e6a5ae38ddb800')
 
   call dein#end()
 endfunction"}}}
@@ -662,6 +676,19 @@ function! s:suite.build() abort "{{{
 
   call vimproc#version()
   call s:assert.true(filereadable(g:vimproc#dll_path))
+endfunction"}}}
+
+function! s:get_revision(plugin) abort "{{{
+  let cwd = getcwd()
+  try
+    execute 'lcd' fnameescape(a:plugin.path)
+
+    let rev = substitute(system('git rev-parse HEAD'), '\n$', '', '')
+
+    return (rev !~ '\s') ? rev : ''
+  finally
+    execute 'lcd' fnameescape(cwd)
+  endtry
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:
