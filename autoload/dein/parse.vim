@@ -130,8 +130,6 @@ function! dein#parse#_dict(plugin) abort "{{{
   if !has_key(a:plugin, 'merged')
     let plugin.merged = !plugin.lazy && !plugin.local
           \ && stridx(plugin.rtp, dein#_get_base_path()) == 0
-          \ && (plugin.normalized_name !=# 'vimproc'
-          \     || (!has('win32') && !has('win32unix')))
   endif
 
   if empty(plugin.pre_cmd)

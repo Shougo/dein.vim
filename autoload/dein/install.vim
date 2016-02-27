@@ -115,10 +115,10 @@ function! dein#install#_recache_runtimepath() abort "{{{
   echomsg 'Update done: ' . strftime('(%Y/%m/%d %H:%M:%S)')
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
-  let dest = printf('%s/temp/%d/%s', dein#_get_base_path(), getpid(),
-        \ strftime('%Y%m%d%H%M%S'))
-  if !isdirectory(dest)
-    call mkdir(dest, 'p')
+  let parent = printf('%s/temp/%d', dein#_get_base_path(), getpid())
+  let dest = parent . '/' . strftime('%Y%m%d%H%M%S')
+  if !isdirectory(parent)
+    call mkdir(parent, 'p')
   endif
   if rename(dein#_get_runtime_path(), dest)
     call dein#_error('Rename failed.')
