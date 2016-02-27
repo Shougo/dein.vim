@@ -111,7 +111,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#_call_hook('post_source')
 
-  echomsg 'Update done: ' . strftime('(%Y/%m/%d %H:%M:%S)')
+  call s:echo('Update done: ' . strftime('(%Y/%m/%d %H:%M:%S)'), 'echomsg')
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
   let parent = printf('%s/temp/%d', dein#_get_base_path(), getpid())
@@ -664,11 +664,11 @@ function! s:check_output(context, process) abort "{{{
     call add(a:context.errored_plugins,
           \ plugin)
   elseif a:process.rev ==# new_rev
-    call s:print_progress_message(
+    call s:print_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Same revision'))
   else
-    call s:print_progress_message(
+    call s:print_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Updated'))
 
