@@ -102,6 +102,8 @@ dein#begin({base-path})				*dein#begin()*
 		Initialize dein.vim and start plugins configuration
 		block.
 		{base-path} is where your downloaded plugins will be placed.
+		For example, "Shougo/dein.vim" will be downloaded in
+		"{base-path}/repos/github.com/Shougo/dein.vim" directory.
 
 		Note: You must not call the function inside a
 		"has('vim_starting')" block.
@@ -616,7 +618,7 @@ EXAMPLES					*dein-examples*
 
 	call dein#begin(expand('~/.cache/dein'))
 
-	call dein#add('Shougo/dein.vim')
+	call dein#add({path to dein.vim directory})
 	call dein#add('Shougo/neocomplete.vim')
 	...
 
