@@ -65,12 +65,14 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
   else
     call s:init_variables(context)
     try
-      call s:install_blocking(context)
+      let errored = s:install_blocking(context)
     catch
       call s:error(v:exception)
       call s:error(v:throwpoint)
       return 1
     endtry
+
+    return errored
   endif
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
