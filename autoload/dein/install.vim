@@ -26,6 +26,8 @@
 " Variables
 let s:global_context = {}
 let s:job_info = {}
+let s:log = []
+let s:updates_log = []
 
 function! dein#install#_update(plugins, bang, async) abort "{{{
   let plugins = empty(a:plugins) ?
@@ -48,18 +50,20 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
   let context = s:init_context(plugins, a:bang, a:async)
 
   if a:async
-    if empty(s:global_context) ||
+    if !empty(s:global_context) &&
           \ confirm('The installation has not finished. Cancel now?',
-          \         "yes\nNo", 2) == 1
-      let s:global_context = context
-      call s:install_async(context)
-      augroup dein-install
-        autocmd!
-        autocmd CursorHold * call s:on_hold()
-      augroup END
+          \         "yes\nNo", 2) != 1
+      return
     endif
+
+    call s:init_variables(context)
+    call s:install_async(context)
+    augroup dein-install
+      autocmd!
+      autocmd CursorHold * call s:on_hold()
+    augroup END
   else
-    let s:global_context = context
+    call s:init_variables(context)
     try
       call s:install_blocking(context)
     catch
@@ -155,10 +159,10 @@ function! s:clear_runtimepath() abort "{{{
 endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
-  return get(s:global_context, 'log', [])
+  return s:log
 endfunction"}}}
 function! dein#install#_get_updates_log() abort "{{{
-  return get(s:global_context, 'updates_log', [])
+  return s:updates_log
 endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
@@ -459,8 +463,6 @@ function! s:init_context(plugins, bang, async) abort "{{{
   let context.plugins = a:plugins
   let context.max_plugins =
         \ len(context.plugins)
-  let context.updates_log = []
-  let context.log = []
   let context.progress_type = g:dein#install_progress_type
   if (context.progress_type ==# 'statusline' && a:async)
         \ || has('vim_starting')
@@ -473,6 +475,11 @@ function! s:init_context(plugins, bang, async) abort "{{{
   let context.title = &g:title
   let context.titlestring = &g:titlestring
   return context
+endfunction"}}}
+function! s:init_variables(context) abort "{{{
+  let s:global_context = a:context
+  let s:log = []
+  let s:updates_log = []
 endfunction"}}}
 
 function! s:job_handler_neovim(job_id, data, event) abort "{{{
@@ -777,8 +784,8 @@ function! s:print_progress_message(msg) abort "{{{
     call s:echo(msg, 'echo')
   endif
 
-  let s:global_context.updates_log += msg
-  let s:global_context.log += msg
+  let s:updates_log += msg
+  let s:log += msg
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
@@ -788,9 +795,7 @@ function! s:print_message(msg) abort "{{{
 
   call s:echo(msg, 'echo')
 
-  if !empty(s:global_context)
-    let s:global_context.log += msg
-  endif
+  let s:log += msg
 endfunction"}}}
 function! s:error(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
@@ -800,10 +805,8 @@ function! s:error(msg) abort "{{{
 
   call s:echo(msg, 'error')
 
-  if !empty(s:global_context)
-    let s:global_context.updates_log += msg
-    let s:global_context.log += msg
-  endif
+  let s:updates_log += msg
+  let s:log += msg
 endfunction"}}}
 function! s:helptags() abort "{{{
   if empty(s:list_directory(dein#_get_tags_path()))
