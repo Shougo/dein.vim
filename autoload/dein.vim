@@ -101,6 +101,7 @@ function! dein#_init() abort "{{{
   let s:runtime_path = ''
   let s:base_path = ''
   let s:block_level = 0
+  let s:prev_plugins = []
   let g:dein#_plugins = {}
   let g:dein#name = ''
 
@@ -158,6 +159,9 @@ function! dein#begin(path) abort "{{{
   let s:block_level += 1
   let s:base_path = dein#_chomp(dein#_expand(a:path))
   let s:runtime_path = s:base_path . '/.dein'
+  if !has('vim_starting')
+    let s:prev_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
+  endif
 
   call dein#_filetype_off()
 
@@ -215,6 +219,10 @@ function! dein#end() abort "{{{
   call dein#_call_hook('source', sourced)
 
   if !has('vim_starting')
+    let merged_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
+    if merged_plugins !=# s:prev_plugins
+      call dein#install#_recache_runtimepath()
+    endif
     call dein#_call_hook('post_source')
     call dein#_reset_ftplugin()
   endif
