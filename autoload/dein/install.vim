@@ -52,7 +52,12 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
     endif
   else
     let s:global_context = context
-    call s:install_blocking(context)
+    try
+      call s:install_blocking(context)
+    catch
+      call s:error(v:exception)
+      call s:error(v:throwpoint)
+    endtry
   endif
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
