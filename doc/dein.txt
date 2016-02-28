@@ -178,7 +178,7 @@ dein#update([{plugins}])			*dein#update()*
 		If you omit it, dein will update all plugins.
 		Note: If you are using neovim, it is the asynchronous.
 
-dein#reinstall([{plugins}])			*dein#reinstall()*
+dein#reinstall({plugins})			*dein#reinstall()*
 		Reinstall the plugins.
 		{plugins} is the plugins name list.
 
