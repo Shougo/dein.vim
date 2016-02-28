@@ -746,7 +746,9 @@ function! s:print_message(msg) abort "{{{
 
   call s:echo(msg, 'echo')
 
-  let s:global_context.log += msg
+  if !empty(s:global_context)
+    let s:global_context.log += msg
+  endif
 endfunction"}}}
 function! s:error(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
@@ -756,8 +758,10 @@ function! s:error(msg) abort "{{{
 
   call s:echo(msg, 'error')
 
-  let s:global_context.updates_log += msg
-  let s:global_context.log += msg
+  if !empty(s:global_context)
+    let s:global_context.updates_log += msg
+    let s:global_context.log += msg
+  endif
 endfunction"}}}
 function! s:helptags() abort "{{{
   if empty(s:list_directory(dein#_get_tags_path()))
