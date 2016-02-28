@@ -512,7 +512,9 @@ function! s:job_handler(id, msg, event) abort "{{{
     return
   endif
 
-  let lines = has('nvim') ? a:msg : split(a:msg, "\n")
+  let lines = has('nvim') ?
+        \ map(a:msg, "iconv(v:val, 'char', &encoding)") :
+        \ split(iconv(a:msg, 'char', &encoding), "\n")
 
   let candidates = job.candidates
   if !empty(lines) && lines[0] != "\n" && !empty(job.candidates)
@@ -521,7 +523,7 @@ function! s:job_handler(id, msg, event) abort "{{{
     call remove(lines, 0)
   endif
 
-  let candidates += map(lines, "iconv(v:val, 'char', &encoding)")
+  let candidates += lines
 endfunction"}}}
 
 
