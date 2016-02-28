@@ -116,7 +116,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#_call_hook('post_source')
 
-  call s:echo('Update done: ' . strftime('(%Y/%m/%d %H:%M:%S)'), 'echomsg')
+  call s:error(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
   if dein#_get_base_path() == ''
@@ -376,13 +376,13 @@ function! s:install_blocking(context) abort "{{{
     call s:restore_view(a:context)
   endtry
 
-  call dein#install#_recache_runtimepath()
-
   call s:print_message(
         \ s:get_updated_message(a:context.synced_plugins))
 
   call s:print_message(
         \ s:get_errored_message(a:context.errored_plugins))
+
+  call dein#install#_recache_runtimepath()
 
   return len(a:context.errored_plugins)
 endfunction"}}}
@@ -393,13 +393,13 @@ function! s:install_async(context) abort "{{{
         \ && a:context.number == a:context.max_plugins
     call s:restore_view(a:context)
 
-    call dein#install#_recache_runtimepath()
-
     call s:print_message(
           \ s:get_updated_message(a:context.synced_plugins))
 
     call s:print_message(
           \ s:get_errored_message(a:context.errored_plugins))
+
+    call dein#install#_recache_runtimepath()
 
     " Disable installation handler
     let s:global_context = {}
