@@ -209,8 +209,11 @@ dein#source([{plugins}])			*dein#source()*
 		{plugins} is the plugins name list.
 		If you omit it, dein will source all plugins.
 
-dein#get({plugin-name})				 *dein#get()*
+dein#get([{plugin-name}])				 *dein#get()*
 		Get the plugin options dictionary for {plugin-name}.
+		If you omit {plugin-name}, dein will returns the plugins
+		dictionary.  The key is the plugin name.  The value is the
+		plugin dictionary.
 
 dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		Load plugins configuration from the cache file,
