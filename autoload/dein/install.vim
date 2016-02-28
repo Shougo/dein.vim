@@ -172,7 +172,7 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
         \ type.get_sync_command(a:plugin) : ''
 
   if cmd == ''
-    return ['', 'Not supported sync action.']
+    return ['', '']
   endif
 
   let message = printf('(%'.len(a:max).'d/%d): |%s| %s',
