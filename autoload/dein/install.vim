@@ -69,6 +69,7 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
     catch
       call s:error(v:exception)
       call s:error(v:throwpoint)
+      return 1
     endtry
   endif
 endfunction"}}}
