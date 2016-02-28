@@ -643,7 +643,7 @@ function! s:check_output(context, process) abort "{{{
     let [is_skip, status] =
           \ s:get_vimproc_result(a:process, is_timeout)
   else
-    let [is_skip, status] = [0, '', a:process.status]
+    let [is_skip, status] = [0, a:process.status]
   endif
 
   if is_skip
@@ -765,7 +765,7 @@ function! s:iconv(expr, from, to) abort "{{{
 endfunction"}}}
 function! s:print_progress_message(msg) abort "{{{
   let msg = dein#_convert2list(a:msg)
-  if empty(msg)
+  if empty(msg) || empty(s:global_context)
     return
   endif
 

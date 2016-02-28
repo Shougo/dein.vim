@@ -5,6 +5,7 @@ let s:assert = themis#helper('assert')
 
 let s:path = fnamemodify('.cache', ':p') . '/'
 let s:path2 = fnamemodify('.cache2', ':p') . '/'
+let s:path3 = fnamemodify('.cache3', ':p') . '/'
 let s:runtimepath_save = &runtimepath
 let s:filetype_save = &l:filetype
 
@@ -26,6 +27,21 @@ function! s:suite.before_each() abort "{{{
   let g:dein#install_progress_type = 'echo'
 endfunction"}}}
 
+function! s:suite.install() abort "{{{
+  let g:dein#install_progress_type = 'title'
+
+  call dein#begin(s:path)
+
+  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+
+  call dein#end()
+
+  call s:assert.equals(s:dein_install(), 0)
+
+  let plugin = dein#get('neocomplete.vim')
+  call s:assert.true(isdirectory(plugin.rtp))
+endfunction"}}}
+
 function! s:suite.tap() abort "{{{
   call dein#begin(s:path)
   call s:assert.equals(dein#tap('neocomplete.vim'), 0)
@@ -35,30 +51,6 @@ function! s:suite.tap() abort "{{{
   call s:assert.equals(dein#tap('neocomplete.vim'), 1)
   call s:assert.equals(dein#tap('unite.vim'), 0)
   call dein#end()
-endfunction"}}}
-
-function! s:suite.install() abort "{{{
-  let g:dein#install_progress_type = 'title'
-
-  call dein#begin(s:path)
-
-  let rev = '07f1d54c3d3207e4a3494a6ca1d5d5a91526fa9f'
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ {'rev': rev}), 0)
-
-  call dein#end()
-
-  call s:assert.equals(s:dein_install(), 0)
-
-  let plugin = dein#get('neocomplete.vim')
-
-  call s:assert.equals(plugin.rtp,
-        \ s:path.'repos/github.com/Shougo/neocomplete.vim_'.rev)
-
-  call s:assert.true(isdirectory(plugin.rtp))
-
-  call s:assert.equals(
-        \ s:get_revision(plugin), rev)
 endfunction"}}}
 
 function! s:suite.reinstall() abort "{{{
@@ -669,7 +661,7 @@ function! s:suite.copy_directory() abort "{{{
 endfunction"}}}
 
 function! s:suite.build() abort "{{{
-  call dein#begin(s:path)
+  call dein#begin(tempname())
 
   call dein#add('Shougo/vimproc.vim', {
         \ 'build': {
@@ -683,7 +675,7 @@ function! s:suite.build() abort "{{{
 
   call dein#end()
 
-  call s:assert.equals(s:dein_update(), 0)
+  call s:assert.equals(s:dein_install(), 0)
 
   call vimproc#version()
   call s:assert.true(filereadable(g:vimproc#dll_path))
