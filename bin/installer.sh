@@ -10,7 +10,7 @@ fi
 
 # Installation directory
 PLUGIN_DIR=$1
-INSTALL_DIR="$PLUGIN_DIR/repos/Shougo/dein.vim"
+INSTALL_DIR="$PLUGIN_DIR/repos/github.com/Shougo/dein.vim"
 echo "Install to \"$INSTALL_DIR\"..."
 if [ -e "$INSTALL_DIR" ]; then
   echo "\"$INSTALL_DIR\" already exists!"
