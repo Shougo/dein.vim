@@ -223,12 +223,6 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
 
   let filetype_after = dein#_redir('autocmd FileType')
 
-  if reset_ftplugin
-    call dein#_reset_ftplugin()
-  elseif filetype_before !=# filetype_after
-    execute 'doautocmd FileType' &filetype
-  endif
-
   " Reload script files.
   for directory in filter(['plugin', 'after/plugin'],
         \ "isdirectory(a:plugin.rtp.'/'.v:val)")
@@ -238,6 +232,12 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
       execute 'silent! unsilent source' fnameescape(file)
     endfor
   endfor
+
+  if reset_ftplugin
+    call dein#_reset_ftplugin()
+  elseif filetype_before !=# filetype_after
+    execute 'doautocmd FileType' &filetype
+  endif
 
   if !has('vim_starting')
     call dein#_call_hook('post_source', a:plugin)
