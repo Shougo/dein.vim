@@ -123,9 +123,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call s:merge_files(plugins, 'after/ftdetect')
 
   silent! runtime! ftdetect/**/*.vim
-  silent! runtime! after/ftdetect/**/*.vim
   silent! runtime! plugin/**/*.vim
-  silent! runtime! after/plugin/**/*.vim
 
   call dein#remote_plugins()
 
