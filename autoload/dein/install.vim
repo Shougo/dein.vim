@@ -390,17 +390,17 @@ function! s:install_async(context) abort "{{{
 
     call dein#install#_recache_runtimepath()
 
-    " Disable installation handler
-    let s:global_context = {}
-    augroup dein-install
-      autocmd!
-    augroup END
-
     call s:print_message(
           \ s:get_updated_message(a:context.synced_plugins))
 
     call s:print_message(
           \ s:get_errored_message(a:context.errored_plugins))
+
+    " Disable installation handler
+    let s:global_context = {}
+    augroup dein-install
+      autocmd!
+    augroup END
   endif
 
   return len(a:context.errored_plugins)
@@ -915,6 +915,10 @@ function! s:echo_mode(m, mode) abort "{{{
 endfunction"}}}
 
 function! s:on_hold() abort "{{{
+  if empty(s:global_context)
+    return
+  endif
+
   call s:install_async(s:global_context)
   call feedkeys("g\<ESC>", 'n')
 endfunction"}}}
