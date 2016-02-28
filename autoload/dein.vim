@@ -131,7 +131,7 @@ function! dein#_get_base_path() abort "{{{
 endfunction"}}}
 function! dein#_get_runtime_path() abort "{{{
   if !isdirectory(s:runtime_path)
-    call mkdir(s:runtime_path, 'p')
+    call mkdir(s:runtime_path . '/after', 'p')
   endif
 
   return s:runtime_path
@@ -174,7 +174,8 @@ function! dein#begin(path) abort "{{{
     return 1
   endif
   let &runtimepath = dein#_join_rtp(
-        \ insert(rtps, s:runtime_path, n-1), &runtimepath, s:runtime_path)
+        \ add(insert(rtps, s:runtime_path, n-1), s:runtime_path.'/after'),
+        \ &runtimepath, s:runtime_path)
 endfunction"}}}
 
 function! dein#end() abort "{{{
