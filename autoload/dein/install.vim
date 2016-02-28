@@ -637,14 +637,13 @@ function! s:check_output(context, process) abort "{{{
         \             >= a:process.plugin.timeout
 
   if a:context.async && has_key(a:process, 'proc')
-    let [is_skip, output, status] =
+    let [is_skip, status] =
           \ s:get_async_result(a:process, is_timeout)
   elseif dein#_has_vimproc() && has_key(a:process, 'proc')
-    let [is_skip, output, status] =
+    let [is_skip, status] =
           \ s:get_vimproc_result(a:process, is_timeout)
   else
-    let [is_skip, output, status] =
-          \ [0, '', a:process.status]
+    let [is_skip, status] = [0, '', a:process.status]
   endif
 
   if is_skip
@@ -710,7 +709,7 @@ function! s:check_output(context, process) abort "{{{
 endfunction"}}}
 function! s:get_async_result(process, is_timeout) abort "{{{
   if !has_key(s:job_info, a:process.proc)
-    return [1, -1, '']
+    return [1, -1]
   endif
 
   let job = s:job_info[a:process.proc]
@@ -722,7 +721,7 @@ function! s:get_async_result(process, is_timeout) abort "{{{
       call s:print_message(output)
     endif
     let job.candidates = job.candidates[-1:]
-    return [1, -1, '']
+    return [1, -1]
   else
     if a:is_timeout
       silent! call call(
@@ -738,7 +737,7 @@ function! s:get_async_result(process, is_timeout) abort "{{{
 
   let status = job.status
 
-  return [0, status, output]
+  return [0, status]
 endfunction"}}}
 function! s:get_vimproc_result(process, is_timeout) abort "{{{
   let output = vimproc#util#iconv(
@@ -748,13 +747,13 @@ function! s:get_vimproc_result(process, is_timeout) abort "{{{
     call s:print_message(output)
   endif
   if !a:process.proc.stdout.eof && !a:is_timeout
-    return [1, -1, '']
+    return [1, -1]
   endif
   call a:process.proc.stdout.close()
 
   let status = a:process.proc.waitpid()[1]
 
-  return [0, status, output]
+  return [0, status]
 endfunction"}}}
 
 function! s:iconv(expr, from, to) abort "{{{
