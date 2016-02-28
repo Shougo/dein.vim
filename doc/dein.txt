@@ -196,7 +196,8 @@ dein#check_install([{plugins}])			*dein#check_install()*
 		If you omit it, dein will check all plugins installation.
 
 dein#check_lazy_plugins()			 *dein#check_lazy_plugins()*
-		Check the no meaning lazy plugins.
+		Check the no meaning lazy plugins.  These plugins have not
+		"plugin/" directory.
 
 dein#recache_runtimepath()			 *dein#recache_runtimepath()*
 		Re-make the dein runtimepath cache and execute |:helptags|.
@@ -374,8 +375,14 @@ OPTIONS 					*dein-options*
 		call dein#add('https://github.com/Shougo/unite.vim.git',
 		   \ {'directory': 'unite'})
 <
+						*dein-options-base*
+		base		(String)
+		The directory base path to use. If omitted, the path specified
+		with |dein#begin()| will be used. It is useful for loading
+		scripts from a different path.
+
 						*dein-options-normalized_name*
-		normalized_name			(String)
+		normalized_name		(String)
 		Specify the normalized name of the plugin.  If omitted, dein
 		will normalize the tail of the repository name.
 		Note: Must be unique across all plugins.
