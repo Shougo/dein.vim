@@ -30,10 +30,18 @@ let s:job_info = {}
 function! dein#install#_update(plugins, bang, async) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
-        \ map(copy(a:plugins), 'dein#get(v:val)')
+        \ filter(map(copy(a:plugins), 'dein#get(v:val)'),
+        \        '!empty(v:val)')
 
   if !a:bang
     let plugins = filter(plugins, '!isdirectory(v:val.path)')
+  endif
+
+  if empty(plugins)
+    call s:error('Target plugins are not found.')
+    call s:error('You may have used the wrong plugin name,'.
+          \ ' or all of the plugins are already installed.')
+    return
   endif
 
   " Set context.
