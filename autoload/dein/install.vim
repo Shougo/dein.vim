@@ -475,27 +475,34 @@ function! s:init_context(plugins, bang, async) abort "{{{
   return context
 endfunction"}}}
 
-function! s:job_handler(job_id, data, event) abort "{{{
-  if !has_key(s:job_info, a:job_id)
-    let s:job_info[a:job_id] = {
+function! s:job_handler_neovim(job_id, data, event) abort "{{{
+  call s:job_handler(a:job_id, a:data, a:event)
+endfunction"}}}
+function! s:job_handler_vim(channel, msg) abort "{{{
+  call s:job_handler(s:channel2id(a:channel), a:msg, '')
+endfunction"}}}
+function! s:job_handler(id, msg, event) abort "{{{
+  if !has_key(s:job_info, a:id)
+    let s:job_info[a:id] = {
           \ 'candidates': [],
           \ 'eof': 0,
           \ 'status': -1,
           \ }
   endif
 
-  let job = s:job_info[a:job_id]
+  let job = s:job_info[a:id]
 
-  if a:event ==# 'exit'
+  if (has('nvim') && a:event ==# 'exit')
+        \ || (!has('nvim') && a:msg ==# 'DETACH')
     let job.eof = 1
-    let job.status = a:data
+    let job.status = a:msg
     if !empty(s:global_context)
       call s:install_async(s:global_context)
     endif
     return
   endif
 
-  let lines = a:data
+  let lines = has('nvim') ? a:msg : split(a:msg, "\n")
 
   let candidates = job.candidates
   if !empty(lines) && lines[0] != "\n" && !empty(job.candidates)
@@ -520,11 +527,11 @@ function! s:sync(plugin, context) abort "{{{
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, a:plugin.name, 'is frozen.'))
     return
-  else
-    let [cmd, message] = s:get_sync_command(
-          \   a:context.bang, a:plugin,
-          \   a:context.number, a:context.max_plugins)
   endif
+
+  let [cmd, message] = s:get_sync_command(
+        \   a:context.bang, a:plugin,
+        \   a:context.number, a:context.max_plugins)
 
   if cmd == ''
     " Skip
@@ -548,7 +555,16 @@ function! s:sync(plugin, context) abort "{{{
 
   call s:print_progress_message(message)
 
+  let process = s:init_process(a:plugin, a:context, cmd)
+  if !empty(process)
+    call add(a:context.processes, process)
+  endif
+endfunction"}}}
+function! s:init_process(plugin, context, cmd) abort
+  let process = {}
+
   let cwd = getcwd()
+  let cmd = s:iconv(a:cmd, &encoding, 'char')
   try
     let lang_save = $LANG
     let $LANG = 'C'
@@ -558,7 +574,7 @@ function! s:sync(plugin, context) abort "{{{
     let rev = s:get_revision_number(a:plugin)
 
     let process = {
-          \ 'number': num,
+          \ 'number': a:context.number,
           \ 'rev': rev,
           \ 'plugin': a:plugin,
           \ 'output': '',
@@ -582,15 +598,18 @@ function! s:sync(plugin, context) abort "{{{
 
     if has('nvim') && a:context.async
       " Use neovim async jobs
-      let process.proc = jobstart(
-            \          iconv(cmd, &encoding, 'char'), {
-            \ 'on_stdout': function('s:job_handler'),
-            \ 'on_stderr': function('s:job_handler'),
-            \ 'on_exit': function('s:job_handler'),
+      let process.proc = jobstart(cmd, {
+            \ 'on_stdout': function('s:job_handler_neovim'),
+            \ 'on_stderr': function('s:job_handler_neovim'),
+            \ 'on_exit': function('s:job_handler_neovim'),
             \ })
+    elseif has('job') && a:context.async
+      let process.proc = s:channel2id(job_getchannel(
+            \ job_start([&shell, &shellcmdflag, cmd], {
+            \   'callback': function('s:job_handler_vim'),
+            \ })))
     elseif dein#_has_vimproc()
-      let process.proc = vimproc#pgroup_open(vimproc#util#iconv(
-            \            cmd, &encoding, 'char'), 0, 2)
+      let process.proc = vimproc#pgroup_open(cmd, 0, 2)
 
       " Close handles.
       call process.proc.stdin.close()
@@ -604,58 +623,25 @@ function! s:sync(plugin, context) abort "{{{
     call dein#install#_cd(cwd)
   endtry
 
-  call add(a:context.processes, process)
-endfunction"}}}
+  return process
+endfunction
 function! s:check_output(context, process) abort "{{{
-  if has('nvim') && a:context.async && has_key(a:process, 'proc')
-    let is_timeout = (localtime() - a:process.start_time)
-          \             >= a:process.plugin.timeout
+  let is_timeout = (localtime() - a:process.start_time)
+        \             >= a:process.plugin.timeout
 
-    if !has_key(s:job_info, a:process.proc)
-      return
-    endif
-
-    let job = s:job_info[a:process.proc]
-
-    if !job.eof && !is_timeout
-      let output = join(job.candidates[: -2], "\n")
-      if output != ''
-        let a:process.output .= output
-        call s:print_message(output)
-      endif
-      let job.candidates = job.candidates[-1:]
-      return
-    else
-      if is_timeout
-        silent! call jobstop(a:process.proc)
-      endif
-      let output = join(job.candidates, "\n")
-      if output != ''
-        let a:process.output .= output
-        call s:print_message(output)
-      endif
-      let job.candidates = []
-    endif
-
-    let status = job.status
+  if a:context.async && has_key(a:process, 'proc')
+    let [is_skip, output, status] =
+          \ s:get_async_result(a:process, is_timeout)
   elseif dein#_has_vimproc() && has_key(a:process, 'proc')
-    let is_timeout = (localtime() - a:process.start_time)
-          \             >= a:process.plugin.timeout
-    let output = vimproc#util#iconv(
-          \ a:process.proc.stdout.read(-1, 300), 'char', &encoding)
-    if output != ''
-      let a:process.output .= output
-      call s:print_message(output)
-    endif
-    if !a:process.proc.stdout.eof && !is_timeout
-      return
-    endif
-    call a:process.proc.stdout.close()
-
-    let status = a:process.proc.waitpid()[1]
+    let [is_skip, output, status] =
+          \ s:get_vimproc_result(a:process, is_timeout)
   else
-    let is_timeout = 0
-    let status = a:process.status
+    let [is_skip, output, status] =
+          \ [0, '', a:process.status]
+  endif
+
+  if is_skip
+    return
   endif
 
   let num = a:process.number
@@ -714,6 +700,54 @@ function! s:check_output(context, process) abort "{{{
   endif
 
   let a:process.eof = 1
+endfunction"}}}
+function! s:get_async_result(process, is_timeout) abort "{{{
+  if !has_key(s:job_info, a:process.proc)
+    return [1, -1, '']
+  endif
+
+  let job = s:job_info[a:process.proc]
+
+  if !job.eof && !a:is_timeout
+    let output = join(job.candidates[: -2], "\n")
+    if output != ''
+      let a:process.output .= output
+      call s:print_message(output)
+    endif
+    let job.candidates = job.candidates[-1:]
+    return [1, -1, '']
+  else
+    if a:is_timeout
+      silent! call call(
+            \ (has('nvim') ? 'jobstop' : 'job_stop'), a:process.proc)
+    endif
+    let output = join(job.candidates, "\n")
+    if output != ''
+      let a:process.output .= output
+      call s:print_message(output)
+    endif
+    let job.candidates = []
+  endif
+
+  let status = job.status
+
+  return [0, status, output]
+endfunction"}}}
+function! s:get_vimproc_result(process, is_timeout) abort "{{{
+  let output = vimproc#util#iconv(
+        \ a:process.proc.stdout.read(-1, 300), 'char', &encoding)
+  if output != ''
+    let a:process.output .= output
+    call s:print_message(output)
+  endif
+  if !a:process.proc.stdout.eof && !a:is_timeout
+    return [1, -1, '']
+  endif
+  call a:process.proc.stdout.close()
+
+  let status = a:process.proc.waitpid()[1]
+
+  return [0, status, output]
 endfunction"}}}
 
 function! s:iconv(expr, from, to) abort "{{{
@@ -882,6 +916,9 @@ function! s:build(plugin) abort "{{{
   endtry
 
   return dein#install#_get_last_status()
+endfunction"}}}
+function! s:channel2id(channel) abort "{{{
+  return matchstr(a:channel, '\d\+')
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{

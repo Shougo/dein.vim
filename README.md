@@ -25,12 +25,6 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 2. Edit your .vimrc.
 
 
-## Recommends
-
-* [vimproc](https://github.com/Shougo/vimproc.vim) if you want to
-  install/update asynchronously in Unite interface.
-
-
 ## Concept
 
 * Faster than NeoBundle
@@ -47,8 +41,6 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 ## Future works (not implemented yet)
 
 * Rollback
-
-* Channel/Job asynchronous installer
 
 * Other types support
 
