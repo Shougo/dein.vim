@@ -696,7 +696,8 @@ function! s:load_depends(plugin, rtps, index) abort "{{{
 endfunction"}}}
 
 function! s:is_async() abort "{{{
-  return (has('nvim') || has('job')) && !has('vim_starting')
+  return (has('nvim') || (has('job') && !s:is_windows))
+        \ && !has('vim_starting')
 endfunction"}}}
 
 " vim: foldmethod=marker
