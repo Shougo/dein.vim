@@ -18,6 +18,14 @@ function! s:dein_update() abort
   return dein#install#_update([], 1, 0)
 endfunction
 
+function! s:suite.before_each() abort "{{{
+  call dein#_init()
+  let &runtimepath = s:runtimepath_save
+  let &l:filetype = s:filetype_save
+  let g:temp = tempname()
+  let g:dein#install_progress_type = 'echo'
+endfunction"}}}
+
 function! s:suite.tap() abort "{{{
   call dein#begin(s:path)
   call s:assert.equals(dein#tap('neocomplete.vim'), 0)
@@ -29,14 +37,6 @@ function! s:suite.tap() abort "{{{
   call dein#end()
 endfunction"}}}
 
-function! s:suite.before_each() abort "{{{
-  call dein#_init()
-  let &runtimepath = s:runtimepath_save
-  let &l:filetype = s:filetype_save
-  let g:temp = tempname()
-  let g:dein#install_progress_type = 'echo'
-endfunction"}}}
-
 function! s:suite.install() abort "{{{
   let g:dein#install_progress_type = 'title'
 
@@ -45,6 +45,8 @@ function! s:suite.install() abort "{{{
   let rev = '07f1d54c3d3207e4a3494a6ca1d5d5a91526fa9f'
   call s:assert.equals(dein#add('Shougo/neocomplete.vim',
         \ {'rev': rev}), 0)
+
+  call dein#end()
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -57,8 +59,6 @@ function! s:suite.install() abort "{{{
 
   call s:assert.equals(
         \ s:get_revision(plugin), rev)
-
-  call dein#end()
 endfunction"}}}
 
 function! s:suite.reinstall() abort "{{{
@@ -681,9 +681,9 @@ function! s:suite.build() abort "{{{
         \    },
         \ })
 
-  call s:assert.equals(s:dein_update(), 0)
-
   call dein#end()
+
+  call s:assert.equals(s:dein_update(), 0)
 
   call vimproc#version()
   call s:assert.true(filereadable(g:vimproc#dll_path))
