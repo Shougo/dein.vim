@@ -819,6 +819,8 @@ function! s:helptags() abort "{{{
     call s:copy_files(values(dein#get()), 'doc')
 
     silent execute 'helptags' fnameescape(dein#_get_tags_path())
+  catch /^Vim(helptags):E151:/
+    " Ignore an error that occurs when there is no help file
   catch
     call s:error('Error generating helptags:')
     call s:error(v:exception)
