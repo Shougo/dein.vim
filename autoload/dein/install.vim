@@ -119,6 +119,11 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call s:echo('Update done: ' . strftime('(%Y/%m/%d %H:%M:%S)'), 'echomsg')
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
+  if dein#_get_base_path() == ''
+    call dein#_error('Invalid base path.')
+    return
+  endif
+
   let parent = printf('%s/temp/%d', dein#_get_base_path(), getpid())
   let dest = parent . '/' . strftime('%Y%m%d%H%M%S')
   if !isdirectory(parent)
