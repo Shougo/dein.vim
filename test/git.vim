@@ -32,6 +32,15 @@ function! s:suite.init() abort "{{{
         \ 'L9', {}),
         \ { 'uri': 'https://github.com/vim-scripts/L9.git',
         \   'type': 'git', 'directory': 'github.com/vim-scripts/L9' })
+
+  let g:dein#types#git#default_protocol = 'ssh'
+
+  call s:assert.equals(s:git.init(
+        \ 'Shougo/dein.vim', {}),
+        \ { 'uri': 'git@github.com:Shougo/dein.vim.git',
+        \   'type': 'git', 'directory': 'github.com/Shougo/dein.vim' })
+
+  let g:dein#types#git#default_protocol = 'https'
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:

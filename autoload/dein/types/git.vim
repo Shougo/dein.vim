@@ -86,9 +86,11 @@ function! s:type.init(repo, option) abort "{{{
     let uri .= '.git'
   endif
 
-  return { 'uri': uri, 'type': 'git',
-        \  'directory': substitute(substitute(
-        \                 uri, '.*:/*', '', ''), '\.git$', '', '') }
+  let directory = substitute(uri, '\.git$', '', '')
+  let directory = substitute(directory, '^https:/\+\|^git@', '', '')
+  let directory = substitute(directory, ':', '/', 'g')
+
+  return { 'uri': uri, 'type': 'git', 'directory': directory }
 endfunction"}}}
 
 function! s:type.get_sync_command(plugin) abort "{{{
