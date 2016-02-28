@@ -131,7 +131,7 @@ function! dein#_get_base_path() abort "{{{
 endfunction"}}}
 function! dein#_get_runtime_path() abort "{{{
   if !isdirectory(s:runtime_path)
-    call mkdir(s:runtime_path . '/after', 'p')
+    call mkdir(s:runtime_path, 'p')
   endif
 
   return s:runtime_path
