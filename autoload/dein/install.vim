@@ -389,11 +389,9 @@ function! s:install_blocking(context) abort "{{{
     call s:restore_view(a:context)
   endtry
 
-  call s:print_message(
-        \ s:get_updated_message(a:context.synced_plugins))
+  call s:echomsg(s:get_updated_message(a:context.synced_plugins))
 
-  call s:print_message(
-        \ s:get_errored_message(a:context.errored_plugins))
+  call s:echomsg(s:get_errored_message(a:context.errored_plugins))
 
   call dein#install#_recache_runtimepath()
 
@@ -806,6 +804,17 @@ function! s:error(msg) abort "{{{
   endif
 
   call s:echo(msg, 'error')
+
+  let s:updates_log += msg
+  let s:log += msg
+endfunction"}}}
+function! s:echomsg(msg) abort "{{{
+  let msg = dein#_convert2list(a:msg)
+  if empty(msg)
+    return
+  endif
+
+  call s:echo(msg, 'echomsg')
 
   let s:updates_log += msg
   let s:log += msg
