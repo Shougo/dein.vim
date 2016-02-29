@@ -404,11 +404,9 @@ function! s:install_async(context) abort "{{{
         \ && a:context.number == a:context.max_plugins
     call s:restore_view(a:context)
 
-    call s:print_message(
-          \ s:get_updated_message(a:context.synced_plugins))
+    call s:echomsg(s:get_updated_message(a:context.synced_plugins))
 
-    call s:print_message(
-          \ s:get_errored_message(a:context.errored_plugins))
+    call s:echomsg(s:get_errored_message(a:context.errored_plugins))
 
     call dein#install#_recache_runtimepath()
 
