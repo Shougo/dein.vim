@@ -245,9 +245,6 @@ function! dein#add(repo, ...) abort "{{{
   endif
 
   let g:dein#_plugins[plugin.name] = plugin
-  if plugin.force
-    call dein#autoload#_source([plugin])
-  endif
 endfunction"}}}
 
 function! dein#local(dir, ...) abort "{{{
@@ -333,10 +330,6 @@ function! dein#load_cache(...) abort "{{{
     endif
 
     let g:dein#_plugins = plugins
-    let forced_plugins = filter(values(g:dein#_plugins), 'v:val.force')
-    if !empty(forced_plugins)
-      call dein#autoload#_source(forced_plugins)
-    endif
     for plugin in filter(dein#_get_lazy_plugins(),
           \ '!empty(v:val.on_cmd) || !empty(v:val.on_map)')
       if !empty(plugin.on_cmd)

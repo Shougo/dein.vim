@@ -44,7 +44,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'if': 1,
         \ 'sourced': 0,
         \ 'local': 0,
-        \ 'force': 0,
         \ 'base': dein#_get_base_path() . '/repos',
         \ 'frozen': 0,
         \ 'depends': [],

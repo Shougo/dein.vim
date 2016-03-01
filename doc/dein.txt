@@ -425,12 +425,6 @@ OPTIONS 					*dein-options*
 		If omit it, |g:dein#install_process_timeout| will be used.
 		Note: This feature is available if you installed |vimproc|.
 
-						*dein-options-force*
-		force			(Number)
-		If set to 1, dein will load plugin files in the plugin
-		repository forcedly.
-		Note:  It increases the loading overhead.
-
 						*dein-options-frozen*
 		frozen		(Number)
 		If set to 1, dein doesn't update it automatically. It is
