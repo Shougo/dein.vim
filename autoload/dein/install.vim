@@ -374,6 +374,42 @@ function! dein#install#_copy_directory(src, dest) abort "{{{
     return 1
   endif
 endfunction"}}}
+function! dein#install#_copy_directories(srcs, dest) abort "{{{
+  if empty(a:srcs)
+    return 0
+  endif
+
+  if dein#_is_windows()
+    " Create temporary batch file
+    let lines = ['@echo off']
+    for src in a:srcs
+      " Note: In xcopy command, must use "\" instead of "/".
+      let line = substitute(printf(
+            \ ' "%s/"* "%s"', src, a:dest), '/', '\\', 'g')
+      call add(lines, printf('xcopy %s /E /H /I /R /Y', line))
+    endfor
+
+    let temp = tempname() . '.bat'
+    try
+      call writefile(lines, temp)
+      let result = system(temp)
+    finally
+      call delete(temp)
+    endtry
+  else
+    let cmdline = 'cp -R '
+          \ . join(map(copy(a:srcs), "shellescape(v:val.'/') . '*'"))
+          \ . ' ' . shellescape(a:dest)
+    let result = system(cmdline)
+  endif
+
+  if v:shell_error
+    call dein#_error('copy command failed.')
+    call dein#_error(result)
+    call dein#_error('cmdline: ' . cmdline)
+    return 1
+  endif
+endfunction"}}}
 
 function! s:install_blocking(context) abort "{{{
   try
