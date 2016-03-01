@@ -609,7 +609,7 @@ function! s:suite.cache() abort "{{{
 
   call s:assert.equals(dein#get('neocomplete.vim'), {})
   call s:assert.not_equals(readfile(dein#_get_cache_file()), [])
-  sandbox let cache = eval(readfile(dein#_get_cache_file())[3])
+  sandbox let cache = eval(readfile(dein#_get_cache_file())[2])
   call s:assert.equals(type(cache), type({}))
 
   call s:assert.equals(dein#load_cache([$MYVIMRC], 1), 0)

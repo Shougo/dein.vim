@@ -294,12 +294,12 @@ function! dein#save_cache() abort "{{{
   let current_vim = dein#_redir('version')
 
   call writefile([s:get_cache_version(),
-        \ current_vim, string(s:vimrcs), string(plugins)],
+        \ string(s:vimrcs), string(plugins)],
         \ dein#_get_cache_file())
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
-  let s:vimrcs = len(a:000) == 0 ? [$MYVIMRC] : a:1
-  let starting = get(a:000, 1, has('vim_starting'))
+  let s:vimrcs = a:0 ? a:1 : [$MYVIMRC]
+  let starting = a:0 > 1 ? a:2 : has('vim_starting')
 
   let cache = dein#_get_cache_file()
   if !starting || !filereadable(cache) | return 1 | endif
@@ -313,19 +313,14 @@ function! dein#load_cache(...) abort "{{{
 
   try
     let list = readfile(cache)
-    let ver = list[0]
-    let vim = get(list, 1, '')
-    let vimrcs = get(list, 2, '')
-
-    if len(list) != 4
-          \ || ver !=# s:get_cache_version()
-          \ || current_vim !=# vim
-          \ || string(s:vimrcs) !=# vimrcs
+    if len(list) != 3
+          \ || list[0] !=# s:get_cache_version()
+          \ || string(s:vimrcs) !=# list[1]
       call dein#clear_cache()
       return 1
     endif
 
-    sandbox let plugins = eval(list[3])
+    sandbox let plugins = eval(list[2])
 
     if type(plugins) != type({})
       call dein#clear_cache()
