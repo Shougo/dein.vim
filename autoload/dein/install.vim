@@ -396,6 +396,7 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     finally
       call delete(temp)
     endtry
+    let cmdline = temp
   else
     let cmdline = 'cp -R '
           \ . join(map(copy(a:srcs), "shellescape(v:val.'/') . '*'"))

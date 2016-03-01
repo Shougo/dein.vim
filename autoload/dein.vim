@@ -291,8 +291,6 @@ function! dein#save_cache() abort "{{{
     let plugin.sourced = 0
   endfor
 
-  let current_vim = dein#_redir('version')
-
   call writefile([s:get_cache_version(),
         \ string(s:vimrcs),
         \ (exists('*json_encode') ?
@@ -310,8 +308,6 @@ function! dein#load_cache(...) abort "{{{
         \ 'getftime(cache) < v:val'))
     return 1
   endif
-
-  let current_vim = dein#_redir('version')
 
   try
     let list = readfile(cache)
