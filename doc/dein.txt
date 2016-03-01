@@ -154,7 +154,7 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 <
 						 *dein#local()*
 dein#local({directory}, [{options}, [{names}]])
-		Adds the subdirectories in {directory} to 'runtimepath', like
+		Add the subdirectories in {directory} to 'runtimepath', like
 		|pathogen| does. See |dein-options| for keys to set in
 		{options}.
 		If {names} is given, {names} directories are only loaded.
@@ -170,14 +170,14 @@ dein#install([{plugins}])			*dein#install()*
 		Install the plugins.
 		{plugins} is the plugins name list.
 		If you omit it, dein will install all plugins.
-		Note: If you are using neovim or |+job|, it is the
-		asynchronous.
+		Note: If you are using neovim or |+job|, it runs
+		asynchronously.
 
 dein#update([{plugins}])			*dein#update()*
 		Install/Update the plugins.
 		{plugins} is the plugins name list.
 		If you omit it, dein will update all plugins.
-		Note: If you are using neovim, it is the asynchronous.
+		Note: If you are using neovim, it runs asynchronously.
 
 dein#reinstall({plugins})			*dein#reinstall()*
 		Reinstall the plugins.
@@ -188,16 +188,16 @@ dein#remote_plugins()
 		Load not loaded neovim |:remote-plugin| and execute
 		|:UpdateRemotePlugins| command.
 		It is better than |:UpdateRemotePlugins| for dein.
-		Note: It is valid in neovim.
+		Note: It is valid only in neovim.
 
 dein#check_install([{plugins}])			*dein#check_install()*
 		Check the plugins installation.
 		If the plugins are not installed, it will return non zero.
-		{plugins} is the check of the plugins name list.
+		{plugins} is the plugins name list to check.
 		If you omit it, dein will check all plugins installation.
 
 dein#check_lazy_plugins()			 *dein#check_lazy_plugins()*
-		Check the no meaning lazy plugins.  These plugins have not
+		Check the no meaning lazy plugins.  These plugins don't have
 		"plugin/" directory.
 
 dein#recache_runtimepath()			 *dein#recache_runtimepath()*
@@ -251,19 +251,19 @@ dein#clear_cache()
 		Clear the cache file manually.
 
 dein#tap({plugin-name})				*dein#tap()*
-		It returns non-zero if {plugin-name} is exists and not
+		Return non-zero if {plugin-name} exists and isn't
 		disabled.
 		It initializes |dein#name| variable as {plugin-name}.
 
 dein#is_sourced({plugin-name})			*dein#is_sourced()*
-		It returns non-zero if {plugin-name} is exists and sourced.
+		Return non-zero if {plugin-name} exists and is sourced.
 		See |dein#source()| and |dein#tap()| as well.
 
 dein#get_log() 					*dein#get_log()*
-		Prints all previous install logs.
+		Print all previous install logs.
 
 dein#get_updates_log() 				*dein#get_updates_log()*
-		Prints previous update logs.
+		Print previous update logs.
 
 
 ------------------------------------------------------------------------------
@@ -319,7 +319,7 @@ g:dein#types#git#command_path
 					*g:dein#types#git#default_protocol*
 g:dein#types#git#default_protocol
 		The default protocol used for git (github).
-		Note: It is only accepted in "https" or "ssh".
+		Note: It only accepts "https" or "ssh".
 
 		Defaults: "https"
 
@@ -486,10 +486,10 @@ OPTIONS 					*dein-options*
 		automatically.
 		If you don't set it, dein will set it automatically when the
 		conditions are met.
-		Note: You should not specify the plugins which have not
-		"plugin/" directory as lazy load plugins.  It no means and
-		just increases the overhead.  You can get the no meaning lazy
-		plugins by |dein#check_lazy_plugins()|.
+		Note: You should not specify the plugins which have no
+		"plugin/" directory as lazy load plugins.  It is meaningless
+		and just increases the overhead.  You can get the no meaning
+		lazy plugins by |dein#check_lazy_plugins()|.
 
 						*dein-options-on_i*
 		on_i		(Number)
@@ -504,7 +504,7 @@ OPTIONS 					*dein-options*
 		on_path		(List) or (String)
 		If set to ".*", dein will call |dein#source()| on editing all
 		files.  Otherwise, dein will call |dein#source()| if the
-		buffer name is matched the string pattern.
+		buffer name is matched to the string pattern.
 		Note: It is useful for explorer behavior plugins.
 		Ex: vimfiler, metarw, vim-gnupg ...
 
@@ -515,7 +515,7 @@ OPTIONS 					*dein-options*
 
 						*dein-options-on_source*
 		on_source	(List) or (String)
-		Load the plugin after the list plugins are loaded.
+		Load the plugin after the listed plugins are loaded.
 		Note: The plugins must be lazy loaded plugins.
 
 						*dein-options-on_cmd*
@@ -643,7 +643,7 @@ A: You can use |dein-options-rtp|.
 <
 	Note: It does not generate |:helptags| file.
 
-Q: vimproc does not work when manual build it.
+Q: vimproc does not work when manually build it.
 https://github.com/Shougo/dein.vim/issues/11
 
 A: You should not build it manually.  Please use |dein-options-build| feature.
