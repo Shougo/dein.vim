@@ -3,7 +3,12 @@ language: viml
 sudo: required
 dist: trusty
 
+os:
+    - linux
+    - osx
+
 before_script:
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install macvim --with-override-system-vim; fi
     - vim --version
     - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
     - git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
