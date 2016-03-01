@@ -599,7 +599,7 @@ function! s:suite.cache() abort "{{{
   call dein#begin(s:path)
   call delete(dein#_get_cache_file())
   call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
-  call s:assert.equals(dein#load_cache(), 1)
+  call s:assert.equals(dein#load_cache([$MYVIMRC], 1), 1)
   call s:assert.equals(dein#save_cache(), 0)
   call s:assert.equals(dein#end(), 0)
 
@@ -612,7 +612,7 @@ function! s:suite.cache() abort "{{{
   sandbox let cache = eval(readfile(dein#_get_cache_file())[3])
   call s:assert.equals(type(cache), type({}))
 
-  call s:assert.equals(dein#load_cache(), 0)
+  call s:assert.equals(dein#load_cache([$MYVIMRC], 1), 0)
 
   let plugin = dein#get('neocomplete.vim')
 

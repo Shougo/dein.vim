@@ -159,14 +159,16 @@ function! dein#begin(path) abort "{{{
   let s:block_level += 1
   let s:base_path = dein#_chomp(dein#_expand(a:path))
   let s:runtime_path = s:base_path . '/.dein'
-  if !has('vim_starting')
-    let s:prev_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
-  endif
 
   call dein#_filetype_off()
 
+  if !has('vim_starting')
+    let s:prev_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
+    execute 'set rtp-='.fnameescape(s:runtime_path)
+    execute 'set rtp-='.fnameescape(s:runtime_path.'/after')
+  endif
+
   " Join to the tail in runtimepath.
-  execute 'set rtp-='.fnameescape(s:runtime_path)
   let rtps = dein#_split_rtp(&runtimepath)
   let n = index(rtps, $VIMRUNTIME)
   if n < 0
@@ -297,9 +299,10 @@ function! dein#save_cache() abort "{{{
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
   let s:vimrcs = len(a:000) == 0 ? [$MYVIMRC] : a:1
+  let starting = get(a:000, 1, has('vim_starting'))
 
   let cache = dein#_get_cache_file()
-  if !filereadable(cache) | return 1 | endif
+  if !starting || !filereadable(cache) | return 1 | endif
 
   if !empty(filter(map(copy(s:vimrcs), 'getftime(dein#_expand(v:val))'),
         \ 'getftime(cache) < v:val'))
