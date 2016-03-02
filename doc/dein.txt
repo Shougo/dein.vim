@@ -415,9 +415,10 @@ OPTIONS 					*dein-options*
 
 						*dein-options-if*
 		if		(Number) or (String)
-		If set to zero, dein doesn't register the plugin.
+		If set to zero, dein doesn't register the plugin, i.e. the
+		plugin will be disabled.
 		If it is String, dein will eval it.
-		If you don't set it, dein will register the plugin.
+		If you don't set it, dein will register (enable) the plugin.
 
 						*dein-options-timeout*
 		timeout		 (Number)
