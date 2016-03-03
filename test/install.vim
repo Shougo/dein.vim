@@ -610,16 +610,6 @@ function! s:suite.cache() abort "{{{
   call s:assert.equals(dein#get('neocomplete.vim'), {})
   call s:assert.not_equals(readfile(dein#_get_cache_file()), [])
 
-  let file = readfile(dein#_get_cache_file())
-
-  sandbox let cache1 = eval(file[2])
-  call s:assert.equals(type(cache1), type({}))
-
-  if exists('*json_encode')
-    let cache2 = json_decode(file[2])
-    call s:assert.equals(cache1, cache2)
-  endif
-
   call s:assert.equals(dein#load_cache([$MYVIMRC], 1), 0)
 
   let plugin = dein#get('neocomplete.vim')

@@ -292,9 +292,7 @@ function! dein#save_cache() abort "{{{
   endfor
 
   call writefile([s:get_cache_version(),
-        \ string(s:vimrcs),
-        \ (exists('*json_encode') ?
-        \  json_encode(plugins) : string(plugins))],
+        \ string(s:vimrcs), string(plugins)],
         \ dein#_get_cache_file())
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
@@ -318,8 +316,7 @@ function! dein#load_cache(...) abort "{{{
       return 1
     endif
 
-    sandbox let plugins = exists('*json_decode') ?
-          \ json_decode(list[2]) : eval(list[2])
+    sandbox let plugins = eval(list[2])
 
     if type(plugins) != type({})
       call dein#clear_cache()
