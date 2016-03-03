@@ -22,7 +22,24 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
      $ sh ./installer.sh {specify the installation directory}
      ```
 
-2. Edit your .vimrc.
+2. Edit your .vimrc like this.
+
+     ```vim
+     if &compatible
+       set nocompatible
+     endif
+     set runtimepath^={path to dein.vim directory}
+
+     call dein#begin(expand('~/.cache/dein'))
+
+     call dein#add({path to dein.vim directory})
+     call dein#add('Shougo/neocomplete.vim')
+     ...
+
+     call dein#end()
+
+     filetype plugin indent on
+     ```
 
 
 ## Concept
