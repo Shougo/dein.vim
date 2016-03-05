@@ -4,6 +4,26 @@
 " License: MIT license
 "=============================================================================
 
+let s:is_windows = has('win32') || has('win64')
+
+function! dein#util#_is_windows() abort "{{{
+  return s:is_windows
+endfunction"}}}
+function! dein#util#_is_mac() abort "{{{
+  return !s:is_windows && !has('win32unix')
+      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
+      \   (!isdirectory('/proc') && executable('sw_vers')))
+endfunction"}}}
+function! dein#util#_is_cygwin() abort "{{{
+  return has('win32unix')
+endfunction"}}}
+
+function! dein#util#_is_sudo() abort "{{{
+  return $SUDO_USER != '' && $USER !=# $SUDO_USER
+      \ && $HOME !=# expand('~'.$USER)
+      \ && $HOME ==# expand('~'.$SUDO_USER)
+endfunction"}}}
+
 function! dein#util#_error(msg) abort "{{{
   for mes in s:msg2list(a:msg)
     echohl WarningMsg | echomsg '[dein] ' . mes | echohl None
@@ -45,6 +65,16 @@ function! dein#util#_has_vimproc() abort "{{{
   endif
 
   return exists('*vimproc#version')
+endfunction"}}}
+
+function! dein#util#_check_lazy_plugins() abort "{{{
+  let no_meaning_plugins = map(filter(dein#_get_lazy_plugins(),
+        \   "!v:val.local && isdirectory(v:val.rtp)
+        \    && !isdirectory(v:val.rtp . '/plugin')
+        \    && !isdirectory(v:val.rtp . '/after/plugin')"),
+        \   'v:val.name')
+  echomsg 'No meaning lazy plugins: ' string(no_meaning_plugins)
+  return len(no_meaning_plugins)
 endfunction"}}}
 
 function! s:msg2list(expr) abort "{{{

@@ -220,7 +220,7 @@ function! s:is_git_dir(path) abort "{{{
   return 1
 endfunction "}}}
 
-let s:is_windows = dein#_is_windows()
+let s:is_windows = dein#util#_is_windows()
 
 function! s:join_paths(path1, path2) abort "{{{
   " Joins two paths together, handling the case where the second path

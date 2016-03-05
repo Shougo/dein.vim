@@ -53,7 +53,7 @@ function! dein#_get_runtime_path() abort "{{{
   return s:runtime_path
 endfunction"}}}
 function! dein#_get_tags_path() abort "{{{
-  if s:runtime_path == '' || dein#_is_sudo()
+  if s:runtime_path == '' || dein#util#_is_sudo()
     return ''
   endif
 
@@ -271,27 +271,16 @@ function! s:get_cache_version() abort "{{{
 endfunction "}}}
 
 function! dein#install(...) abort "{{{
-  return dein#install#_update(get(a:000, 0, []), 0, s:is_async())
+  return dein#install#_update(get(a:000, 0, []), 0, dein#install#_is_async())
 endfunction"}}}
 function! dein#update(...) abort "{{{
-  return dein#install#_update(get(a:000, 0, []), 1, s:is_async())
+  return dein#install#_update(get(a:000, 0, []), 1, dein#install#_is_async())
 endfunction"}}}
 function! dein#reinstall(plugins) abort "{{{
   call dein#install#_reinstall(a:plugins)
 endfunction"}}}
 function! dein#remote_plugins() abort "{{{
-  if !has('nvim')
-    return
-  endif
-
-  " Load not loaded neovim remote plugins
-  call dein#autoload#_source(filter(
-        \ values(dein#get()),
-        \ "isdirectory(v:val.rtp . '/rplugin')"))
-
-  if exists(':UpdateRemotePlugins')
-    UpdateRemotePlugins
-  endif
+  return dein#install#_remote_plugins()
 endfunction"}}}
 function! dein#recache_runtimepath() abort "{{{
   call dein#install#_recache_runtimepath()
@@ -312,13 +301,7 @@ function! dein#check_install(...) abort "{{{
   return 1
 endfunction"}}}
 function! dein#check_lazy_plugins() abort "{{{
-  let no_meaning_plugins = map(filter(dein#_get_lazy_plugins(),
-        \   "!v:val.local && isdirectory(v:val.rtp)
-        \    && !isdirectory(v:val.rtp . '/plugin')
-        \    && !isdirectory(v:val.rtp . '/after/plugin')"),
-        \   'v:val.name')
-  echomsg 'No meaning lazy plugins: ' string(no_meaning_plugins)
-  return len(no_meaning_plugins)
+  return dein#util#_check_lazy_plugins()
 endfunction"}}}
 
 function! dein#load_toml(filename, ...) abort "{{{
@@ -343,17 +326,6 @@ function! dein#_expand(path) abort "{{{
         \ a:path
   return (s:is_windows && path =~ '\\') ?
         \ dein#_substitute_path(path) : path
-endfunction"}}}
-function! dein#_is_windows() abort "{{{
-  return s:is_windows
-endfunction"}}}
-function! dein#_is_mac() abort "{{{
-  return !s:is_windows && !has('win32unix')
-      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
-      \   (!isdirectory('/proc') && executable('sw_vers')))
-endfunction"}}}
-function! dein#_is_cygwin() abort "{{{
-  return has('win32unix')
 endfunction"}}}
 function! dein#_split_rtp(runtimepath) abort "{{{
   if stridx(a:runtimepath, '\,') < 0
@@ -446,13 +418,8 @@ function! dein#_tsort(plugins) abort "{{{
 
   return sorted
 endfunction"}}}
-function! dein#_is_sudo() abort "{{{
-  return $SUDO_USER != '' && $USER !=# $SUDO_USER
-      \ && $HOME !=# expand('~'.$USER)
-      \ && $HOME ==# expand('~'.$SUDO_USER)
-endfunction"}}}
 function! dein#_writefile(path, list) abort "{{{
-  if dein#_is_sudo() || !filewritable(dein#_get_base_path())
+  if dein#util#_is_sudo() || !filewritable(dein#_get_base_path())
     return 1
   endif
 
@@ -607,11 +574,6 @@ function! s:load_depends(plugin, rtps, index) abort "{{{
       endif
     endif
   endfor
-endfunction"}}}
-
-function! s:is_async() abort "{{{
-  return (has('nvim') || (has('job') && exists('*job_getchannel') && !s:is_windows))
-        \ && !has('vim_starting')
 endfunction"}}}
 
 " vim: foldmethod=marker

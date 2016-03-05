@@ -91,7 +91,7 @@ function! dein#install#_reinstall(plugins) abort "{{{
 endfunction"}}}
 
 function! dein#install#_recache_runtimepath() abort "{{{
-  if dein#_is_sudo()
+  if dein#util#_is_sudo()
     call s:error('"sudo vim" is detected. This feature is disabled.')
     return
   endif
@@ -147,6 +147,26 @@ function! s:clear_runtimepath() abort "{{{
         \ "fnamemodify(v:val, ':t') !=# getpid()")
     call dein#install#_rm(path)
   endfor
+endfunction"}}}
+
+function! dein#install#_is_async() abort "{{{
+  return !has('vim_starting') && (has('nvim')
+        \ || (has('job') && exists('*job_getchannel') && !s:is_windows))
+endfunction"}}}
+
+function! dein#install#_remote_plugins() abort "{{{
+  if !has('nvim')
+    return
+  endif
+
+  " Load not loaded neovim remote plugins
+  call dein#autoload#_source(filter(
+        \ values(dein#get()),
+        \ "isdirectory(v:val.rtp . '/rplugin')"))
+
+  if exists(':UpdateRemotePlugins')
+    UpdateRemotePlugins
+  endif
 endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
@@ -332,13 +352,13 @@ function! dein#install#_rm(path) abort "{{{
     call delete(a:path, 'rf')
   else
     let cmdline = ' "' . a:path . '"'
-    if dein#_is_windows()
+    if dein#util#_is_windows()
       " Note: In rm command, must use "\" instead of "/".
       let cmdline = substitute(cmdline, '/', '\\\\', 'g')
     endif
 
     " Use system instead of vimproc#system()
-    let rm_command = dein#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
+    let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
     let result = system(rm_command . cmdline)
     if v:shell_error
       call dein#util#_error(result)
@@ -351,7 +371,7 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
   endif
 
   let status = 0
-  if dein#_is_windows()
+  if dein#util#_is_windows()
     " Create temporary batch file
     let lines = ['@echo off']
     for src in a:srcs
@@ -901,16 +921,16 @@ function! s:build(plugin) abort "{{{
   let build = a:plugin.build
   if type(build) == type('')
     let cmd = build
-  elseif dein#_is_windows() && has_key(build, 'windows')
+  elseif dein#util#_is_windows() && has_key(build, 'windows')
     let cmd = build.windows
-  elseif dein#_is_mac() && has_key(build, 'mac')
+  elseif dein#util#_is_mac() && has_key(build, 'mac')
     let cmd = build.mac
-  elseif dein#_is_cygwin() && has_key(build, 'cygwin')
+  elseif dein#util#_is_cygwin() && has_key(build, 'cygwin')
     let cmd = build.cygwin
-  elseif !dein#_is_windows() && has_key(build, 'linux')
+  elseif !dein#util#_is_windows() && has_key(build, 'linux')
         \ && !executable('gmake')
     let cmd = build.linux
-  elseif !dein#_is_windows() && has_key(build, 'unix')
+  elseif !dein#util#_is_windows() && has_key(build, 'unix')
     let cmd = build.unix
   elseif has_key(build, 'others')
     let cmd = build.others
