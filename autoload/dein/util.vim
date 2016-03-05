@@ -91,6 +91,10 @@ function! dein#util#_writefile(path, list) abort "{{{
   return writefile(a:list, path)
 endfunction"}}}
 
+function! dein#util#_get_type(name) abort "{{{
+  return get({'git': dein#types#git#define()}, a:name, {})
+endfunction"}}}
+
 function! s:msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction"}}}

@@ -181,7 +181,7 @@ function! s:get_progress_message(plugin, number, max) abort "{{{
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
 function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
-  let type = dein#_get_type(a:plugin.type)
+  let type = dein#util#_get_type(a:plugin.type)
 
   let cmd = has_key(type, 'get_sync_command') ?
         \ type.get_sync_command(a:plugin) : ''
@@ -197,7 +197,7 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
 endfunction"}}}
 function! s:get_revision_number(plugin) abort "{{{
   let cwd = getcwd()
-  let type = dein#_get_type(a:plugin.type)
+  let type = dein#util#_get_type(a:plugin.type)
 
   if !isdirectory(a:plugin.path)
         \ || !has_key(type, 'get_revision_number_command')
@@ -231,7 +231,7 @@ endfunction"}}}
 function! s:get_updated_log_message(plugin, new_rev, old_rev) abort "{{{
   let cwd = getcwd()
   try
-    let type = dein#_get_type(a:plugin.type)
+    let type = dein#util#_get_type(a:plugin.type)
 
     call dein#install#_cd(a:plugin.path)
 
@@ -253,7 +253,7 @@ function! s:lock_revision(process, context) abort "{{{
 
   let plugin.new_rev = s:get_revision_number(plugin)
 
-  let type = dein#_get_type(plugin.type)
+  let type = dein#util#_get_type(plugin.type)
   if !has_key(type, 'get_revision_lock_command')
     return 0
   endif
