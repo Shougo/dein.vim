@@ -387,8 +387,9 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     " Note: vimproc#system() does not support the command line.
     let status = 0
     for src in a:srcs
-      let result = system(printf('cp -R %s/* %s',
-            \ shellescape(src), shellescape(a:dest)))
+      let cmdline = printf('cp -R %s/* %s',
+            \ shellescape(src), shellescape(a:dest))
+      let result = system(cmdline)
       if v:shell_error
         let status = 1
         call dein#_error('copy command failed.')
