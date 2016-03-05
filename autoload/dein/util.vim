@@ -36,6 +36,17 @@ function! dein#util#_uniq(list, ...) abort "{{{
   return a:0 ? map(list, 'v:val[0]') : list
 endfunction"}}}
 
+function! dein#util#_has_vimproc() abort "{{{
+  if !exists('*vimproc#version')
+    try
+      call vimproc#version()
+    catch
+    endtry
+  endif
+
+  return exists('*vimproc#version')
+endfunction"}}}
+
 function! s:msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction"}}}

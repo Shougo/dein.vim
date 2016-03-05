@@ -93,7 +93,7 @@ function! s:type.get_sync_command(plugin) abort "{{{
     let cmd .= printf(' %s "%s"', a:plugin.uri, a:plugin.path)
   else
     let shell = fnamemodify(split(&shell)[0], ':t')
-    let and = (!dein#_has_vimproc() && shell ==# 'fish') ?
+    let and = (!dein#util#_has_vimproc() && shell ==# 'fish') ?
           \ '; and ' : ' && '
 
     let cmd = g:dein#types#git#pull_command

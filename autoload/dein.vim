@@ -11,29 +11,6 @@ endif
 
 let s:is_windows = has('win32') || has('win64')
 
-function! dein#_substitute_path(path) abort "{{{
-  return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
-endfunction"}}}
-function! dein#_expand(path) abort "{{{
-  let path = (a:path =~ '^\~') ? fnamemodify(a:path, ':p') :
-        \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
-        \               '^\$\h\w*', '\=eval(submatch(0))', '') :
-        \ a:path
-  return (s:is_windows && path =~ '\\') ?
-        \ dein#_substitute_path(path) : path
-endfunction"}}}
-function! dein#_is_windows() abort "{{{
-  return s:is_windows
-endfunction"}}}
-function! dein#_is_mac() abort "{{{
-  return !s:is_windows && !has('win32unix')
-      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
-      \   (!isdirectory('/proc') && executable('sw_vers')))
-endfunction"}}}
-function! dein#_is_cygwin() abort "{{{
-  return has('win32unix')
-endfunction"}}}
-
 function! dein#_init() abort "{{{
   let s:runtime_path = ''
   let s:base_path = ''
@@ -356,15 +333,27 @@ function! dein#get_updates_log() abort "{{{
 endfunction"}}}
 
 " Helper functions
-function! dein#_has_vimproc() abort "{{{
-  if !exists('*vimproc#version')
-    try
-      call vimproc#version()
-    catch
-    endtry
-  endif
-
-  return exists('*vimproc#version')
+function! dein#_substitute_path(path) abort "{{{
+  return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
+endfunction"}}}
+function! dein#_expand(path) abort "{{{
+  let path = (a:path =~ '^\~') ? fnamemodify(a:path, ':p') :
+        \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
+        \               '^\$\h\w*', '\=eval(submatch(0))', '') :
+        \ a:path
+  return (s:is_windows && path =~ '\\') ?
+        \ dein#_substitute_path(path) : path
+endfunction"}}}
+function! dein#_is_windows() abort "{{{
+  return s:is_windows
+endfunction"}}}
+function! dein#_is_mac() abort "{{{
+  return !s:is_windows && !has('win32unix')
+      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
+      \   (!isdirectory('/proc') && executable('sw_vers')))
+endfunction"}}}
+function! dein#_is_cygwin() abort "{{{
+  return has('win32unix')
 endfunction"}}}
 function! dein#_split_rtp(runtimepath) abort "{{{
   if stridx(a:runtimepath, '\,') < 0

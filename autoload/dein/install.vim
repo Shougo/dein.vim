@@ -313,7 +313,7 @@ endfunction"}}}
 function! dein#install#_system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
-  let output = dein#_has_vimproc() ?
+  let output = dein#util#_has_vimproc() ?
         \ vimproc#system(command) : system(command, "\<C-d>")
 
   let output = s:iconv(output, 'char', &encoding)
@@ -321,7 +321,7 @@ function! dein#install#_system(command) abort "{{{
   return substitute(output, '\n$', '', '')
 endfunction"}}}
 function! dein#install#_get_last_status() abort "{{{
-  return dein#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
+  return dein#util#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction"}}}
 function! dein#install#_rm(path) abort "{{{
   if !isdirectory(a:path) && !filereadable(a:path)
@@ -631,7 +631,7 @@ function! s:init_process(plugin, context, cmd) abort
             \ job_start([&shell, &shellcmdflag, cmd], {
             \   'callback': function('s:job_handler_vim'),
             \ })))
-    elseif dein#_has_vimproc()
+    elseif dein#util#_has_vimproc()
       let process.proc = vimproc#pgroup_open(cmd, 0, 2)
 
       " Close handles.
@@ -655,7 +655,7 @@ function! s:check_output(context, process) abort "{{{
   if a:context.async && has_key(a:process, 'proc')
     let [is_skip, status] =
           \ s:get_async_result(a:process, is_timeout)
-  elseif dein#_has_vimproc() && has_key(a:process, 'proc')
+  elseif dein#util#_has_vimproc() && has_key(a:process, 'proc')
     let [is_skip, status] =
           \ s:get_vimproc_result(a:process, is_timeout)
   else
@@ -924,7 +924,7 @@ function! s:build(plugin) abort "{{{
   try
     call dein#install#_cd(a:plugin.path)
 
-    if !dein#_has_vimproc()
+    if !dein#util#_has_vimproc()
       let result = system(cmd)
 
       if dein#install#_get_last_status()
