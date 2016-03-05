@@ -22,14 +22,6 @@ function! dein#_expand(path) abort "{{{
   return (s:is_windows && path =~ '\\') ?
         \ dein#_substitute_path(path) : path
 endfunction"}}}
-function! dein#_set_default(var, val, ...) abort "{{{
-  if !exists(a:var) || type({a:var}) != type(a:val)
-    let alternate_var = get(a:000, 0, '')
-
-    let {a:var} = exists(alternate_var) ?
-          \ {alternate_var} : a:val
-  endif
-endfunction"}}}
 function! dein#_uniq(list, ...) abort "{{{
   let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
   let i = 0
