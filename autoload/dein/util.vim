@@ -77,6 +77,20 @@ function! dein#util#_check_lazy_plugins() abort "{{{
   return len(no_meaning_plugins)
 endfunction"}}}
 
+function! dein#util#_writefile(path, list) abort "{{{
+  if dein#util#_is_sudo() || !filewritable(dein#_get_base_path())
+    return 1
+  endif
+
+  let path = dein#_get_base_path() . '/' . a:path
+  let dir = fnamemodify(path, ':h')
+  if !isdirectory(dir)
+    call mkdir(dir, 'p')
+  endif
+
+  return writefile(a:list, path)
+endfunction"}}}
+
 function! s:msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction"}}}

@@ -888,7 +888,7 @@ function! s:merge_files(plugins, directory) abort "{{{
     endfor
   endfor
 
-  call dein#_writefile(printf('.dein/%s/%s.vim',
+  call dein#util#_writefile(printf('.dein/%s/%s.vim',
         \ a:directory, a:directory), files)
 endfunction"}}}
 function! s:list_directory(directory) abort "{{{
