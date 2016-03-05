@@ -377,21 +377,28 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     finally
       call delete(temp)
     endtry
-    let cmdline = temp
+    if v:shell_error
+      let status = 1
+      call dein#_error('copy command failed.')
+      call dein#_error(result)
+      call dein#_error('cmdline: ' . temp)
+    endif
   else
     " Note: vimproc#system() does not support the command line.
-    let cmdline = 'cp -R '
-          \ . join(map(copy(a:srcs), "shellescape(v:val.'/') . '*'"))
-          \ . ' ' . shellescape(a:dest)
-    let result = system(cmdline)
+    let status = 0
+    for src in a:srcs
+      let result = system(printf('cp -R %s/* %s',
+            \ shellescape(src), shellescape(a:dest)))
+      if v:shell_error
+        let status = 1
+        call dein#_error('copy command failed.')
+        call dein#_error(result)
+        call dein#_error('cmdline: ' . cmdline)
+      endif
+    endfor
   endif
 
-  if v:shell_error
-    call dein#_error('copy command failed.')
-    call dein#_error(result)
-    call dein#_error('cmdline: ' . cmdline)
-    return 1
-  endif
+  return status
 endfunction"}}}
 
 function! s:install_blocking(context) abort "{{{
