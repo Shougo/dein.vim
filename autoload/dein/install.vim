@@ -355,25 +355,6 @@ function! dein#install#_rm(path) abort "{{{
     endif
   endif
 endfunction"}}}
-function! dein#install#_copy_directory(src, dest) abort "{{{
-  let cmdline = printf(' "%s/"* "%s"', a:src, a:dest)
-  if dein#_is_windows()
-    " Note: In xcopy command, must use "\" instead of "/".
-    let cmdline = substitute(cmdline, '/', '\\', 'g')
-  endif
-
-  " Use system instead of vimproc#system()
-  let cmdline = dein#_is_windows() ?
-        \ printf('xcopy %s /E /H /I /R /Y', cmdline) :
-        \ 'cp -R ' . cmdline
-  let result = system(cmdline)
-  if v:shell_error
-    call dein#_error('copy command failed.')
-    call dein#_error(result)
-    call dein#_error('cmdline: ' . cmdline)
-    return 1
-  endif
-endfunction"}}}
 function! dein#install#_copy_directories(srcs, dest) abort "{{{
   if empty(a:srcs)
     return 0
@@ -398,6 +379,7 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     endtry
     let cmdline = temp
   else
+    " Note: vimproc#system() does not support the command line.
     let cmdline = 'cp -R '
           \ . join(map(copy(a:srcs), "shellescape(v:val.'/') . '*'"))
           \ . ' ' . shellescape(a:dest)
@@ -873,11 +855,10 @@ function! s:helptags() abort "{{{
 endfunction"}}}
 function! s:copy_files(plugins, directory) abort "{{{
   let directory = (a:directory == '' ? '' : '/' . a:directory)
-  for src in filter(map(copy(a:plugins), "v:val.rtp . directory"),
+  let srcs = filter(map(copy(a:plugins), "v:val.rtp . directory"),
         \ 'isdirectory(v:val)')
-    call dein#install#_copy_directory(src,
-          \ dein#_get_runtime_path() . directory)
-  endfor
+  call dein#install#_copy_directories(srcs,
+        \ dein#_get_runtime_path() . directory)
 endfunction"}}}
 function! s:merge_files(plugins, directory) abort "{{{
   let files = []
