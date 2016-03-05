@@ -6,6 +6,15 @@
 
 let s:is_windows = has('win32') || has('win64')
 
+" Global options definition." "{{{
+let g:dein#install_max_processes =
+      \ get(g:, 'dein#install_max_processes', 8)
+let g:dein#install_process_timeout =
+      \ get(g:, 'dein#install_process_timeout', 120)
+let g:dein#install_progress_type =
+      \ get(g:, 'dein#install_progress_type', 'statusline')
+"}}}
+
 function! dein#util#_is_windows() abort "{{{
   return s:is_windows
 endfunction"}}}
@@ -93,6 +102,25 @@ endfunction"}}}
 
 function! dein#util#_get_type(name) abort "{{{
   return get({'git': dein#types#git#define()}, a:name, {})
+endfunction"}}}
+
+function! dein#util#_save_cache(vimrcs) abort "{{{
+  if dein#_get_base_path() == ''
+    " Ignore
+    return 1
+  endif
+
+  " Set function prefixes before save cache
+  call dein#autoload#_set_function_prefixes(dein#_get_lazy_plugins())
+
+  let plugins = deepcopy(dein#get())
+  for plugin in values(plugins)
+    let plugin.sourced = 0
+  endfor
+
+  call writefile([dein#_get_cache_version(),
+        \ string(a:vimrcs), string(plugins)],
+        \ dein#_get_cache_file())
 endfunction"}}}
 
 function! s:msg2list(expr) abort "{{{

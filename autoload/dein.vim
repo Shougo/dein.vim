@@ -9,15 +9,16 @@ if v:version < 704
   finish
 endif
 
-let s:is_windows = has('win32') || has('win64')
 let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
       \ . '/dein/parser.vim'
 
 function! dein#_init() abort "{{{
+  let s:is_windows = has('win32') || has('win64')
   let s:runtime_path = ''
   let s:base_path = ''
   let s:block_level = 0
   let s:prev_plugins = []
+  let s:vimrcs = []
   let g:dein#_plugins = {}
   let g:dein#name = ''
 
@@ -186,22 +187,7 @@ function! dein#is_sourced(name) abort "{{{
 endfunction"}}}
 
 function! dein#save_cache() abort "{{{
-  if dein#_get_base_path() == '' || !exists('s:vimrcs')
-    " Ignore
-    return 1
-  endif
-
-  " Set function prefixes before save cache
-  call dein#autoload#_set_function_prefixes(dein#_get_lazy_plugins())
-
-  let plugins = deepcopy(dein#get())
-  for plugin in values(plugins)
-    let plugin.sourced = 0
-  endfor
-
-  call writefile([s:get_cache_version(),
-        \ string(s:vimrcs), string(plugins)],
-        \ dein#_get_cache_file())
+  return dein#util#_save_cache(s:vimrcs)
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
   let s:vimrcs = a:0 ? a:1 : [$MYVIMRC]
@@ -218,7 +204,7 @@ function! dein#load_cache(...) abort "{{{
   try
     let list = readfile(cache)
     if len(list) != 3
-          \ || list[0] !=# s:get_cache_version()
+          \ || list[0] !=# dein#_get_cache_version()
           \ || string(s:vimrcs) !=# list[1]
       call dein#clear_cache()
       return 1
@@ -258,7 +244,7 @@ endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
   return dein#_get_base_path() . '/cache_' . v:progname
 endfunction"}}}
-function! s:get_cache_version() abort "{{{
+function! dein#_get_cache_version() abort "{{{
   return getftime(s:parser_vim_path)
 endfunction "}}}
 
