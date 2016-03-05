@@ -10,6 +10,8 @@ if v:version < 704
 endif
 
 let s:is_windows = has('win32') || has('win64')
+let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
+      \ . '/dein/parser.vim'
 
 function! dein#_init() abort "{{{
   let s:runtime_path = ''
@@ -264,8 +266,6 @@ endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
   return dein#_get_base_path() . '/cache_' . v:progname
 endfunction"}}}
-let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
-      \ . '/dein/parser.vim'
 function! s:get_cache_version() abort "{{{
   return getftime(s:parser_vim_path)
 endfunction "}}}
