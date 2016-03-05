@@ -1,40 +1,11 @@
 "=============================================================================
 " FILE: dein.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license  {{{
-"     Permission is hereby granted, free of charge, to any person obtaining
-"     a copy of this software and associated documentation files (the
-"     "Software"), to deal in the Software without restriction, including
-"     without limitation the rights to use, copy, modify, merge, publish,
-"     distribute, sublicense, and/or sell copies of the Software, and to
-"     permit persons to whom the Software is furnished to do so, subject to
-"     the following conditions:
-"
-"     The above copyright notice and this permission notice shall be included
-"     in all copies or substantial portions of the Software.
-"
-"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
+" License: MIT license
 "=============================================================================
 
-function! dein#_msg2list(expr) abort "{{{
-  return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
-endfunction"}}}
-
-function! dein#_error(msg) abort "{{{
-  for mes in dein#_msg2list(a:msg)
-    echohl WarningMsg | echomsg '[dein] ' . mes | echohl None
-  endfor
-endfunction"}}}
-
 if v:version < 704
-  call dein#_error('Does not work this version of Vim (' . v:version . ').')
+  call dein#util#_error('Does not work this version of Vim (' . v:version . ').')
   finish
 endif
 
@@ -152,7 +123,7 @@ call dein#_init()
 
 function! dein#begin(path) abort "{{{
   if a:path == '' || s:block_level != 0
-    call dein#_error('Invalid begin/end block usage.')
+    call dein#util#_error('Invalid begin/end block usage.')
     return 1
   endif
 
@@ -172,7 +143,7 @@ function! dein#begin(path) abort "{{{
   let rtps = dein#_split_rtp(&runtimepath)
   let n = index(rtps, $VIMRUNTIME)
   if n < 0
-    call dein#_error('Invalid runtimepath.')
+    call dein#util#_error('Invalid runtimepath.')
     return 1
   endif
   let &runtimepath = dein#_join_rtp(
@@ -182,7 +153,7 @@ endfunction"}}}
 
 function! dein#end() abort "{{{
   if s:block_level != 1
-    call dein#_error('Invalid begin/end block usage.')
+    call dein#util#_error('Invalid begin/end block usage.')
     return 1
   endif
 
@@ -192,7 +163,7 @@ function! dein#end() abort "{{{
   let rtps = dein#_split_rtp(&runtimepath)
   let index = index(rtps, s:runtime_path)
   if index < 0
-    call dein#_error('Invalid runtimepath.')
+    call dein#util#_error('Invalid runtimepath.')
     return 1
   endif
 
@@ -233,7 +204,7 @@ endfunction"}}}
 
 function! dein#add(repo, ...) abort "{{{
   if s:block_level != 1
-    call dein#_error('Invalid add usage.')
+    call dein#util#_error('Invalid add usage.')
     return 1
   endif
 
@@ -334,7 +305,7 @@ function! dein#load_cache(...) abort "{{{
       endif
     endfor
   catch
-    call dein#_error('Error occurred while loading cache : ' . v:exception)
+    call dein#util#_error('Error occurred while loading cache : ' . v:exception)
     call dein#clear_cache()
     return 1
   endtry
@@ -662,7 +633,7 @@ endfunction"}}}
 function! s:load_depends(plugin, rtps, index) abort "{{{
   for name in a:plugin.depends
     if !has_key(g:dein#_plugins, name)
-      call dein#_error(printf('Plugin name "%s" is not found.', name))
+      call dein#util#_error(printf('Plugin name "%s" is not found.', name))
       return 1
     endif
   endfor

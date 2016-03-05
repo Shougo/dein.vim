@@ -1,26 +1,7 @@
 "=============================================================================
 " FILE: install.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license  {{{
-"     Permission is hereby granted, free of charge, to any person obtaining
-"     a copy of this software and associated documentation files (the
-"     "Software"), to deal in the Software without restriction, including
-"     without limitation the rights to use, copy, modify, merge, publish,
-"     distribute, sublicense, and/or sell copies of the Software, and to
-"     permit persons to whom the Software is furnished to do so, subject to
-"     the following conditions:
-"
-"     The above copyright notice and this permission notice shall be included
-"     in all copies or substantial portions of the Software.
-"
-"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
+" License: MIT license
 "=============================================================================
 
 " Variables
@@ -84,7 +65,7 @@ function! dein#install#_reinstall(plugins) abort "{{{
           \ || plugin.local
           \ || (plugin.sourced &&
           \     index(['dein', 'vimproc'], plugin.normalized_name) >= 0)
-      call dein#_error(
+      call dein#util#_error(
             \ printf('|%s| Cannot reinstall the plugin!', plugin.name))
       continue
     endif
@@ -133,7 +114,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
   if dein#_get_base_path() == ''
-    call dein#_error('Invalid base path.')
+    call dein#util#_error('Invalid base path.')
     return
   endif
 
@@ -143,9 +124,9 @@ function! s:clear_runtimepath() abort "{{{
     call mkdir(parent, 'p')
   endif
   if rename(dein#_get_runtime_path(), dest)
-    call dein#_error('Rename failed.')
-    call dein#_error('src=' . dein#_get_runtime_path())
-    call dein#_error('dest=' . dest)
+    call dein#util#_error('Rename failed.')
+    call dein#util#_error('src=' . dein#_get_runtime_path())
+    call dein#util#_error('dest=' . dest)
     return
   endif
 
@@ -351,7 +332,7 @@ function! dein#install#_rm(path) abort "{{{
     let rm_command = dein#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
     let result = system(rm_command . cmdline)
     if v:shell_error
-      call dein#_error(result)
+      call dein#util#_error(result)
     endif
   endif
 endfunction"}}}

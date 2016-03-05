@@ -1,26 +1,7 @@
 "=============================================================================
 " FILE: autoload.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license  {{{
-"     Permission is hereby granted, free of charge, to any person obtaining
-"     a copy of this software and associated documentation files (the
-"     "Software"), to deal in the Software without restriction, including
-"     without limitation the rights to use, copy, modify, merge, publish,
-"     distribute, sublicense, and/or sell copies of the Software, and to
-"     permit persons to whom the Software is furnished to do so, subject to
-"     the following conditions:
-"
-"     The above copyright notice and this permission notice shall be included
-"     in all copies or substantial portions of the Software.
-"
-"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
+" License: MIT license
 "=============================================================================
 
 function! dein#autoload#_source(plugins) abort "{{{
@@ -110,7 +91,7 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "
   call dein#source(a:name)
 
   if !exists(':' . a:command)
-    call dein#_error(printf('command %s is not found.', a:command))
+    call dein#util#_error(printf('command %s is not found.', a:command))
     return
   endif
 
@@ -177,7 +158,7 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
   " Load dependencies
   for name in a:plugin.depends
     if !has_key(g:dein#_plugins, name)
-      call dein#_error(printf('Plugin name "%s" is not found.', name))
+      call dein#util#_error(printf('Plugin name "%s" is not found.', name))
       return 1
     endif
 
