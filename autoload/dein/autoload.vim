@@ -72,7 +72,7 @@ endfunction"}}}
 function! dein#autoload#_set_function_prefixes(plugins) abort "{{{
   for plugin in filter(copy(a:plugins), "empty(v:val.pre_func)")
     let plugin.pre_func =
-          \ dein#_uniq(map(split(globpath(
+          \ dein#util#_uniq(map(split(globpath(
           \  plugin.path, 'autoload/**/*.vim', 1), "\n"),
           \  "substitute(matchstr(
           \   dein#_substitute_path(fnamemodify(v:val, ':r')),

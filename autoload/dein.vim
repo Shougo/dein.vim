@@ -22,21 +22,6 @@ function! dein#_expand(path) abort "{{{
   return (s:is_windows && path =~ '\\') ?
         \ dein#_substitute_path(path) : path
 endfunction"}}}
-function! dein#_uniq(list, ...) abort "{{{
-  let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
-  let i = 0
-  let seen = {}
-  while i < len(list)
-    let key = string(a:0 ? list[i][1] : list[i])
-    if has_key(seen, key)
-      call remove(list, i)
-    else
-      let seen[key] = 1
-      let i += 1
-    endif
-  endwhile
-  return a:0 ? map(list, 'v:val[0]') : list
-endfunction"}}}
 function! dein#_is_windows() abort "{{{
   return s:is_windows
 endfunction"}}}
@@ -48,17 +33,6 @@ endfunction"}}}
 function! dein#_is_cygwin() abort "{{{
   return has('win32unix')
 endfunction"}}}
-
-" Global options definition." "{{{
-let g:dein#enable_name_conversion =
-      \ get(g:, 'dein#enable_name_conversion', 0)
-let g:dein#install_max_processes =
-      \ get(g:, 'dein#install_max_processes', 8)
-let g:dein#install_process_timeout =
-      \ get(g:, 'dein#install_process_timeout', 120)
-let g:dein#install_progress_type =
-      \ get(g:, 'dein#install_progress_type', 'statusline')
-"}}}
 
 function! dein#_init() abort "{{{
   let s:runtime_path = ''

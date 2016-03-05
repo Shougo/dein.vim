@@ -6,6 +6,11 @@
 
 let s:git = dein#types#git#define()
 
+" Global options definition." "{{{
+let g:dein#enable_name_conversion =
+      \ get(g:, 'dein#enable_name_conversion', 0)
+"}}}
+
 function! dein#parse#_init(repo, options) abort "{{{
   let plugin = s:git.init(a:repo, a:options)
   if empty(plugin)
@@ -176,7 +181,7 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
           \   fnamemodify(v:val, ':p')), '/$', '', '')")
   endfor
 
-  for dir in dein#_uniq(directories)
+  for dir in dein#util#_uniq(directories)
     let options = extend({ 'local': 1, 'base': base,
           \ 'name': fnamemodify(dir, ':t') }, a:options)
 
