@@ -122,6 +122,14 @@ function! dein#util#_save_cache(vimrcs) abort "{{{
         \ string(a:vimrcs), string(plugins)],
         \ dein#_get_cache_file())
 endfunction"}}}
+function! dein#util#_clear_cache() abort "{{{
+  let cache = dein#_get_cache_file()
+  if !filereadable(cache)
+    return
+  endif
+
+  call delete(cache)
+endfunction"}}}
 
 function! s:msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')

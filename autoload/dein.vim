@@ -150,7 +150,7 @@ function! dein#end() abort "{{{
       call dein#install#_recache_runtimepath()
     endif
     call dein#_call_hook('post_source')
-    call dein#_reset_ftplugin()
+    call dein#autoload#_reset_ftplugin()
   endif
 endfunction"}}}
 
@@ -234,12 +234,7 @@ function! dein#load_cache(...) abort "{{{
   endtry
 endfunction"}}}
 function! dein#clear_cache() abort "{{{
-  let cache = dein#_get_cache_file()
-  if !filereadable(cache)
-    return
-  endif
-
-  call delete(cache)
+  return dein#util#_clear_cache()
 endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
   return dein#_get_base_path() . '/cache_' . v:progname
@@ -342,37 +337,6 @@ function! dein#_filetype_off() abort "{{{
   endif
 
   return filetype_out
-endfunction"}}}
-function! dein#_reset_ftplugin() abort "{{{
-  let filetype_out = dein#_filetype_off()
-
-  if filetype_out =~# 'detection:ON'
-        \ && filetype_out =~# 'plugin:ON'
-        \ && filetype_out =~# 'indent:ON'
-    silent! filetype plugin indent on
-  else
-    if filetype_out =~# 'detection:ON'
-      silent! filetype on
-    endif
-
-    if filetype_out =~# 'plugin:ON'
-      silent! filetype plugin on
-    endif
-
-    if filetype_out =~# 'indent:ON'
-      silent! filetype indent on
-    endif
-  endif
-
-  if filetype_out =~# 'detection:ON'
-    filetype detect
-  endif
-
-  " Reload filetype plugins.
-  let &l:filetype = &l:filetype
-
-  " Recall FileType autocmd
-  execute 'doautocmd FileType' &filetype
 endfunction"}}}
 function! dein#_call_hook(hook_name, ...) abort "{{{
   let prefix = '#User#dein#'.a:hook_name.'#'
