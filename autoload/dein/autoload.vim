@@ -173,7 +173,6 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1
 
   let filetype_before = dein#_redir('autocmd FileType')
-  let reset_ftplugin = 0
 
   " Load dependencies
   for name in a:plugin.depends
@@ -217,10 +216,6 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     endif
   endfor
 
-  if !reset_ftplugin
-    let reset_ftplugin = s:is_reset_ftplugin(&filetype, a:plugin.rtp)
-  endif
-
   let filetype_after = dein#_redir('autocmd FileType')
 
   " Reload script files.
@@ -233,7 +228,7 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     endfor
   endfor
 
-  if reset_ftplugin
+  if s:is_reset_ftplugin(a:plugin.rtp)
     call dein#_reset_ftplugin()
   elseif filetype_before !=# filetype_after
     execute 'doautocmd FileType' &filetype
@@ -267,21 +262,10 @@ function! s:get_input() abort "{{{
   return input
 endfunction"}}}
 
-function! s:is_reset_ftplugin(filetype, rtp) abort "{{{
-  for filetype in split(a:filetype, '\.')
-    for directory in ['ftplugin', 'indent', 'syntax',
-          \ 'after/ftplugin', 'after/indent', 'after/syntax']
-      let base = a:rtp . '/' . directory
-      if filereadable(base.'/'.filetype.'.vim') ||
-            \ (directory =~# 'ftplugin$' &&
-            \   isdirectory(base . '/' . filetype) ||
-            \   glob(base.'/'.filetype.'_*.vim') != '')
-        return 1
-      endif
-    endfor
-  endfor
-
-  return 0
+function! s:is_reset_ftplugin(rtp) abort "{{{
+  return len(filter(['ftplugin', 'indent', 'syntax',
+        \ 'after/ftplugin', 'after/indent', 'after/syntax'],
+        \ "isdirectory(a:rtp . '/' . v:val)"))
 endfunction"}}}
 
 " vim: foldmethod=marker
