@@ -24,7 +24,10 @@ function! dein#_init() abort "{{{
   augroup dein
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
-    autocmd FileType * nested call s:on_ft()
+    autocmd FileType * nested
+          \ if &filetype != '' |
+          \   call dein#autoload#_on_ft() |
+          \ endif
     autocmd FuncUndefined * call s:on_func(expand('<afile>'))
     autocmd VimEnter * call dein#_call_hook('post_source')
   augroup END
@@ -38,8 +41,11 @@ function! dein#_init() abort "{{{
         \ 'BufRead', 'BufCreate', 'BufEnter',
         \ 'BufWinEnter', 'BufNew', 'VimEnter'
         \ ]
-    execute 'autocmd dein' event
-          \ "* call s:on_path(expand('<afile>'), " .string(event) . ")"
+    execute 'autocmd dein' event '*'
+          \ "if expand('<afile>') != '' |
+          \   call dein#autoload#_on_path(expand('<afile>'), "
+          \                           .string(event) . ") |
+          \ endif"
   endfor
 endfunction"}}}
 function! dein#_get_base_path() abort "{{{
@@ -496,20 +502,6 @@ function! s:tsort_impl(target, mark, sorted) abort "{{{
   call add(a:sorted, a:target)
 endfunction"}}}
 
-function! s:on_path(path, event) abort "{{{
-  if a:path == ''
-    return
-  endif
-
-  call dein#autoload#_on_path(a:path, a:event)
-endfunction"}}}
-function! s:on_ft() abort "{{{
-  if &filetype == ''
-    return
-  endif
-
-  call dein#autoload#_on_ft()
-endfunction"}}}
 function! s:on_func(name) abort "{{{
   let function_prefix = substitute(a:name, '[^#]*$', '', '')
   if function_prefix =~# '^dein#'
