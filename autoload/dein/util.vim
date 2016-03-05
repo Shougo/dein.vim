@@ -39,6 +39,10 @@ function! dein#util#_error(msg) abort "{{{
   endfor
 endfunction"}}}
 
+function! dein#util#_chomp(str) abort "{{{
+  return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
+endfunction"}}}
+
 function! dein#util#_set_default(var, val, ...) abort "{{{
   if !exists(a:var) || type({a:var}) != type(a:val)
     let alternate_var = get(a:000, 0, '')

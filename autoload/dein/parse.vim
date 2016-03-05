@@ -80,7 +80,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   if !has_key(plugin, 'directory')
     let plugin.directory = plugin.name
   endif
-  let plugin.directory = dein#_chomp(plugin.directory)
+  let plugin.directory = dein#util#_chomp(plugin.directory)
 
   if plugin.rev != ''
     let plugin.directory .= '_' . substitute(plugin.rev,
@@ -90,12 +90,12 @@ function! dein#parse#_dict(plugin) abort "{{{
   if plugin.base[0:] == '~'
     let plugin.base = dein#_expand(plugin.base)
   endif
-  let plugin.base = dein#_chomp(plugin.base)
+  let plugin.base = dein#util#_chomp(plugin.base)
 
   if !has_key(plugin, 'path')
     let plugin.path = plugin.base.'/'.plugin.directory
   endif
-  let plugin.path = dein#_chomp(plugin.path)
+  let plugin.path = dein#util#_chomp(plugin.path)
 
   " Check relative path
   if (!has_key(a:plugin, 'rtp') || a:plugin.rtp != '')
@@ -105,7 +105,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   if plugin.rtp[0:] == '~'
     let plugin.rtp = dein#_expand(plugin.rtp)
   endif
-  let plugin.rtp = dein#_chomp(plugin.rtp)
+  let plugin.rtp = dein#util#_chomp(plugin.rtp)
 
   if !has_key(plugin, 'augroup')
     let plugin.augroup = plugin.normalized_name

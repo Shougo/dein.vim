@@ -80,7 +80,10 @@ function! dein#begin(path) abort "{{{
   endif
 
   let s:block_level += 1
-  let s:base_path = dein#_chomp(dein#_expand(a:path))
+  let s:base_path = dein#_expand(a:path)
+  if s:base_path[-1:] == '/'
+    let s:base_path = s:base_path[: -2]
+  endif
   let s:runtime_path = s:base_path . '/.dein'
 
   call dein#_filetype_off()
@@ -311,9 +314,6 @@ endfunction"}}}
 function! dein#_join_rtp(list, runtimepath, rtp) abort "{{{
   return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
         \ join(a:list, ',') : join(map(copy(a:list), 's:escape(v:val)'), ',')
-endfunction"}}}
-function! dein#_chomp(str) abort "{{{
-  return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
 endfunction"}}}
 function! dein#_convert2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? copy(a:expr) :
