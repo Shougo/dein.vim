@@ -108,7 +108,7 @@ function! dein#_init() abort "{{{
   augroup dein
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
-    autocmd FileType * call s:on_ft()
+    autocmd FileType * nested call s:on_ft()
     autocmd FuncUndefined * call s:on_func(expand('<afile>'))
     autocmd VimEnter * call dein#_call_hook('post_source')
   augroup END
