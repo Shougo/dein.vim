@@ -148,21 +148,7 @@ function! dein#end() abort "{{{
 endfunction"}}}
 
 function! dein#add(repo, ...) abort "{{{
-  if s:block_level != 1
-    call dein#util#_error('Invalid add usage.')
-    return 1
-  endif
-
-  let plugin = dein#parse#_dict(
-        \ dein#parse#_init(a:repo, get(a:000, 0, {})))
-  if (has_key(g:dein#_plugins, plugin.name)
-        \ && g:dein#_plugins[plugin.name].sourced)
-        \ || !plugin.if
-    " Skip already loaded or not enabled plugin.
-    return
-  endif
-
-  let g:dein#_plugins[plugin.name] = plugin
+  return dein#parse#_add(a:repo, get(a:000, 0, {}))
 endfunction"}}}
 
 function! dein#local(dir, ...) abort "{{{
@@ -417,19 +403,6 @@ function! dein#_tsort(plugins) abort "{{{
   endfor
 
   return sorted
-endfunction"}}}
-function! dein#_writefile(path, list) abort "{{{
-  if dein#util#_is_sudo() || !filewritable(dein#_get_base_path())
-    return 1
-  endif
-
-  let path = dein#_get_base_path() . '/' . a:path
-  let dir = fnamemodify(path, ':h')
-  if !isdirectory(dir)
-    call mkdir(dir, 'p')
-  endif
-
-  return writefile(a:list, path)
 endfunction"}}}
 function! dein#_add_dummy_commands(plugin) abort "{{{
   if empty(a:plugin.dummy_commands)

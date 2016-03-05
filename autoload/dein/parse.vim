@@ -11,6 +11,18 @@ let g:dein#enable_name_conversion =
       \ get(g:, 'dein#enable_name_conversion', 0)
 "}}}
 
+function! dein#parse#_add(repo, options) abort "{{{
+  let plugin = dein#parse#_dict(
+        \ dein#parse#_init(a:repo, a:options))
+  if (has_key(g:dein#_plugins, plugin.name)
+        \ && g:dein#_plugins[plugin.name].sourced)
+        \ || !plugin.if
+    " Skip already loaded or not enabled plugin.
+    return
+  endif
+
+  let g:dein#_plugins[plugin.name] = plugin
+endfunction"}}}
 function! dein#parse#_init(repo, options) abort "{{{
   let plugin = s:git.init(a:repo, a:options)
   if empty(plugin)
