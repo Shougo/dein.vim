@@ -361,9 +361,6 @@ function! dein#_tsort(plugins) abort "{{{
   return sorted
 endfunction"}}}
 function! dein#_add_dummy_commands(plugin) abort "{{{
-  if empty(a:plugin.dummy_commands)
-    call s:generate_dummy_commands(a:plugin)
-  endif
   for command in a:plugin.dummy_commands
     silent! execute command[1]
   endfor
@@ -382,42 +379,8 @@ function! s:generate_dummy_commands(plugin) abort "{{{
   endfor
 endfunction"}}}
 function! dein#_add_dummy_mappings(plugin) abort "{{{
-  if empty(a:plugin.dummy_mappings)
-    call s:generate_dummy_mappings(a:plugin)
-  endif
   for mapping in a:plugin.dummy_mappings
     silent! execute mapping[2]
-  endfor
-endfunction"}}}
-function! s:generate_dummy_mappings(plugin) abort "{{{
-  for [modes, mappings] in map(copy(a:plugin.on_map), "
-        \   type(v:val) == type([]) ?
-        \     [split(v:val[0], '\\zs'), v:val[1:]] :
-        \     [['n', 'x', 'o'], [v:val]]
-        \ ")
-    if mappings ==# ['<Plug>']
-      " Use plugin name.
-      let mappings = ['<Plug>(' . a:plugin.normalized_name]
-      if stridx(a:plugin.normalized_name, '-') >= 0
-        " The plugin mappings may use "_" instead of "-".
-        call add(mappings, '<Plug>(' .
-              \ substitute(a:plugin.normalized_name, '-', '_', 'g'))
-      endif
-    endif
-
-    for mapping in mappings
-      " Define dummy mappings.
-      let prefix = printf("call dein#autoload#_on_map(%s, %s,",
-            \ string(substitute(mapping, '<', '<lt>', 'g')),
-            \ string(a:plugin.name))
-      for mode in modes
-        let raw_map = mode.'noremap <unique><silent> '.mapping
-            \ . (mode ==# 'c' ? " \<C-r>=" :
-            \    mode ==# 'i' ? " \<C-o>:" : " :\<C-u>") . prefix
-            \ . string(mode) . ")<CR>"
-        call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
-      endfor
-    endfor
   endfor
 endfunction"}}}
 
