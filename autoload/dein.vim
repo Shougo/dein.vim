@@ -266,17 +266,15 @@ function! dein#recache_runtimepath() abort "{{{
 endfunction"}}}
 
 function! dein#check_install(...) abort "{{{
-  let plugins = empty(a:000) ?
-        \ values(dein#get()) :
-        \ map(copy(a:1), 'dein#get(v:val)')
-
-  call filter(plugins, '!empty(v:val) && !isdirectory(v:val.path)')
+  let plugins = filter(empty(a:000) ? dein#get() : filter(map(copy(a:1),
+        \                     'dein#get(v:val)'), '!empty(v:val)'),
+        \     '!isdirectory(v:val.path)')
   if empty(plugins)
     return 0
   endif
 
-  echomsg 'Not installed plugins: '
-        \ string(map(copy(plugins), 'v:val.name'))
+  call dein#util#_error('Not installed plugins: '
+        \ string(map(copy(plugins), 'v:val.name')))
   return 1
 endfunction"}}}
 function! dein#check_lazy_plugins() abort "{{{
