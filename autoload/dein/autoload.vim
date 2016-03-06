@@ -188,7 +188,7 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
 
   let &runtimepath = dein#_join_rtp(a:rtps, &runtimepath, '')
 
-  call dein#_call_hook('source', a:plugin)
+  call dein#call_hook('source', a:plugin)
 
   for on_source in filter(dein#_get_lazy_plugins(),
         \ "index(v:val.on_source, a:plugin.name) >= 0")
@@ -216,7 +216,7 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
   endif
 
   if !has('vim_starting')
-    call dein#_call_hook('post_source', a:plugin)
+    call dein#call_hook('post_source', a:plugin)
   endif
 endfunction"}}}
 function! dein#autoload#_reset_ftplugin() abort "{{{

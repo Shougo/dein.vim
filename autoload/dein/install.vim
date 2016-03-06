@@ -108,7 +108,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#remote_plugins()
 
-  call dein#_call_hook('post_source')
+  call dein#call_hook('post_source')
 
   call s:error(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}

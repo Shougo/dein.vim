@@ -33,7 +33,7 @@ function! dein#_init() abort "{{{
           \   call dein#autoload#_on_ft() |
           \ endif
     autocmd FuncUndefined * call s:on_func(expand('<afile>'))
-    autocmd VimEnter * call dein#_call_hook('post_source')
+    autocmd VimEnter * call dein#call_hook('post_source')
   augroup END
 
   if exists('##CmdUndefined')
@@ -151,14 +151,14 @@ function! dein#end() abort "{{{
   endfor
   let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
 
-  call dein#_call_hook('source', sourced)
+  call dein#call_hook('source', sourced)
 
   if !has('vim_starting')
     let merged_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
     if merged_plugins !=# s:prev_plugins
       call dein#install#_recache_runtimepath()
     endif
-    call dein#_call_hook('post_source')
+    call dein#call_hook('post_source')
     call dein#autoload#_reset_ftplugin()
   endif
 endfunction"}}}
@@ -312,6 +312,19 @@ endfunction"}}}
 function! dein#recache_runtimepath() abort "{{{
   call dein#install#_recache_runtimepath()
 endfunction"}}}
+function! dein#call_hook(hook_name, ...) abort "{{{
+  let prefix = '#User#dein#'.a:hook_name.'#'
+  let plugins = filter(dein#_convert2list(
+        \ (empty(a:000) ? dein#get() : a:1)),
+        \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
+
+  for plugin in dein#_tsort(plugins)
+    let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
+    if exists('#User#'.autocmd)
+      execute 'doautocmd User' autocmd
+    endif
+  endfor
+endfunction"}}}
 
 function! dein#check_install(...) abort "{{{
   let plugins = filter(empty(a:000) ? dein#get() : filter(map(copy(a:1),
@@ -388,19 +401,6 @@ function! dein#_filetype_off() abort "{{{
   endif
 
   return filetype_out
-endfunction"}}}
-function! dein#_call_hook(hook_name, ...) abort "{{{
-  let prefix = '#User#dein#'.a:hook_name.'#'
-  let plugins = filter(dein#_convert2list(
-        \ (empty(a:000) ? dein#get() : a:1)),
-        \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
-
-  for plugin in dein#_tsort(plugins)
-    let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
-    if exists('#User#'.autocmd)
-      execute 'doautocmd User' autocmd
-    endif
-  endfor
 endfunction"}}}
 function! dein#_tsort(plugins) abort "{{{
   let sorted = []

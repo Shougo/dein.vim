@@ -248,6 +248,11 @@ dein#get_updates_log() 				*dein#get_updates_log()*
 		Print previous update logs.
 
 
+dein#call_hook({hook-name})			 *dein#call_hook()*
+		Calls the hook {hook-name}.
+		Note: If {hook-name} is "source", dein will call "source"
+		hooks in sourced plugins.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 
