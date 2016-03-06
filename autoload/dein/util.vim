@@ -137,6 +137,33 @@ function! dein#util#_clear_cache() abort "{{{
   call delete(cache)
 endfunction"}}}
 
+function! dein#util#_save_state(vimrcs) abort "{{{
+  if dein#_get_base_path() == ''
+    " Ignore
+    return 1
+  endif
+
+  " Set function prefixes before save state
+  call dein#autoload#_set_function_prefixes(dein#_get_lazy_plugins())
+
+  let plugins = deepcopy(dein#get())
+  for plugin in values(plugins)
+    let plugin.sourced = 0
+  endfor
+
+  call writefile([
+        \ 'call dein#_init()',
+        \ ], dein#_get_state_file())
+endfunction"}}}
+function! dein#util#_clear_state() abort "{{{
+  let cache = dein#_get_cache_state()
+  if !filereadable(cache)
+    return
+  endif
+
+  call delete(cache)
+endfunction"}}}
+
 function! s:msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction"}}}
