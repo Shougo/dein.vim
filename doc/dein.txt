@@ -237,13 +237,11 @@ dein#save_cache()
 dein#clear_cache()
 		Clear the cache file manually.
 
-dein#load_state({base-path}, [{vimrcs}])		 *dein#load_state()*
+dein#load_state({base-path})				 *dein#load_state()*
 		Load dein's state from the cache script,
 		which is located in `dein#util#_get_runtime_path() . '/state_' .
 		v:progname . '.vim'`.
 		{base-path} is where your downloaded plugins will be placed.
-		{vimrcs} is a list of compared .vimrc and/or other
-		configuration files. The default is |$MYVIMRC|.
 		It is faster than |dein#load_cache()| feature.
 		Note: You must call it before |dein#begin()|.  It clears dein
 		all configuration.
@@ -254,16 +252,6 @@ dein#load_state({base-path}, [{vimrcs}])		 *dein#load_state()*
 	if dein#load_state(path)
 	  call dein#begin(path)
 	  " My plugins here:
-	  " ...
-	  call dein#end()
-	  call dein#save_state()
-	endif
-<
-		If you use multiple configuration files,
->
-	if dein#load_state(path, [$MYVIMRC, 'plugin.vim', 'plugin.toml'])
-	  call dein#begin(path)
-	  " My plugins here or other files spcified as arguments
 	  " ...
 	  call dein#end()
 	  call dein#save_state()
