@@ -4,14 +4,25 @@
 " License: MIT license
 "=============================================================================
 
-function! dein#autoload#_source(plugins) abort "{{{
+function! dein#autoload#_source(...) abort "{{{
+  let plugins = empty(a:000) ? values(g:dein#_plugins) :
+        \ dein#util#_convert2list(a:1)
+  if empty(plugins)
+    return
+  endif
+
+  if type(plugins[0]) != type({})
+    let plugins = map(dein#util#_convert2list(a:1),
+        \       'get(g:dein#_plugins, v:val, {})')
+  endif
+
   let rtps = dein#util#_split_rtp(&runtimepath)
-  let index = index(rtps, dein#_get_runtime_path())
+  let index = index(rtps, dein#util#_get_runtime_path())
   if index < 0
     return 1
   endif
 
-  for plugin in filter(copy(a:plugins),
+  for plugin in filter(plugins,
         \ "!empty(v:val) && !v:val.sourced && v:val.rtp != ''")
     if s:source_plugin(rtps, index, plugin)
       return 1
@@ -61,6 +72,11 @@ endfunction"}}}
 
 function! dein#autoload#_on_func(name) abort "{{{
   let function_prefix = substitute(a:name, '[^#]*$', '', '')
+  if function_prefix =~# '^dein#'
+        \ || function_prefix ==# 'vital#'
+        \ || has('vim_starting')
+    return
+  endif
 
   let lazy_plugins = dein#util#_get_lazy_plugins()
   call dein#autoload#_set_function_prefixes(lazy_plugins)

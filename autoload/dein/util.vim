@@ -33,6 +33,28 @@ function! dein#util#_is_sudo() abort "{{{
       \ && $HOME ==# expand('~'.$SUDO_USER)
 endfunction"}}}
 
+function! dein#util#_get_base_path() abort "{{{
+  return g:dein#_base_path
+endfunction"}}}
+function! dein#util#_get_runtime_path() abort "{{{
+  if !isdirectory(g:dein#_runtime_path)
+    call mkdir(g:dein#_runtime_path, 'p')
+  endif
+
+  return g:dein#_runtime_path
+endfunction"}}}
+function! dein#util#_get_tags_path() abort "{{{
+  if g:dein#_runtime_path == '' || dein#util#_is_sudo()
+    return ''
+  endif
+
+  let dir = g:dein#_runtime_path . '/doc'
+  if !isdirectory(dir)
+    call mkdir(dir, 'p')
+  endif
+  return dir
+endfunction"}}}
+
 function! dein#util#_error(msg) abort "{{{
   for mes in s:msg2list(a:msg)
     echohl WarningMsg | echomsg '[dein] ' . mes | echohl None
@@ -91,11 +113,11 @@ function! dein#util#_check_lazy_plugins() abort "{{{
 endfunction"}}}
 
 function! dein#util#_writefile(path, list) abort "{{{
-  if dein#util#_is_sudo() || !filewritable(dein#_get_base_path())
+  if dein#util#_is_sudo() || !filewritable(dein#util#_get_base_path())
     return 1
   endif
 
-  let path = dein#_get_base_path() . '/' . a:path
+  let path = dein#util#_get_base_path() . '/' . a:path
   let dir = fnamemodify(path, ':h')
   if !isdirectory(dir)
     call mkdir(dir, 'p')
@@ -119,10 +141,10 @@ function! dein#util#_load_cache(...) abort "{{{
     for plugin in filter(dein#util#_get_lazy_plugins(),
           \ '!empty(v:val.on_cmd) || !empty(v:val.on_map)')
       if !empty(plugin.on_cmd)
-        call dein#_add_dummy_commands(plugin)
+        call dein#util#_add_dummy_commands(plugin)
       endif
       if !empty(plugin.on_map)
-        call dein#_add_dummy_mappings(plugin)
+        call dein#util#_add_dummy_mappings(plugin)
       endif
     endfor
   catch
@@ -133,7 +155,7 @@ function! dein#util#_load_cache(...) abort "{{{
   endtry
 endfunction"}}}
 function! dein#util#_save_cache(vimrcs, is_state) abort "{{{
-  if dein#_get_base_path() == ''
+  if dein#util#_get_base_path() == ''
     " Ignore
     return 1
   endif
@@ -165,7 +187,7 @@ function! dein#util#_clear_cache() abort "{{{
 endfunction"}}}
 
 function! dein#util#_save_state() abort "{{{
-  if dein#_get_base_path() == ''
+  if dein#util#_get_base_path() == ''
     " Ignore
     return 1
   endif
@@ -294,6 +316,20 @@ function! dein#util#_end() abort "{{{
   endif
 endfunction"}}}
 
+function! dein#util#_call_hook(hook_name, ...) abort "{{{
+  let prefix = '#User#dein#'.a:hook_name.'#'
+  let plugins = filter(dein#util#_convert2list(
+        \ (empty(a:000) ? dein#get() : a:1)),
+        \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
+
+  for plugin in dein#util#_tsort(plugins)
+    let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
+    if exists('#User#'.autocmd)
+      execute 'doautocmd User' autocmd
+    endif
+  endfor
+endfunction"}}}
+
 function! dein#util#_add_dummy_commands(plugin) abort "{{{
   for command in a:plugin.dummy_commands
     silent! execute command[1]
@@ -338,6 +374,13 @@ function! dein#util#_expand(path) abort "{{{
 endfunction"}}}
 function! dein#util#_substitute_path(path) abort "{{{
   return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
+endfunction"}}}
+
+function! dein#util#_convert2list(expr) abort "{{{
+  return type(a:expr) ==# type([]) ? copy(a:expr) :
+        \ type(a:expr) ==# type('') ?
+        \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
+        \ : [a:expr]
 endfunction"}}}
 
 function! dein#util#_filetype_off() abort "{{{

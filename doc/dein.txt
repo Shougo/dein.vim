@@ -200,7 +200,7 @@ dein#get([{plugin-name}])				 *dein#get()*
 
 dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		Load plugins configuration from the cache file,
-		which is located in `dein#_get_runtime_path() . '/cache_' .
+		which is located in `dein#util#_get_runtime_path() . '/cache_' .
 		v:progname`.
 		{vimrcs} is a list of compared .vimrc and/or other
 		configuration files. The default is |$MYVIMRC|.
@@ -239,7 +239,7 @@ dein#clear_cache()
 
 dein#load_state([{vimrcs}])			 *dein#load_state()*
 		Load dein's state from the cache script,
-		which is located in `dein#_get_runtime_path() . '/state_' .
+		which is located in `dein#util#_get_runtime_path() . '/state_' .
 		v:progname . '.vim'`.
 		{vimrcs} is a list of compared .vimrc and/or other
 		configuration files. The default is |$MYVIMRC|.

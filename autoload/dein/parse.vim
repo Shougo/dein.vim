@@ -42,7 +42,7 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'if': 1,
         \ 'sourced': 0,
         \ 'local': 0,
-        \ 'base': dein#_get_base_path() . '/repos',
+        \ 'base': dein#util#_get_base_path() . '/repos',
         \ 'frozen': 0,
         \ 'depends': [],
         \ 'timeout': g:dein#install_process_timeout,
@@ -131,7 +131,7 @@ function! dein#parse#_dict(plugin) abort "{{{
 
   if !has_key(a:plugin, 'merged')
     let plugin.merged = !plugin.lazy && !plugin.local
-          \ && stridx(plugin.rtp, dein#_get_base_path()) == 0
+          \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
   endif
 
   if empty(plugin.pre_cmd)
@@ -145,7 +145,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   if has_key(a:plugin, 'depends')
-    let plugin.depends = dein#_convert2list(a:plugin.depends)
+    let plugin.depends = dein#util#_convert2list(a:plugin.depends)
   endif
 
   if plugin.lazy
