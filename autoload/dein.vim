@@ -16,12 +16,14 @@ function! dein#_init() abort "{{{
   let s:is_windows = has('win32') || has('win64')
   let s:block_level = 0
   let s:prev_plugins = []
-  let s:vimrcs = []
 
   let g:dein#_plugins = {}
   let g:dein#name = ''
   let g:dein#_base_path = ''
   let g:dein#_runtime_path = ''
+  let g:dein#_off1 = ''
+  let g:dein#_off2 = ''
+  let g:dein#_vimrcs = []
 
   augroup dein
     autocmd!
@@ -194,34 +196,12 @@ function! dein#is_sourced(name) abort "{{{
 endfunction"}}}
 
 function! dein#save_cache() abort "{{{
-  return dein#util#_save_cache(s:vimrcs)
+  return dein#util#_save_cache(g:dein#_vimrcs, 0)
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
-  let s:vimrcs = a:0 ? a:1 : [$MYVIMRC]
-  let starting = a:0 > 1 ? a:2 : has('vim_starting')
-
-  let cache = dein#_get_cache_file()
-  if !starting || !filereadable(cache) | return 1 | endif
-
-  if !empty(filter(map(copy(s:vimrcs), 'getftime(dein#_expand(v:val))'),
-        \ 'getftime(cache) < v:val'))
-    return 1
-  endif
-
   try
-    let list = readfile(cache)
-    if len(list) != 3
-          \ || list[0] !=# dein#_get_cache_version()
-          \ || string(s:vimrcs) !=# list[1]
-      call dein#clear_cache()
-      return 1
-    endif
-
-    sandbox let plugins = has('patch-7.4.1498') ?
-          \ js_decode(list[2]) : eval(list[2])
-
-    if type(plugins) != type({})
-      call dein#clear_cache()
+    let plugins = call('dein#load_cache_raw', a:000)
+    if empty(plugins)
       return 1
     endif
 
@@ -236,10 +216,41 @@ function! dein#load_cache(...) abort "{{{
       endif
     endfor
   catch
-    call dein#util#_error('Error occurred while loading cache : ' . v:exception)
+    call dein#util#_error('Error occurred while loading cache : '
+          \ . v:exception)
     call dein#clear_cache()
     return 1
   endtry
+endfunction"}}}
+function! dein#load_cache_raw(...) abort "{{{
+  let g:dein#_vimrcs = a:0 ? a:1 : [$MYVIMRC]
+  let starting = a:0 > 1 ? a:2 : has('vim_starting')
+
+  let cache = dein#_get_cache_file()
+  if !starting || !filereadable(cache) | return {} | endif
+
+  if !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(dein#_expand(v:val))'),
+        \ 'getftime(cache) < v:val'))
+    return {}
+  endif
+
+  let list = readfile(cache)
+  if len(list) != 3
+        \ || list[0] !=# dein#_get_cache_version()
+        \ || string(g:dein#_vimrcs) !=# list[1]
+    call dein#clear_cache()
+    return {}
+  endif
+
+  sandbox let plugins = has('patch-7.4.1498') ?
+        \ js_decode(list[2]) : eval(list[2])
+
+  if type(plugins) != type({})
+    call dein#clear_cache()
+    return {}
+  endif
+
+  return plugins
 endfunction"}}}
 function! dein#clear_cache() abort "{{{
   return dein#util#_clear_cache()
@@ -251,14 +262,35 @@ function! dein#_get_cache_version() abort "{{{
   return getftime(s:parser_vim_path)
 endfunction "}}}
 
+function! dein#load_state(...) abort "{{{
+  let starting = a:0 > 0 ? a:1 : has('vim_starting')
+
+  if !starting
+    return 1
+  endif
+
+  let state = dein#_get_state_file()
+  if !filereadable(state)
+    return
+  endif
+
+  try
+    execute 'source' fnameescape(state)
+  catch
+    call dein#util#_error('Error occurred while loading state : '
+          \ . v:exception)
+    call dein#clear_state()
+    return 1
+  endtry
+endfunction"}}}
 function! dein#save_state() abort "{{{
-  return dein#util#_save_state(s:vimrcs)
+  return dein#util#_save_state()
 endfunction"}}}
 function! dein#clear_state() abort "{{{
   return dein#util#_clear_state()
 endfunction"}}}
 function! dein#_get_state_file() abort "{{{
-  return dein#_get_base_path() . '/state_' . v:progname . 'vim'
+  return dein#_get_base_path() . '/state_' . v:progname . '.vim'
 endfunction"}}}
 function! dein#_get_state_version() abort "{{{
   return getftime(s:dein_path)
@@ -345,11 +377,13 @@ function! dein#_filetype_off() abort "{{{
 
   if filetype_out =~# 'plugin:ON'
         \ || filetype_out =~# 'indent:ON'
-    filetype plugin indent off
+    let g:dein#_off1 = 'filetype plugin indent off'
+    execute g:dein#_off1
   endif
 
   if filetype_out =~# 'detection:ON'
-    filetype off
+    let g:dein#_off2 = 'filetype off'
+    execute g:dein#_off2
   endif
 
   return filetype_out

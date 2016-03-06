@@ -108,7 +108,7 @@ function! dein#util#_get_type(name) abort "{{{
   return get({'git': dein#types#git#define()}, a:name, {})
 endfunction"}}}
 
-function! dein#util#_save_cache(vimrcs) abort "{{{
+function! dein#util#_save_cache(vimrcs, is_state) abort "{{{
   if dein#_get_base_path() == ''
     " Ignore
     return 1
@@ -118,9 +118,12 @@ function! dein#util#_save_cache(vimrcs) abort "{{{
   call dein#autoload#_set_function_prefixes(dein#_get_lazy_plugins())
 
   let plugins = deepcopy(dein#get())
-  for plugin in values(plugins)
-    let plugin.sourced = 0
-  endfor
+
+  if !a:is_state
+    for plugin in values(plugins)
+      let plugin.sourced = 0
+    endfor
+  endif
 
   let json = has('patch-7.4.1498') ? js_encode(plugins) : string(plugins)
 
@@ -137,23 +140,44 @@ function! dein#util#_clear_cache() abort "{{{
   call delete(cache)
 endfunction"}}}
 
-function! dein#util#_save_state(vimrcs) abort "{{{
+function! dein#util#_save_state() abort "{{{
   if dein#_get_base_path() == ''
     " Ignore
     return 1
   endif
 
-  " Set function prefixes before save state
-  call dein#autoload#_set_function_prefixes(dein#_get_lazy_plugins())
+  call dein#util#_save_cache(g:dein#_vimrcs, 1)
 
-  let plugins = deepcopy(dein#get())
-  for plugin in values(plugins)
-    let plugin.sourced = 0
+  " Version check
+
+  let lines = [
+        \ 'let plugins = dein#load_cache_raw('. string(g:dein#_vimrcs) .', 1)',
+        \ "if empty(plugins) | throw 'Cache loading error' | endif",
+        \ 'let g:dein#_plugins = plugins',
+        \ 'call dein#_init()',
+        \ 'let g:dein#_base_path = ' . string(g:dein#_base_path),
+        \ 'let g:dein#_runtime_path = ' . string(g:dein#_runtime_path),
+        \ 'let &runtimepath = ' . string(&runtimepath),
+        \ ]
+
+  if g:dein#_off1 != ''
+    call add(lines, g:dein#_off1)
+  endif
+  if g:dein#_off2 != ''
+    call add(lines, g:dein#_off2)
+  endif
+
+  " Add dummy mappings/commands
+  for plugin in dein#_get_lazy_plugins()
+    for command in plugin.dummy_commands
+      call add(lines, 'silent! ' . command[1])
+    endfor
+    for mapping in plugin.dummy_mappings
+      call add(lines, 'silent! ' . mapping[2])
+    endfor
   endfor
 
-  call writefile([
-        \ 'call dein#_init()',
-        \ ], dein#_get_state_file())
+  call writefile(lines, dein#_get_state_file())
 endfunction"}}}
 function! dein#util#_clear_state() abort "{{{
   let cache = dein#_get_cache_state()
