@@ -13,8 +13,6 @@ let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
       \ . '/dein/parser.vim'
 
 function! dein#_init() abort "{{{
-  let s:is_windows = has('win32') || has('win64')
-
   let g:dein#_plugins = {}
   let g:dein#name = ''
   let g:dein#_base_path = ''
