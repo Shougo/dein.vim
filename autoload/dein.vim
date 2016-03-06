@@ -71,9 +71,11 @@ function! dein#_get_tags_path() abort "{{{
   return dir
 endfunction"}}}
 
-call dein#_init()
-
 function! dein#begin(path) abort "{{{
+  if has('vim_starting')
+    call dein#_init()
+  endif
+
   if a:path == '' || s:block_level != 0
     call dein#util#_error('Invalid begin/end block usage.')
     return 1
