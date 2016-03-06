@@ -684,7 +684,7 @@ function! s:load_depends(plugin, rtps, index) abort "{{{
 endfunction"}}}
 
 function! s:is_async() abort "{{{
-  return (has('nvim') || (has('job') && !s:is_windows))
+  return (has('nvim') || (has('job') && exists('*job_getchannel') && !s:is_windows))
         \ && !has('vim_starting')
 endfunction"}}}
 
