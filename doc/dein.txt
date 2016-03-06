@@ -200,7 +200,8 @@ dein#get([{plugin-name}])				 *dein#get()*
 
 dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		Load plugins configuration from the cache file,
-		which is located in `dein#_get_runtime_path() . '/cache'`.
+		which is located in `dein#_get_runtime_path() . '/cache_' .
+		v:progname`.
 		{vimrcs} is a list of compared .vimrc and/or other
 		configuration files. The default is |$MYVIMRC|.
 		Note: You must call it after |dein#begin()|.  It clears
@@ -209,19 +210,23 @@ dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		It returns 1, if the cache file is old or invalid or not
 		found.
 >
+	call dein#begin(path)
 	if dein#load_cache()
 	  " My plugins here:
 	  " ...
 	  call dein#save_cache()
 	endif
+	call dein#end()
 <
 		If you use multiple configuration files,
 >
+	call dein#begin(path)
 	if dein#load_cache([$MYVIMRC, 'plugin.vim', 'plugin.toml'])
 	  " My plugins here or other files spcified as arguments
 	  " ...
 	  call dein#save_cache()
 	endif
+	call dein#end()
 <
 						*dein#save_cache()*
 dein#save_cache()
@@ -231,6 +236,46 @@ dein#save_cache()
 						*dein#clear_cache()*
 dein#clear_cache()
 		Clear the cache file manually.
+
+dein#load_state([{vimrcs}])			 *dein#load_state()*
+		Load dein's state from the cache script,
+		which is located in `dein#_get_runtime_path() . '/state_' .
+		v:progname . '.vim'`.
+		{vimrcs} is a list of compared .vimrc and/or other
+		configuration files. The default is |$MYVIMRC|.
+		It is faster than |dein#load_cache()| feature.
+		Note: You must call it begin |dein#begin()|.  It clears dein
+		all configuration.
+
+		It returns 1, if the cache script is old or invalid or not
+		found.
+>
+	if dein#load_state()
+	  call dein#begin(path)
+	  " My plugins here:
+	  " ...
+	  call dein#end()
+	  call dein#save_state()
+	endif
+<
+		If you use multiple configuration files,
+>
+	if dein#load_state([$MYVIMRC, 'plugin.vim', 'plugin.toml'])
+	  call dein#begin(path)
+	  " My plugins here or other files spcified as arguments
+	  " ...
+	  call dein#end()
+	  call dein#save_state()
+	endif
+<
+						*dein#save_state()*
+dein#save_state()
+		Save defin state in the cache script.
+		Note: It is available when loading .vimrc.
+
+						*dein#clear_state()*
+dein#clear_state()
+		Clear the state file manually.
 
 dein#tap({plugin-name})				*dein#tap()*
 		Return non-zero if {plugin-name} exists and isn't
