@@ -122,8 +122,10 @@ function! dein#util#_save_cache(vimrcs) abort "{{{
     let plugin.sourced = 0
   endfor
 
+  let json = has('patch-7.4.1498') ? js_encode(plugins) : string(plugins)
+
   call writefile([dein#_get_cache_version(),
-        \ string(a:vimrcs), string(plugins)],
+        \ string(a:vimrcs), json],
         \ dein#_get_cache_file())
 endfunction"}}}
 function! dein#util#_clear_cache() abort "{{{
