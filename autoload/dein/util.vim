@@ -154,7 +154,6 @@ function! dein#util#_save_state() abort "{{{
         \ 'let plugins = dein#load_cache_raw('. string(g:dein#_vimrcs) .', 1)',
         \ "if empty(plugins) | throw 'Cache loading error' | endif",
         \ 'let g:dein#_plugins = plugins',
-        \ 'call dein#_init()',
         \ 'let g:dein#_base_path = ' . string(g:dein#_base_path),
         \ 'let g:dein#_runtime_path = ' . string(g:dein#_runtime_path),
         \ 'let &runtimepath = ' . string(&runtimepath),

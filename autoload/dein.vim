@@ -9,8 +9,8 @@ if v:version < 704
   finish
 endif
 
-let s:dein_path = expand('<sfile>')
-let s:parser_vim_path = fnamemodify(s:dein_path, ':h') . '/dein/parser.vim'
+let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
+      \ . '/dein/parser.vim'
 
 function! dein#_init() abort "{{{
   let s:is_windows = has('win32') || has('win64')
@@ -262,16 +262,20 @@ function! dein#_get_cache_version() abort "{{{
   return getftime(s:parser_vim_path)
 endfunction "}}}
 
-function! dein#load_state(...) abort "{{{
+function! dein#load_state(path, ...) abort "{{{
   let starting = a:0 > 0 ? a:1 : has('vim_starting')
 
   if !starting
     return 1
   endif
 
+  call dein#_init()
+
+  let g:dein#_base_path = expand(a:path)
+
   let state = dein#_get_state_file()
   if !filereadable(state)
-    return
+    return 1
   endif
 
   try
@@ -292,9 +296,6 @@ endfunction"}}}
 function! dein#_get_state_file() abort "{{{
   return dein#_get_base_path() . '/state_' . v:progname . '.vim'
 endfunction"}}}
-function! dein#_get_state_version() abort "{{{
-  return getftime(s:dein_path)
-endfunction "}}}
 
 function! dein#install(...) abort "{{{
   return dein#install#_update(get(a:000, 0, []), 0, dein#install#_is_async())
