@@ -51,43 +51,6 @@ function! dein#_init() abort "{{{
   endfor
 endfunction"}}}
 
-function! dein#begin(path) abort "{{{
-  return dein#util#_begin(a:path)
-endfunction"}}}
-function! dein#end() abort "{{{
-  return dein#util#_end()
-endfunction"}}}
-function! dein#add(repo, ...) abort "{{{
-  return dein#parse#_add(a:repo, get(a:000, 0, {}))
-endfunction"}}}
-function! dein#local(dir, ...) abort "{{{
-  return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))
-endfunction"}}}
-function! dein#get(...) abort "{{{
-  return empty(a:000) ? copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
-endfunction"}}}
-function! dein#source(...) abort "{{{
-  return call('dein#autoload#_source', a:000)
-endfunction"}}}
-function! dein#install(...) abort "{{{
-  return dein#install#_update(get(a:000, 0, []), 0, dein#install#_is_async())
-endfunction"}}}
-function! dein#update(...) abort "{{{
-  return dein#install#_update(get(a:000, 0, []), 1, dein#install#_is_async())
-endfunction"}}}
-function! dein#reinstall(plugins) abort "{{{
-  call dein#install#_reinstall(a:plugins)
-endfunction"}}}
-function! dein#remote_plugins() abort "{{{
-  return dein#install#_remote_plugins()
-endfunction"}}}
-function! dein#recache_runtimepath() abort "{{{
-  call dein#install#_recache_runtimepath()
-endfunction"}}}
-function! dein#call_hook(hook_name, ...) abort "{{{
-  return call('dein#util#_call_hook', [a:hook_name] + a:000)
-endfunction"}}}
-
 function! dein#tap(name) abort "{{{
   if !has_key(g:dein#_plugins, a:name)
         \ || !isdirectory(g:dein#_plugins[a:name].path)
@@ -99,6 +62,18 @@ function! dein#tap(name) abort "{{{
 endfunction"}}}
 function! dein#is_sourced(name) abort "{{{
   return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
+endfunction"}}}
+function! dein#check_install(...) abort "{{{
+  let plugins = filter(empty(a:000) ? dein#get() : filter(map(copy(a:1),
+        \                     'dein#get(v:val)'), '!empty(v:val)'),
+        \     '!isdirectory(v:val.path)')
+  if empty(plugins)
+    return 0
+  endif
+
+  call dein#util#_error('Not installed plugins: ' .
+        \ string(map(copy(plugins), 'v:val.name')))
+  return 1
 endfunction"}}}
 
 function! dein#save_cache() abort "{{{
@@ -182,26 +157,48 @@ function! dein#_get_state_file() abort "{{{
   return g:dein#_base_path . '/state_' . v:progname . '.vim'
 endfunction"}}}
 
-function! dein#check_install(...) abort "{{{
-  let plugins = filter(empty(a:000) ? dein#get() : filter(map(copy(a:1),
-        \                     'dein#get(v:val)'), '!empty(v:val)'),
-        \     '!isdirectory(v:val.path)')
-  if empty(plugins)
-    return 0
-  endif
-
-  call dein#util#_error('Not installed plugins: ' .
-        \ string(map(copy(plugins), 'v:val.name')))
-  return 1
+function! dein#begin(path) abort "{{{
+  return dein#util#_begin(a:path)
+endfunction"}}}
+function! dein#end() abort "{{{
+  return dein#util#_end()
+endfunction"}}}
+function! dein#add(repo, ...) abort "{{{
+  return dein#parse#_add(a:repo, get(a:000, 0, {}))
+endfunction"}}}
+function! dein#local(dir, ...) abort "{{{
+  return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))
+endfunction"}}}
+function! dein#get(...) abort "{{{
+  return empty(a:000) ? copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
+endfunction"}}}
+function! dein#source(...) abort "{{{
+  return call('dein#autoload#_source', a:000)
+endfunction"}}}
+function! dein#install(...) abort "{{{
+  return dein#install#_update(get(a:000, 0, []), 0, dein#install#_is_async())
+endfunction"}}}
+function! dein#update(...) abort "{{{
+  return dein#install#_update(get(a:000, 0, []), 1, dein#install#_is_async())
+endfunction"}}}
+function! dein#reinstall(plugins) abort "{{{
+  call dein#install#_reinstall(a:plugins)
+endfunction"}}}
+function! dein#remote_plugins() abort "{{{
+  return dein#install#_remote_plugins()
+endfunction"}}}
+function! dein#recache_runtimepath() abort "{{{
+  call dein#install#_recache_runtimepath()
+endfunction"}}}
+function! dein#call_hook(hook_name, ...) abort "{{{
+  return call('dein#util#_call_hook', [a:hook_name] + a:000)
 endfunction"}}}
 function! dein#check_lazy_plugins() abort "{{{
   return dein#util#_check_lazy_plugins()
 endfunction"}}}
-
 function! dein#load_toml(filename, ...) abort "{{{
   return dein#parse#_load_toml(a:filename, get(a:000, 0, {}))
 endfunction"}}}
-
 function! dein#get_log() abort "{{{
   return join(dein#install#_get_log(), "\n")
 endfunction"}}}
