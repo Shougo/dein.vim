@@ -14,8 +14,6 @@ let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
 
 function! dein#_init() abort "{{{
   let s:is_windows = has('win32') || has('win64')
-  let s:block_level = 0
-  let s:prev_plugins = []
 
   let g:dein#_plugins = {}
   let g:dein#name = ''
@@ -24,6 +22,7 @@ function! dein#_init() abort "{{{
   let g:dein#_off1 = ''
   let g:dein#_off2 = ''
   let g:dein#_vimrcs = []
+  let g:dein#_block_level = 0
 
   augroup dein
     autocmd!
@@ -75,92 +74,11 @@ function! dein#_get_tags_path() abort "{{{
 endfunction"}}}
 
 function! dein#begin(path) abort "{{{
-  if has('vim_starting')
-    call dein#_init()
-  endif
-
-  if a:path == '' || s:block_level != 0
-    call dein#util#_error('Invalid begin/end block usage.')
-    return 1
-  endif
-
-  let s:block_level += 1
-  let g:dein#_base_path = dein#_expand(a:path)
-  if g:dein#_base_path[-1:] == '/'
-    let g:dein#_base_path = g:dein#_base_path[: -2]
-  endif
-  let g:dein#_runtime_path = g:dein#_base_path . '/.dein'
-
-  call dein#_filetype_off()
-
-  if !has('vim_starting')
-    let s:prev_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
-    execute 'set rtp-='.fnameescape(g:dein#_runtime_path)
-    execute 'set rtp-='.fnameescape(g:dein#_runtime_path.'/after')
-  endif
-
-  " Join to the tail in runtimepath.
-  let rtps = dein#_split_rtp(&runtimepath)
-  let n = index(rtps, $VIMRUNTIME)
-  if n < 0
-    call dein#util#_error('Invalid runtimepath.')
-    return 1
-  endif
-  let &runtimepath = dein#_join_rtp(
-        \ add(insert(rtps, g:dein#_runtime_path, n-1),
-        \     g:dein#_runtime_path.'/after'),
-        \ &runtimepath, g:dein#_runtime_path)
+  return dein#util#_begin(a:path)
 endfunction"}}}
 
 function! dein#end() abort "{{{
-  if s:block_level != 1
-    call dein#util#_error('Invalid begin/end block usage.')
-    return 1
-  endif
-
-  let s:block_level -= 1
-
-  " Add runtimepath
-  let rtps = dein#_split_rtp(&runtimepath)
-  let index = index(rtps, g:dein#_runtime_path)
-  if index < 0
-    call dein#util#_error('Invalid runtimepath.')
-    return 1
-  endif
-
-  let sourced = []
-  for plugin in filter(values(g:dein#_plugins),
-        \ "!v:val.lazy && !v:val.sourced && v:val.rtp != ''")
-    " Load dependencies
-    if !empty(plugin.depends)
-      if s:load_depends(plugin, rtps, index)
-        return 1
-      endif
-      continue
-    endif
-
-    if !plugin.merged
-      call insert(rtps, plugin.rtp, index)
-      if isdirectory(plugin.rtp.'/after')
-        call add(rtps, plugin.rtp.'/after')
-      endif
-    endif
-
-    let plugin.sourced = 1
-    call add(sourced, plugin)
-  endfor
-  let &runtimepath = dein#_join_rtp(rtps, &runtimepath, '')
-
-  call dein#call_hook('source', sourced)
-
-  if !has('vim_starting')
-    let merged_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
-    if merged_plugins !=# s:prev_plugins
-      call dein#install#_recache_runtimepath()
-    endif
-    call dein#call_hook('post_source')
-    call dein#autoload#_reset_ftplugin()
-  endif
+  return dein#util#_end()
 endfunction"}}}
 
 function! dein#add(repo, ...) abort "{{{
@@ -199,28 +117,7 @@ function! dein#save_cache() abort "{{{
   return dein#util#_save_cache(g:dein#_vimrcs, 0)
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
-  try
-    let plugins = call('dein#load_cache_raw', a:000)
-    if empty(plugins)
-      return 1
-    endif
-
-    let g:dein#_plugins = plugins
-    for plugin in filter(dein#_get_lazy_plugins(),
-          \ '!empty(v:val.on_cmd) || !empty(v:val.on_map)')
-      if !empty(plugin.on_cmd)
-        call dein#_add_dummy_commands(plugin)
-      endif
-      if !empty(plugin.on_map)
-        call dein#_add_dummy_mappings(plugin)
-      endif
-    endfor
-  catch
-    call dein#util#_error('Error occurred while loading cache : '
-          \ . v:exception)
-    call dein#clear_cache()
-    return 1
-  endtry
+  return call('dein#util#_load_cache', a:000)
 endfunction"}}}
 function! dein#load_cache_raw(...) abort "{{{
   let g:dein#_vimrcs = a:0 ? a:1 : [$MYVIMRC]
@@ -229,7 +126,7 @@ function! dein#load_cache_raw(...) abort "{{{
   let cache = dein#_get_cache_file()
   if !starting || !filereadable(cache) | return {} | endif
 
-  if !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(dein#_expand(v:val))'),
+  if !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
         \ 'getftime(cache) < v:val'))
     return {}
   endif
@@ -318,7 +215,7 @@ function! dein#call_hook(hook_name, ...) abort "{{{
         \ (empty(a:000) ? dein#get() : a:1)),
         \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
 
-  for plugin in dein#_tsort(plugins)
+  for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
     if exists('#User#'.autocmd)
       execute 'doautocmd User' autocmd
@@ -354,116 +251,11 @@ function! dein#get_updates_log() abort "{{{
 endfunction"}}}
 
 " Helper functions
-function! dein#_substitute_path(path) abort "{{{
-  return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
-endfunction"}}}
-function! dein#_expand(path) abort "{{{
-  let path = (a:path =~ '^\~') ? fnamemodify(a:path, ':p') :
-        \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
-        \               '^\$\h\w*', '\=eval(submatch(0))', '') :
-        \ a:path
-  return (s:is_windows && path =~ '\\') ?
-        \ dein#_substitute_path(path) : path
-endfunction"}}}
-function! dein#_split_rtp(runtimepath) abort "{{{
-  if stridx(a:runtimepath, '\,') < 0
-    return split(a:runtimepath, ',')
-  endif
-
-  let split = split(a:runtimepath, '\\\@<!\%(\\\\\)*\zs,')
-  return map(split,'substitute(v:val, ''\\\([\\,]\)'', "\\1", "g")')
-endfunction"}}}
-function! dein#_join_rtp(list, runtimepath, rtp) abort "{{{
-  return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
-        \ join(a:list, ',') : join(map(copy(a:list), 's:escape(v:val)'), ',')
-endfunction"}}}
 function! dein#_convert2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? copy(a:expr) :
         \ type(a:expr) ==# type('') ?
         \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
         \ : [a:expr]
-endfunction"}}}
-function! dein#_get_lazy_plugins() abort "{{{
-  return filter(values(g:dein#_plugins), '!v:val.sourced')
-endfunction"}}}
-function! dein#_filetype_off() abort "{{{
-  let filetype_out = dein#_redir('filetype')
-
-  if filetype_out =~# 'plugin:ON'
-        \ || filetype_out =~# 'indent:ON'
-    let g:dein#_off1 = 'filetype plugin indent off'
-    execute g:dein#_off1
-  endif
-
-  if filetype_out =~# 'detection:ON'
-    let g:dein#_off2 = 'filetype off'
-    execute g:dein#_off2
-  endif
-
-  return filetype_out
-endfunction"}}}
-function! dein#_tsort(plugins) abort "{{{
-  let sorted = []
-  let mark = {}
-  for target in a:plugins
-    call s:tsort_impl(target, mark, sorted)
-  endfor
-
-  return sorted
-endfunction"}}}
-function! dein#_add_dummy_commands(plugin) abort "{{{
-  for command in a:plugin.dummy_commands
-    silent! execute command[1]
-  endfor
-endfunction"}}}
-function! s:generate_dummy_commands(plugin) abort "{{{
-  for name in a:plugin.on_cmd
-    " Define dummy commands.
-    let raw_cmd = 'command '
-          \ . '-complete=customlist,dein#autoload#_dummy_complete'
-          \ . ' -bang -bar -range -nargs=* '. name
-          \ . printf(" call dein#autoload#_on_cmd(%s, %s, <q-args>,
-          \  expand('<bang>'), expand('<line1>'), expand('<line2>'))",
-          \   string(name), string(a:plugin.name))
-
-    call add(a:plugin.dummy_commands, [name, raw_cmd])
-  endfor
-endfunction"}}}
-function! dein#_add_dummy_mappings(plugin) abort "{{{
-  for mapping in a:plugin.dummy_mappings
-    silent! execute mapping[2]
-  endfor
-endfunction"}}}
-
-" Executes a command and returns its output.
-" This wraps Vim's `:redir`, and makes sure that the `verbose` settings have
-" no influence.
-function! dein#_redir(cmd) abort "{{{
-  let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
-  set verbose=0 verbosefile=
-  redir => res
-  silent! execute a:cmd
-  redir END
-  let [&verbose, &verbosefile] = [save_verbose, save_verbosefile]
-  return res
-endfunction"}}}
-
-" Escape a path for runtimepath.
-function! s:escape(path) abort "{{{
-  return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
-endfunction"}}}
-
-function! s:tsort_impl(target, mark, sorted) abort "{{{
-  if empty(a:target) || has_key(a:mark, a:target.name)
-    return
-  endif
-
-  let a:mark[a:target.name] = 1
-  for depend in a:target.depends
-    call s:tsort_impl(dein#get(depend), a:mark, a:sorted)
-  endfor
-
-  call add(a:sorted, a:target)
 endfunction"}}}
 
 function! s:on_func(name) abort "{{{
@@ -475,30 +267,6 @@ function! s:on_func(name) abort "{{{
   endif
 
   call dein#autoload#_on_func(a:name)
-endfunction"}}}
-
-function! s:load_depends(plugin, rtps, index) abort "{{{
-  for name in a:plugin.depends
-    if !has_key(g:dein#_plugins, name)
-      call dein#util#_error(printf('Plugin name "%s" is not found.', name))
-      return 1
-    endif
-  endfor
-
-  for depend in dein#_tsort([a:plugin])
-    if depend.sourced
-      return
-    endif
-
-    let depend.sourced = 1
-
-    if !depend.merged
-      call insert(a:rtps, depend.rtp, a:index)
-      if isdirectory(depend.rtp.'/after')
-        call add(a:rtps, depend.rtp.'/after')
-      endif
-    endif
-  endfor
 endfunction"}}}
 
 " vim: foldmethod=marker

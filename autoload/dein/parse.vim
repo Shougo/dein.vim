@@ -88,7 +88,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   if plugin.base[0:] == '~'
-    let plugin.base = dein#_expand(plugin.base)
+    let plugin.base = dein#util#_expand(plugin.base)
   endif
   let plugin.base = dein#util#_chomp(plugin.base)
 
@@ -103,7 +103,7 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.rtp = plugin.path.'/'.plugin.rtp
   endif
   if plugin.rtp[0:] == '~'
-    let plugin.rtp = dein#_expand(plugin.rtp)
+    let plugin.rtp = dein#util#_expand(plugin.rtp)
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
 
@@ -151,11 +151,11 @@ function! dein#parse#_dict(plugin) abort "{{{
   if plugin.lazy
     if !empty(plugin.on_cmd)
       call s:generate_dummy_commands(plugin)
-      call dein#_add_dummy_commands(plugin)
+      call dein#util#_add_dummy_commands(plugin)
     endif
     if !empty(plugin.on_map)
       call s:generate_dummy_mappings(plugin)
-      call dein#_add_dummy_mappings(plugin)
+      call dein#util#_add_dummy_mappings(plugin)
     endif
   endif
 
@@ -163,7 +163,7 @@ function! dein#parse#_dict(plugin) abort "{{{
 endfunction"}}}
 function! dein#parse#_load_toml(filename, default) abort "{{{
   try
-    let toml = dein#toml#parse_file(dein#_expand(a:filename))
+    let toml = dein#toml#parse_file(dein#util#_expand(a:filename))
   catch /vital: Text.TOML:/
     call dein#util#_error('Invalid toml format: ' . a:filename)
     call dein#util#_error(v:exception)
@@ -186,12 +186,12 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
   endfor
 endfunction"}}}
 function! dein#parse#_local(localdir, options, includes) abort "{{{
-  let base = fnamemodify(dein#_expand(a:localdir), ':p')
+  let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
     let directories += map(filter(split(glob(base . glob), '\n'),
           \ "isdirectory(v:val)"), "
-          \ substitute(dein#_substitute_path(
+          \ substitute(dein#util#_substitute_path(
           \   fnamemodify(v:val, ':p')), '/$', '', '')")
   endfor
 
