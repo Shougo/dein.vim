@@ -14,13 +14,14 @@ let s:parser_vim_path = fnamemodify(s:dein_path, ':h') . '/dein/parser.vim'
 
 function! dein#_init() abort "{{{
   let s:is_windows = has('win32') || has('win64')
-  let s:runtime_path = ''
-  let s:base_path = ''
   let s:block_level = 0
   let s:prev_plugins = []
   let s:vimrcs = []
+
   let g:dein#_plugins = {}
   let g:dein#name = ''
+  let g:dein#_base_path = ''
+  let g:dein#_runtime_path = ''
 
   augroup dein
     autocmd!
@@ -50,21 +51,21 @@ function! dein#_init() abort "{{{
   endfor
 endfunction"}}}
 function! dein#_get_base_path() abort "{{{
-  return s:base_path
+  return g:dein#_base_path
 endfunction"}}}
 function! dein#_get_runtime_path() abort "{{{
-  if !isdirectory(s:runtime_path)
-    call mkdir(s:runtime_path, 'p')
+  if !isdirectory(g:dein#_runtime_path)
+    call mkdir(g:dein#_runtime_path, 'p')
   endif
 
-  return s:runtime_path
+  return g:dein#_runtime_path
 endfunction"}}}
 function! dein#_get_tags_path() abort "{{{
-  if s:runtime_path == '' || dein#util#_is_sudo()
+  if g:dein#_runtime_path == '' || dein#util#_is_sudo()
     return ''
   endif
 
-  let dir = s:runtime_path . '/doc'
+  let dir = g:dein#_runtime_path . '/doc'
   if !isdirectory(dir)
     call mkdir(dir, 'p')
   endif
@@ -82,18 +83,18 @@ function! dein#begin(path) abort "{{{
   endif
 
   let s:block_level += 1
-  let s:base_path = dein#_expand(a:path)
-  if s:base_path[-1:] == '/'
-    let s:base_path = s:base_path[: -2]
+  let g:dein#_base_path = dein#_expand(a:path)
+  if g:dein#_base_path[-1:] == '/'
+    let g:dein#_base_path = g:dein#_base_path[: -2]
   endif
-  let s:runtime_path = s:base_path . '/.dein'
+  let g:dein#_runtime_path = g:dein#_base_path . '/.dein'
 
   call dein#_filetype_off()
 
   if !has('vim_starting')
     let s:prev_plugins = keys(filter(copy(g:dein#_plugins), 'v:val.merged'))
-    execute 'set rtp-='.fnameescape(s:runtime_path)
-    execute 'set rtp-='.fnameescape(s:runtime_path.'/after')
+    execute 'set rtp-='.fnameescape(g:dein#_runtime_path)
+    execute 'set rtp-='.fnameescape(g:dein#_runtime_path.'/after')
   endif
 
   " Join to the tail in runtimepath.
@@ -104,8 +105,9 @@ function! dein#begin(path) abort "{{{
     return 1
   endif
   let &runtimepath = dein#_join_rtp(
-        \ add(insert(rtps, s:runtime_path, n-1), s:runtime_path.'/after'),
-        \ &runtimepath, s:runtime_path)
+        \ add(insert(rtps, g:dein#_runtime_path, n-1),
+        \     g:dein#_runtime_path.'/after'),
+        \ &runtimepath, g:dein#_runtime_path)
 endfunction"}}}
 
 function! dein#end() abort "{{{
@@ -118,7 +120,7 @@ function! dein#end() abort "{{{
 
   " Add runtimepath
   let rtps = dein#_split_rtp(&runtimepath)
-  let index = index(rtps, s:runtime_path)
+  let index = index(rtps, g:dein#_runtime_path)
   if index < 0
     call dein#util#_error('Invalid runtimepath.')
     return 1
