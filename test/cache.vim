@@ -1,9 +1,5 @@
 " set verbose=1
 
-if $TRAVIS_OS_NAME ==# 'osx'
-  finish
-endif
-
 let s:suite = themis#suite('install')
 let s:assert = themis#helper('assert')
 

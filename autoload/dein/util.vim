@@ -173,6 +173,10 @@ function! dein#util#_save_cache(vimrcs, is_state) abort "{{{
 
   let json = has('patch-7.4.1498') ? js_encode(plugins) : string(plugins)
 
+  if !isdirectory(g:dein#_base_path)
+    call mkdir(g:dein#_base_path, 'p')
+  endif
+
   call writefile([dein#_get_cache_version(),
         \ string(a:vimrcs), json],
         \ dein#_get_cache_file())
