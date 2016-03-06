@@ -360,6 +360,7 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     return 0
   endif
 
+  let status = 0
   if dein#_is_windows()
     " Create temporary batch file
     let lines = ['@echo off']
@@ -385,7 +386,6 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     endif
   else
     " Note: vimproc#system() does not support the command line.
-    let status = 0
     for src in a:srcs
       let cmdline = printf('cp -R %s/* %s',
             \ shellescape(src), shellescape(a:dest))
