@@ -1,36 +1,28 @@
 "=============================================================================
 " FILE: autoload.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license  {{{
-"     Permission is hereby granted, free of charge, to any person obtaining
-"     a copy of this software and associated documentation files (the
-"     "Software"), to deal in the Software without restriction, including
-"     without limitation the rights to use, copy, modify, merge, publish,
-"     distribute, sublicense, and/or sell copies of the Software, and to
-"     permit persons to whom the Software is furnished to do so, subject to
-"     the following conditions:
-"
-"     The above copyright notice and this permission notice shall be included
-"     in all copies or substantial portions of the Software.
-"
-"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
+" License: MIT license
 "=============================================================================
 
-function! dein#autoload#_source(plugins) abort "{{{
-  let rtps = dein#_split_rtp(&runtimepath)
-  let index = index(rtps, dein#_get_runtime_path())
+function! dein#autoload#_source(...) abort "{{{
+  let plugins = empty(a:000) ? values(g:dein#_plugins) :
+        \ dein#util#_convert2list(a:1)
+  if empty(plugins)
+    return
+  endif
+
+  if type(plugins[0]) != type({})
+    let plugins = map(dein#util#_convert2list(a:1),
+        \       'get(g:dein#_plugins, v:val, {})')
+  endif
+
+  let rtps = dein#util#_split_rtp(&runtimepath)
+  let index = index(rtps, dein#util#_get_runtime_path())
   if index < 0
     return 1
   endif
 
-  for plugin in filter(copy(a:plugins),
+  for plugin in filter(plugins,
         \ "!empty(v:val) && !v:val.sourced && v:val.rtp != ''")
     if s:source_plugin(rtps, index, plugin)
       return 1
@@ -39,7 +31,7 @@ function! dein#autoload#_source(plugins) abort "{{{
 endfunction"}}}
 
 function! dein#autoload#_on_i() abort "{{{
-  let plugins = filter(dein#_get_lazy_plugins(), 'v:val.on_i')
+  let plugins = filter(dein#util#_get_lazy_plugins(), 'v:val.on_i')
   if !empty(plugins)
     call dein#autoload#_source(plugins)
     doautocmd InsertEnter
@@ -48,7 +40,7 @@ endfunction"}}}
 
 function! dein#autoload#_on_ft() abort "{{{
   for filetype in split(&l:filetype, '\.')
-    call dein#autoload#_source(filter(dein#_get_lazy_plugins(),
+    call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
           \ 'index(v:val.on_ft, filetype) >= 0'))
   endfor
 endfunction"}}}
@@ -60,8 +52,8 @@ function! dein#autoload#_on_path(path, event) abort "{{{
     let path = '~'
   endif
 
-  let path = dein#_expand(path)
-  let plugins = filter(dein#_get_lazy_plugins(),
+  let path = dein#util#_expand(path)
+  let plugins = filter(dein#util#_get_lazy_plugins(),
         \ "!empty(filter(copy(v:val.on_path), 'path =~? v:val'))")
   if empty(plugins)
     return
@@ -71,7 +63,7 @@ function! dein#autoload#_on_path(path, event) abort "{{{
   execute 'doautocmd' a:event
 
   if !exists('s:loaded_path') && has('vim_starting')
-        \ && dein#_redir('filetype') =~# 'detection:ON'
+        \ && dein#util#_redir('filetype') =~# 'detection:ON'
     " Force enable auto detection if path plugins are loaded
     autocmd dein VimEnter * filetype detect
     let s:loaded_path = 1
@@ -80,8 +72,13 @@ endfunction"}}}
 
 function! dein#autoload#_on_func(name) abort "{{{
   let function_prefix = substitute(a:name, '[^#]*$', '', '')
+  if function_prefix =~# '^dein#'
+        \ || function_prefix ==# 'vital#'
+        \ || has('vim_starting')
+    return
+  endif
 
-  let lazy_plugins = dein#_get_lazy_plugins()
+  let lazy_plugins = dein#util#_get_lazy_plugins()
   call dein#autoload#_set_function_prefixes(lazy_plugins)
 
   call dein#autoload#_source(filter(lazy_plugins,
@@ -91,17 +88,17 @@ endfunction"}}}
 function! dein#autoload#_set_function_prefixes(plugins) abort "{{{
   for plugin in filter(copy(a:plugins), "empty(v:val.pre_func)")
     let plugin.pre_func =
-          \ dein#_uniq(map(split(globpath(
+          \ dein#util#_uniq(map(split(globpath(
           \  plugin.path, 'autoload/**/*.vim', 1), "\n"),
           \  "substitute(matchstr(
-          \   dein#_substitute_path(fnamemodify(v:val, ':r')),
+          \   dein#util#_substitute_path(fnamemodify(v:val, ':r')),
           \         '/autoload/\\zs.*$'), '/', '#', 'g').'#'"))
   endfor
 endfunction"}}}
 
 function! dein#autoload#_on_pre_cmd(name) abort "{{{
   call dein#autoload#_source(
-        \ filter(dein#_get_lazy_plugins(),
+        \ filter(dein#util#_get_lazy_plugins(),
         \ "!empty(filter(map(copy(v:val.pre_cmd), 'tolower(v:val)'),
         \   'stridx(tolower(a:name), v:val) == 0'))"))
 endfunction"}}}
@@ -110,7 +107,7 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "
   call dein#source(a:name)
 
   if !exists(':' . a:command)
-    call dein#_error(printf('command %s is not found.', a:command))
+    call dein#util#_error(printf('command %s is not found.', a:command))
     return
   endif
 
@@ -172,12 +169,12 @@ endfunction"}}}
 function! s:source_plugin(rtps, index, plugin) abort "{{{
   let a:plugin.sourced = 1
 
-  let filetype_before = dein#_redir('autocmd FileType')
+  let filetype_before = dein#util#_redir('autocmd FileType')
 
   " Load dependencies
   for name in a:plugin.depends
     if !has_key(g:dein#_plugins, name)
-      call dein#_error(printf('Plugin name "%s" is not found.', name))
+      call dein#util#_error(printf('Plugin name "%s" is not found.', name))
       return 1
     endif
 
@@ -205,18 +202,18 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     call add(a:rtps, a:plugin.rtp.'/after')
   endif
 
-  let &runtimepath = dein#_join_rtp(a:rtps, &runtimepath, '')
+  let &runtimepath = dein#util#_join_rtp(a:rtps, &runtimepath, '')
 
-  call dein#_call_hook('source', a:plugin)
+  call dein#call_hook('source', a:plugin)
 
-  for on_source in filter(dein#_get_lazy_plugins(),
+  for on_source in filter(dein#util#_get_lazy_plugins(),
         \ "index(v:val.on_source, a:plugin.name) >= 0")
     if s:source_plugin(a:rtps, a:index, on_source)
       return 1
     endif
   endfor
 
-  let filetype_after = dein#_redir('autocmd FileType')
+  let filetype_after = dein#util#_redir('autocmd FileType')
 
   " Reload script files.
   for directory in filter(['plugin', 'after/plugin'],
@@ -229,14 +226,45 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
   endfor
 
   if s:is_reset_ftplugin(a:plugin.rtp)
-    call dein#_reset_ftplugin()
+    call dein#autoload#_reset_ftplugin()
   elseif filetype_before !=# filetype_after
     execute 'doautocmd FileType' &filetype
   endif
 
   if !has('vim_starting')
-    call dein#_call_hook('post_source', a:plugin)
+    call dein#call_hook('post_source', a:plugin)
   endif
+endfunction"}}}
+function! dein#autoload#_reset_ftplugin() abort "{{{
+  let filetype_out = dein#util#_filetype_off()
+
+  if filetype_out =~# 'detection:ON'
+        \ && filetype_out =~# 'plugin:ON'
+        \ && filetype_out =~# 'indent:ON'
+    silent! filetype plugin indent on
+  else
+    if filetype_out =~# 'detection:ON'
+      silent! filetype on
+    endif
+
+    if filetype_out =~# 'plugin:ON'
+      silent! filetype plugin on
+    endif
+
+    if filetype_out =~# 'indent:ON'
+      silent! filetype indent on
+    endif
+  endif
+
+  if filetype_out =~# 'detection:ON'
+    filetype detect
+  endif
+
+  " Reload filetype plugins.
+  let &l:filetype = &l:filetype
+
+  " Recall FileType autocmd
+  execute 'doautocmd FileType' &filetype
 endfunction"}}}
 function! s:get_input() abort "{{{
   let input = ''

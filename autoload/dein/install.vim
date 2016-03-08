@@ -1,26 +1,7 @@
 "=============================================================================
 " FILE: install.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license  {{{
-"     Permission is hereby granted, free of charge, to any person obtaining
-"     a copy of this software and associated documentation files (the
-"     "Software"), to deal in the Software without restriction, including
-"     without limitation the rights to use, copy, modify, merge, publish,
-"     distribute, sublicense, and/or sell copies of the Software, and to
-"     permit persons to whom the Software is furnished to do so, subject to
-"     the following conditions:
-"
-"     The above copyright notice and this permission notice shall be included
-"     in all copies or substantial portions of the Software.
-"
-"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
+" License: MIT license
 "=============================================================================
 
 " Variables
@@ -76,7 +57,7 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
   endif
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
-  let plugins = map(dein#_convert2list(a:plugins), 'dein#get(v:val)')
+  let plugins = map(dein#util#_convert2list(a:plugins), 'dein#get(v:val)')
 
   for plugin in plugins
     " Remove the plugin
@@ -84,7 +65,7 @@ function! dein#install#_reinstall(plugins) abort "{{{
           \ || plugin.local
           \ || (plugin.sourced &&
           \     index(['dein', 'vimproc'], plugin.normalized_name) >= 0)
-      call dein#_error(
+      call dein#util#_error(
             \ printf('|%s| Cannot reinstall the plugin!', plugin.name))
       continue
     endif
@@ -97,11 +78,11 @@ function! dein#install#_reinstall(plugins) abort "{{{
     endif
   endfor
 
-  call dein#install#_update(dein#_convert2list(a:plugins), 0, 1)
+  call dein#install#_update(dein#util#_convert2list(a:plugins), 0, 1)
 endfunction"}}}
 
 function! dein#install#_recache_runtimepath() abort "{{{
-  if dein#_is_sudo()
+  if dein#util#_is_sudo()
     call s:error('"sudo vim" is detected. This feature is disabled.')
     return
   endif
@@ -116,8 +97,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call s:helptags()
 
   " Clear ftdetect and after/ftdetect directories.
-  call dein#install#_rm(dein#_get_runtime_path().'/ftdetect')
-  call dein#install#_rm(dein#_get_runtime_path().'/after/ftdetect')
+  call dein#install#_rm(dein#util#_get_runtime_path().'/ftdetect')
+  call dein#install#_rm(dein#util#_get_runtime_path().'/after/ftdetect')
 
   call s:merge_files(plugins, 'ftdetect')
   call s:merge_files(plugins, 'after/ftdetect')
@@ -127,36 +108,57 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#remote_plugins()
 
-  call dein#_call_hook('post_source')
+  call dein#call_hook('post_source')
 
   call s:error(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
-  if dein#_get_base_path() == ''
-    call dein#_error('Invalid base path.')
+  if dein#util#_get_base_path() == ''
+    call dein#util#_error('Invalid base path.')
     return
   endif
 
-  let parent = printf('%s/temp/%d', dein#_get_base_path(), getpid())
+  let parent = printf('%s/temp/%d', dein#util#_get_base_path(), getpid())
   let dest = parent . '/' . strftime('%Y%m%d%H%M%S')
   if !isdirectory(parent)
     call mkdir(parent, 'p')
   endif
-  if rename(dein#_get_runtime_path(), dest)
-    call dein#_error('Rename failed.')
-    call dein#_error('src=' . dein#_get_runtime_path())
-    call dein#_error('dest=' . dest)
+  if rename(dein#util#_get_runtime_path(), dest)
+    call dein#util#_error('Rename failed.')
+    call dein#util#_error('src=' . dein#util#_get_runtime_path())
+    call dein#util#_error('dest=' . dest)
     return
   endif
 
   " Dummy call to create runtime path
-  call dein#_get_runtime_path()
+  call dein#util#_get_runtime_path()
 
   " Remove previous runtime path
-  for path in filter(split(glob(dein#_get_base_path().'/temp/*'), "\n"),
+  for path in filter(split(glob(dein#util#_get_base_path().'/temp/*'), "\n"),
         \ "fnamemodify(v:val, ':t') !=# getpid()")
     call dein#install#_rm(path)
   endfor
+endfunction"}}}
+
+function! dein#install#_is_async() abort "{{{
+  return !has('vim_starting') && (has('nvim')
+        \ || (has('job') && exists('*job_getchannel')
+        \                && !dein#util#_is_windows()))
+endfunction"}}}
+
+function! dein#install#_remote_plugins() abort "{{{
+  if !has('nvim')
+    return
+  endif
+
+  " Load not loaded neovim remote plugins
+  call dein#autoload#_source(filter(
+        \ values(dein#get()),
+        \ "isdirectory(v:val.rtp . '/rplugin')"))
+
+  if exists(':UpdateRemotePlugins')
+    UpdateRemotePlugins
+  endif
 endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
@@ -171,7 +173,7 @@ function! s:get_progress_message(plugin, number, max) abort "{{{
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
 function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
-  let type = dein#_get_type(a:plugin.type)
+  let type = dein#util#_get_type(a:plugin.type)
 
   let cmd = has_key(type, 'get_sync_command') ?
         \ type.get_sync_command(a:plugin) : ''
@@ -187,7 +189,7 @@ function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
 endfunction"}}}
 function! s:get_revision_number(plugin) abort "{{{
   let cwd = getcwd()
-  let type = dein#_get_type(a:plugin.type)
+  let type = dein#util#_get_type(a:plugin.type)
 
   if !isdirectory(a:plugin.path)
         \ || !has_key(type, 'get_revision_number_command')
@@ -221,7 +223,7 @@ endfunction"}}}
 function! s:get_updated_log_message(plugin, new_rev, old_rev) abort "{{{
   let cwd = getcwd()
   try
-    let type = dein#_get_type(a:plugin.type)
+    let type = dein#util#_get_type(a:plugin.type)
 
     call dein#install#_cd(a:plugin.path)
 
@@ -243,7 +245,7 @@ function! s:lock_revision(process, context) abort "{{{
 
   let plugin.new_rev = s:get_revision_number(plugin)
 
-  let type = dein#_get_type(plugin.type)
+  let type = dein#util#_get_type(plugin.type)
   if !has_key(type, 'get_revision_lock_command')
     return 0
   endif
@@ -323,7 +325,7 @@ endfunction"}}}
 function! dein#install#_system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
-  let output = dein#_has_vimproc() ?
+  let output = dein#util#_has_vimproc() ?
         \ vimproc#system(command) : system(command, "\<C-d>")
 
   let output = s:iconv(output, 'char', &encoding)
@@ -331,7 +333,7 @@ function! dein#install#_system(command) abort "{{{
   return substitute(output, '\n$', '', '')
 endfunction"}}}
 function! dein#install#_get_last_status() abort "{{{
-  return dein#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
+  return dein#util#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction"}}}
 function! dein#install#_rm(path) abort "{{{
   if !isdirectory(a:path) && !filereadable(a:path)
@@ -342,16 +344,16 @@ function! dein#install#_rm(path) abort "{{{
     call delete(a:path, 'rf')
   else
     let cmdline = ' "' . a:path . '"'
-    if dein#_is_windows()
+    if dein#util#_is_windows()
       " Note: In rm command, must use "\" instead of "/".
       let cmdline = substitute(cmdline, '/', '\\\\', 'g')
     endif
 
     " Use system instead of vimproc#system()
-    let rm_command = dein#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
+    let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
     let result = system(rm_command . cmdline)
     if v:shell_error
-      call dein#_error(result)
+      call dein#util#_error(result)
     endif
   endif
 endfunction"}}}
@@ -361,7 +363,7 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
   endif
 
   let status = 0
-  if dein#_is_windows()
+  if dein#util#_is_windows()
     " Create temporary batch file
     let lines = ['@echo off']
     for src in a:srcs
@@ -641,7 +643,7 @@ function! s:init_process(plugin, context, cmd) abort
             \ job_start([&shell, &shellcmdflag, cmd], {
             \   'callback': function('s:job_handler_vim'),
             \ })))
-    elseif dein#_has_vimproc()
+    elseif dein#util#_has_vimproc()
       let process.proc = vimproc#pgroup_open(cmd, 0, 2)
 
       " Close handles.
@@ -665,7 +667,7 @@ function! s:check_output(context, process) abort "{{{
   if a:context.async && has_key(a:process, 'proc')
     let [is_skip, status] =
           \ s:get_async_result(a:process, is_timeout)
-  elseif dein#_has_vimproc() && has_key(a:process, 'proc')
+  elseif dein#util#_has_vimproc() && has_key(a:process, 'proc')
     let [is_skip, status] =
           \ s:get_vimproc_result(a:process, is_timeout)
   else
@@ -790,7 +792,7 @@ function! s:iconv(expr, from, to) abort "{{{
   return result != '' ? result : a:expr
 endfunction"}}}
 function! s:print_progress_message(msg) abort "{{{
-  let msg = dein#_convert2list(a:msg)
+  let msg = dein#util#_convert2list(a:msg)
   if empty(msg) || empty(s:global_context)
     return
   endif
@@ -813,7 +815,7 @@ function! s:print_progress_message(msg) abort "{{{
   let s:log += msg
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
-  let msg = dein#_convert2list(a:msg)
+  let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
   endif
@@ -823,7 +825,7 @@ function! s:print_message(msg) abort "{{{
   let s:log += msg
 endfunction"}}}
 function! s:error(msg) abort "{{{
-  let msg = dein#_convert2list(a:msg)
+  let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
   endif
@@ -834,7 +836,7 @@ function! s:error(msg) abort "{{{
   let s:log += msg
 endfunction"}}}
 function! s:echomsg(msg) abort "{{{
-  let msg = dein#_convert2list(a:msg)
+  let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
   endif
@@ -845,14 +847,14 @@ function! s:echomsg(msg) abort "{{{
   let s:log += msg
 endfunction"}}}
 function! s:helptags() abort "{{{
-  if empty(s:list_directory(dein#_get_tags_path()))
+  if empty(s:list_directory(dein#util#_get_tags_path()))
     return
   endif
 
   try
     call s:copy_files(values(dein#get()), 'doc')
 
-    silent execute 'helptags' fnameescape(dein#_get_tags_path())
+    silent execute 'helptags' fnameescape(dein#util#_get_tags_path())
   catch /^Vim(helptags):E151:/
     " Ignore an error that occurs when there is no help file
   catch
@@ -866,7 +868,7 @@ function! s:copy_files(plugins, directory) abort "{{{
   let srcs = filter(map(copy(a:plugins), "v:val.rtp . directory"),
         \ 'isdirectory(v:val)')
   call dein#install#_copy_directories(srcs,
-        \ dein#_get_runtime_path() . directory)
+        \ dein#util#_get_runtime_path() . directory)
 endfunction"}}}
 function! s:merge_files(plugins, directory) abort "{{{
   let files = []
@@ -878,7 +880,7 @@ function! s:merge_files(plugins, directory) abort "{{{
     endfor
   endfor
 
-  call dein#_writefile(printf('.dein/%s/%s.vim',
+  call dein#util#_writefile(printf('.dein/%s/%s.vim',
         \ a:directory, a:directory), files)
 endfunction"}}}
 function! s:list_directory(directory) abort "{{{
@@ -911,16 +913,16 @@ function! s:build(plugin) abort "{{{
   let build = a:plugin.build
   if type(build) == type('')
     let cmd = build
-  elseif dein#_is_windows() && has_key(build, 'windows')
+  elseif dein#util#_is_windows() && has_key(build, 'windows')
     let cmd = build.windows
-  elseif dein#_is_mac() && has_key(build, 'mac')
+  elseif dein#util#_is_mac() && has_key(build, 'mac')
     let cmd = build.mac
-  elseif dein#_is_cygwin() && has_key(build, 'cygwin')
+  elseif dein#util#_is_cygwin() && has_key(build, 'cygwin')
     let cmd = build.cygwin
-  elseif !dein#_is_windows() && has_key(build, 'linux')
+  elseif !dein#util#_is_windows() && has_key(build, 'linux')
         \ && !executable('gmake')
     let cmd = build.linux
-  elseif !dein#_is_windows() && has_key(build, 'unix')
+  elseif !dein#util#_is_windows() && has_key(build, 'unix')
     let cmd = build.unix
   elseif has_key(build, 'others')
     let cmd = build.others
@@ -934,7 +936,7 @@ function! s:build(plugin) abort "{{{
   try
     call dein#install#_cd(a:plugin.path)
 
-    if !dein#_has_vimproc()
+    if !dein#util#_has_vimproc()
       let result = system(cmd)
 
       if dein#install#_get_last_status()
@@ -962,7 +964,7 @@ function! s:channel2id(channel) abort "{{{
 endfunction"}}}
 
 function! s:echo(expr, mode) abort "{{{
-  let msg = map(filter(dein#_convert2list(a:expr), "v:val != ''"),
+  let msg = map(filter(dein#util#_convert2list(a:expr), "v:val != ''"),
         \ "'[dein] ' .  v:val")
   if empty(msg)
     return

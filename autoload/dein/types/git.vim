@@ -2,36 +2,17 @@
 " FILE: git.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
 "          Robert Nelson     <robert@rnelson.ca>
-" License: MIT license  {{{
-"     Permission is hereby granted, free of charge, to any person obtaining
-"     a copy of this software and associated documentation files (the
-"     "Software"), to deal in the Software without restriction, including
-"     without limitation the rights to use, copy, modify, merge, publish,
-"     distribute, sublicense, and/or sell copies of the Software, and to
-"     permit persons to whom the Software is furnished to do so, subject to
-"     the following conditions:
-"
-"     The above copyright notice and this permission notice shall be included
-"     in all copies or substantial portions of the Software.
-"
-"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
+" License: MIT license
 "=============================================================================
 
 " Global options definition. "{{{
-call dein#_set_default(
+call dein#util#_set_default(
       \ 'g:dein#types#git#command_path', 'git')
-call dein#_set_default(
+call dein#util#_set_default(
       \ 'g:dein#types#git#default_protocol', 'https')
-call dein#_set_default(
+call dein#util#_set_default(
       \ 'g:dein#types#git#clone_depth', 0)
-call dein#_set_default(
+call dein#util#_set_default(
       \ 'g:dein#types#git#pull_command', 'pull --ff --ff-only')
 "}}}
 
@@ -63,7 +44,7 @@ function! s:type.init(repo, option) abort "{{{
   endif
 
   if protocol !=# 'https' && protocol !=# 'ssh'
-    call dein#_error(
+    call dein#util#_error(
           \ printf('Repo: %s The protocol "%s" is unsecure and invalid.',
           \ a:repo, protocol))
     return {}
@@ -112,7 +93,7 @@ function! s:type.get_sync_command(plugin) abort "{{{
     let cmd .= printf(' %s "%s"', a:plugin.uri, a:plugin.path)
   else
     let shell = fnamemodify(split(&shell)[0], ':t')
-    let and = (!dein#_has_vimproc() && shell ==# 'fish') ?
+    let and = (!dein#util#_has_vimproc() && shell ==# 'fish') ?
           \ '; and ' : ' && '
 
     let cmd = g:dein#types#git#pull_command
@@ -239,7 +220,7 @@ function! s:is_git_dir(path) abort "{{{
   return 1
 endfunction "}}}
 
-let s:is_windows = dein#_is_windows()
+let s:is_windows = dein#util#_is_windows()
 
 function! s:join_paths(path1, path2) abort "{{{
   " Joins two paths together, handling the case where the second path

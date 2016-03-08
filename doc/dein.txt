@@ -1,26 +1,8 @@
 *dein.txt*	Dark powered Vim/Neovim plugin manager
 
-Version: 0.0
+Version: 1.0
 Author:  Shougo <Shougo.Matsu at gmail.com>
-License: MIT license  {{{
-    Permission is hereby granted, free of charge, to any person obtaining
-    a copy of this software and associated documentation files (the
-    "Software"), to deal in the Software without restriction, including
-    without limitation the rights to use, copy, modify, merge, publish,
-    distribute, sublicense, and/or sell copies of the Software, and to
-    permit persons to whom the Software is furnished to do so, subject to
-    the following conditions:
-    The above copyright notice and this permission notice shall be included
-    in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-}}}
+License: MIT license
 
 CONTENTS					*dein-contents*
 
@@ -218,7 +200,8 @@ dein#get([{plugin-name}])				 *dein#get()*
 
 dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		Load plugins configuration from the cache file,
-		which is located in `dein#_get_runtime_path() . '/cache'`.
+		which is located in `dein#util#_get_runtime_path() . '/cache_' .
+		v:progname`.
 		{vimrcs} is a list of compared .vimrc and/or other
 		configuration files. The default is |$MYVIMRC|.
 		Note: You must call it after |dein#begin()|.  It clears
@@ -227,19 +210,23 @@ dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		It returns 1, if the cache file is old or invalid or not
 		found.
 >
+	call dein#begin(path)
 	if dein#load_cache()
 	  " My plugins here:
 	  " ...
 	  call dein#save_cache()
 	endif
+	call dein#end()
 <
 		If you use multiple configuration files,
 >
+	call dein#begin(path)
 	if dein#load_cache([$MYVIMRC, 'plugin.vim', 'plugin.toml'])
 	  " My plugins here or other files spcified as arguments
 	  " ...
 	  call dein#save_cache()
 	endif
+	call dein#end()
 <
 						*dein#save_cache()*
 dein#save_cache()
@@ -249,6 +236,35 @@ dein#save_cache()
 						*dein#clear_cache()*
 dein#clear_cache()
 		Clear the cache file manually.
+
+dein#load_state({base-path})				 *dein#load_state()*
+		Load dein's state from the cache script,
+		which is located in `dein#util#_get_runtime_path() . '/state_' .
+		v:progname . '.vim'`.
+		{base-path} is where your downloaded plugins will be placed.
+		It is faster than |dein#load_cache()| feature.
+		Note: You must call it before |dein#begin()|.  It clears dein
+		all configuration.
+
+		It returns 1, if the cache script is old or invalid or not
+		found.
+>
+	if dein#load_state(path)
+	  call dein#begin(path)
+	  " My plugins here:
+	  " ...
+	  call dein#end()
+	  call dein#save_state()
+	endif
+<
+						*dein#save_state()*
+dein#save_state()
+		Save defin state in the cache script.
+		Note: It is available when loading .vimrc.
+
+						*dein#clear_state()*
+dein#clear_state()
+		Clear the state file manually.
 
 dein#tap({plugin-name})				*dein#tap()*
 		Return non-zero if {plugin-name} exists and isn't
@@ -265,6 +281,11 @@ dein#get_log() 					*dein#get_log()*
 dein#get_updates_log() 				*dein#get_updates_log()*
 		Print previous update logs.
 
+
+dein#call_hook({hook-name})			 *dein#call_hook()*
+		Calls the hook {hook-name}.
+		Note: If {hook-name} is "source", dein will call "source"
+		hooks in sourced plugins.
 
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*

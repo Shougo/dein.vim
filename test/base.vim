@@ -40,10 +40,6 @@ function! s:suite.add_normal() abort "{{{
   call s:assert.equals(dein#end(), 0)
 endfunction"}}}
 
-function! s:suite.add_invalid() abort "{{{
-  call s:assert.equals(dein#add('foo'), 1)
-endfunction"}}}
-
 function! s:suite.add_ovewrite() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
 
@@ -79,10 +75,10 @@ function! s:suite.is_sourced() abort "{{{
 endfunction"}}}
 
 function! s:suite.expand() abort "{{{
-  call s:assert.equals(dein#_expand('~'),
-        \ dein#_substitute_path(fnamemodify('~', ':p')))
-  call s:assert.equals(dein#_expand('$HOME'),
-        \ dein#_substitute_path($HOME))
+  call s:assert.equals(dein#util#_expand('~'),
+        \ dein#util#_substitute_path(fnamemodify('~', ':p')))
+  call s:assert.equals(dein#util#_expand('$HOME'),
+        \ dein#util#_substitute_path($HOME))
 endfunction"}}}
 
 " vim:foldmethod=marker:fen:
