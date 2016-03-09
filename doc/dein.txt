@@ -245,6 +245,8 @@ dein#load_state({base-path})				 *dein#load_state()*
 		It is faster than |dein#load_cache()| feature.
 		Note: You must call it before |dein#begin()|.  It clears dein
 		all configuration.
+		Note: If you use this feature, |dein-hooks-source| cannot be
+		called.  You must call it manually if needed.
 
 		It returns 1, if the cache script is old or invalid or not
 		found.
@@ -590,12 +592,6 @@ HOOKS 						*dein-hooks*
 		Note: You must set the autocmd before |dein#end()|.
 		Note: You can use |g:dein#name| as {name} in |dein#tap()| block.
 
-						*dein-hooks-post_source*
-		User#dein#post_source#{name}
-		Called or sourced after scripts are sourced.
-		Note: In Vim initializing, calling the hooks are
-		delayed until |VimEnter|.
-
 		Example: >
 
 	if dein#tap('open-browser.vim')
@@ -621,6 +617,14 @@ HOOKS 						*dein-hooks*
 	        \ 'source ~/.vim/rc/plugins/deoplete.rc.vim'
 	endif
 <
+
+						*dein-hooks-post_source*
+		User#dein#post_source#{name}
+		Called or sourced after scripts are sourced.
+		Note: In Vim initializing, you must call the hooks manually in
+		|VimEnter| if needed. >
+
+	autocmd VimEnter * call dein#call_hook('post_source')
 
 ==============================================================================
 UNITE SOURCES					*dein-unite-sources*
