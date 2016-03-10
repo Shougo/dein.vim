@@ -323,7 +323,7 @@ endfunction"}}}
 function! dein#util#_call_hook(hook_name, ...) abort "{{{
   let prefix = '#User#dein#'.a:hook_name.'#'
   let plugins = filter(dein#util#_convert2list(
-        \ (empty(a:000) ? dein#get() : a:1)),
+        \ (empty(a:000) ? values(dein#get()) : a:1)),
         \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
 
   for plugin in dein#util#_tsort(plugins)
