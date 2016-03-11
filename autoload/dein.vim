@@ -73,6 +73,9 @@ function! dein#check_install(...) abort "{{{
         \ string(map(copy(plugins), 'v:val.name')))
   return 1
 endfunction"}}}
+function! dein#check_clean() abort "{{{
+  return dein#util#_check_clean()
+endfunction"}}}
 
 function! dein#save_cache() abort "{{{
   return dein#util#_save_cache(g:dein#_vimrcs, 0)

@@ -3,9 +3,8 @@
 let s:suite = themis#suite('install')
 let s:assert = themis#helper('assert')
 
-let s:path = fnamemodify('.cache', ':p') . '/'
-let s:path2 = fnamemodify('.cache2', ':p') . '/'
-let s:path3 = fnamemodify('.cache3', ':p') . '/'
+let s:path = fnamemodify('.cache', ':p')
+let s:path2 = fnamemodify('.cache2', ':p')
 let s:runtimepath_save = &runtimepath
 let s:filetype_save = &l:filetype
 
@@ -579,6 +578,15 @@ function! s:suite.local() abort "{{{
 
   call s:assert.equals(plugin2.rtp,
         \ s:path2.'repos/github.com/Shougo/neopairs.vim')
+endfunction"}}}
+
+function! s:suite.clean() abort "{{{
+  call dein#begin(s:path2)
+
+  call s:assert.equals(dein#end(), 0)
+
+  call s:assert.equals(dein#check_clean(),
+        \ [s:path2.'repos/github.com/Shougo/neopairs.vim'])
 endfunction"}}}
 
 function! s:suite.local_nongit() abort "{{{

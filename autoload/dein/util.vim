@@ -111,6 +111,13 @@ function! dein#util#_check_lazy_plugins() abort "{{{
   echomsg 'No meaning lazy plugins: ' string(no_meaning_plugins)
   return len(no_meaning_plugins)
 endfunction"}}}
+function! dein#util#_check_clean() abort "{{{
+  let plugins_directories = map(values(dein#get()), 'v:val.path')
+  return filter(split(globpath(dein#util#_get_base_path(),
+        \ 'repos/*/*/*'), "\n"), "isdirectory(v:val)
+        \   && index(plugins_directories, v:val) < 0
+        \   && empty(dein#get(fnamemodify(v:val, ':t')))")
+endfunction"}}}
 
 function! dein#util#_writefile(path, list) abort "{{{
   if dein#util#_is_sudo() || !filewritable(dein#util#_get_base_path())

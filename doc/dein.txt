@@ -182,6 +182,10 @@ dein#check_lazy_plugins()			 *dein#check_lazy_plugins()*
 		Check the no meaning lazy plugins.  These plugins don't have
 		"plugin/" directory.
 
+dein#check_clean()				 *dein#check_clean()*
+		Returns the non-used plugins directories.  You can write the
+		wrap command to remove them.
+
 dein#recache_runtimepath()			 *dein#recache_runtimepath()*
 		Re-make the dein runtimepath cache and execute |:helptags|.
 		It is called automatically after the installation.
