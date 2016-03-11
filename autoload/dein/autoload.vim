@@ -167,6 +167,9 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort "{{{
 endfunction"}}}
 
 function! s:source_plugin(rtps, index, plugin) abort "{{{
+  if a:plugin.sourced
+    return
+  endif
   let a:plugin.sourced = 1
 
   let filetype_before = dein#util#_redir('autocmd FileType')
