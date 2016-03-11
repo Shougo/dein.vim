@@ -4,7 +4,13 @@ let s:suite = themis#suite('install')
 let s:assert = themis#helper('assert')
 
 let s:path = fnamemodify('.cache', ':p')
+if s:path !~ '/$'
+  let s:path .= '/'
+endif
 let s:path2 = fnamemodify('.cache2', ':p')
+if s:path2 !~ '/$'
+  let s:path2 .= '/'
+endif
 let s:runtimepath_save = &runtimepath
 let s:filetype_save = &l:filetype
 
