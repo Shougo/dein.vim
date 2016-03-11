@@ -835,6 +835,17 @@ function! s:error(msg) abort "{{{
   let s:updates_log += msg
   let s:log += msg
 endfunction"}}}
+function! s:nonskip_error(msg) abort "{{{
+  let msg = dein#util#_convert2list(a:msg)
+  if empty(msg)
+    return
+  endif
+
+  call s:echo_mode(msg, 'error')
+
+  let s:updates_log += msg
+  let s:log += msg
+endfunction"}}}
 function! s:echomsg(msg) abort "{{{
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
@@ -950,7 +961,7 @@ function! s:build(plugin) abort "{{{
   catch
     " Build error from vimproc.
     let message = v:exception . ' ' . v:throwpoint
-    call s:error(message)
+    call s:nonskip_error(message)
 
     return 1
   finally
