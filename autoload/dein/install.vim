@@ -10,6 +10,15 @@ let s:job_info = {}
 let s:log = []
 let s:updates_log = []
 
+" Global options definition." "{{{
+let g:dein#install_max_processes =
+      \ get(g:, 'dein#install_max_processes', 8)
+let g:dein#install_process_timeout =
+      \ get(g:, 'dein#install_process_timeout', 120)
+let g:dein#install_progress_type =
+      \ get(g:, 'dein#install_progress_type', 'statusline')
+"}}}
+
 function! dein#install#_update(plugins, bang, async) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :

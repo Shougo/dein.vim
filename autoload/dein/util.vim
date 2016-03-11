@@ -15,6 +15,9 @@ let g:dein#install_progress_type =
       \ get(g:, 'dein#install_progress_type', 'statusline')
 "}}}
 
+function! dein#util#_init() abort "{{{
+endfunction"}}}
+
 function! dein#util#_is_windows() abort "{{{
   return s:is_windows
 endfunction"}}}
