@@ -526,7 +526,6 @@ function! s:job_handler(id, msg, event) abort "{{{
   let job = s:job_info[a:id]
 
   if (has('nvim') && a:event ==# 'exit')
-        \ || (!has('nvim') && a:msg ==# 'DETACH')
     let job.eof = 1
     let job.status = a:msg
     if !empty(s:global_context)
@@ -639,10 +638,10 @@ function! s:init_process(plugin, context, cmd) abort
             \ 'on_exit': function('s:job_handler_neovim'),
             \ })
     elseif has('job') && a:context.async
-      let process.proc = s:channel2id(job_getchannel(
-            \ job_start([&shell, &shellcmdflag, cmd], {
+      let process.job = job_start([&shell, &shellcmdflag, cmd], {
             \   'callback': function('s:job_handler_vim'),
-            \ })))
+            \ })
+      let process.proc = s:channel2id(job_getchannel(process.job))
     elseif dein#util#_has_vimproc()
       let process.proc = vimproc#pgroup_open(cmd, 0, 2)
 
@@ -742,6 +741,15 @@ function! s:get_async_result(process, is_timeout) abort "{{{
 
   let job = s:job_info[a:process.proc]
 
+  if !has('nvim')
+    " Check job status
+    let status = job_status(a:process.job)
+    if status !=# 'run'
+      let job.status = 0
+      let job.eof = 1
+    endif
+  endif
+
   if !job.eof && !a:is_timeout
     let output = join(job.candidates[: -2], "\n")
     if output != ''
@@ -753,7 +761,8 @@ function! s:get_async_result(process, is_timeout) abort "{{{
   else
     if a:is_timeout
       silent! call call(
-            \ (has('nvim') ? 'jobstop' : 'job_stop'), a:process.proc)
+            \ (has('nvim') ? 'jobstop' : 'job_stop'),
+            \ (has('nvim') ? a:process.proc : a:process.job))
     endif
     let output = join(job.candidates, "\n")
     if output != ''
