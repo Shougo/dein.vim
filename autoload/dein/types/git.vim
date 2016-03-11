@@ -35,6 +35,11 @@ function! s:type.init(repo, option) abort "{{{
   let protocol = matchstr(a:repo, '^.\{-}\ze://')
   let name = substitute(a:repo[len(protocol):],
         \   '^://[^/]*/', '', '')
+  let host = substitute(matchstr(a:repo[len(protocol):],
+        \ '^://\zs[^/]*\ze/'), ':.*$', '', '')
+  if host == ''
+    let host = 'github.com'
+  endif
 
   if protocol == ''
         \ || a:repo =~# '\<\%(gh\|github\|bb\|bitbucket\):\S\+'
@@ -59,7 +64,7 @@ function! s:type.init(repo, option) abort "{{{
   else
     let uri = (protocol ==# 'ssh') ?
           \ 'git@github.com:' . name :
-          \ protocol . '://github.com/' . name
+          \ protocol . '://' . host . '/' . name
   endif
 
   if uri !~ '\.git\s*$'

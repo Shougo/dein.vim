@@ -33,6 +33,11 @@ function! s:suite.init() abort "{{{
         \ { 'uri': 'https://github.com/vim-scripts/L9.git',
         \   'type': 'git', 'directory': 'github.com/vim-scripts/L9' })
 
+  call s:assert.equals(s:git.init(
+        \ 'https://bitbucket.org/mortonfox/twitvim.git', {}),
+        \ { 'uri': 'https://bitbucket.org/mortonfox/twitvim.git',
+        \   'type': 'git', 'directory': 'bitbucket.org/mortonfox/twitvim' })
+
   let g:dein#types#git#default_protocol = 'ssh'
 
   call s:assert.equals(s:git.init(
