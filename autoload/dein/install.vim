@@ -13,8 +13,8 @@ let s:updates_log = []
 function! dein#install#_update(plugins, bang, async) abort "{{{
   let plugins = empty(a:plugins) ?
         \ values(dein#get()) :
-        \ filter(map(copy(a:plugins), 'dein#get(v:val)'),
-        \        '!empty(v:val)')
+        \ filter(map(dein#util#_convert2list(a:plugins),
+        \   'dein#get(v:val)'), '!empty(v:val)')
 
   if !a:bang
     let plugins = filter(plugins, '!isdirectory(v:val.path)')
