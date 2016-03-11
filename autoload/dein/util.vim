@@ -296,7 +296,6 @@ function! dein#util#_end() abort "{{{
     return 1
   endif
 
-  let sourced = []
   for plugin in filter(values(g:dein#_plugins),
         \ "!v:val.lazy && !v:val.sourced && v:val.rtp != ''")
     " Load dependencies
@@ -315,12 +314,10 @@ function! dein#util#_end() abort "{{{
     endif
 
     let plugin.sourced = 1
-    call add(sourced, plugin)
   endfor
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
-  call dein#call_hook('source', sourced)
-
+  call dein#call_hook('source')
   if !has('vim_starting')
     call dein#call_hook('post_source')
     call dein#autoload#_reset_ftplugin()
