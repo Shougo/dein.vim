@@ -6,15 +6,6 @@
 
 let s:is_windows = has('win32') || has('win64')
 
-" Global options definition." "{{{
-let g:dein#install_max_processes =
-      \ get(g:, 'dein#install_max_processes', 8)
-let g:dein#install_process_timeout =
-      \ get(g:, 'dein#install_process_timeout', 120)
-let g:dein#install_progress_type =
-      \ get(g:, 'dein#install_progress_type', 'statusline')
-"}}}
-
 function! dein#util#_init() abort "{{{
 endfunction"}}}
 
