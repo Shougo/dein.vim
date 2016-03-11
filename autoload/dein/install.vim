@@ -141,9 +141,12 @@ function! s:clear_runtimepath() abort "{{{
 endfunction"}}}
 
 function! dein#install#_is_async() abort "{{{
-  return !has('vim_starting') && (has('nvim')
-        \ || (has('job') && exists('*job_getchannel')
-        \                && !dein#util#_is_windows()))
+  if has('vim_starting')
+    return 0
+  endif
+  return has('nvim') || (has('job') && exists('*job_getchannel')
+        \                && has('patch-7.4.1510')
+        \                && !dein#util#_is_windows())
 endfunction"}}}
 
 function! dein#install#_remote_plugins() abort "{{{
