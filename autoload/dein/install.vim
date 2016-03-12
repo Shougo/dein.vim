@@ -13,8 +13,6 @@ let s:updates_log = []
 " Global options definition." "{{{
 let g:dein#install_max_processes =
       \ get(g:, 'dein#install_max_processes', 8)
-let g:dein#install_process_timeout =
-      \ get(g:, 'dein#install_process_timeout', 120)
 let g:dein#install_progress_type =
       \ get(g:, 'dein#install_progress_type', 'statusline')
 "}}}
@@ -154,8 +152,7 @@ function! dein#install#_is_async() abort "{{{
     return 0
   endif
   return has('nvim') || (has('job') && exists('*job_getchannel')
-        \                && has('patch-7.4.1510')
-        \                && !dein#util#_is_windows())
+        \                && has('patch-7.4.1510'))
 endfunction"}}}
 
 function! dein#install#_remote_plugins() abort "{{{
