@@ -437,6 +437,8 @@ function! s:install_blocking(context) abort "{{{
   if !empty(a:context.synced_plugins)
         \ || !empty(a:context.errored_plugins)
     call dein#install#_recache_runtimepath()
+  else
+    call s:error(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
   endif
 
   return len(a:context.errored_plugins)
@@ -455,6 +457,8 @@ function! s:install_async(context) abort "{{{
     if !empty(a:context.synced_plugins)
           \ || !empty(a:context.errored_plugins)
       call dein#install#_recache_runtimepath()
+    else
+      call s:error(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     endif
 
     " Disable installation handler
@@ -656,9 +660,21 @@ function! s:init_process(plugin, context, cmd) abort
             \ 'on_exit': function('s:job_handler_neovim'),
             \ })
     elseif has('job') && a:context.async
-      let process.job = job_start([&shell, &shellcmdflag, cmd], {
-            \   'callback': function('s:job_handler_vim'),
-            \ })
+      try
+        " Note: In Windows, job_start() does not work in shellslash.
+        let shellslash = 0
+        if exists('+shellslash')
+          let shellslash = &shellslash
+          set noshellslash
+        endif
+        let process.job = job_start([&shell, &shellcmdflag, cmd], {
+              \   'callback': function('s:job_handler_vim'),
+              \ })
+      finally
+        if exists('+shellslash')
+          let &shellslash = shellslash
+        endif
+      endtry
       let process.proc = s:channel2id(job_getchannel(process.job))
     elseif dein#util#_has_vimproc()
       let process.proc = vimproc#pgroup_open(cmd, 0, 2)
