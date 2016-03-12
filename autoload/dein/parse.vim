@@ -133,7 +133,7 @@ function! dein#parse#_dict(plugin) abort "{{{
 
   if !has_key(a:plugin, 'merged')
     let plugin.merged =
-          \ !plugin.lazy && !plugin.local && plugin.if == ''
+          \ !plugin.lazy && !plugin.local && !has_key(a:plugin, 'if')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
   endif
 
