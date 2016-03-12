@@ -397,7 +397,7 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     endif
   else
     " Note: vimproc#system() does not support the command line.
-    for src in a:srcs
+    for src in filter(copy(a:srcs), 'len(s:list_directory(v:val))')
       let cmdline = printf('cp -R %s/* %s',
             \ shellescape(src), shellescape(a:dest))
       let result = system(cmdline)
