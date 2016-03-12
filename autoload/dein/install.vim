@@ -935,7 +935,7 @@ function! s:merge_files(plugins, directory) abort "{{{
         \ a:directory, a:directory), files)
 endfunction"}}}
 function! s:list_directory(directory) abort "{{{
-  return split(glob(a:directory, '/*'), "\n")
+  return split(glob(a:directory . '/*'), "\n")
 endfunction"}}}
 function! s:vimproc_system(cmd) abort "{{{
   let proc = vimproc#pgroup_open(a:cmd)
