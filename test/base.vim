@@ -63,17 +63,6 @@ function! s:suite.get() abort "{{{
   call dein#end()
 endfunction"}}}
 
-function! s:suite.is_sourced() abort "{{{
-  call dein#begin(s:path)
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
-  call s:assert.equals(dein#is_sourced('neocomplete.vim'), 0)
-  call s:assert.equals(dein#install(), 0)
-  call s:assert.equals(dein#is_sourced('neocomplete.vim'), 0)
-  call s:assert.equals(dein#source('neocomplete.vim'), 0)
-  call s:assert.equals(dein#is_sourced('neocomplete.vim'), 1)
-  call dein#end()
-endfunction"}}}
-
 function! s:suite.expand() abort "{{{
   call s:assert.equals(dein#util#_expand('~'),
         \ dein#util#_substitute_path(fnamemodify('~', ':p')))
