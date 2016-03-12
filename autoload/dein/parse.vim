@@ -9,6 +9,8 @@ let s:git = dein#types#git#define()
 " Global options definition." "{{{
 let g:dein#enable_name_conversion =
       \ get(g:, 'dein#enable_name_conversion', 0)
+let g:dein#install_process_timeout =
+      \ get(g:, 'dein#install_process_timeout', 120)
 "}}}
 
 function! dein#parse#_add(repo, options) abort "{{{
