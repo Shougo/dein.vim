@@ -391,9 +391,9 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     endtry
     if v:shell_error
       let status = 1
-      call dein#_error('copy command failed.')
-      call dein#_error(result)
-      call dein#_error('cmdline: ' . temp)
+      call dein#util#_error('copy command failed.')
+      call dein#util#_error(result)
+      call dein#util#_error('cmdline: ' . temp)
     endif
   else
     " Note: vimproc#system() does not support the command line.
@@ -403,9 +403,9 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
       let result = system(cmdline)
       if v:shell_error
         let status = 1
-        call dein#_error('copy command failed.')
-        call dein#_error(result)
-        call dein#_error('cmdline: ' . cmdline)
+        call dein#util#_error('copy command failed.')
+        call dein#util#_error(result)
+        call dein#util#_error('cmdline: ' . cmdline)
       endif
     endfor
   endif
