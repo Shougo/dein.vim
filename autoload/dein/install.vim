@@ -434,7 +434,10 @@ function! s:install_blocking(context) abort "{{{
 
   call s:echomsg(s:get_errored_message(a:context.errored_plugins))
 
-  call dein#install#_recache_runtimepath()
+  if !empty(a:context.synced_plugins)
+        \ || !empty(a:context.errored_plugins)
+    call dein#install#_recache_runtimepath()
+  endif
 
   return len(a:context.errored_plugins)
 endfunction"}}}
@@ -449,7 +452,10 @@ function! s:install_async(context) abort "{{{
 
     call s:echomsg(s:get_errored_message(a:context.errored_plugins))
 
-    call dein#install#_recache_runtimepath()
+    if !empty(a:context.synced_plugins)
+          \ || !empty(a:context.errored_plugins)
+      call dein#install#_recache_runtimepath()
+    endif
 
     " Disable installation handler
     let s:global_context = {}
