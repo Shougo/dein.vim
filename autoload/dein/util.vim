@@ -190,6 +190,21 @@ function! dein#util#_clear_cache() abort "{{{
 
   call delete(cache)
 endfunction"}}}
+function! dein#util#_load_merged_plugins() abort "{{{
+  let path = dein#util#_get_base_path() . '/merged'
+  if !filereadable(path)
+    return []
+  endif
+  let list = readfile(path)
+  sandbox let plugins = has('patch-7.4.1498') ?
+        \ js_decode(list[0]) : eval(list[0])
+  return plugins
+endfunction"}}}
+function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
+  let json = has('patch-7.4.1498') ?
+        \ js_encode(a:merged_plugins) : string(a:merged_plugins)
+  call writefile([json], dein#util#_get_base_path() . '/merged')
+endfunction"}}}
 
 function! dein#util#_save_state() abort "{{{
   if dein#util#_get_base_path() == ''
@@ -308,6 +323,13 @@ function! dein#util#_end() abort "{{{
     let plugin.sourced = 1
   endfor
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
+
+  let merged_plugins = map(filter(values(g:dein#_plugins),
+        \ 'v:val.merged'), 'v:val.name')
+  if merged_plugins !=# dein#util#_load_merged_plugins()
+    call dein#recache_runtimepath()
+    call dein#util#_save_merged_plugins(merged_plugins)
+  endif
 
   if !empty(depends)
     call dein#source(depends)
