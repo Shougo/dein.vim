@@ -118,7 +118,7 @@ function! dein#clear_cache() abort "{{{
   return dein#util#_clear_cache()
 endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
-  return g:dein#_base_path . '/cache_' . v:progname
+  return g:dein#_base_path.'/cache_'.fnamemodify(v:progname, ':r')
 endfunction"}}}
 function! dein#_get_cache_version() abort "{{{
   return getftime(s:parser_vim_path)
@@ -156,7 +156,7 @@ function! dein#clear_state() abort "{{{
   return dein#util#_clear_state()
 endfunction"}}}
 function! dein#_get_state_file() abort "{{{
-  return g:dein#_base_path . '/state_' . v:progname . '.vim'
+  return g:dein#_base_path.'/state_'.fnamemodify(v:progname, ':r').'.vim'
 endfunction"}}}
 
 function! dein#begin(path, ...) abort "{{{
