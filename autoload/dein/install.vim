@@ -87,6 +87,19 @@ function! dein#install#_reinstall(plugins) abort "{{{
 
   call dein#install#_update(dein#util#_convert2list(a:plugins), 0, 1)
 endfunction"}}}
+function! dein#install#_direct_install(repo, options) abort "{{{
+  let options = copy(a:options)
+  let options.merged = 0
+
+  let plugin = dein#parse#_dict(dein#parse#_init(a:repo, options))
+  if !plugin.if
+    return
+  endif
+
+  let g:dein#_plugins[plugin.name] = plugin
+  call dein#install(plugin.name)
+  call dein#source(plugin.name)
+endfunction"}}}
 
 function! dein#install#_recache_runtimepath() abort "{{{
   if dein#util#_is_sudo()

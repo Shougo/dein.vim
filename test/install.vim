@@ -72,6 +72,14 @@ function! s:suite.reinstall() abort "{{{
   call s:assert.equals(dein#reinstall('neocomplete.vim'), 0)
 endfunction"}}}
 
+function! s:suite.direct_install() abort "{{{
+  call dein#begin(s:path)
+  call dein#end()
+
+  call s:assert.equals(dein#direct_install('Shougo/neocomplete.vim'), 0)
+  call s:assert.equals(dein#get('neocomplete.vim').sourced, 1)
+endfunction"}}}
+
 function! s:suite.update() abort "{{{
   let g:dein#install_progress_type = 'echo'
 

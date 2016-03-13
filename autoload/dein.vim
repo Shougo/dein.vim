@@ -183,6 +183,12 @@ endfunction"}}}
 function! dein#update(...) abort "{{{
   return dein#install#_update(get(a:000, 0, []), 1, dein#install#_is_async())
 endfunction"}}}
+function! dein#direct_install(repo, ...) abort "{{{
+  call dein#install#_direct_install(a:repo, (a:0 ? a:1 : {}))
+endfunction"}}}
+function! dein#get_direct_plugins_path() abort "{{{
+  return g:dein#_base_path.'/direct_install.vim'
+endfunction"}}}
 function! dein#reinstall(plugins) abort "{{{
   call dein#install#_reinstall(a:plugins)
 endfunction"}}}
