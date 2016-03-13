@@ -192,7 +192,7 @@ function! dein#util#_clear_cache() abort "{{{
 endfunction"}}}
 function! dein#util#_check_vimrcs() abort
   let time = getftime(dein#util#_get_runtime_path())
-  return empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
+  return !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
         \ 'time < v:val'))
 endfunction
 function! dein#util#_load_merged_plugins() abort "{{{
@@ -331,7 +331,8 @@ function! dein#util#_end() abort "{{{
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
   if dein#util#_check_vimrcs()
-    if map(filter(values(g:dein#_plugins), 'v:val.merged'), 'v:val.name')
+    if sort(map(filter(values(g:dein#_plugins),
+          \ 'v:val.merged'), 'v:val.name'))
           \ !=# dein#util#_load_merged_plugins()
       call dein#recache_runtimepath()
     endif
