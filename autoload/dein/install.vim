@@ -99,7 +99,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   let plugins = values(dein#get())
 
-  call s:copy_files(filter(copy(plugins), 'v:val.merged'), '')
+  let merged_plugins = filter(copy(plugins), 'v:val.merged')
+  call s:copy_files(merged_plugins, '')
 
   call s:helptags()
 
@@ -116,6 +117,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call dein#remote_plugins()
 
   call dein#call_hook('post_source')
+
+  call dein#util#_save_merged_plugins(map(merged_plugins, 'v:val.name'))
 
   call s:error(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}

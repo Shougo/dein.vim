@@ -331,11 +331,9 @@ function! dein#util#_end() abort "{{{
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
   if dein#util#_check_vimrcs()
-    let merged_plugins = map(filter(values(g:dein#_plugins),
-          \ 'v:val.merged'), 'v:val.name')
-    if merged_plugins !=# dein#util#_load_merged_plugins()
+    if map(filter(values(g:dein#_plugins), 'v:val.merged'), 'v:val.name')
+          \ !=# dein#util#_load_merged_plugins()
       call dein#recache_runtimepath()
-      call dein#util#_save_merged_plugins(merged_plugins)
     endif
   endif
 

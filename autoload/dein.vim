@@ -90,8 +90,9 @@ function! dein#load_cache_raw(...) abort "{{{
   let cache = dein#_get_cache_file()
   if !starting || !filereadable(cache) | return {} | endif
 
-  if !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
-        \ 'getftime(cache) < v:val'))
+  let time = getftime(cache)
+  if !empty(filter(map(copy(g:dein#_vimrcs),
+        \ 'getftime(expand(v:val))'), 'time < v:val'))
     return {}
   endif
 
