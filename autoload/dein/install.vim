@@ -1055,6 +1055,10 @@ function! s:echo(expr, mode) abort "{{{
 endfunction"}}}
 function! s:echo_mode(m, mode) abort "{{{
   for m in split(a:m, '\r\?\n', 1)
+    if !has('vim_starting') && a:mode !=# 'error'
+      let m = s:truncate_skipping(m, &columns - 1, &columns/3, '...')
+    endif
+
     if a:mode ==# 'error'
       echohl WarningMsg | echomsg m | echohl None
     elseif a:mode ==# 'echomsg'
@@ -1063,6 +1067,47 @@ function! s:echo_mode(m, mode) abort "{{{
       echo m
     endif
   endfor
+endfunction"}}}
+
+function! s:truncate_skipping(str, max, footer_width, separator) abort "{{{
+  let width = strwidth(a:str)
+  if width <= a:max
+    let ret = a:str
+  else
+    let header_width = a:max - strwidth(a:separator) - a:footer_width
+    let ret = s:strwidthpart(a:str, header_width) . a:separator
+          \ . s:strwidthpart_reverse(a:str, a:footer_width)
+  endif
+
+  return ret
+endfunction"}}}
+function! s:strwidthpart(str, width) abort "{{{
+  if a:width <= 0
+    return ''
+  endif
+  let ret = a:str
+  let width = strwidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '.$')
+    let ret = ret[: -1 - len(char)]
+    let width -= strwidth(char)
+  endwhile
+
+  return ret
+endfunction"}}}
+function! s:strwidthpart_reverse(str, width) abort "{{{
+  if a:width <= 0
+    return ''
+  endif
+  let ret = a:str
+  let width = strwidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '^.')
+    let ret = ret[len(char) :]
+    let width -= strwidth(char)
+  endwhile
+
+  return ret
 endfunction"}}}
 
 function! s:on_hold() abort "{{{
