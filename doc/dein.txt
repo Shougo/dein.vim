@@ -116,7 +116,10 @@ dein#direct_install({repo}[, {options}])	 *dein#direct_install()*
 		The arguments are same with |dein#add()|.
 		It installs and sources the plugin.
 		Note: The direct installed plugins configuration is saved in
-		|dein#get_direct_plugins_path()|.  You can load or edit it.
+		|dein#get_direct_plugins_path()|.  You can load or edit it. >
+
+		" Try neocomplete without the configuration.
+		call dein#direct_install('Shougo/neocomplete.vim')
 
 dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		Load TOML plugin configuration from {filename}.  See
