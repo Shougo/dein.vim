@@ -246,13 +246,13 @@ function! s:generate_dummy_mappings(plugin) abort "{{{
 
     for mapping in mappings
       " Define dummy mappings.
-      let prefix = printf("call dein#autoload#_on_map(%s, %s,",
+      let prefix = printf("dein#autoload#_on_map(%s, %s,",
             \ string(substitute(mapping, '<', '<lt>', 'g')),
             \ string(a:plugin.name))
       for mode in modes
         let raw_map = mode.'noremap <unique><silent> '.mapping
             \ . (mode ==# 'c' ? " \<C-r>=" :
-            \    mode ==# 'i' ? " \<C-o>:" : " :\<C-u>") . prefix
+            \    mode ==# 'i' ? " \<C-o>:call " : " :\<C-u>call ") . prefix
             \ . string(mode) . ")<CR>"
         call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
       endfor
