@@ -290,14 +290,12 @@ function! dein#util#_end() abort "{{{
     return 1
   endif
 
+  let depends = []
   for plugin in filter(values(g:dein#_plugins),
         \ "!v:val.lazy && !v:val.sourced && v:val.rtp != ''")
     " Load dependencies
     if !empty(plugin.depends)
-      if s:load_depends(plugin, rtps, index)
-        return 1
-      endif
-      continue
+      let depends += plugin.depends
     endif
 
     if !plugin.merged
@@ -310,6 +308,10 @@ function! dein#util#_end() abort "{{{
     let plugin.sourced = 1
   endfor
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
+
+  if !empty(depends)
+    call dein#source(depends)
+  endif
 
   call dein#call_hook('source')
   if !has('vim_starting')
@@ -436,30 +438,6 @@ endfunction"}}}
 " Escape a path for runtimepath.
 function! s:escape(path) abort "{{{
   return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
-endfunction"}}}
-
-function! s:load_depends(plugin, rtps, index) abort "{{{
-  for name in a:plugin.depends
-    if !has_key(g:dein#_plugins, name)
-      call dein#util#_error(printf('Plugin name "%s" is not found.', name))
-      return 1
-    endif
-  endfor
-
-  for depend in dein#util#_tsort([a:plugin])
-    if depend.sourced
-      return
-    endif
-
-    let depend.sourced = 1
-
-    if !depend.merged
-      call insert(a:rtps, depend.rtp, a:index)
-      if isdirectory(depend.rtp.'/after')
-        call add(a:rtps, depend.rtp.'/after')
-      endif
-    endif
-  endfor
 endfunction"}}}
 
 " vim: foldmethod=marker

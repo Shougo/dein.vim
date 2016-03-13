@@ -476,17 +476,6 @@ function! s:suite.depends_lazy() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
-function! s:suite.depends_error() abort "{{{
-  call dein#begin(s:path)
-
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'depends': 'vimfiler.vim'}), 0)
-
-  call s:assert.equals(s:dein_install(), 0)
-
-  call s:assert.equals(dein#end(), 1)
-endfunction"}}}
-
 function! s:suite.depends_error_lazy() abort "{{{
   call dein#begin(s:path)
 

@@ -439,6 +439,7 @@ OPTIONS 					*dein-options*
 		Specify a list of plugins a plugin depends on.
 		List items are '{plugin-name}'.
 		Those specified in the list are NOT installed automatically.
+		Note: The loading order is not guaranteed in non lazy plugins.
 
 						*dein-options-if*
 		if		(Number) or (String)
@@ -600,6 +601,7 @@ HOOKS 						*dein-hooks*
 		useful for plugin initialization in lazy plugins.
 		Note: You must set the autocmd before |dein#end()|.
 		Note: You can use |g:dein#name| as {name} in |dein#tap()| block.
+		Note: The loading order is not guaranteed in non lazy plugins.
 
 		Example: >
 
