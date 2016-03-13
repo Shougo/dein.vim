@@ -190,6 +190,11 @@ function! dein#util#_clear_cache() abort "{{{
 
   call delete(cache)
 endfunction"}}}
+function! dein#util#_check_vimrcs() abort
+  let time = getftime(dein#util#_get_runtime_path())
+  return empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
+        \ 'time < v:val'))
+endfunction
 function! dein#util#_load_merged_plugins() abort "{{{
   let path = dein#util#_get_base_path() . '/merged'
   if !filereadable(path)
@@ -253,7 +258,7 @@ function! dein#util#_clear_state() abort "{{{
   call delete(cache)
 endfunction"}}}
 
-function! dein#util#_begin(path) abort "{{{
+function! dein#util#_begin(path, vimrcs) abort "{{{
   if has('vim_starting')
     call dein#_init()
   endif
@@ -269,6 +274,7 @@ function! dein#util#_begin(path) abort "{{{
     let g:dein#_base_path = g:dein#_base_path[: -2]
   endif
   let g:dein#_runtime_path = g:dein#_base_path . '/.dein'
+  let g:dein#_vimrcs = a:vimrcs
 
   call dein#util#_filetype_off()
 
@@ -324,11 +330,13 @@ function! dein#util#_end() abort "{{{
   endfor
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
-  let merged_plugins = map(filter(values(g:dein#_plugins),
-        \ 'v:val.merged'), 'v:val.name')
-  if merged_plugins !=# dein#util#_load_merged_plugins()
-    call dein#recache_runtimepath()
-    call dein#util#_save_merged_plugins(merged_plugins)
+  if dein#util#_check_vimrcs()
+    let merged_plugins = map(filter(values(g:dein#_plugins),
+          \ 'v:val.merged'), 'v:val.name')
+    if merged_plugins !=# dein#util#_load_merged_plugins()
+      call dein#recache_runtimepath()
+      call dein#util#_save_merged_plugins(merged_plugins)
+    endif
   endif
 
   if !empty(depends)

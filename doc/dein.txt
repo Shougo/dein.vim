@@ -80,12 +80,14 @@ INTERFACE					*dein-interface*
 ------------------------------------------------------------------------------
 FUNCTIONS 					*dein-functions*
 
-dein#begin({base-path})				*dein#begin()*
+dein#begin({base-path}, [{vimrcs}])				*dein#begin()*
 		Initialize dein.vim and start plugins configuration
 		block.
 		{base-path} is where your downloaded plugins will be placed.
 		For example, "Shougo/dein.vim" will be downloaded in
 		"{base-path}/repos/github.com/Shougo/dein.vim" directory.
+		{vimrcs} is a list of compared .vimrc and/or other
+		configuration files. The default is |$MYVIMRC|.
 
 		Note: You must not call the function inside a
 		"has('vim_starting')" block.
@@ -94,8 +96,9 @@ dein#begin({base-path})				*dein#begin()*
 >
 dein#end()					*dein#end()*
 		End dein configuration block.
-		Note: 'runtimepath' is changed after |dein#end()|.
 		You must not use the plugins in |dein#begin()| block.
+		It executes |dein#recache_runtimepath()| automatically.
+		Note: 'runtimepath' is changed after |dein#end()|.
 
 dein#add({repo}[, {options}])			*dein#add()*
 		Initialize a plugin.

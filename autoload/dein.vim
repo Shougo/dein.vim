@@ -84,7 +84,7 @@ function! dein#load_cache(...) abort "{{{
   return call('dein#util#_load_cache', a:000)
 endfunction"}}}
 function! dein#load_cache_raw(...) abort "{{{
-  let g:dein#_vimrcs = a:0 ? a:1 : [$MYVIMRC]
+  if a:0 | let g:dein#_vimrcs = a:1 | endif
   let starting = a:0 > 1 ? a:2 : has('vim_starting')
 
   let cache = dein#_get_cache_file()
@@ -158,8 +158,8 @@ function! dein#_get_state_file() abort "{{{
   return g:dein#_base_path . '/state_' . v:progname . '.vim'
 endfunction"}}}
 
-function! dein#begin(path) abort "{{{
-  return dein#util#_begin(a:path)
+function! dein#begin(path, ...) abort "{{{
+  return dein#util#_begin(a:path, empty(a:000) ? [$MYVIMRC] : a:1)
 endfunction"}}}
 function! dein#end() abort "{{{
   return dein#util#_end()
