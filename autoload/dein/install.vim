@@ -99,6 +99,16 @@ function! dein#install#_direct_install(repo, options) abort "{{{
   let g:dein#_plugins[plugin.name] = plugin
   call dein#install(plugin.name)
   call dein#source(plugin.name)
+
+  " Add to direct_install.vim
+  let file = dein#get_direct_plugins_path()
+  let line = printf('call dein#add(%s, %s)',
+        \ string(a:repo), string(options))
+  if !filereadable(file)
+    call writefile([line], file)
+  else
+    call writefile(add(readfile(file), line), file)
+  endif
 endfunction"}}}
 
 function! dein#install#_recache_runtimepath() abort "{{{

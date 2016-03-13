@@ -115,6 +115,8 @@ dein#direct_install({repo}[, {options}])	 *dein#direct_install()*
 		Direct install a plugin without editing the configuration.
 		The arguments are same with |dein#add()|.
 		It installs and sources the plugin.
+		Note: The direct installed plugins configuration is saved in
+		|dein#get_direct_plugins_path()|.  You can load or edit it.
 
 dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		Load TOML plugin configuration from {filename}.  See
@@ -295,6 +297,8 @@ dein#get_log() 					*dein#get_log()*
 dein#get_updates_log() 				*dein#get_updates_log()*
 		Print previous update logs.
 
+dein#get_direct_plugins_path()		 *dein#get_direct_plugins_path()*
+		Get the direct installed plugins script path.
 
 dein#call_hook({hook-name})			 *dein#call_hook()*
 		Calls the hook {hook-name}.
