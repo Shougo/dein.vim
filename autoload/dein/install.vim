@@ -391,21 +391,21 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
     endtry
     if v:shell_error
       let status = 1
-      call dein#_error('copy command failed.')
-      call dein#_error(result)
-      call dein#_error('cmdline: ' . temp)
+      call dein#util#_error('copy command failed.')
+      call dein#util#_error(result)
+      call dein#util#_error('cmdline: ' . temp)
     endif
   else
     " Note: vimproc#system() does not support the command line.
-    for src in a:srcs
+    for src in filter(copy(a:srcs), 'len(s:list_directory(v:val))')
       let cmdline = printf('cp -R %s/* %s',
             \ shellescape(src), shellescape(a:dest))
       let result = system(cmdline)
       if v:shell_error
         let status = 1
-        call dein#_error('copy command failed.')
-        call dein#_error(result)
-        call dein#_error('cmdline: ' . cmdline)
+        call dein#util#_error('copy command failed.')
+        call dein#util#_error(result)
+        call dein#util#_error('cmdline: ' . cmdline)
       endif
     endfor
   endif
@@ -935,7 +935,7 @@ function! s:merge_files(plugins, directory) abort "{{{
         \ a:directory, a:directory), files)
 endfunction"}}}
 function! s:list_directory(directory) abort "{{{
-  return split(glob(a:directory, '/*'), "\n")
+  return split(glob(a:directory . '/*'), "\n")
 endfunction"}}}
 function! s:vimproc_system(cmd) abort "{{{
   let proc = vimproc#pgroup_open(a:cmd)
