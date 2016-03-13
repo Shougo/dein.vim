@@ -259,7 +259,7 @@ function! dein#util#_clear_state() abort "{{{
 endfunction"}}}
 
 function! dein#util#_begin(path, vimrcs) abort "{{{
-  if has('vim_starting')
+  if !exists('#dein')
     call dein#_init()
   endif
 
