@@ -22,12 +22,43 @@ function! dein#autoload#_source(...) abort "{{{
     return 1
   endif
 
+  let filetype_before = dein#util#_redir('autocmd FileType')
+
+  let sourced = []
   for plugin in filter(plugins,
         \ "!empty(v:val) && !v:val.sourced && v:val.rtp != ''")
-    if s:source_plugin(rtps, index, plugin)
+    if s:source_plugin(rtps, index, plugin, sourced)
       return 1
     endif
   endfor
+
+  let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
+
+  call dein#call_hook('source', sourced)
+
+  " Reload script files.
+  for plugin in sourced
+    for directory in filter(['plugin', 'after/plugin'],
+          \ "isdirectory(plugin.rtp.'/'.v:val)")
+      for file in split(glob(plugin.rtp.'/'.directory.'/**/*.vim'), '\n')
+        " Note: "silent!" is required to ignore E122, E174 and E227.
+        "       "unsilent" then displays any messages while sourcing.
+        execute 'silent! unsilent source' fnameescape(file)
+      endfor
+    endfor
+  endfor
+
+  let filetype_after = dein#util#_redir('autocmd FileType')
+
+  if s:is_reset_ftplugin(sourced)
+    call dein#autoload#_reset_ftplugin()
+  elseif filetype_before !=# filetype_after
+    execute 'doautocmd FileType' &filetype
+  endif
+
+  if !has('vim_starting')
+    call dein#call_hook('post_source', sourced)
+  endif
 endfunction"}}}
 
 function! dein#autoload#_on_i() abort "{{{
@@ -166,13 +197,11 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort "{{{
   return ['']
 endfunction"}}}
 
-function! s:source_plugin(rtps, index, plugin) abort "{{{
+function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
   if a:plugin.sourced
     return
   endif
   let a:plugin.sourced = 1
-
-  let filetype_before = dein#util#_redir('autocmd FileType')
 
   " Load dependencies
   for name in a:plugin.depends
@@ -181,7 +210,14 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
       return 1
     endif
 
-    if s:source_plugin(a:rtps, a:index, g:dein#_plugins[name])
+    if s:source_plugin(a:rtps, a:index, g:dein#_plugins[name], a:sourced)
+      return 1
+    endif
+  endfor
+
+  for on_source in filter(dein#util#_get_lazy_plugins(),
+        \ "index(v:val.on_source, a:plugin.name) >= 0")
+    if s:source_plugin(a:rtps, a:index, on_source, a:sourced)
       return 1
     endif
   endfor
@@ -205,38 +241,7 @@ function! s:source_plugin(rtps, index, plugin) abort "{{{
     call add(a:rtps, a:plugin.rtp.'/after')
   endif
 
-  let &runtimepath = dein#util#_join_rtp(a:rtps, &runtimepath, '')
-
-  call dein#call_hook('source', a:plugin)
-
-  for on_source in filter(dein#util#_get_lazy_plugins(),
-        \ "index(v:val.on_source, a:plugin.name) >= 0")
-    if s:source_plugin(a:rtps, a:index, on_source)
-      return 1
-    endif
-  endfor
-
-  let filetype_after = dein#util#_redir('autocmd FileType')
-
-  " Reload script files.
-  for directory in filter(['plugin', 'after/plugin'],
-        \ "isdirectory(a:plugin.rtp.'/'.v:val)")
-    for file in split(glob(a:plugin.rtp.'/'.directory.'/**/*.vim'), '\n')
-      " Note: "silent!" is required to ignore E122, E174 and E227.
-      "       "unsilent" then displays any messages while sourcing.
-      execute 'silent! unsilent source' fnameescape(file)
-    endfor
-  endfor
-
-  if s:is_reset_ftplugin(a:plugin.rtp)
-    call dein#autoload#_reset_ftplugin()
-  elseif filetype_before !=# filetype_after
-    execute 'doautocmd FileType' &filetype
-  endif
-
-  if !has('vim_starting')
-    call dein#call_hook('post_source', a:plugin)
-  endif
+  call add(a:sourced, a:plugin)
 endfunction"}}}
 function! dein#autoload#_reset_ftplugin() abort "{{{
   let filetype_out = dein#util#_filetype_off()
@@ -293,10 +298,15 @@ function! s:get_input() abort "{{{
   return input
 endfunction"}}}
 
-function! s:is_reset_ftplugin(rtp) abort "{{{
-  return len(filter(['ftplugin', 'indent', 'syntax',
+function! s:is_reset_ftplugin(plugins) abort "{{{
+  for plugin in a:plugins
+    if !empty(filter(['ftplugin', 'indent', 'syntax',
         \ 'after/ftplugin', 'after/indent', 'after/syntax'],
-        \ "isdirectory(a:rtp . '/' . v:val)"))
+        \ "isdirectory(plugin.rtp . '/' . v:val)"))
+      return 1
+    endif
+  endfor
+  return 0
 endfunction"}}}
 
 " vim: foldmethod=marker
