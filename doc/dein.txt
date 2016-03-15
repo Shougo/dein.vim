@@ -217,8 +217,8 @@ dein#get([{plugin-name}])				 *dein#get()*
 
 dein#load_cache([{vimrcs}])			 *dein#load_cache()*
 		Load plugins configuration from the cache file,
-		which is located in `dein#util#_get_runtime_path() . '/cache_' .
-		fnamemodify(v:progname, ':r')`.
+		which is located in `dein#util#_get_runtime_path() . '/cache_'
+		.  fnamemodify(v:progname, ':r')`.
 		{vimrcs} is a list of compared .vimrc and/or other
 		configuration files. The default is |$MYVIMRC|.
 		Note: You must call it after |dein#begin()|.  It clears
@@ -256,8 +256,8 @@ dein#clear_cache()
 
 dein#load_state({base-path})				 *dein#load_state()*
 		Load dein's state from the cache script,
-		which is located in `dein#util#_get_runtime_path() . '/state_' .
-		fnamemodify(v:progname, ':r') . '.vim'`.
+		which is located in `dein#util#_get_runtime_path() . '/state_'
+		.  fnamemodify(v:progname, ':r') . '.vim'`.
 		{base-path} is where your downloaded plugins will be placed.
 		It is faster than |dein#load_cache()| feature.
 		Note: You must call it before |dein#begin()|.  It clears dein
@@ -288,7 +288,7 @@ dein#clear_state()
 dein#tap({plugin-name})				*dein#tap()*
 		Return non-zero if {plugin-name} exists and isn't
 		disabled.
-		It initializes |dein#name| variable as {plugin-name}.
+		It initializes |g:dein#name| variable as {plugin-name}.
 
 dein#is_sourced({plugin-name})			*dein#is_sourced()*
 		Return non-zero if {plugin-name} exists and is sourced.
@@ -315,10 +315,10 @@ VARIABLES 					*dein-variables*
 g:dein#name
 		Current plugin name set by |dein#tap()|.
 
-	 					*g:dein#enable_name_conversion*
+ 					*g:dein#enable_name_conversion*
 g:dein#enable_name_conversion
 		If you set it to 1 and omit plugin name,
-		|plugin-options-normalized_name| is used as plugin name.
+		|dein-options-normalized_name| is used as plugin name.
 		It is useful for absorbing difference of repository name.
 
 		Defaults: "0".
@@ -330,7 +330,7 @@ g:dein#install_max_processes
 
 		Defaults: "8".
 
-						*g:dein#install_process_timeout*
+					*g:dein#install_process_timeout*
 g:dein#install_process_timeout
 		The time of timeout seconds when updating/installing plugins.
 
@@ -343,12 +343,12 @@ g:dein#install_progress_type
 		"echo":
 			Displayed in the echo area.
 		"statusline":
-			Displayed in the |statusline|.  It is disabled in the
+			Displayed in the 'statusline'.  It is disabled in the
 			asynchronous installer.
 		"tabline":
-			Displayed in the |tabline|.
+			Displayed in the 'tabline'.
 		"title":
-			Displayed in the |titlestring|.
+			Displayed in the 'titlestring'.
 
 		Defaults: "statusline".
 
@@ -547,7 +547,8 @@ OPTIONS 					*dein-options*
 
 						*dein-options-on_ft*
 		on_ft		(List) or (String)
-		If it is matched to 'filetype', dein will call |dein#source()|.
+		If it is matched to 'filetype', dein will call
+		|dein#source()|.
 
 						*dein-options-on_path*
 		on_path		(List) or (String)
@@ -604,6 +605,19 @@ OPTIONS 					*dein-options*
 		prefix is used.
 		Note: It requires Vim 7.4.414 or above.
 
+						*dein-options-type__depth*
+		type__depth		(Number)
+		The history depth for "git clone".
+		If omitted, |g:dein#types#git#clone_depth| is used.
+		If it is than 0, dein clones the repository by shallow
+		clone. Shallow clone feature saves your repository clone time.
+		But it have problems in some repository.
+
+		See below issues:
+		https://github.com/Shougo/neobundle.vim/issues/81
+		https://github.com/Homebrew/homebrew/issues/12024
+
+		Note: This attribute is available in git type only.
 
 ------------------------------------------------------------------------------
 HOOKS 						*dein-hooks*
@@ -615,7 +629,8 @@ HOOKS 						*dein-hooks*
 		Called or sourced before scripts are sourced. It is
 		useful for plugin initialization in lazy plugins.
 		Note: You must set the autocmd before |dein#end()|.
-		Note: You can use |g:dein#name| as {name} in |dein#tap()| block.
+		Note: You can use |g:dein#name| as {name} in |dein#tap()|
+		block.
 		Note: The loading order is not guaranteed in non lazy plugins.
 
 		Example: >
