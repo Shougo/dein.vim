@@ -278,7 +278,7 @@ dein#load_state({base-path})				 *dein#load_state()*
 <
 						*dein#save_state()*
 dein#save_state()
-		Save defin state in the cache script.
+		Save dein's state in the cache script.
 		Note: It is available when loading .vimrc.
 
 						*dein#clear_state()*
