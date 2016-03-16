@@ -78,7 +78,7 @@ function! dein#check_clean() abort "{{{
 endfunction"}}}
 
 function! dein#save_cache() abort "{{{
-  return dein#util#_save_cache(g:dein#_vimrcs, 0)
+  return dein#util#_save_cache(g:dein#_vimrcs, 0, has('vim_starting'))
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
   return call('dein#util#_load_cache', a:000)
@@ -150,7 +150,7 @@ function! dein#load_state(path, ...) abort "{{{
   endtry
 endfunction"}}}
 function! dein#save_state() abort "{{{
-  return dein#util#_save_state()
+  return dein#util#_save_state(has('vim_starting'))
 endfunction"}}}
 function! dein#clear_state() abort "{{{
   return dein#util#_clear_state()

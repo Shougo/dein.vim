@@ -155,8 +155,8 @@ function! dein#util#_load_cache(...) abort "{{{
     return 1
   endtry
 endfunction"}}}
-function! dein#util#_save_cache(vimrcs, is_state) abort "{{{
-  if dein#util#_get_base_path() == ''
+function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
+  if dein#util#_get_base_path() == '' || !a:is_starting
     " Ignore
     return 1
   endif
@@ -211,13 +211,13 @@ function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
   call writefile([json], dein#util#_get_base_path() . '/merged')
 endfunction"}}}
 
-function! dein#util#_save_state() abort "{{{
-  if dein#util#_get_base_path() == ''
+function! dein#util#_save_state(is_starting) abort "{{{
+  if dein#util#_get_base_path() == '' || !a:is_starting
     " Ignore
     return 1
   endif
 
-  call dein#util#_save_cache(g:dein#_vimrcs, 1)
+  call dein#util#_save_cache(g:dein#_vimrcs, 1, a:is_starting)
 
   " Version check
 
