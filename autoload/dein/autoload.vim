@@ -244,35 +244,37 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
   call add(a:sourced, a:plugin)
 endfunction"}}}
 function! dein#autoload#_reset_ftplugin() abort "{{{
-  let filetype_out = dein#util#_filetype_off()
+  if !empty(&filetype)
+    let filetype_out = dein#util#_filetype_off()
 
-  if filetype_out =~# 'detection:ON'
-        \ && filetype_out =~# 'plugin:ON'
-        \ && filetype_out =~# 'indent:ON'
-    silent! filetype plugin indent on
-  else
     if filetype_out =~# 'detection:ON'
-      silent! filetype on
+          \ && filetype_out =~# 'plugin:ON'
+          \ && filetype_out =~# 'indent:ON'
+      silent! filetype plugin indent on
+    else
+      if filetype_out =~# 'detection:ON'
+        silent! filetype on
+      endif
+
+      if filetype_out =~# 'plugin:ON'
+        silent! filetype plugin on
+      endif
+
+      if filetype_out =~# 'indent:ON'
+        silent! filetype indent on
+      endif
     endif
 
-    if filetype_out =~# 'plugin:ON'
-      silent! filetype plugin on
+    if filetype_out =~# 'detection:ON'
+      filetype detect
     endif
 
-    if filetype_out =~# 'indent:ON'
-      silent! filetype indent on
-    endif
+    " Reload filetype plugins.
+    let &l:filetype = &l:filetype
+
+    " Recall FileType autocmd
+    execute 'doautocmd FileType' &filetype
   endif
-
-  if filetype_out =~# 'detection:ON'
-    filetype detect
-  endif
-
-  " Reload filetype plugins.
-  let &l:filetype = &l:filetype
-
-  " Recall FileType autocmd
-  execute 'doautocmd FileType' &filetype
 endfunction"}}}
 function! s:get_input() abort "{{{
   let input = ''
