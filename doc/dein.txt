@@ -268,8 +268,6 @@ dein#load_state({base-path})				 *dein#load_state()*
 		It is faster than |dein#load_cache()| feature.
 		Note: You must call it before |dein#begin()|.  It clears dein
 		all configuration.
-		Note: If you use this feature, |dein-hooks-source| cannot be
-		called.  You must call it manually if needed.
 
 		It returns 1, if the cache script is old or invalid or not
 		found.
@@ -638,6 +636,8 @@ HOOKS 						*dein-hooks*
 		Note: You can use |g:dein#name| as {name} in |dein#tap()|
 		block.
 		Note: The loading order is not guaranteed in non lazy plugins.
+		Note: non lazy plugins' |dein-hooks-source| cannot be called.
+		You must call it manually if needed.
 
 		Example: >
 

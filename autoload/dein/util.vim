@@ -342,8 +342,8 @@ function! dein#util#_end() abort "{{{
     call dein#source(depends)
   endif
 
-  call dein#call_hook('source')
   if !has('vim_starting')
+    call dein#call_hook('source')
     call dein#call_hook('post_source')
   endif
 endfunction"}}}
