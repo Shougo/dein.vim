@@ -659,7 +659,6 @@ HOOKS 						*dein-hooks*
 		User#dein#source#{name}
 		Called or sourced before scripts are sourced. It is
 		useful for plugin initialization in lazy plugins.
-		Note: You must set the autocmd before |dein#end()|.
 		Note: You can use |g:dein#name| as {name} in |dein#tap()|
 		block.
 		Note: The loading order is not guaranteed in non lazy plugins.
