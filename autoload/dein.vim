@@ -196,6 +196,9 @@ endfunction"}}}
 function! dein#reinstall(plugins) abort "{{{
   call dein#install#_reinstall(a:plugins)
 endfunction"}}}
+function! dein#rollback(date, ...) abort "{{{
+  call dein#install#_rollback(a:date, (a:0 ? a:1 : []))
+endfunction"}}}
 function! dein#remote_plugins() abort "{{{
   return dein#install#_remote_plugins()
 endfunction"}}}

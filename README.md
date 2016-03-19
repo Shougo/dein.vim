@@ -57,8 +57,6 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 ## Future works (not implemented yet)
 
-* Rollback
-
 * Other types support
 
 * Unite log viewer

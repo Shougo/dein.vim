@@ -106,6 +106,37 @@ function! dein#install#_direct_install(repo, options) abort "{{{
     call writefile(add(readfile(file), line), file)
   endif
 endfunction"}}}
+function! dein#install#_rollback(date, plugins) abort "{{{
+  let plugins = dein#util#_get_plugins(a:plugins)
+
+  let glob = s:get_rollback_directory() . '/' . a:date . '*'
+  let rollbacks = reverse(sort(split(glob(glob), '\n')))
+  if empty(rollbacks)
+    return
+  endif
+
+  let revisions = dein#util#_json2vim(readfile(rollbacks[0])[0])
+
+  call filter(plugins, "has_key(revisions, v:val.name)
+        \ && has_key(dein#util#_get_type(v:val.type),
+        \            'get_rollback_command')
+        \ && v:val.type !=# 'none' && !v:val.local
+        \ && !v:val.frozen && v:val.rev == ''
+        \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
+  if empty(plugins)
+    return
+  endif
+
+  for plugin in plugins
+    let type = dein#util#_get_type(plugin.type)
+    let cmd = type.get_rollback_command(dein#util#_get_type(plugin.type),
+          \ revisions[plugin.name])
+    call dein#install#_each(cmd, plugin)
+  endfor
+
+  call dein#recache_runtimepath()
+  call s:error('Rollback to '.fnamemodify(rollbacks[0], ':t').' version.')
+endfunction"}}}
 
 function! dein#install#_recache_runtimepath() abort "{{{
   if dein#util#_is_sudo()
@@ -212,13 +243,6 @@ function! s:list_directory(directory) abort "{{{
   return split(glob(a:directory . '/*'), "\n")
 endfunction"}}}
 function! s:save_rollback() abort "{{{
-  let parent = printf('%s/rollbacks/%s', dein#util#_get_base_path(),
-        \ fnamemodify(v:progname, ':r'))
-  let dest = parent . '/' . strftime('%Y%m%d%H%M%S')
-  if !isdirectory(parent)
-    call mkdir(parent, 'p')
-  endif
-
   let revisions = {}
   for plugin in filter(values(dein#get()),
         \ "!v:val.local && !v:val.frozen && v:val.rev == ''")
@@ -228,7 +252,17 @@ function! s:save_rollback() abort "{{{
     endif
   endfor
 
+  let dest = s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S')
   call writefile([dein#util#_vim2json(revisions)], dest)
+endfunction"}}}
+function! s:get_rollback_directory() abort "{{{
+  let parent = printf('%s/rollbacks/%s', dein#util#_get_base_path(),
+        \ fnamemodify(v:progname, ':r'))
+  if !isdirectory(parent)
+    call mkdir(parent, 'p')
+  endif
+
+  return parent
 endfunction"}}}
 
 function! dein#install#_is_async() abort "{{{
@@ -261,9 +295,12 @@ function! dein#install#_each(cmd, plugins) abort "{{{
       call dein#install#_cd(plugin.path)
 
       if !dein#util#_has_vimproc()
-        " Note: Cannot use system().  Beacause, some commands (Ex: "git gc")
-        " needs PTY.
-        execute '!'.a:cmd
+        let output = system(a:cmd)
+        if v:shell_error
+          call s:print_message(output)
+        else
+          call s:error(output)
+        endif
       else
         call s:vimproc_system(a:cmd)
       endif

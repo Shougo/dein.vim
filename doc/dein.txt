@@ -200,6 +200,13 @@ dein#each({command}[, {plugins}])
 		{plugins} is the plugins name list.
 		You can execute "git gc" command for the plugins.
 
+						*dein#rollback()*
+dein#rollback({date}[, {plugins}])
+		Rollback to the latest matched {date} revisions for {plugins}.
+		If {date} is "", it rollbacks to the latest revisions.
+		{plugins} is the plugins name list.
+		Note: It is the dangerous command.
+
 dein#check_install([{plugins}])			*dein#check_install()*
 		Check the plugins installation.
 		If the plugins are not installed, it will return non zero.

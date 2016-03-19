@@ -625,6 +625,36 @@ function! s:suite.build() abort "{{{
   call s:assert.true(filereadable(g:vimproc#dll_path))
 endfunction"}}}
 
+function! s:suite.rollback() abort "{{{
+  call dein#begin(s:path)
+
+  call dein#add('Shougo/neocomplete.vim')
+
+  call dein#end()
+
+  call s:assert.equals(s:dein_install(), 0)
+
+  let plugin = dein#get('neocomplete.vim')
+
+  let old_rev = s:get_revision(plugin)
+
+  " Change the revision manually
+  let new_rev = '623831d7ca5f9065ae08bada8078361e343d5970'
+  let cwd = getcwd()
+  try
+    call dein#install#_cd(plugin.path)
+    call system('git reset --hard ' . new_rev)
+  finally
+    call dein#install#_cd(cwd)
+  endtry
+
+  call s:assert.equals(s:get_revision(plugin), new_rev)
+
+  call dein#rollback('', ['neocomplete.vim'])
+
+  call s:assert.equals(s:get_revision(plugin), old_rev)
+endfunction"}}}
+
 function! s:get_revision(plugin) abort "{{{
   let cwd = getcwd()
   try

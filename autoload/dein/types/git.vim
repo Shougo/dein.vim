@@ -168,6 +168,13 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
 
   return g:dein#types#git#command_path . ' checkout ' . rev
 endfunction"}}}
+function! s:type.get_rollback_command(plugin, rev) abort "{{{
+  if !executable(g:dein#types#git#command_path)
+    return ''
+  endif
+
+  return g:dein#types#git#command_path . ' reset --hard ' . a:rev
+endfunction"}}}
 
 function! s:is_git_dir(path) abort "{{{
   if isdirectory(a:path)
