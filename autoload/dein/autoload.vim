@@ -301,9 +301,14 @@ function! s:is_reset_ftplugin(plugins) abort "{{{
   endif
 
   for plugin in a:plugins
+    let ftplugin = plugin.rtp . '/ftplugin/' . &filetype
+    let after = plugin.rtp . '/after/ftplugin/' . &filetype
     if !empty(filter(['ftplugin', 'indent',
         \ 'after/ftplugin', 'after/indent',],
-        \ "isdirectory(plugin.rtp . '/' . v:val)"))
+        \ "filereadable(printf('%s/%s/%s.vim',
+        \    plugin.rtp, v:val, &filetype))"))
+        \ || isdirectory(ftplugin) || isdirectory(after)
+        \ || glob(ftplugin. '_*.vim') != '' || glob(after . '_*.vim') != ''
       return 1
     endif
   endfor
