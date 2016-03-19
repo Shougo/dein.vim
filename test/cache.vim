@@ -18,7 +18,7 @@ endfunction"}}}
 function! s:suite.cache() abort "{{{
   call dein#begin(s:path)
   call delete(dein#_get_cache_file())
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
   call s:assert.equals(dein#load_cache([$MYVIMRC], 1), 1)
   call s:assert.equals(dein#util#_save_cache([$MYVIMRC], 0, 1), 0)
   call s:assert.equals(dein#end(), 0)
@@ -48,7 +48,7 @@ function! s:suite.state() abort "{{{
 
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
   call s:assert.equals(dein#end(), 0)
 
   let plugins = deepcopy(g:dein#_plugins)

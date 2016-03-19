@@ -32,9 +32,9 @@ endfunction"}}}
 function! s:suite.add_normal() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
 
-  call s:assert.equals(dein#add('foo', {}), 0)
+  call dein#add('foo', {})
   call s:assert.equals(g:dein#_plugins.foo.name, 'foo')
-  call s:assert.equals(dein#add('bar'), 0)
+  call dein#add('bar')
   call s:assert.equals(g:dein#_plugins.bar.name, 'bar')
 
   call s:assert.equals(dein#end(), 0)
@@ -43,10 +43,10 @@ endfunction"}}}
 function! s:suite.add_ovewrite() abort "{{{
   call s:assert.equals(dein#begin(s:path), 0)
 
-  call s:assert.equals(dein#add('foo', {}), 0)
+  call dein#add('foo', {})
   call s:assert.equals(g:dein#_plugins.foo.sourced, 0)
 
-  call s:assert.equals(dein#add('foo', { 'sourced': 1 }), 0)
+  call dein#add('foo', { 'sourced': 1 })
   call s:assert.equals(g:dein#_plugins.foo.sourced, 1)
 
   call s:assert.equals(dein#end(), 0)
@@ -56,9 +56,9 @@ function! s:suite.get() abort "{{{
   let plugins = { 'foo': {'name': 'bar'} }
 
   call dein#begin(s:path)
-  call s:assert.equals(dein#add('foo', { 'name': 'bar' }), 0)
+  call dein#add('foo', { 'name': 'bar' })
   call s:assert.equals(dein#get('bar').name, 'bar')
-  call s:assert.equals(dein#add('foo'), 0)
+  call dein#add('foo')
   call s:assert.equals(dein#get('foo').name, 'foo')
   call dein#end()
 endfunction"}}}

@@ -37,7 +37,7 @@ function! s:suite.install() abort "{{{
 
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
 
   call dein#end()
 
@@ -50,8 +50,8 @@ endfunction"}}}
 function! s:suite.tap() abort "{{{
   call dein#begin(s:path)
   call s:assert.equals(dein#tap('neocomplete.vim'), 0)
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
-  call s:assert.equals(dein#add('Shougo/unite.vim', {'if':0}), 0)
+  call dein#add('Shougo/neocomplete.vim')
+  call dein#add('Shougo/unite.vim', {'if':0})
   call s:assert.equals(s:dein_install(), 0)
   call s:assert.equals(dein#tap('neocomplete.vim'), 1)
   call s:assert.equals(dein#tap('unite.vim'), 0)
@@ -63,7 +63,7 @@ function! s:suite.reinstall() abort "{{{
 
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -85,11 +85,10 @@ function! s:suite.update() abort "{{{
 
   call dein#begin(s:path2)
 
-  call s:assert.equals(dein#add('Shougo/neopairs.vim', {'frozen': 1}), 0)
+  call dein#add('Shougo/neopairs.vim', {'frozen': 1})
 
   " Travis Git does not support the feature.
-  " call s:assert.equals(dein#add('Shougo/neobundle.vim',
-  "       \ {'rev': 'release'}), 0)
+  " call dein#add('Shougo/neobundle.vim', {'rev': 'release'})
 
   call s:assert.equals(s:dein_update(), 0)
 
@@ -113,7 +112,7 @@ function! s:suite.check_install() abort "{{{
 
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -127,7 +126,7 @@ endfunction"}}}
 function! s:suite.fetch() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim', { 'rtp': '' }), 0)
+  call dein#add('Shougo/neocomplete.vim', { 'rtp': '' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -144,7 +143,7 @@ function! s:suite.reload() abort "{{{
   " 1st load
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -153,7 +152,7 @@ function! s:suite.reload() abort "{{{
   " 2nd load
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
 
   call dein#end()
 
@@ -163,8 +162,7 @@ endfunction"}}}
 function! s:suite.if() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ {'if': 0}), 0)
+  call dein#add('Shougo/neocomplete.vim', {'if': 0})
 
   call s:assert.equals(dein#get('neocomplete.vim'), {})
 
@@ -172,8 +170,7 @@ function! s:suite.if() abort "{{{
 
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ {'if': '1+1'}), 0)
+  call dein#add('Shougo/neocomplete.vim', {'if': '1+1'})
 
   call s:assert.equals(dein#get('neocomplete.vim').if, 2)
 
@@ -183,8 +180,7 @@ endfunction"}}}
 function! s:suite.lazy_manual() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'lazy': 1 }), 0)
+  call dein#add('Shougo/neocomplete.vim', { 'lazy': 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -207,8 +203,7 @@ endfunction"}}}
 function! s:suite.lazy_on_i() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'on_i': 1 }), 0)
+  call dein#add('Shougo/neocomplete.vim', { 'on_i': 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -231,8 +226,7 @@ endfunction"}}}
 function! s:suite.lazy_on_ft() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'on_ft': 'cpp' }), 0)
+  call dein#add('Shougo/neocomplete.vim', { 'on_ft': 'cpp' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -263,8 +257,7 @@ endfunction"}}}
 function! s:suite.lazy_on_path() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'on_path': '.*' }), 0)
+  call dein#add('Shougo/neocomplete.vim', { 'on_path': '.*' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -287,10 +280,9 @@ endfunction"}}}
 function! s:suite.lazy_on_source() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neopairs.vim',
-        \ { 'on_source': ['neocomplete.vim'] }), 0)
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'lazy': 1 }), 0)
+  call dein#add('Shougo/neopairs.vim',
+        \ { 'on_source': ['neocomplete.vim'] })
+  call dein#add('Shougo/neocomplete.vim', { 'lazy': 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -313,10 +305,9 @@ endfunction"}}}
 function! s:suite.lazy_on_func() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/vimshell.vim',
-        \ { 'lazy': 1 }), 0)
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'on_func': 'neocomplete#initialize' }), 0)
+  call dein#add('Shougo/vimshell.vim', { 'lazy': 1 })
+  call dein#add('Shougo/neocomplete.vim',
+        \ { 'on_func': 'neocomplete#initialize' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -352,8 +343,8 @@ endfunction"}}}
 function! s:suite.lazy_on_cmd() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'on_cmd': 'NeoCompleteDisable' }), 0)
+  call dein#add('Shougo/neocomplete.vim',
+        \ { 'on_cmd': 'NeoCompleteDisable' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -374,10 +365,9 @@ endfunction"}}}
 function! s:suite.lazy_on_map() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/unite.vim',
-        \ { 'lazy': 1 }), 0)
-  call s:assert.equals(dein#add('Shougo/vimfiler.vim',
-        \ { 'on_map': '<Plug>', 'depends': 'unite.vim' }), 0)
+  call dein#add('Shougo/unite.vim', { 'lazy': 1 })
+  call dein#add('Shougo/vimfiler.vim',
+        \ { 'on_map': '<Plug>', 'depends': 'unite.vim' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -400,8 +390,7 @@ endfunction"}}}
 function! s:suite.lazy_on_pre_cmd() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'lazy': 1 }), 0)
+  call dein#add('Shougo/neocomplete.vim', { 'lazy': 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -437,9 +426,8 @@ endfunction"}}}
 function! s:suite.depends() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'depends': 'vimshell.vim' }), 0)
-  call s:assert.equals(dein#add('Shougo/vimshell.vim', {'merged': 0}), 0)
+  call dein#add('Shougo/neocomplete.vim', { 'depends': 'vimshell.vim' })
+  call dein#add('Shougo/vimshell.vim', {'merged': 0})
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -455,10 +443,9 @@ endfunction"}}}
 function! s:suite.depends_lazy() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'depends': 'vimshell.vim', 'lazy': 1 }), 0)
-  call s:assert.equals(dein#add('Shougo/vimshell.vim',
-        \ { 'lazy': 1 }), 0)
+  call dein#add('Shougo/neocomplete.vim',
+        \ { 'depends': 'vimshell.vim', 'lazy': 1 })
+  call dein#add('Shougo/vimshell.vim', { 'lazy': 1 })
 
   let plugin = dein#get('vimshell.vim')
 
@@ -484,8 +471,8 @@ endfunction"}}}
 function! s:suite.depends_error_lazy() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim',
-        \ { 'depends': 'vimfiler.vim', 'lazy': 1 }), 0)
+  call dein#add('Shougo/neocomplete.vim',
+        \ { 'depends': 'vimfiler.vim', 'lazy': 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -497,7 +484,7 @@ endfunction"}}}
 function! s:suite.hooks() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neocomplete.vim'), 0)
+  call dein#add('Shougo/neocomplete.vim')
 
   let s:test = 0
 
@@ -564,7 +551,7 @@ endfunction"}}}
 function! s:suite.local() abort "{{{
   call dein#begin(s:path)
 
-  call s:assert.equals(dein#add('Shougo/neopairs.vim', {'frozen': 1}), 0)
+  call dein#add('Shougo/neopairs.vim', {'frozen': 1})
   call s:assert.equals(dein#get('neopairs.vim').orig_opts, {'frozen': 1})
 
   call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1})

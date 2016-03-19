@@ -91,12 +91,11 @@ function! dein#install#_direct_install(repo, options) abort "{{{
   let options = copy(a:options)
   let options.merged = 0
 
-  let plugin = dein#parse#_dict(dein#parse#_init(a:repo, options))
-  if !plugin.if
+  let plugin = dein#add(a:repo, options)
+  if empty(plugin)
     return
   endif
 
-  let g:dein#_plugins[plugin.name] = plugin
   call dein#install(plugin.name)
   call dein#source(plugin.name)
 

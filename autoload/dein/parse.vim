@@ -20,10 +20,11 @@ function! dein#parse#_add(repo, options) abort "{{{
         \ && g:dein#_plugins[plugin.name].sourced)
         \ || !plugin.if
     " Skip already loaded or not enabled plugin.
-    return
+    return {}
   endif
 
   let g:dein#_plugins[plugin.name] = plugin
+  return plugin
 endfunction"}}}
 function! dein#parse#_init(repo, options) abort "{{{
   let plugin = s:git.init(a:repo, a:options)
