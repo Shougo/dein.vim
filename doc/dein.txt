@@ -301,7 +301,7 @@ dein#clear_state()
 dein#tap({plugin-name})				*dein#tap()*
 		Return non-zero if {plugin-name} exists and isn't
 		disabled.
-		It initializes |g:dein#name| variable as {plugin-name}.
+		It initializes |g:dein#name| and |g:dein#plugin| variables.
 
 dein#is_sourced({plugin-name})			*dein#is_sourced()*
 		Return non-zero if {plugin-name} exists and is sourced.
@@ -327,6 +327,10 @@ VARIABLES 					*dein-variables*
 						*g:dein#name*
 g:dein#name
 		Current plugin name set by |dein#tap()|.
+
+						*g:dein#plugin*
+g:dein#plugin
+		Current plugin set by |dein#tap()|.
 
  					*g:dein#enable_name_conversion*
 g:dein#enable_name_conversion

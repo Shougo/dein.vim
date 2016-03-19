@@ -13,8 +13,10 @@ let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
       \ . '/dein/parser.vim'
 
 function! dein#_init() abort "{{{
-  let g:dein#_plugins = {}
   let g:dein#name = ''
+  let g:dein#plugin = {}
+
+  let g:dein#_plugins = {}
   let g:dein#_base_path = ''
   let g:dein#_runtime_path = ''
   let g:dein#_off1 = ''
@@ -56,6 +58,7 @@ function! dein#tap(name) abort "{{{
   endif
 
   let g:dein#name = a:name
+  let g:dein#plugin = g:dein#_plugins[a:name]
   return 1
 endfunction"}}}
 function! dein#is_sourced(name) abort "{{{
