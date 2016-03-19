@@ -623,11 +623,11 @@ OPTIONS 					*dein-options*
 		Note: It requires Vim 7.4.414 or above.
 
 						*dein-options-hook_add*
-		hook_add	(List) or (String)
+		hook_add	(String)
 						*dein-options-hook_source*
-		hook_source	(List) or (String)
+		hook_source	(String)
 						*dein-options-hook_post_source*
-		hook_post_source (List) or (String)
+		hook_post_source (String)
 
 		"hook_add" is executed after plugins are added.
 		"hook_source" is executed before plugins are sourced.

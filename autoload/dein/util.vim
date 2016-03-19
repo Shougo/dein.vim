@@ -249,7 +249,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
 
   " Add hooks
   for plugin in values(dein#get())
-    let lines += plugin.hook_add
+    let lines += split(plugin.hook_add, '\n')
   endfor
 
   call writefile(lines, dein#_get_state_file())
@@ -358,16 +358,16 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
   let hook = 'hook_' . a:hook_name
   let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
         \ "v:val.sourced && (exists(prefix . v:val.name)
-        \  || !empty(v:val[hook]))")
+        \  || v:val[hook] != '')")
 
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
     if exists('#User#'.autocmd)
       execute 'doautocmd <nomodeline> User' autocmd
     endif
-    if !empty(plugin[hook])
+    if plugin[hook] != ''
       try
-        execute substitute(join(plugin[hook], "\n"), '\n\s*\\', '', 'g')
+        execute plugin[hook]
       catch
         call dein#util#_error(
               \ 'Error occurred while executing hook: ' . plugin.name)

@@ -24,9 +24,9 @@ function! dein#parse#_add(repo, options) abort "{{{
   endif
 
   let g:dein#_plugins[plugin.name] = plugin
-  if !empty(plugin.hook_add)
+  if plugin.hook_add != ''
     try
-      execute substitute(join(plugin.hook_add, "\n"), '\n\s*\\', '', 'g')
+      execute plugin.hook_add
     catch
       call dein#util#_error(
             \ 'Error occurred while executing hook: ' . plugin.name)
@@ -70,6 +70,9 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'on_source': [],
         \ 'pre_cmd': [],
         \ 'pre_func': [],
+        \ 'hook_add': '',
+        \ 'hook_source': '',
+        \ 'hook_post_source': '',
         \ }
 
   call extend(plugin, a:plugin)
@@ -162,12 +165,12 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   " Hooks
-  let plugin.hook_add = has_key(a:plugin, 'hook_add') ?
-        \ dein#util#_split(a:plugin.hook_add) : []
-  let plugin.hook_source = has_key(a:plugin, 'hook_source') ?
-        \ dein#util#_split(a:plugin.hook_source) : []
-  let plugin.hook_post_source = has_key(a:plugin, 'hook_post_source') ?
-        \ dein#util#_split(a:plugin.hook_post_source) : []
+  let plugin.hook_add = substitute(plugin.hook_add,
+        \ '\n\s*\\', '', 'g')
+  let plugin.hook_source = substitute(plugin.hook_source,
+        \ '\n\s*\\', '', 'g')
+  let plugin.hook_post_source = substitute(plugin.hook_post_source,
+        \ '\n\s*\\', '', 'g')
 
   if plugin.lazy
     if !empty(plugin.on_cmd)
