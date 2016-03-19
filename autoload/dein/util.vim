@@ -363,7 +363,7 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
     if exists('#User#'.autocmd)
-      execute 'doautocmd User' autocmd
+      execute 'doautocmd <nomodeline> User' autocmd
     endif
     if !empty(plugin[hook])
       for line in plugin[hook]

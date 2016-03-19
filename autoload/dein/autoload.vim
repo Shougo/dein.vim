@@ -68,7 +68,7 @@ function! dein#autoload#_on_i() abort "{{{
   let plugins = filter(dein#util#_get_lazy_plugins(), 'v:val.on_i')
   if !empty(plugins)
     call dein#autoload#_source(plugins)
-    doautocmd InsertEnter
+    doautocmd <nomodeline> InsertEnter
   endif
 endfunction"}}}
 
