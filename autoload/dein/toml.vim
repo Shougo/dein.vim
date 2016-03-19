@@ -74,7 +74,8 @@ function! s:_error(input) abort
     let offset += 1
   endwhile
 
-  throw printf("vital: Text.TOML: Illegal toml format at `%s'.", join(buf, ''))
+  throw printf("vital: Text.TOML: Illegal toml format at `%s':%d.",
+      \ join(buf, ''), a:input.p)
 endfunction
 
 function! s:_parse(input) abort

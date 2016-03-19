@@ -146,6 +146,15 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		repo = 'Shougo/neosnippet.vim'
 		on_i = 1
 		on_ft = 'snippet'
+
+		[[plugins]]
+		repo = 'rhysd/accelerated-jk'
+		on_map = '<Plug>'
+		hook_add = '''
+		  nmap <silent>j <Plug>(accelerated_jk_gj)
+		  nmap <silent>k <Plug>(accelerated_jk_gk)
+		'''
+
 <
 						 *dein#local()*
 dein#local({directory}, [{options}, [{names}]])
@@ -608,6 +617,22 @@ OPTIONS 					*dein-options*
 		Example: If you use "unite.vim", "Unite" command
 		prefix is used.
 		Note: It requires Vim 7.4.414 or above.
+
+						*dein-options-hook_add*
+		hook_add	(List) or (String)
+						*dein-options-hook_source*
+		hook_source	(List) or (String)
+						*dein-options-hook_post_source*
+		hook_post_source (List) or (String)
+
+		"hook_add" is executed after plugins are added.
+		"hook_source" is executed before plugins are sourced.
+		"hook_post_source" is executed after plugins are sourced.
+
+		The string will be split by the lines.
+		It is useful for the plugins initialization.
+		Note: It must not contain |line-continuation| and the
+		multi-line statements (Ex: |:function|, |:if|, |:for| ...).
 
 						*dein-options-type__depth*
 		type__depth		(Number)

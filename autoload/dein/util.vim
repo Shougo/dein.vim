@@ -247,6 +247,11 @@ function! dein#util#_save_state(is_starting) abort "{{{
     endfor
   endfor
 
+  " Add hooks
+  for plugin in values(dein#get())
+    let lines += plugin.hook_add
+  endfor
+
   call writefile(lines, dein#_get_state_file())
 endfunction"}}}
 function! dein#util#_clear_state() abort "{{{
@@ -350,14 +355,26 @@ endfunction"}}}
 
 function! dein#util#_call_hook(hook_name, ...) abort "{{{
   let prefix = '#User#dein#'.a:hook_name.'#'
-  let plugins = filter(dein#util#_convert2list(
-        \ (empty(a:000) ? values(dein#get()) : a:1)),
-        \ "get(v:val, 'sourced', 0) && exists(prefix . v:val.name)")
+  let hook = 'hook_' . a:hook_name
+  let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
+        \ "v:val.sourced && (exists(prefix . v:val.name)
+        \  || !empty(v:val[hook]))")
 
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
     if exists('#User#'.autocmd)
       execute 'doautocmd User' autocmd
+    endif
+    if !empty(plugin[hook])
+      for line in plugin[hook]
+        try
+          execute line
+        catch
+          call dein#util#_error(
+                \ 'Error occurred while executing hook: ' . line)
+          call dein#util#_error(v:exception)
+        endtry
+      endfor
     endif
   endfor
 endfunction"}}}
@@ -413,6 +430,10 @@ function! dein#util#_convert2list(expr) abort "{{{
         \ type(a:expr) ==# type('') ?
         \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
         \ : [a:expr]
+endfunction"}}}
+function! dein#util#_split(expr) abort "{{{
+  return type(a:expr) ==# type([]) ? copy(a:expr) :
+        \ split(a:expr, '\r\?\n')
 endfunction"}}}
 
 function! dein#util#_filetype_off() abort "{{{

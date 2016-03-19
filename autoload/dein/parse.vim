@@ -24,6 +24,17 @@ function! dein#parse#_add(repo, options) abort "{{{
   endif
 
   let g:dein#_plugins[plugin.name] = plugin
+  if !empty(plugin.hook_add)
+    for line in plugin.hook_add
+      try
+        execute line
+      catch
+        call dein#util#_error(
+              \ 'Error occurred while executing hook: ' . line)
+        call dein#util#_error(v:exception)
+      endtry
+    endfor
+  endif
   return plugin
 endfunction"}}}
 function! dein#parse#_init(repo, options) abort "{{{
@@ -151,6 +162,14 @@ function! dein#parse#_dict(plugin) abort "{{{
   if has_key(a:plugin, 'depends')
     let plugin.depends = dein#util#_convert2list(a:plugin.depends)
   endif
+
+  " Hooks
+  let plugin.hook_add = has_key(a:plugin, 'hook_add') ?
+        \ dein#util#_split(a:plugin.hook_add) : []
+  let plugin.hook_source = has_key(a:plugin, 'hook_source') ?
+        \ dein#util#_split(a:plugin.hook_source) : []
+  let plugin.hook_post_source = has_key(a:plugin, 'hook_post_source') ?
+        \ dein#util#_split(a:plugin.hook_post_source) : []
 
   if plugin.lazy
     if !empty(plugin.on_cmd)
