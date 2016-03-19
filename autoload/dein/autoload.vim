@@ -49,10 +49,14 @@ function! dein#autoload#_source(...) abort "{{{
 
   let filetype_after = dein#util#_redir('autocmd FileType')
 
-  if s:is_reset_ftplugin(sourced)
-    call dein#autoload#_reset_ftplugin()
-  elseif filetype_before !=# filetype_after
-    execute 'doautocmd FileType' &filetype
+  let is_reset = s:is_reset_ftplugin(sourced)
+  if is_reset
+    call s:reset_ftplugin()
+  endif
+
+  if is_reset || filetype_before !=# filetype_after
+    " Recall FileType autocmd
+    let &l:filetype = &l:filetype
   endif
 
   if !has('vim_starting')
@@ -242,7 +246,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
 
   call add(a:sourced, a:plugin)
 endfunction"}}}
-function! dein#autoload#_reset_ftplugin() abort "{{{
+function! s:reset_ftplugin() abort "{{{
   let filetype_out = dein#util#_filetype_off()
 
   if filetype_out =~# 'detection:ON'
@@ -266,12 +270,6 @@ function! dein#autoload#_reset_ftplugin() abort "{{{
   if filetype_out =~# 'detection:ON'
     filetype detect
   endif
-
-  " Reload filetype plugins.
-  let &l:filetype = &l:filetype
-
-  " Recall FileType autocmd
-  execute 'doautocmd FileType' &filetype
 endfunction"}}}
 function! s:get_input() abort "{{{
   let input = ''
@@ -298,6 +296,10 @@ function! s:get_input() abort "{{{
 endfunction"}}}
 
 function! s:is_reset_ftplugin(plugins) abort "{{{
+  if &filetype == ''
+    return 0
+  endif
+
   for plugin in a:plugins
     if !empty(filter(['ftplugin', 'indent',
         \ 'after/ftplugin', 'after/indent',],

@@ -345,7 +345,6 @@ function! dein#util#_end() abort "{{{
   call dein#call_hook('source')
   if !has('vim_starting')
     call dein#call_hook('post_source')
-    call dein#autoload#_reset_ftplugin()
   endif
 endfunction"}}}
 
