@@ -366,15 +366,13 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
       execute 'doautocmd <nomodeline> User' autocmd
     endif
     if !empty(plugin[hook])
-      for line in plugin[hook]
-        try
-          execute line
-        catch
-          call dein#util#_error(
-                \ 'Error occurred while executing hook: ' . line)
-          call dein#util#_error(v:exception)
-        endtry
-      endfor
+      try
+        execute substitute(join(plugin[hook], "\n"), '\n\s*\\', '', 'g')
+      catch
+        call dein#util#_error(
+              \ 'Error occurred while executing hook: ' . plugin.name)
+        call dein#util#_error(v:exception)
+      endtry
     endif
   endfor
 endfunction"}}}

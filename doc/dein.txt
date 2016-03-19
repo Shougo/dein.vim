@@ -635,8 +635,6 @@ OPTIONS 					*dein-options*
 
 		The string will be split by the lines.
 		It is useful for the plugins initialization.
-		Note: It must not contain |line-continuation| and the
-		multi-line statements (Ex: |:function|, |:if|, |:for| ...).
 
 						*dein-options-type__depth*
 		type__depth		(Number)

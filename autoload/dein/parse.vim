@@ -25,15 +25,13 @@ function! dein#parse#_add(repo, options) abort "{{{
 
   let g:dein#_plugins[plugin.name] = plugin
   if !empty(plugin.hook_add)
-    for line in plugin.hook_add
-      try
-        execute line
-      catch
-        call dein#util#_error(
-              \ 'Error occurred while executing hook: ' . line)
-        call dein#util#_error(v:exception)
-      endtry
-    endfor
+    try
+      execute substitute(join(plugin.hook_add, "\n"), '\n\s*\\', '', 'g')
+    catch
+      call dein#util#_error(
+            \ 'Error occurred while executing hook: ' . plugin.name)
+      call dein#util#_error(v:exception)
+    endtry
   endif
   return plugin
 endfunction"}}}
