@@ -81,10 +81,14 @@ function! dein#check_clean() abort "{{{
 endfunction"}}}
 
 function! dein#save_cache() abort "{{{
-  return dein#util#_save_cache(g:dein#_vimrcs, 0, has('vim_starting'))
+  call dein#util#_error('dein#save_cache() is deprecated.')
+  call dein#util#_error('Please use dein#save_state() instead.')
+  return 1
 endfunction"}}}
 function! dein#load_cache(...) abort "{{{
-  return call('dein#util#_load_cache', a:000)
+  call dein#util#_error('dein#load_cache() is deprecated.')
+  call dein#util#_error('Please use dein#load_state() instead.')
+  return 1
 endfunction"}}}
 function! dein#load_cache_raw(...) abort "{{{
   if a:0 | let g:dein#_vimrcs = a:1 | endif
@@ -103,7 +107,7 @@ function! dein#load_cache_raw(...) abort "{{{
   if len(list) != 3
         \ || list[0] !=# dein#_get_cache_version()
         \ || string(g:dein#_vimrcs) !=# list[1]
-    call dein#clear_cache()
+    call dein#util#_clear_cache()
     return {}
   endif
 
@@ -111,14 +115,11 @@ function! dein#load_cache_raw(...) abort "{{{
         \ js_decode(list[2]) : eval(list[2])
 
   if type(plugins) != type({})
-    call dein#clear_cache()
+    call dein#util#_clear_cache()
     return {}
   endif
 
   return plugins
-endfunction"}}}
-function! dein#clear_cache() abort "{{{
-  return dein#util#_clear_cache()
 endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
   return g:dein#_base_path.'/cache_'.fnamemodify(v:progname, ':r')

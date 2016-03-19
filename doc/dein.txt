@@ -231,43 +231,13 @@ dein#get([{plugin-name}])				 *dein#get()*
 		plugin dictionary.
 
 dein#load_cache([{vimrcs}])			 *dein#load_cache()*
-		Load plugins configuration from the cache file,
-		which is located in `dein#util#_get_runtime_path() . '/cache_'
-		.  fnamemodify(v:progname, ':r')`.
-		{vimrcs} is a list of compared .vimrc and/or other
-		configuration files. The default is |$MYVIMRC|.
-		Note: You must call it after |dein#begin()|.  It clears
-		current plugin configuration.
+		It is the deprecated function.
+		Please use |dein#load_state()| instead.
 
-		It returns 1, if the cache file is old or invalid or not
-		found.
->
-	call dein#begin(path)
-	if dein#load_cache()
-	  " My plugins here:
-	  " ...
-	  call dein#save_cache()
-	endif
-	call dein#end()
-<
-		If you use multiple configuration files,
->
-	call dein#begin(path)
-	if dein#load_cache([$MYVIMRC, 'plugin.vim', 'plugin.toml'])
-	  " My plugins here or other files spcified as arguments
-	  " ...
-	  call dein#save_cache()
-	endif
-	call dein#end()
-<
 						*dein#save_cache()*
 dein#save_cache()
-		Save plugins configuration in the cache file.
-		Note: It is available when loading .vimrc.
-
-						*dein#clear_cache()*
-dein#clear_cache()
-		Clear the cache file manually.
+		It is the deprecated function.
+		Please use |dein#save_state()| instead.
 
 dein#load_state({base-path})				 *dein#load_state()*
 		Load dein's state from the cache script,

@@ -131,30 +131,6 @@ function! dein#util#_get_type(name) abort "{{{
   return get({'git': dein#types#git#define()}, a:name, {})
 endfunction"}}}
 
-function! dein#util#_load_cache(...) abort "{{{
-  try
-    let plugins = call('dein#load_cache_raw', a:000)
-    if empty(plugins)
-      return 1
-    endif
-
-    let g:dein#_plugins = plugins
-    for plugin in filter(dein#util#_get_lazy_plugins(),
-          \ '!empty(v:val.on_cmd) || !empty(v:val.on_map)')
-      if !empty(plugin.on_cmd)
-        call dein#util#_add_dummy_commands(plugin)
-      endif
-      if !empty(plugin.on_map)
-        call dein#util#_add_dummy_mappings(plugin)
-      endif
-    endfor
-  catch
-    call dein#util#_error('Error occurred while loading cache : '
-          \ . v:exception)
-    call dein#clear_cache()
-    return 1
-  endtry
-endfunction"}}}
 function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
   if dein#util#_get_base_path() == '' || !a:is_starting
     " Ignore
