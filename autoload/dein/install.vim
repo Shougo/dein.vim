@@ -614,7 +614,6 @@ function! s:job_handler(id, msg, event) abort "{{{
   let candidates += lines
 endfunction"}}}
 
-
 function! s:sync(plugin, context) abort "{{{
   let a:context.number += 1
 
@@ -660,7 +659,7 @@ function! s:sync(plugin, context) abort "{{{
     call add(a:context.processes, process)
   endif
 endfunction"}}}
-function! s:init_process(plugin, context, cmd) abort
+function! s:init_process(plugin, context, cmd) abort"{{{
   let process = {}
 
   let cwd = getcwd()
@@ -736,7 +735,7 @@ function! s:init_process(plugin, context, cmd) abort
   endtry
 
   return process
-endfunction
+endfunction"}}}
 function! s:check_output(context, process) abort "{{{
   let is_timeout = (localtime() - a:process.start_time)
         \             >= a:process.plugin.timeout
