@@ -22,8 +22,6 @@ function! dein#autoload#_source(...) abort "{{{
     return 1
   endif
 
-  let filetype_before = dein#util#_redir('autocmd FileType')
-
   let sourced = []
   for plugin in filter(plugins,
         \ "!empty(v:val) && !v:val.sourced && v:val.rtp != ''")
@@ -32,6 +30,7 @@ function! dein#autoload#_source(...) abort "{{{
     endif
   endfor
 
+  let filetype_before = dein#util#_redir('autocmd FileType')
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
   call dein#call_hook('source', sourced)
