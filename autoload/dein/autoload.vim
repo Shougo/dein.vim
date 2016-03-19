@@ -249,15 +249,10 @@ endfunction"}}}
 function! s:reset_ftplugin() abort "{{{
   let filetype_out = dein#util#_filetype_off()
 
-  if filetype_out =~# 'detection:ON'
-        \ && filetype_out =~# 'plugin:ON'
+  if filetype_out =~# 'plugin:ON'
         \ && filetype_out =~# 'indent:ON'
     silent! filetype plugin indent on
   else
-    if filetype_out =~# 'detection:ON'
-      silent! filetype on
-    endif
-
     if filetype_out =~# 'plugin:ON'
       silent! filetype plugin on
     endif
@@ -265,10 +260,6 @@ function! s:reset_ftplugin() abort "{{{
     if filetype_out =~# 'indent:ON'
       silent! filetype indent on
     endif
-  endif
-
-  if filetype_out =~# 'detection:ON'
-    filetype detect
   endif
 endfunction"}}}
 function! s:get_input() abort "{{{

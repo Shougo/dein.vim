@@ -411,17 +411,16 @@ function! dein#util#_split(expr) abort "{{{
 endfunction"}}}
 
 function! dein#util#_filetype_off() abort "{{{
+  if &filetype == ''
+    return ''
+  endif
+
   let filetype_out = dein#util#_redir('filetype')
 
   if filetype_out =~# 'plugin:ON'
         \ || filetype_out =~# 'indent:ON'
     let g:dein#_off1 = 'filetype plugin indent off'
     execute g:dein#_off1
-  endif
-
-  if filetype_out =~# 'detection:ON'
-    let g:dein#_off2 = 'filetype off'
-    execute g:dein#_off2
   endif
 
   return filetype_out
