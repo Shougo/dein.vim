@@ -140,6 +140,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call dein#util#_save_merged_plugins(
         \ sort(map(merged_plugins, 'v:val.name')))
 
+  call s:save_rollback()
+
   call s:error(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
@@ -168,6 +170,65 @@ function! s:clear_runtimepath() abort "{{{
         \ "fnamemodify(v:val, ':t') !=# getpid()")
     call dein#install#_rm(path)
   endfor
+endfunction"}}}
+function! s:helptags() abort "{{{
+  if empty(s:list_directory(dein#util#_get_tags_path()))
+    return
+  endif
+
+  try
+    call s:copy_files(values(dein#get()), 'doc')
+
+    silent execute 'helptags' fnameescape(dein#util#_get_tags_path())
+  catch /^Vim(helptags):E151:/
+    " Ignore an error that occurs when there is no help file
+  catch
+    call s:error('Error generating helptags:')
+    call s:error(v:exception)
+    call s:error(v:throwpoint)
+  endtry
+endfunction"}}}
+function! s:copy_files(plugins, directory) abort "{{{
+  let directory = (a:directory == '' ? '' : '/' . a:directory)
+  let srcs = filter(map(copy(a:plugins), "v:val.rtp . directory"),
+        \ 'isdirectory(v:val)')
+  call dein#install#_copy_directories(srcs,
+        \ dein#util#_get_runtime_path() . directory)
+endfunction"}}}
+function! s:merge_files(plugins, directory) abort "{{{
+  let files = []
+  for plugin in a:plugins
+    for file in filter(split(globpath(
+          \ plugin.rtp, a:directory.'/**', 1), '\n'),
+          \ '!isdirectory(v:val)')
+      let files += readfile(file, ':t')
+    endfor
+  endfor
+
+  call dein#util#_writefile(printf('.dein/%s/%s.vim',
+        \ a:directory, a:directory), files)
+endfunction"}}}
+function! s:list_directory(directory) abort "{{{
+  return split(glob(a:directory . '/*'), "\n")
+endfunction"}}}
+function! s:save_rollback() abort "{{{
+  let parent = printf('%s/rollbacks/%s', dein#util#_get_base_path(),
+        \ fnamemodify(v:progname, ':r'))
+  let dest = parent . '/' . strftime('%Y%m%d%H%M%S')
+  if !isdirectory(parent)
+    call mkdir(parent, 'p')
+  endif
+
+  let revisions = {}
+  for plugin in filter(values(dein#get()),
+        \ "!v:val.local && !v:val.frozen && v:val.rev == ''")
+    let rev = s:get_revision_number(plugin)
+    if rev != ''
+      let revisions[plugin.name] = rev
+    endif
+  endfor
+
+  call writefile([dein#util#_vim2json(revisions)], dest)
 endfunction"}}}
 
 function! dein#install#_is_async() abort "{{{
@@ -942,46 +1003,6 @@ function! s:echomsg(msg) abort "{{{
 
   let s:updates_log += msg
   let s:log += msg
-endfunction"}}}
-function! s:helptags() abort "{{{
-  if empty(s:list_directory(dein#util#_get_tags_path()))
-    return
-  endif
-
-  try
-    call s:copy_files(values(dein#get()), 'doc')
-
-    silent execute 'helptags' fnameescape(dein#util#_get_tags_path())
-  catch /^Vim(helptags):E151:/
-    " Ignore an error that occurs when there is no help file
-  catch
-    call s:error('Error generating helptags:')
-    call s:error(v:exception)
-    call s:error(v:throwpoint)
-  endtry
-endfunction"}}}
-function! s:copy_files(plugins, directory) abort "{{{
-  let directory = (a:directory == '' ? '' : '/' . a:directory)
-  let srcs = filter(map(copy(a:plugins), "v:val.rtp . directory"),
-        \ 'isdirectory(v:val)')
-  call dein#install#_copy_directories(srcs,
-        \ dein#util#_get_runtime_path() . directory)
-endfunction"}}}
-function! s:merge_files(plugins, directory) abort "{{{
-  let files = []
-  for plugin in a:plugins
-    for file in filter(split(globpath(
-          \ plugin.rtp, a:directory.'/**', 1), '\n'),
-          \ '!isdirectory(v:val)')
-      let files += readfile(file, ':t')
-    endfor
-  endfor
-
-  call dein#util#_writefile(printf('.dein/%s/%s.vim',
-        \ a:directory, a:directory), files)
-endfunction"}}}
-function! s:list_directory(directory) abort "{{{
-  return split(glob(a:directory . '/*'), "\n")
 endfunction"}}}
 function! s:vimproc_system(cmd) abort "{{{
   let proc = vimproc#pgroup_open(a:cmd, 1)

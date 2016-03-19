@@ -148,14 +148,12 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
     endfor
   endif
 
-  let json = has('patch-7.4.1498') ? js_encode(plugins) : string(plugins)
-
   if !isdirectory(g:dein#_base_path)
     call mkdir(g:dein#_base_path, 'p')
   endif
 
   call writefile([dein#_get_cache_version(),
-        \ string(a:vimrcs), json],
+        \ string(a:vimrcs), dein#util#_vim2json(plugins)],
         \ dein#_get_cache_file())
 endfunction"}}}
 function! dein#util#_clear_cache() abort "{{{
@@ -182,8 +180,7 @@ function! dein#util#_load_merged_plugins() abort "{{{
   return plugins
 endfunction"}}}
 function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
-  let json = has('patch-7.4.1498') ?
-        \ js_encode(a:merged_plugins) : string(a:merged_plugins)
+  let json = dein#util#_vim2json(a:merged_plugins)
   call writefile([json], dein#util#_get_base_path() . '/merged')
 endfunction"}}}
 
@@ -409,6 +406,12 @@ function! dein#util#_split(expr) abort "{{{
   return type(a:expr) ==# type([]) ? copy(a:expr) :
         \ split(a:expr, '\r\?\n')
 endfunction"}}}
+function! dein#util#_vim2json(expr) abort "{{{
+  return has('patch-7.4.1498') ? js_encode(a:expr) : string(a:expr)
+endfunction "}}}
+function! dein#util#_json2vim(expr) abort "{{{
+  sandbox return has('patch-7.4.1498') ? js_decode(a:expr) : eval(a:expr)
+endfunction "}}}
 
 function! dein#util#_filetype_off() abort "{{{
   if &filetype == ''
