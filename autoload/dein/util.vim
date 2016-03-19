@@ -446,6 +446,14 @@ function! dein#util#_get_lazy_plugins() abort "{{{
   return filter(values(g:dein#_plugins), '!v:val.sourced')
 endfunction"}}}
 
+function! dein#util#_get_plugins(plugins) abort "{{{
+  return empty(a:plugins) ?
+        \ values(dein#get()) :
+        \ filter(map(dein#util#_convert2list(a:plugins),
+        \   'type(v:val) == type({}) ? v:val : dein#get(v:val)'),
+        \   '!empty(v:val)')
+endfunction"}}}
+
 function! s:tsort_impl(target, mark, sorted) abort "{{{
   if empty(a:target) || has_key(a:mark, a:target.name)
     return

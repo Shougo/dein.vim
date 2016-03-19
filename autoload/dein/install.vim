@@ -18,10 +18,7 @@ let g:dein#install_progress_type =
 "}}}
 
 function! dein#install#_update(plugins, bang, async) abort "{{{
-  let plugins = empty(a:plugins) ?
-        \ values(dein#get()) :
-        \ filter(map(dein#util#_convert2list(a:plugins),
-        \   'dein#get(v:val)'), '!empty(v:val)')
+  let plugins = dein#util#_get_plugins(a:plugins)
 
   if !a:bang
     let plugins = filter(plugins, '!isdirectory(v:val.path)')
@@ -64,7 +61,7 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
   endif
 endfunction"}}}
 function! dein#install#_reinstall(plugins) abort "{{{
-  let plugins = map(dein#util#_convert2list(a:plugins), 'dein#get(v:val)')
+  let plugins = dein#util#_get_plugins(a:plugins)
 
   for plugin in plugins
     " Remove the plugin
@@ -194,6 +191,30 @@ function! dein#install#_remote_plugins() abort "{{{
   if exists(':UpdateRemotePlugins')
     UpdateRemotePlugins
   endif
+endfunction"}}}
+
+function! dein#install#_each(cmd, plugins) abort "{{{
+  let cwd = getcwd()
+  try
+    for plugin in dein#util#_get_plugins(a:plugins)
+      call dein#install#_cd(plugin.path)
+
+      if !dein#util#_has_vimproc()
+        " Note: Cannot use system().  Beacause, some commands (Ex: "git gc")
+        " needs PTY.
+        execute '!'.a:cmd
+      else
+        call s:vimproc_system(a:cmd)
+      endif
+    endfor
+  catch
+    " Build error from vimproc.
+    let message = v:exception . ' ' . v:throwpoint
+    call s:nonskip_error(message)
+    return 1
+  finally
+    call dein#install#_cd(cwd)
+  endtry
 endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
@@ -907,7 +928,7 @@ function! s:nonskip_error(msg) abort "{{{
     return
   endif
 
-  call s:echo_mode(msg, 'error')
+  call s:echo_mode(join(msg, "\n"), 'error')
 
   let s:updates_log += msg
   let s:log += msg
@@ -964,7 +985,7 @@ function! s:list_directory(directory) abort "{{{
   return split(glob(a:directory . '/*'), "\n")
 endfunction"}}}
 function! s:vimproc_system(cmd) abort "{{{
-  let proc = vimproc#pgroup_open(a:cmd)
+  let proc = vimproc#pgroup_open(a:cmd, 1)
 
   " Close handles.
   call proc.stdin.close()
@@ -978,10 +999,10 @@ function! s:vimproc_system(cmd) abort "{{{
     call s:print_message(proc.stdout.read_lines(-1, 100))
   endwhile
 
-  if !proc.stderr.eof
+  while !proc.stderr.eof
     " Print error.
     call s:error(proc.stderr.read_lines(-1, 100))
-  endif
+  endwhile
 
   call proc.waitpid()
 endfunction"}}}
@@ -1009,30 +1030,7 @@ function! s:build(plugin) abort "{{{
 
   call s:print_progress_message('Building...')
 
-  let cwd = getcwd()
-  try
-    call dein#install#_cd(a:plugin.path)
-
-    if !dein#util#_has_vimproc()
-      let result = system(cmd)
-
-      if dein#install#_get_last_status()
-        call s:error(result)
-      else
-        call s:print_message(result)
-      endif
-    else
-      call s:vimproc_system(cmd)
-    endif
-  catch
-    " Build error from vimproc.
-    let message = v:exception . ' ' . v:throwpoint
-    call s:nonskip_error(message)
-
-    return 1
-  finally
-    call dein#install#_cd(cwd)
-  endtry
+  call dein#install#_each(cmd, a:plugin)
 
   return dein#install#_get_last_status()
 endfunction"}}}

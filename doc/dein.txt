@@ -185,6 +185,12 @@ dein#remote_plugins()
 		It is better than |:UpdateRemotePlugins| for dein.
 		Note: It is valid only in neovim.
 
+						*dein#each()*
+dein#each({command}[, {plugins}])
+		Execute {command} for {plugins}.
+		{plugins} is the plugins name list.
+		You can execute "git gc" command for the plugins.
+
 dein#check_install([{plugins}])			*dein#check_install()*
 		Check the plugins installation.
 		If the plugins are not installed, it will return non zero.

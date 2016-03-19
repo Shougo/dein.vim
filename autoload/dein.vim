@@ -213,5 +213,8 @@ endfunction"}}}
 function! dein#get_updates_log() abort "{{{
   return join(dein#install#_get_updates_log(), "\n")
 endfunction"}}}
+function! dein#each(command, ...) abort "{{{
+  return dein#install#_each(a:command, (a:0 ? a:1 : []))
+endfunction"}}}
 
 " vim: foldmethod=marker

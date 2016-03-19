@@ -45,6 +45,7 @@ function! s:suite.install() abort "{{{
 
   let plugin = dein#get('neocomplete.vim')
   call s:assert.true(isdirectory(plugin.rtp))
+  call s:assert.equals(dein#each('git gc'), 0)
 endfunction"}}}
 
 function! s:suite.tap() abort "{{{
