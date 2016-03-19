@@ -358,14 +358,14 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
   let hook = 'hook_' . a:hook_name
   let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
         \ "v:val.sourced && (exists(prefix . v:val.name)
-        \  || !empty(v:val[hook]))")
+        \  || !empty(get(v:val, hook)))")
 
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
     if exists('#User#'.autocmd)
       execute 'doautocmd User' autocmd
     endif
-    if !empty(plugin[hook])
+    if !empty(get(plugin, hook))
       for line in plugin[hook]
         try
           execute line
