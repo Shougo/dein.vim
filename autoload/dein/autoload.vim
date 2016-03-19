@@ -300,8 +300,8 @@ endfunction"}}}
 
 function! s:is_reset_ftplugin(plugins) abort "{{{
   for plugin in a:plugins
-    if !empty(filter(['ftplugin', 'indent', 'syntax',
-        \ 'after/ftplugin', 'after/indent', 'after/syntax'],
+    if !empty(filter(['ftplugin', 'indent',
+        \ 'after/ftplugin', 'after/indent',],
         \ "isdirectory(plugin.rtp . '/' . v:val)"))
       return 1
     endif
