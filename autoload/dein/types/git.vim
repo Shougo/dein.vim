@@ -25,7 +25,7 @@ let s:type = {
       \ }
 
 function! s:type.init(repo, option) abort "{{{
-  if a:repo =~ '^/\|^\a:/' && s:is_git_dir(a:repo.'/.git')
+  if a:repo =~ '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
     " Local repository.
     return { 'uri': a:repo, 'type': 'git', 'local': 1 }
   elseif isdirectory(a:repo)
