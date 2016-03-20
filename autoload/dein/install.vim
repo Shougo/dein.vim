@@ -120,8 +120,7 @@ function! dein#install#_rollback(date, plugins) abort "{{{
   call filter(plugins, "has_key(revisions, v:val.name)
         \ && has_key(dein#util#_get_type(v:val.type),
         \            'get_rollback_command')
-        \ && v:val.type !=# 'none' && !v:val.local
-        \ && !v:val.frozen && v:val.rev == ''
+        \ && !v:val.local && !v:val.frozen && v:val.rev == ''
         \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
   if empty(plugins)
     return
