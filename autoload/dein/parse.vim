@@ -108,7 +108,8 @@ function! dein#parse#_dict(plugin) abort "{{{
   let plugin.base = dein#util#_chomp(plugin.base)
 
   if !has_key(plugin, 'path')
-    let plugin.path = plugin.base.'/'.plugin.directory
+    let plugin.path = plugin.local ?
+          \ plugin.repo : plugin.base . '/' . plugin.directory
   endif
   let plugin.path = dein#util#_chomp(plugin.path)
 
