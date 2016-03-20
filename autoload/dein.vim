@@ -147,8 +147,10 @@ function! dein#load_state(path, ...) abort "{{{
   try
     execute 'source' fnameescape(state)
   catch
-    call dein#util#_error('Error occurred while loading state : '
-          \ . v:exception)
+    if v:exception !=# 'Cache loading error'
+      call dein#util#_error('Error occurred while loading state : '
+            \ . v:exception)
+    endif
     call dein#clear_state()
     return 1
   endtry
