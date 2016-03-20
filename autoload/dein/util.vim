@@ -228,6 +228,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
   call writefile(lines, dein#_get_state_file())
 endfunction"}}}
 function! dein#util#_clear_state() abort "{{{
+  call dein#util#_clear_cache()
   let cache = dein#_get_state_file()
   if !filereadable(cache)
     return
