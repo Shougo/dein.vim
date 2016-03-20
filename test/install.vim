@@ -626,7 +626,7 @@ function! s:suite.build() abort "{{{
 endfunction"}}}
 
 function! s:suite.rollback() abort "{{{
-  call dein#begin(s:path)
+  call dein#begin(tempname())
 
   call dein#add('Shougo/neocomplete.vim')
 
