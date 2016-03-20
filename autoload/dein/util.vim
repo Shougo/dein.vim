@@ -185,6 +185,11 @@ function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
 endfunction"}}}
 
 function! dein#util#_save_state(is_starting) abort "{{{
+  if g:dein#_block_level != 0
+    call dein#util#_error('Invalid dein#save_state() usage.')
+    return 1
+  endif
+
   if dein#util#_get_base_path() == '' || !a:is_starting
     " Ignore
     return 1

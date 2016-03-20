@@ -40,4 +40,11 @@ function! s:suite.state() abort "{{{
   "call s:assert.equals(dein#_plugins, plugins)
 endfunction"}}}
 
+function! s:suite.state_error() abort "{{{
+  call dein#begin(s:path)
+
+  call dein#add('Shougo/neocomplete.vim')
+  call s:assert.equals(dein#save_state(), 1)
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:
