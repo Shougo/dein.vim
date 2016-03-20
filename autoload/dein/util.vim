@@ -164,11 +164,11 @@ function! dein#util#_clear_cache() abort "{{{
 
   call delete(cache)
 endfunction"}}}
-function! dein#util#_check_vimrcs() abort
+function! dein#util#_check_vimrcs() abort "{{{
   let time = getftime(dein#util#_get_runtime_path())
   return !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
         \ 'time < v:val'))
-endfunction
+endfunction"}}}
 function! dein#util#_load_merged_plugins() abort "{{{
   let path = dein#util#_get_base_path() . '/merged'
   if !filereadable(path)
