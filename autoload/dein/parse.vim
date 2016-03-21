@@ -210,6 +210,11 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
     call dein#add(plugin.repo, options)
   endfor
 endfunction"}}}
+function! dein#parse#_load_dict(dict, default) abort "{{{
+  for [repo, options] in items(a:dict)
+    call dein#add(repo, extend(copy(options), a:default, 'keep'))
+  endfor
+endfunction"}}}
 function! dein#parse#_local(localdir, options, includes) abort "{{{
   let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []

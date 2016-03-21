@@ -156,6 +156,17 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		'''
 
 <
+dein#load_dict({dict}, [{options}])		*dein#load_dict()*
+		Load the plugin configuration from {dict}.  {dict} is the
+		|Dictionary|.   The key is the repository URI and the value is
+		the |dein-options| dictionary. See |dein-options| for keys to
+		set in {options}. >
+
+		call dein#load_dict({
+		\ 'Shougo/unite.vim': {},
+		\ 'Shougo/neocomplete.vim': {'name': 'neocomplete'}
+		\ })
+
 						 *dein#local()*
 dein#local({directory}, [{options}, [{names}]])
 		Add the subdirectories in {directory} to 'runtimepath', like

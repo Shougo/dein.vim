@@ -64,4 +64,54 @@ function! s:suite.name_conversion() abort "{{{
   let g:dein#enable_name_conversion = 0
 endfunction"}}}
 
+function! s:suite.load_toml() abort "{{{
+  let toml = tempname()
+  call writefile([
+        \ '# TOML sample',
+        \ '[[plugins]]',
+        \ '# repository name is required.',
+        \ "repo = 'kana/vim-niceblock'",
+        \ "on_map = '<Plug>'",
+        \ '[[plugins]]',
+        \ "repo = 'Shougo/neosnippet.vim'",
+        \ 'on_i = 1',
+        \ "on_ft = 'snippet'",
+        \ ], toml)
+
+  call dein#begin(s:path)
+  call s:assert.equals(dein#load_toml(toml), 0)
+  call dein#end()
+
+  call s:assert.equals(dein#get('neosnippet.vim').on_i, 1)
+endfunction"}}}
+
+function! s:suite.error_toml() abort "{{{
+  let toml = tempname()
+  call writefile([
+        \ '# TOML sample',
+        \ '[[plugins]]',
+        \ '# repository name is required.',
+        \ "on_map = '<Plug>'",
+        \ '[[plugins]]',
+        \ 'on_i = 1',
+        \ "on_ft = 'snippet'",
+        \ ], toml)
+
+  call dein#begin(s:path)
+  call s:assert.equals(dein#load_toml(toml), 1)
+  call dein#end()
+endfunction"}}}
+
+function! s:suite.load_dict() abort "{{{
+  call dein#begin(s:path)
+  call s:assert.equals(dein#load_dict({
+        \ 'Shougo/unite.vim': {},
+        \ 'Shougo/neocomplete.vim': {'name': 'neocomplete'}
+        \ }, {'lazy': 1}), 0)
+  call dein#end()
+
+  call s:assert.not_equals(dein#get('unite.vim'), {})
+  call s:assert.equals(dein#get('neocomplete').lazy, 1)
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:
