@@ -76,6 +76,16 @@ function! s:suite.load_toml() abort "{{{
         \ "repo = 'Shougo/neosnippet.vim'",
         \ 'on_i = 1',
         \ "on_ft = 'snippet'",
+        \ "hook_add = '''",
+        \ "echo",
+        \ '"comment',
+        \ "echo",
+        \ "'''",
+        \ "hook_source = '''",
+        \ "echo",
+        \ '\',
+        \ "echo",
+        \ "'''",
         \ ], toml)
 
   call dein#begin(s:path)
@@ -83,6 +93,10 @@ function! s:suite.load_toml() abort "{{{
   call dein#end()
 
   call s:assert.equals(dein#get('neosnippet.vim').on_i, 1)
+  call s:assert.equals(dein#get('neosnippet.vim').hook_add,
+        \ "echo\necho\n")
+  call s:assert.equals(dein#get('neosnippet.vim').hook_source,
+        \ "echo\necho\n")
 endfunction"}}}
 
 function! s:suite.error_toml() abort "{{{
