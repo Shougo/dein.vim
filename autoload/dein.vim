@@ -19,7 +19,8 @@ function! dein#_init() abort "{{{
   let g:dein#_plugins = {}
   let g:dein#_base_path = ''
   let g:dein#_runtime_path = ''
-  let g:dein#_off = ''
+  let g:dein#_off1 = ''
+  let g:dein#_off2 = ''
   let g:dein#_vimrcs = []
   let g:dein#_block_level = 0
 

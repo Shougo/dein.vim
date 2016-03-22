@@ -247,19 +247,18 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
   call add(a:sourced, a:plugin)
 endfunction"}}}
 function! s:reset_ftplugin() abort "{{{
-  let filetype_out = dein#util#_filetype_off()
+  let filetype_state = dein#util#_redir('filetype')
 
-  if filetype_out =~# 'plugin:ON'
-        \ && filetype_out =~# 'indent:ON'
-    silent! filetype plugin indent on
-  else
-    if filetype_out =~# 'plugin:ON'
-      silent! filetype plugin on
-    endif
+  call dein#util#_filetype_off()
 
-    if filetype_out =~# 'indent:ON'
-      silent! filetype indent on
-    endif
+  silent! filetype on
+
+  if filetype_state =~# 'plugin:ON'
+    silent! filetype plugin on
+  endif
+
+  if filetype_state =~# 'indent:ON'
+    silent! filetype indent on
   endif
 endfunction"}}}
 function! s:get_input() abort "{{{

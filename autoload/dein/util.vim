@@ -208,8 +208,11 @@ function! dein#util#_save_state(is_starting) abort "{{{
         \ 'let &runtimepath = ' . string(&runtimepath),
         \ ]
 
-  if g:dein#_off != ''
-    call add(lines, g:dein#_off)
+  if g:dein#_off1 != ''
+    call add(lines, g:dein#_off1)
+  endif
+  if g:dein#_off2 != ''
+    call add(lines, g:dein#_off2)
   endif
 
   " Add dummy mappings/commands
@@ -417,19 +420,15 @@ function! dein#util#_json2vim(expr) abort "{{{
 endfunction "}}}
 
 function! dein#util#_filetype_off() abort "{{{
-  if &filetype == ''
-    return ''
+  if exists('g:did_load_filetypes')
+    let g:dein#_off1 = 'filetype off'
+    execute g:dein#_off1
   endif
 
-  let filetype_out = dein#util#_redir('filetype')
-
-  if filetype_out =~# 'plugin:ON'
-        \ || filetype_out =~# 'indent:ON'
-    let g:dein#_off = 'filetype plugin indent off'
-    execute g:dein#_off
+  if exists('b:did_indent') || exists('b:did_ftplugin')
+    let g:dein#_off2 = 'filetype plugin indent off'
+    execute g:dein#_off2
   endif
-
-  return filetype_out
 endfunction"}}}
 
 function! dein#util#_redir(cmd) abort "{{{
