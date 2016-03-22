@@ -208,11 +208,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
         \ 'let &runtimepath = ' . string(&runtimepath),
         \ ]
 
-  if g:dein#_off1 != ''
-    call add(lines, g:dein#_off1)
-  endif
-  if g:dein#_off2 != ''
-    call add(lines, g:dein#_off2)
+  if g:dein#_off != ''
+    call add(lines, g:dein#_off)
   endif
 
   " Add dummy mappings/commands
@@ -428,8 +425,8 @@ function! dein#util#_filetype_off() abort "{{{
 
   if filetype_out =~# 'plugin:ON'
         \ || filetype_out =~# 'indent:ON'
-    let g:dein#_off1 = 'filetype plugin indent off'
-    execute g:dein#_off1
+    let g:dein#_off = 'filetype plugin indent off'
+    execute g:dein#_off
   endif
 
   return filetype_out
