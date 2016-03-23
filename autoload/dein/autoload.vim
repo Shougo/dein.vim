@@ -133,8 +133,9 @@ endfunction"}}}
 function! dein#autoload#_on_pre_cmd(name) abort "{{{
   call dein#autoload#_source(
         \ filter(dein#util#_get_lazy_plugins(),
-        \ "!empty(filter(map(copy(v:val.pre_cmd), 'tolower(v:val)'),
-        \   'stridx(tolower(a:name), v:val) == 0'))"))
+        \ "index(map(copy(v:val.on_cmd), 'tolower(v:val)'), a:name) >= 0
+        \  || !empty(filter(map(copy(v:val.pre_cmd), 'tolower(v:val)'),
+        \                   'stridx(tolower(a:name), v:val) == 0'))"))
 endfunction"}}}
 
 function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "{{{
@@ -197,12 +198,20 @@ function! dein#autoload#_on_map(mapping, name, mode) abort "{{{
 endfunction"}}}
 
 function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort "{{{
-  " Load plugins
-  call dein#autoload#_on_pre_cmd(
-        \ tolower(matchstr(a:cmdline, '\a\S*')))
+  let command = matchstr(a:cmdline, '\h\w*')
+  if exists(':'.command)
+    " Remove the dummy command.
+    silent! execute 'delcommand' command
+  endif
 
-  " Print the candidates
-  call feedkeys("\<C-d>", 'n')
+  " Load plugins
+  call dein#autoload#_on_pre_cmd(tolower(command))
+
+  if exists(':'.command)
+    " Print the candidates
+    call feedkeys("\<C-d>", 'n')
+  endif
+
   return ['']
 endfunction"}}}
 
