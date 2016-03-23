@@ -166,7 +166,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort "{{{
 
   if a:mode ==# 'v' || a:mode ==# 'x'
     call feedkeys('gv', 'n')
-  elseif a:mode ==# 'o'
+  elseif a:mode ==# 'o' && v:operator !=# 'c'
     " TODO: omap
     " v:prevcount?
     " Cancel waiting operator mode.
@@ -175,17 +175,23 @@ function! dein#autoload#_on_map(mapping, name, mode) abort "{{{
 
   call feedkeys(cnt, 'n')
 
-  let mapping = a:mapping
-  while mapping =~ '<[[:alnum:]-]\+>'
-    let mapping = substitute(mapping, '\c<Leader>',
-          \ get(g:, 'mapleader', '\'), 'g')
-    let mapping = substitute(mapping, '\c<LocalLeader>',
-          \ get(g:, 'maplocalleader', '\'), 'g')
-    let ctrl = matchstr(mapping, '<\zs[[:alnum:]-]\+\ze>')
-    execute 'let mapping = substitute(
-          \ mapping, "<' . ctrl . '>", "\<' . ctrl . '>", "")'
-  endwhile
-  call feedkeys(mapping . input, 'm')
+  if a:mode ==# 'o' && v:operator ==# 'c'
+    " Note: This is the dirty hack.
+    execute matchstr(maparg(a:mapping . input, a:mode),
+          \ ':<C-U>\zs.*\ze<CR>')
+  else
+    let mapping = a:mapping
+    while mapping =~ '<[[:alnum:]-]\+>'
+      let mapping = substitute(mapping, '\c<Leader>',
+            \ get(g:, 'mapleader', '\'), 'g')
+      let mapping = substitute(mapping, '\c<LocalLeader>',
+            \ get(g:, 'maplocalleader', '\'), 'g')
+      let ctrl = matchstr(mapping, '<\zs[[:alnum:]-]\+\ze>')
+      execute 'let mapping = substitute(
+            \ mapping, "<' . ctrl . '>", "\<' . ctrl . '>", "")'
+    endwhile
+    call feedkeys(mapping . input, 'm')
+  endif
 
   return ''
 endfunction"}}}
