@@ -166,12 +166,17 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   " Hooks
-  let plugin.hook_add = substitute(plugin.hook_add,
-        \ '\n\s*\\\|\n\s*"[^\n]*', '', 'g')
-  let plugin.hook_source = substitute(plugin.hook_source,
-        \ '\n\s*\\\|\n\s*"[^\n]*', '', 'g')
-  let plugin.hook_post_source = substitute(plugin.hook_post_source,
-        \ '\n\s*\\\|\n\s*"[^\n]*', '', 'g')
+  if plugin.hook_add != ''
+        \ || plugin.hook_source != ''
+        \ || plugin.hook_post_source != ''
+    let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
+    let plugin.hook_add = substitute(
+          \ plugin.hook_add, pattern, '', 'g')
+    let plugin.hook_source = substitute(
+          \ plugin.hook_source, pattern, '', 'g')
+    let plugin.hook_post_source = substitute(
+          \ plugin.hook_post_source, pattern, '', 'g')
+  endif
 
   if plugin.lazy
     if !empty(plugin.on_cmd)

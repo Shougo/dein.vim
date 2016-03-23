@@ -77,7 +77,7 @@ function! s:suite.load_toml() abort "{{{
         \ 'on_i = 1',
         \ "on_ft = 'snippet'",
         \ "hook_add = '''",
-        \ "echo",
+        \ '"echo',
         \ '"comment',
         \ "echo",
         \ "'''",
@@ -94,7 +94,7 @@ function! s:suite.load_toml() abort "{{{
 
   call s:assert.equals(dein#get('neosnippet.vim').on_i, 1)
   call s:assert.equals(dein#get('neosnippet.vim').hook_add,
-        \ "echo\necho\n")
+        \ "\necho\n")
   call s:assert.equals(dein#get('neosnippet.vim').hook_source,
         \ "echo\necho\n")
 endfunction"}}}
