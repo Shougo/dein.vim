@@ -174,10 +174,7 @@ function! dein#util#_load_merged_plugins() abort "{{{
   if !filereadable(path)
     return []
   endif
-  let list = readfile(path)
-  sandbox let plugins = has('patch-7.4.1498') ?
-        \ js_decode(list[0]) : eval(list[0])
-  return plugins
+  return dein#util#_json2vim(readfile(path)[0])
 endfunction"}}}
 function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
   let json = dein#util#_vim2json(a:merged_plugins)
