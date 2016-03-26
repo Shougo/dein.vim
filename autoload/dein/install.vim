@@ -476,7 +476,7 @@ function! dein#install#_system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
   let output = dein#util#_has_vimproc() ?
-        \ vimproc#system(command) : system(command, "\<C-d>")
+        \ vimproc#system(command) : system(command)
 
   let output = s:iconv(output, 'char', &encoding)
 
@@ -760,9 +760,12 @@ function! s:init_process(plugin, context, cmd) abort"{{{
 
   let cwd = getcwd()
   let cmd = s:iconv(a:cmd, &encoding, 'char')
+  let lang_save = $LANG
+  let prompt_save = $GIT_TERMINAL_PROMPT
   try
-    let lang_save = $LANG
     let $LANG = 'C'
+    " Disable git prompt (git version >= 2.3.0)
+    let $GIT_TERMINAL_PROMPT = 0
 
     call dein#install#_cd(a:plugin.path)
 
@@ -827,6 +830,7 @@ function! s:init_process(plugin, context, cmd) abort"{{{
     endif
   finally
     let $LANG = lang_save
+    let $GIT_TERMINAL_PROMPT = prompt_save
     call dein#install#_cd(cwd)
   endtry
 
@@ -866,6 +870,9 @@ function! s:check_output(context, process) abort "{{{
           \ num, max, plugin.name, 'Error')
     call s:print_progress_message(message)
     call s:error(plugin.path)
+    if !isdirectory(plugin.path)
+      call s:error('Maybe wrong username or repository.')
+    endif
 
     call s:error((is_timeout ? 'Process timeout.' :
           \    split(a:process.output, '\n')))
