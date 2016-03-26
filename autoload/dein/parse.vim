@@ -68,6 +68,7 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'on_map': [],
         \ 'on_path': [],
         \ 'on_source': [],
+        \ 'on_idle': 0,
         \ 'pre_cmd': [],
         \ 'pre_func': [],
         \ 'hook_add': '',
@@ -139,7 +140,7 @@ function! dein#parse#_dict(plugin) abort "{{{
 
   " Set lazy flag
   if !has_key(a:plugin, 'lazy')
-    let plugin.lazy = plugin.on_i
+    let plugin.lazy = plugin.on_i || plugin.on_idle
           \ || !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
           \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
           \ || !empty(plugin.on_path)   || !empty(plugin.on_source)

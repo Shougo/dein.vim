@@ -79,6 +79,18 @@ function! dein#autoload#_on_ft() abort "{{{
   endfor
 endfunction"}}}
 
+function! dein#autoload#_on_idle() abort "{{{
+  let plugins = filter(dein#util#_get_lazy_plugins(), 'v:val.on_idle')
+  if empty(plugins)
+    augroup dein-idle
+      autocmd!
+    augroup END
+  else
+    call dein#autoload#_source(plugins[: 5])
+    call feedkeys("g\<ESC>", 'n')
+  endif
+endfunction"}}}
+
 function! dein#autoload#_on_path(path, event) abort "{{{
   let path = a:path
   " For ":edit ~".

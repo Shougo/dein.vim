@@ -34,6 +34,10 @@ function! dein#_init() abort "{{{
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
   augroup END
 
+  augroup dein-idle
+    autocmd FocusLost,CursorHold * call dein#autoload#_on_idle()
+  augroup END
+
   if exists('##CmdUndefined')
     autocmd CmdUndefined *
           \ call dein#autoload#_on_pre_cmd(expand('<afile>'))

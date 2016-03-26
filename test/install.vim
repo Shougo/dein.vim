@@ -413,6 +413,29 @@ function! s:suite.lazy_on_pre_cmd() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
+function! s:suite.lazy_on_idle() abort "{{{
+  call dein#begin(s:path)
+
+  call dein#add('Shougo/vimfiler.vim', { 'on_idle': 1})
+
+  call s:assert.equals(s:dein_install(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('vimfiler.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#util#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  doautocmd CursorHold
+
+  call s:assert.equals(plugin.sourced, 1)
+  call s:assert.equals(
+        \ len(filter(dein#util#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
 function! s:suite.invalide_runtimepath() abort "{{{
   let &runtimepath = ''
   call s:assert.equals(dein#begin(s:path), 1)
