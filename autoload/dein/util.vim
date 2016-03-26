@@ -257,7 +257,15 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
   let g:dein#_runtime_path = g:dein#_base_path . '/.dein'
   let g:dein#_vimrcs = a:vimrcs
 
-  call dein#util#_filetype_off()
+  " Filetype off
+  if exists('g:did_load_filetypes')
+    let g:dein#_off1 = 'filetype off'
+    execute g:dein#_off1
+  endif
+  if exists('b:did_indent') || exists('b:did_ftplugin')
+    let g:dein#_off2 = 'filetype plugin indent off'
+    execute g:dein#_off2
+  endif
 
   if !has('vim_starting')
     execute 'set rtp-='.fnameescape(g:dein#_runtime_path)
@@ -415,18 +423,6 @@ endfunction "}}}
 function! dein#util#_json2vim(expr) abort "{{{
   sandbox return has('patch-7.4.1498') ? js_decode(a:expr) : eval(a:expr)
 endfunction "}}}
-
-function! dein#util#_filetype_off() abort "{{{
-  if exists('g:did_load_filetypes')
-    let g:dein#_off1 = 'filetype off'
-    execute g:dein#_off1
-  endif
-
-  if exists('b:did_indent') || exists('b:did_ftplugin')
-    let g:dein#_off2 = 'filetype plugin indent off'
-    execute g:dein#_off2
-  endif
-endfunction"}}}
 
 function! dein#util#_redir(cmd) abort "{{{
   let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]

@@ -276,9 +276,9 @@ endfunction"}}}
 function! s:reset_ftplugin() abort "{{{
   let filetype_state = dein#util#_redir('filetype')
 
-  call dein#util#_filetype_off()
-
-  silent! filetype on
+  if exists('b:did_indent') || exists('b:did_ftplugin')
+    filetype plugin indent off
+  endif
 
   if filetype_state =~# 'plugin:ON'
     silent! filetype plugin on
