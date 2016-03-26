@@ -73,7 +73,7 @@ function! dein#check_install(...) abort "{{{
   endif
 
   call dein#util#_error('Not installed plugins: ' .
-        \ string(map(copy(plugins), 'v:val.name')))
+        \ string(map(values(plugins), 'v:val.name')))
   return 1
 endfunction"}}}
 function! dein#check_clean() abort "{{{
