@@ -583,6 +583,8 @@ function! s:install_blocking(context) abort "{{{
     call s:error(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
   endif
 
+  let s:global_context = {}
+
   return len(a:context.errored_plugins)
 endfunction"}}}
 function! s:install_async(context) abort "{{{
