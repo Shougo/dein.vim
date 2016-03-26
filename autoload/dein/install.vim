@@ -755,7 +755,7 @@ function! s:sync(plugin, context) abort "{{{
     call add(a:context.processes, process)
   endif
 endfunction"}}}
-function! s:init_process(plugin, context, cmd) abort"{{{
+function! s:init_process(plugin, context, cmd) abort "{{{
   let process = {}
 
   let cwd = getcwd()
@@ -794,40 +794,7 @@ function! s:init_process(plugin, context, cmd) abort"{{{
       endtry
     endif
 
-    if has('nvim') && a:context.async
-      " Use neovim async jobs
-      let process.proc = jobstart(cmd, {
-            \ 'on_stdout': function('s:job_handler_neovim'),
-            \ 'on_stderr': function('s:job_handler_neovim'),
-            \ 'on_exit': function('s:job_handler_neovim'),
-            \ })
-    elseif has('job') && a:context.async
-      try
-        " Note: In Windows, job_start() does not work in shellslash.
-        let shellslash = 0
-        if exists('+shellslash')
-          let shellslash = &shellslash
-          set noshellslash
-        endif
-        let process.job = job_start([&shell, &shellcmdflag, cmd], {
-              \   'callback': function('s:job_handler_vim'),
-              \ })
-      finally
-        if exists('+shellslash')
-          let &shellslash = shellslash
-        endif
-      endtry
-      let process.proc = s:channel2id(job_getchannel(process.job))
-    elseif dein#util#_has_vimproc()
-      let process.proc = vimproc#pgroup_open(cmd, 0, 2)
-
-      " Close handles.
-      call process.proc.stdin.close()
-      call process.proc.stderr.close()
-    else
-      let process.output = dein#install#_system(cmd)
-      let process.status = dein#install#_get_last_status()
-    endif
+    call s:init_job(process, a:context, cmd)
   finally
     let $LANG = lang_save
     let $GIT_TERMINAL_PROMPT = prompt_save
@@ -835,6 +802,42 @@ function! s:init_process(plugin, context, cmd) abort"{{{
   endtry
 
   return process
+endfunction"}}}
+function! s:init_job(process, context, cmd) abort "{{{
+  if has('nvim') && a:context.async
+    " Use neovim async jobs
+    let a:process.proc = jobstart(a:cmd, {
+          \ 'on_stdout': function('s:job_handler_neovim'),
+          \ 'on_stderr': function('s:job_handler_neovim'),
+          \ 'on_exit': function('s:job_handler_neovim'),
+          \ })
+  elseif has('job') && a:context.async
+    try
+      " Note: In Windows, job_start() does not work in shellslash.
+      let shellslash = 0
+      if exists('+shellslash')
+        let shellslash = &shellslash
+        set noshellslash
+      endif
+      let a:process.job = job_start([&shell, &shellcmdflag, a:cmd], {
+            \   'callback': function('s:job_handler_vim'),
+            \ })
+    finally
+      if exists('+shellslash')
+        let &shellslash = shellslash
+      endif
+    endtry
+    let a:process.proc = s:channel2id(job_getchannel(a:process.job))
+  elseif dein#util#_has_vimproc()
+    let a:process.proc = vimproc#pgroup_open(a:cmd, 0, 2)
+
+    " Close handles.
+    call a:process.proc.stdin.close()
+    call a:process.proc.stderr.close()
+  else
+    let a:process.output = dein#install#_system(a:cmd)
+    let a:process.status = dein#install#_get_last_status()
+  endif
 endfunction"}}}
 function! s:check_output(context, process) abort "{{{
   let is_timeout = (localtime() - a:process.start_time)
