@@ -204,9 +204,10 @@ function! s:clear_runtimepath() abort "{{{
 endfunction"}}}
 function! s:helptags() abort "{{{
   try
+    let tags = dein#util#_get_tags_path()
     call s:copy_files(filter(
           \ values(dein#get()), '!v:val.merged'), 'doc')
-    silent execute 'helptags' fnameescape(dein#util#_get_tags_path())
+    silent execute 'helptags' fnameescape(tags)
   catch /^Vim(helptags):E151:/
     " Ignore an error that occurs when there is no help file
   catch
