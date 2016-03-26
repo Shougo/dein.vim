@@ -920,7 +920,7 @@ function! s:get_async_result(process, is_timeout) abort "{{{
     " Check job status
     let status = job_status(a:process.job)
     if status !=# 'run'
-      let job.status = 0
+      let job.status = job_info(a:process.job).exitval
       let job.eof = 1
     endif
   endif
