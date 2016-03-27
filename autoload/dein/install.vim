@@ -173,6 +173,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call s:save_rollback()
 
+  call dein#clear_state()
+
   call s:error(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
