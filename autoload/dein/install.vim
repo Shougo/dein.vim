@@ -515,21 +515,25 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
 
   let status = 0
   if dein#util#_is_windows()
-    " Create temporary batch file
-    let lines = ['@echo off']
-    for src in a:srcs
-      " Note: In xcopy command, must use "\" instead of "/".
-      let line = substitute(printf(
-            \ ' "%s/"* "%s"', src, a:dest), '/', '\\', 'g')
-      call add(lines, printf('xcopy %s /E /H /I /R /Y', line))
-    endfor
-
     let temp = tempname() . '.bat'
+    let exclude = tempname()
     try
+      call writefile(['.git', '.svn'], exclude)
+
+      " Create temporary batch file
+      let lines = ['@echo off']
+      for src in a:srcs
+        " Note: In xcopy command, must use "\" instead of "/".
+        call add(lines, printf('xcopy %s /E /H /I /R /Y /EXCLUDE:"%s"',
+              \   substitute(printf(' "%s/"* "%s"', src, a:dest),
+              \              '/', '\\', 'g'), exclude))
+      endfor
       call writefile(lines, temp)
+
       let result = system(temp)
     finally
       call delete(temp)
+      call delete(exclude)
     endtry
     if v:shell_error
       let status = 1
@@ -538,18 +542,17 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
       call dein#util#_error('cmdline: ' . temp)
     endif
   else
-    " Note: vimproc#system() does not support the command line.
-    for src in filter(copy(a:srcs), 'len(s:list_directory(v:val))')
-      let cmdline = printf('cp -R %s/* %s',
-            \ shellescape(src), shellescape(a:dest))
-      let result = system(cmdline)
-      if v:shell_error
-        let status = 1
-        call dein#util#_error('copy command failed.')
-        call dein#util#_error(result)
-        call dein#util#_error('cmdline: ' . cmdline)
-      endif
-    endfor
+    let srcs = map(filter(copy(a:srcs),
+          \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . "/")')
+    let cmdline = printf("rsync -a --exclude '/.git/' %s %s",
+          \ join(srcs), shellescape(a:dest))
+    let result = dein#install#_system(cmdline)
+    if dein#install#_get_last_status()
+      let status = 1
+      call dein#util#_error('copy command failed.')
+      call dein#util#_error(result)
+      call dein#util#_error('cmdline: ' . cmdline)
+    endif
   endif
 
   return status
