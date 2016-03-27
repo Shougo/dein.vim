@@ -526,7 +526,7 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
       let lines = ['@echo off']
       for src in a:srcs
         " Note: In xcopy command, must use "\" instead of "/".
-        call add(lines, printf('xcopy /EXCLUDE:"%s" %s /E /H /I /R /Y',
+        call add(lines, printf('xcopy /EXCLUDE:%s %s /E /H /I /R /Y',
               \   substitute(exclude, '/', '\\', 'g'),
               \   substitute(printf(' "%s/"* "%s"', src, a:dest),
               \              '/', '\\', 'g')))
