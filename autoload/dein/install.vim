@@ -268,8 +268,9 @@ function! dein#install#_is_async() abort "{{{
   if has('vim_starting')
     return 0
   endif
-  return has('nvim') || (has('job') && exists('*job_getchannel')
-        \                && has('patch-7.4.1510'))
+  return has('nvim') || (has('job') && has('channel')
+        \                && exists('*job_getchannel')
+        \                && exists('*job_info'))
 endfunction"}}}
 
 function! dein#install#_remote_plugins() abort "{{{
