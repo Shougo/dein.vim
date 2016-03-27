@@ -9,9 +9,6 @@ if v:version < 704
   finish
 endif
 
-let s:parser_vim_path = fnamemodify(expand('<sfile>'), ':h')
-      \ . '/dein/parser.vim'
-
 function! dein#_init() abort "{{{
   let g:dein#name = ''
   let g:dein#plugin = {}
@@ -108,9 +105,8 @@ function! dein#load_cache_raw(...) abort "{{{
   endif
 
   let list = readfile(cache)
-  if len(list) != 3
-        \ || list[0] !=# dein#_get_cache_version()
-        \ || string(g:dein#_vimrcs) !=# list[1]
+  if len(list) != 2
+        \ || string(g:dein#_vimrcs) !=# list[0]
     call dein#util#_clear_cache()
     return {}
   endif
@@ -128,9 +124,6 @@ endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
   return g:dein#_base_path.'/cache_'.fnamemodify(v:progname, ':r')
 endfunction"}}}
-function! dein#_get_cache_version() abort "{{{
-  return getftime(s:parser_vim_path)
-endfunction "}}}
 
 function! dein#load_state(path, ...) abort "{{{
   let starting = a:0 > 0 ? a:1 : has('vim_starting')
