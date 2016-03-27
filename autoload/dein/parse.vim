@@ -225,7 +225,7 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
   let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
-    let directories += map(filter(split(glob(base . glob), '\n'),
+    let directories += map(filter(dein#util#_globlist(base . glob),
           \ "isdirectory(v:val)"), "
           \ substitute(dein#util#_substitute_path(
           \   fnamemodify(v:val, ':p')), '/$', '', '')")

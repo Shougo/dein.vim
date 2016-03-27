@@ -110,7 +110,7 @@ function! dein#install#_rollback(date, plugins) abort "{{{
   let plugins = dein#util#_get_plugins(a:plugins)
 
   let glob = s:get_rollback_directory() . '/' . a:date . '*'
-  let rollbacks = reverse(sort(split(glob(glob), '\n')))
+  let rollbacks = reverse(sort(dein#util#_globlist(glob)))
   if empty(rollbacks)
     return
   endif
@@ -199,8 +199,9 @@ function! s:clear_runtimepath() abort "{{{
   call dein#util#_get_runtime_path()
 
   " Remove previous runtime path
-  for path in filter(split(glob(dein#util#_get_base_path().'/temp/*'), "\n"),
-        \ "fnamemodify(v:val, ':t') !=# getpid()")
+  for path in filter(dein#util#_globlist(
+        \ dein#util#_get_base_path().'/temp/*'),
+        \   "fnamemodify(v:val, ':t') !=# getpid()")
     call dein#install#_rm(path)
   endfor
 endfunction"}}}
@@ -239,7 +240,7 @@ function! s:merge_files(plugins, directory) abort "{{{
         \ a:directory, a:directory), files)
 endfunction"}}}
 function! s:list_directory(directory) abort "{{{
-  return split(glob(a:directory . '/*'), "\n")
+  return dein#util#_globlist(a:directory . '/*')
 endfunction"}}}
 function! s:save_rollback() abort "{{{
   let revisions = {}
