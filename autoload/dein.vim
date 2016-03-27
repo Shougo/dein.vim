@@ -107,17 +107,11 @@ function! dein#load_cache_raw(...) abort "{{{
   let list = readfile(cache)
   if len(list) != 2
         \ || string(g:dein#_vimrcs) !=# list[0]
-    call dein#util#_clear_cache()
     return {}
   endif
 
   sandbox let plugins = has('patch-7.4.1498') ?
         \ js_decode(list[1]) : eval(list[1])
-
-  if type(plugins) != type({})
-    call dein#util#_clear_cache()
-    return {}
-  endif
 
   return plugins
 endfunction"}}}

@@ -155,14 +155,6 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
   call writefile([string(a:vimrcs), dein#util#_vim2json(plugins)],
         \ dein#_get_cache_file())
 endfunction"}}}
-function! dein#util#_clear_cache() abort "{{{
-  let cache = dein#_get_cache_file()
-  if !filereadable(cache)
-    return
-  endif
-
-  call delete(cache)
-endfunction"}}}
 function! dein#util#_check_vimrcs() abort "{{{
   let time = getftime(dein#util#_get_runtime_path())
   return !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
