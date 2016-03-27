@@ -161,7 +161,6 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call s:merge_files(plugins, 'after/ftdetect')
 
   filetype off | filetype on
-  silent! runtime! ftdetect/**/*.vim
   silent! runtime! plugin/**/*.vim
 
   call dein#remote_plugins()
