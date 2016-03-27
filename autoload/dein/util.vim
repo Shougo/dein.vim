@@ -229,13 +229,10 @@ function! dein#util#_save_state(is_starting) abort "{{{
   call writefile(lines, dein#_get_state_file())
 endfunction"}}}
 function! dein#util#_clear_state() abort "{{{
-  call dein#util#_clear_cache()
-  let cache = dein#_get_state_file()
-  if !filereadable(cache)
-    return
-  endif
-
-  call delete(cache)
+  for cache in dein#util#_globlist(g:dein#_base_path.'/state_*.vim')
+        \ + dein#util#_globlist(g:dein#_base_path.'/cache_*')
+    call delete(cache)
+  endfor
 endfunction"}}}
 
 function! dein#util#_begin(path, vimrcs) abort "{{{
@@ -404,6 +401,9 @@ function! dein#util#_expand(path) abort "{{{
 endfunction"}}}
 function! dein#util#_substitute_path(path) abort "{{{
   return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
+endfunction"}}}
+function! dein#util#_globlist(path) abort "{{{
+  return split(glob(a:path), '\n')
 endfunction"}}}
 
 function! dein#util#_convert2list(expr) abort "{{{

@@ -112,7 +112,7 @@ function! dein#load_cache_raw(...) abort "{{{
   endif
 
   sandbox let plugins = has('patch-7.4.1498') ?
-        \ js_decode(list[2]) : eval(list[2])
+        \ js_decode(list[1]) : eval(list[1])
 
   if type(plugins) != type({})
     call dein#util#_clear_cache()

@@ -1,6 +1,6 @@
 " set verbose=1
 
-let s:suite = themis#suite('install')
+let s:suite = themis#suite('state')
 let s:assert = themis#helper('assert')
 
 let s:runtimepath_save = &runtimepath
