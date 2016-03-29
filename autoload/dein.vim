@@ -66,15 +66,15 @@ function! dein#is_sourced(name) abort "{{{
   return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
 endfunction"}}}
 function! dein#check_install(...) abort "{{{
-  let plugins = filter(empty(a:000) ? dein#get() : filter(map(copy(a:1),
-        \                     'dein#get(v:val)'), '!empty(v:val)'),
+  let plugins = filter(empty(a:000) ? values(dein#get()) :
+        \ filter(map(copy(a:1), 'dein#get(v:val)'), '!empty(v:val)'),
         \     '!isdirectory(v:val.path)')
   if empty(plugins)
     return 0
   endif
 
   call dein#util#_error('Not installed plugins: ' .
-        \ string(map(values(plugins), 'v:val.name')))
+        \ string(map(plugins, 'v:val.name')))
   return 1
 endfunction"}}}
 function! dein#check_clean() abort "{{{
