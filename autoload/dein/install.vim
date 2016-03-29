@@ -677,6 +677,8 @@ function! s:init_variables(context) abort "{{{
   let s:global_context = a:context
   let s:log = []
   let s:updates_log = []
+
+  call s:error(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 
 function! s:job_handler_neovim(job_id, data, event) abort "{{{
