@@ -642,6 +642,9 @@ function! s:suite.build() abort "{{{
 
   call dein#end()
 
+  call s:assert.true(dein#check_install())
+  call s:assert.true(dein#check_install(['vimproc.vim']))
+
   call s:assert.equals(s:dein_install(), 0)
 
   call vimproc#version()
