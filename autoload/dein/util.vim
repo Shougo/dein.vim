@@ -214,7 +214,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
   endfor
 
   " Add hooks
-  for plugin in values(dein#get())
+  for plugin in dein#util#_tsort(values(dein#get()))
     let lines += split(plugin.hook_add, '\n')
   endfor
 
