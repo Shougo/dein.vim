@@ -24,6 +24,8 @@ function! dein#install#_update(plugins, update_type, async) abort "{{{
 
   if a:update_type ==# 'install'
     let plugins = filter(plugins, '!isdirectory(v:val.path)')
+  elseif a:update_type ==# 'check_update'
+    let plugins = filter(plugins, 'isdirectory(v:val.path)')
   endif
 
   if empty(plugins)
@@ -337,11 +339,16 @@ function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
-function! s:get_sync_command(plugin, number, max) abort "{{{i
+function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   let type = dein#util#_get_type(a:plugin.type)
 
-  let cmd = has_key(type, 'get_sync_command') ?
-        \ type.get_sync_command(a:plugin) : ''
+  let cmd = ''
+  if a:update_type ==# 'check_update'
+        \ && has_key(type, 'get_fetch_remote_command')
+    let cmd = type.get_fetch_remote_command(a:plugin)
+  elseif has_key(type, 'get_sync_command')
+    let cmd = type.get_sync_command(a:plugin)
+  endif
 
   if cmd == ''
     return ['', '']
@@ -449,7 +456,7 @@ function! s:lock_revision(process, context) abort "{{{
     return -1
   endif
 endfunction"}}}
-function! s:get_updated_message(plugins) abort "{{{
+function! s:get_updated_message(context, plugins) abort "{{{
   if empty(a:plugins)
     return ''
   endif
@@ -460,7 +467,8 @@ function! s:get_updated_message(plugins) abort "{{{
         \                     : printf('(%d change%s)',
         \                              v:val.commit_count,
         \                              (v:val.commit_count == 1 ? '' : 's')))
-        \    . (v:val.uri =~ '^\\h\\w*://github.com/' ? \"\\n\"
+        \    . ((a:context.update_type !=# 'check_update' &&
+        \        v:val.uri =~ '^\\h\\w*://github.com/') ? \"\\n\"
         \      . printf('    %s/compare/%s...%s',
         \        substitute(substitute(v:val.uri, '\\.git$', '', ''),
         \          '^\\h\\w*:', 'https:', ''),
@@ -588,17 +596,7 @@ function! s:install_blocking(context) abort "{{{
     call s:restore_view(a:context)
   endtry
 
-  call s:echomsg(s:get_updated_message(a:context.synced_plugins))
-  call s:echomsg(s:get_errored_message(a:context.errored_plugins))
-
-  if !empty(a:context.synced_plugins)
-        \ || !empty(a:context.errored_plugins)
-    call dein#install#_recache_runtimepath()
-  else
-    call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
-  endif
-
-  let s:global_context = {}
+  call s:done(a:context)
 
   return len(a:context.errored_plugins)
 endfunction"}}}
@@ -608,22 +606,7 @@ function! s:install_async(context) abort "{{{
   if empty(a:context.processes)
         \ && a:context.number == a:context.max_plugins
     call s:restore_view(a:context)
-
-    call s:echomsg(s:get_updated_message(a:context.synced_plugins))
-    call s:echomsg(s:get_errored_message(a:context.errored_plugins))
-
-    if !empty(a:context.synced_plugins)
-          \ || !empty(a:context.errored_plugins)
-      call dein#install#_recache_runtimepath()
-    else
-      call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
-    endif
-
-    " Disable installation handler
-    let s:global_context = {}
-    augroup dein-install
-      autocmd!
-    augroup END
+    call s:done(a:context)
   endif
 
   return len(a:context.errored_plugins)
@@ -690,6 +673,26 @@ function! s:init_variables(context) abort "{{{
 
   call dein#util#_notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
+function! s:done(context) abort "{{{
+  call dein#util#_notify(
+        \ s:get_updated_message(a:context, a:context.synced_plugins))
+  call dein#util#_notify(
+        \ s:get_errored_message(a:context.errored_plugins))
+
+  if a:context.update_type !=# 'check_update'
+        \ && (!empty(a:context.synced_plugins)
+        \     || !empty(a:context.errored_plugins))
+    call dein#install#_recache_runtimepath()
+  else
+    call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
+  endif
+
+  " Disable installation handler
+  let s:global_context = {}
+  augroup dein-install
+    autocmd!
+  augroup END
+endfunction"}}}
 
 function! s:job_handler_neovim(job_id, data, event) abort "{{{
   call s:job_handler(a:job_id, a:data, a:event)
@@ -746,7 +749,8 @@ function! s:sync(plugin, context) abort "{{{
   endif
 
   let [cmd, message] = s:get_sync_command(
-        \   a:plugin, a:context.number, a:context.max_plugins)
+        \   a:plugin, a:context.update_type,
+        \   a:context.number, a:context.max_plugins)
 
   if cmd == ''
     " Skip
@@ -886,7 +890,9 @@ function! s:check_output(context, process) abort "{{{
     call s:lock_revision(a:process, a:context)
   endif
 
-  let new_rev = s:get_revision_number(plugin)
+  let new_rev = (a:context.update_type ==# 'check_update') ?
+        \ matchstr(a:process.output, '^\S\+') :
+        \ s:get_revision_number(plugin)
 
   if is_timeout || status
     let message = printf('(%'.len(max).'d/%d): |%s| %s',
@@ -903,15 +909,18 @@ function! s:check_output(context, process) abort "{{{
     call add(a:context.errored_plugins,
           \ plugin)
   elseif a:process.rev ==# new_rev
-    call s:print_message(
-          \ printf('(%'.len(max).'d/%d): |%s| %s',
-          \ num, max, plugin.name, 'Same revision'))
+        \ || (a:context.update_type ==# 'check_update' && new_rev == '')
+    if a:context.update_type !=# 'check_update'
+      call s:print_message(
+            \ printf('(%'.len(max).'d/%d): |%s| %s',
+            \ num, max, plugin.name, 'Same revision'))
+    endif
   else
     call s:print_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',
           \ num, max, plugin.name, 'Updated'))
 
-    if a:process.rev != ''
+    if a:process.rev != '' && a:context.update_type !=# 'check_update'
       let log_messages = split(s:get_updated_log_message(
             \   plugin, new_rev, a:process.rev), '\n')
       let plugin.commit_count = len(log_messages)
@@ -973,6 +982,8 @@ function! s:get_async_result(process, is_timeout) abort "{{{
       let a:process.output .= output
       call s:print_message(output)
     endif
+    let a:process.output = substitute(
+          \ a:process.output, 'DETACH', '', '')
     let job.candidates = []
   endif
 

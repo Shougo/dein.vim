@@ -69,7 +69,7 @@ function! dein#util#_notify(msg) abort "{{{
   call dein#util#_set_default(
         \ 'g:dein#enable_notification', 0)
 
-  if !g:dein#enable_notification
+  if !g:dein#enable_notification || a:msg == ''
     return
   endif
 

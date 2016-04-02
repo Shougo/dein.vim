@@ -224,6 +224,12 @@ dein#check_install([{plugins}])			*dein#check_install()*
 		{plugins} is the plugins name list to check.
 		If you omit it, dein will check all plugins installation.
 
+dein#check_update([{plugins}])			*dein#check_update()*
+		Check the plugins update.
+		{plugins} is the plugins name list to check.
+		If you omit it, dein will check all plugins update.
+		Note: If you are using neovim, it runs asynchronously.
+
 dein#check_lazy_plugins()			 *dein#check_lazy_plugins()*
 		Check the no meaning lazy plugins.  These plugins don't have
 		"plugin/" directory.

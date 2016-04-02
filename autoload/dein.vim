@@ -182,6 +182,10 @@ function! dein#update(...) abort "{{{
   return dein#install#_update(get(a:000, 0, []),
         \ 'update', dein#install#_is_async())
 endfunction"}}}
+function! dein#check_update(...) abort "{{{
+  return dein#install#_update(get(a:000, 0, []),
+        \ 'check_update', dein#install#_is_async())
+endfunction"}}}
 function! dein#direct_install(repo, ...) abort "{{{
   call dein#install#_direct_install(a:repo, (a:0 ? a:1 : {}))
 endfunction"}}}

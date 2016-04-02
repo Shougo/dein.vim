@@ -175,6 +175,25 @@ function! s:type.get_rollback_command(plugin, rev) abort "{{{
 
   return g:dein#types#git#command_path . ' reset --hard ' . a:rev
 endfunction"}}}
+function! s:type.get_revision_remote_command(bundle) abort "{{{
+  if !executable(g:dein#types#git#command_path)
+    return ''
+  endif
+
+  let rev = a:bundle.rev
+  if rev == ''
+    let rev = 'HEAD'
+  endif
+
+  return g:dein#types#git#command_path .' ls-remote origin ' . rev
+endfunction"}}}
+function! s:type.get_fetch_remote_command(bundle) abort "{{{
+  if !executable(g:dein#types#git#command_path)
+    return ''
+  endif
+
+  return g:dein#types#git#command_path .' fetch origin '
+endfunction"}}}
 
 function! s:is_git_dir(path) abort "{{{
   if isdirectory(a:path)
