@@ -76,6 +76,7 @@ function! s:suite.reinstall() abort "{{{
 endfunction"}}}
 
 function! s:suite.direct_install() abort "{{{
+  let g:dein#install_progress_type = 'none'
   call dein#begin(s:path)
   call dein#end()
 

@@ -361,6 +361,8 @@ g:dein#install_process_timeout
 g:dein#install_progress_type
 		The output type of the progress bar in the installer.
 
+		"none":
+			Disabled.
 		"echo":
 			Displayed in the echo area.
 		"statusline":

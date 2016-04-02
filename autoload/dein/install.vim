@@ -1013,7 +1013,7 @@ function! s:print_progress_message(msg) abort "{{{
   elseif s:global_context.progress_type ==# 'title'
     set title
     let &g:titlestring = join(msg, "\n")
-  else
+  elseif s:global_context.progress_type ==# 'echo'
     call s:echo(msg, 'echo')
   endif
 
