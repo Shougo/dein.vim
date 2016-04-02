@@ -161,9 +161,6 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
     return 1
   endif
 
-  " Set function prefixes before save cache
-  call dein#autoload#_set_function_prefixes(dein#util#_get_lazy_plugins())
-
   let plugins = deepcopy(dein#get())
 
   if !a:is_state

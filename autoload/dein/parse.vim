@@ -73,7 +73,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'sourced': 0,
         \ 'dummy_commands': [],
         \ 'dummy_mappings': [],
-        \ 'pre_func': [],
         \ }
   call extend(plugin, a:plugin)
 
@@ -135,7 +134,6 @@ function! dein#parse#_dict(plugin) abort "{{{
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd',
         \ 'on_func', 'on_map', 'on_source',
-        \ 'pre_func',
         \ ], "type(plugin[v:val]) != type([])
         \")
     let plugin[key] = [plugin[key]]
@@ -229,7 +227,6 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
         \ 'sourced': 1,
         \ 'dummy_commands': 1,
         \ 'dummy_mappings': 1,
-        \ 'pre_func': 1,
         \ 'orig_opts': 1,
         \ 'repo': 1,
         \ }

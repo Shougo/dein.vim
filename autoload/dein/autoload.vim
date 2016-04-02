@@ -124,22 +124,9 @@ function! dein#autoload#_on_func(name) abort "{{{
     return
   endif
 
-  let lazy_plugins = dein#util#_get_lazy_plugins()
-  call dein#autoload#_set_function_prefixes(lazy_plugins)
-
-  call dein#autoload#_source(filter(lazy_plugins,
-        \  "index(v:val.pre_func, function_prefix) >= 0
+  call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
+        \  "stridx(function_prefix, v:val.normalized_name.'#') == 0
         \   || (index(v:val.on_func, a:name) >= 0)"))
-endfunction"}}}
-function! dein#autoload#_set_function_prefixes(plugins) abort "{{{
-  for plugin in filter(copy(a:plugins), "empty(v:val.pre_func)")
-    let plugin.pre_func =
-          \ dein#util#_uniq(map(split(globpath(
-          \  plugin.path, 'autoload/**/*.vim', 1), "\n"),
-          \  "substitute(matchstr(
-          \   dein#util#_substitute_path(fnamemodify(v:val, ':r')),
-          \         '/autoload/\\zs.*$'), '/', '#', 'g').'#'"))
-  endfor
 endfunction"}}}
 
 function! dein#autoload#_on_pre_cmd(name) abort "{{{
