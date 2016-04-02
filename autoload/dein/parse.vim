@@ -24,7 +24,7 @@ function! dein#parse#_add(repo, options) abort "{{{
   endif
 
   let g:dein#_plugins[plugin.name] = plugin
-  if plugin.hook_add != ''
+  if has_key(plugin, 'hook_add')
     try
       execute plugin.hook_add
     catch
@@ -62,10 +62,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'on_path': [],
         \ 'on_source': [],
         \ 'on_idle': 0,
-        \ 'hook_add': '',
-        \ 'hook_source': '',
-        \ 'hook_post_source': '',
-        \ 'hook_post_update': '',
         \
         \ 'type': 'none',
         \ 'uri': '',
@@ -139,7 +135,6 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin[key] = [plugin[key]]
   endfor
 
-  " Set lazy flag
   if !has_key(a:plugin, 'lazy')
     let plugin.lazy = plugin.on_i || plugin.on_idle
           \ || !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
@@ -153,7 +148,6 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
   endif
 
-  " Set if flag
   if has_key(a:plugin, 'if') && type(a:plugin.if) == type('')
     sandbox let plugin.if = eval(a:plugin.if)
   endif
@@ -163,17 +157,20 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   " Hooks
-  if plugin.hook_add != ''
-        \ || plugin.hook_source != ''
-        \ || plugin.hook_post_source != ''
-        \ || plugin.hook_post_update != ''
-    let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
+  let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
+  if has_key(plugin, 'hook_add')
     let plugin.hook_add = substitute(
           \ plugin.hook_add, pattern, '', 'g')
+  endif
+  if has_key(plugin, 'hook_source')
     let plugin.hook_source = substitute(
           \ plugin.hook_source, pattern, '', 'g')
+  endif
+  if has_key(plugin, 'hook_post_source')
     let plugin.hook_post_source = substitute(
           \ plugin.hook_post_source, pattern, '', 'g')
+  endif
+  if has_key(plugin, 'hook_post_update')
     let plugin.hook_post_update = substitute(
           \ plugin.hook_post_update, pattern, '', 'g')
   endif
@@ -217,7 +214,13 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
 endfunction"}}}
 function! dein#parse#_plugins2toml(plugins) abort "{{{
   let toml = []
+
   let default = dein#parse#_dict(dein#parse#_init('', {}))
+  let default.hook_add = ''
+  let default.hook_source = ''
+  let default.hook_post_source = ''
+  let default.hook_post_update = ''
+
   let skip_default = {
         \ 'type': 1,
         \ 'directory': 1,
@@ -230,14 +233,15 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
         \ 'orig_opts': 1,
         \ 'repo': 1,
         \ }
+
   for plugin in dein#util#_sort_by(a:plugins, 'v:val.repo')
     let toml += ['[[plugins]]',
           \ 'repo = ' . string(plugin.repo)]
 
     for key in filter(sort(keys(default)),
-          \ '!has_key(skip_default, v:val)
-          \  && has_key(plugin, v:val)
-          \  && plugin[v:val] !=# default[v:val]')
+          \ "!has_key(skip_default, v:val)
+          \      && has_key(plugin, v:val)
+          \      && plugin[v:val] !=# default[v:val]")
       let val = plugin[key]
       if key =~ '^hook_'
         let toml += [

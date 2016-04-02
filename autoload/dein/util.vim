@@ -236,7 +236,9 @@ function! dein#util#_save_state(is_starting) abort "{{{
 
   " Add hooks
   for plugin in dein#util#_tsort(values(dein#get()))
-    let lines += split(plugin.hook_add, '\n')
+    if has_key(plugin, 'hook_add')
+      let lines += split(plugin.hook_add, '\n')
+    endif
   endfor
 
   call writefile(lines, dein#_get_state_file())
@@ -351,14 +353,14 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
   let hook = 'hook_' . a:hook_name
   let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
         \ "v:val.sourced && (exists(prefix . v:val.name)
-        \  || v:val[hook] != '') && isdirectory(v:val.path)")
+        \  || has_key(v:val, hook)) && isdirectory(v:val.path)")
 
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
     if exists('#User#'.autocmd)
       execute 'doautocmd <nomodeline> User' autocmd
     endif
-    if plugin[hook] != ''
+    if has_key(plugin, hook)
       try
         execute plugin[hook]
       catch
