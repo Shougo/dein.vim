@@ -146,8 +146,9 @@ function! dein#autoload#_on_pre_cmd(name) abort "{{{
   call dein#autoload#_source(
         \ filter(dein#util#_get_lazy_plugins(),
         \ "index(map(copy(v:val.on_cmd), 'tolower(v:val)'), a:name) >= 0
-        \  || !empty(filter(map(copy(v:val.pre_cmd), 'tolower(v:val)'),
-        \                   'stridx(tolower(a:name), v:val) == 0'))"))
+        \  || stridx(tolower(a:name),
+        \            substitute(tolower(v:val.normalized_name),
+        \                       '[_-]', '', 'g')) == 0"))
 endfunction"}}}
 
 function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort "{{{

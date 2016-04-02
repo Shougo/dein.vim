@@ -361,7 +361,6 @@ function! s:suite.lazy_on_cmd() abort "{{{
 
   let plugin = dein#get('neocomplete.vim')
 
-  call s:assert.equals(plugin.pre_cmd, ['neocomplete'])
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 0)
@@ -407,7 +406,6 @@ function! s:suite.lazy_on_pre_cmd() abort "{{{
 
   let plugin = dein#get('neocomplete.vim')
 
-  call s:assert.equals(plugin.pre_cmd, ['neocomplete'])
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 0)

@@ -73,7 +73,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'sourced': 0,
         \ 'dummy_commands': [],
         \ 'dummy_mappings': [],
-        \ 'pre_cmd': [],
         \ 'pre_func': [],
         \ }
   call extend(plugin, a:plugin)
@@ -136,7 +135,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd',
         \ 'on_func', 'on_map', 'on_source',
-        \ 'pre_cmd', 'pre_func',
+        \ 'pre_func',
         \ ], "type(plugin[v:val]) != type([])
         \")
     let plugin[key] = [plugin[key]]
@@ -154,11 +153,6 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.merged =
           \ !plugin.lazy && !plugin.local && !has_key(a:plugin, 'if')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
-  endif
-
-  if empty(plugin.pre_cmd)
-    let plugin.pre_cmd = [substitute(
-          \ plugin.normalized_name, '[_-]', '', 'g')]
   endif
 
   " Set if flag
@@ -235,7 +229,6 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
         \ 'sourced': 1,
         \ 'dummy_commands': 1,
         \ 'dummy_mappings': 1,
-        \ 'pre_cmd': 1,
         \ 'pre_func': 1,
         \ 'orig_opts': 1,
         \ 'repo': 1,

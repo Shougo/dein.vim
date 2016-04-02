@@ -613,14 +613,6 @@ OPTIONS 					*dein-options*
 		If set to non-zero, dein will call |dein#source()| on
 		|FocusLost| or |CursorHold| autocmd.
 
-						*dein-options-pre_cmd*
-		pre_cmd		(List) or (String)
-		The autoload command prefix in the commands.
-		If omitted it, automatically generated prefix is used.
-		Example: If you use "unite.vim", "Unite" command
-		prefix is used.
-		Note: It requires Vim 7.4.414 or above.
-
 						*dein-options-hook_add*
 		hook_add	(String)
 						*dein-options-hook_source*
