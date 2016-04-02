@@ -352,7 +352,7 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
   let hook = 'hook_' . a:hook_name
   let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
         \ "v:val.sourced && (exists(prefix . v:val.name)
-        \  || v:val[hook] != '')")
+        \  || v:val[hook] != '') && isdirectory(v:val.path)")
 
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
