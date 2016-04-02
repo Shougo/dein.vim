@@ -81,8 +81,9 @@ function! dein#util#_notify(msg) abort "{{{
           \ printf('Snarl_CMD snShowMessage 2 [dein] "%s"', a:msg))
   elseif dein#util#_is_mac()
     call dein#install#_system(
-          \ printf("osascript -e 'display notification "
-          \        ."\"%s\" with title \"[dein]\"'", a:msg))
+          \ printf("%s osascript -e 'display notification "
+          \        ."\"%s\" with title \"[dein]\"'",
+          \ (exists('$TMUX') ? 'reattach-to-user-namespace' : ''), a:msg))
   endif
 endfunction"}}}
 
