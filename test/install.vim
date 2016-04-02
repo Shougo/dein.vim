@@ -30,10 +30,12 @@ function! s:suite.before_each() abort "{{{
   let &l:filetype = s:filetype_save
   let g:temp = tempname()
   let g:dein#install_progress_type = 'echo'
+  let g:dein#enable_notification = 0
 endfunction"}}}
 
 function! s:suite.install() abort "{{{
   let g:dein#install_progress_type = 'title'
+  let g:dein#enable_notification = 1
 
   call dein#begin(s:path)
 

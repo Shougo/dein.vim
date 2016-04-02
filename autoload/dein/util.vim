@@ -9,6 +9,15 @@ let s:is_windows = has('win32') || has('win64')
 function! dein#util#_init() abort "{{{
 endfunction"}}}
 
+function! dein#util#_set_default(var, val, ...) abort "{{{
+  if !exists(a:var) || type({a:var}) != type(a:val)
+    let alternate_var = get(a:000, 0, '')
+
+    let {a:var} = exists(alternate_var) ?
+          \ {alternate_var} : a:val
+  endif
+endfunction"}}}
+
 function! dein#util#_is_windows() abort "{{{
   return s:is_windows
 endfunction"}}}
@@ -56,19 +65,29 @@ function! dein#util#_error(msg) abort "{{{
 endfunction"}}}
 function! dein#util#_notify(msg) abort "{{{
   call dein#util#_error(a:msg)
+
+  call dein#util#_set_default(
+        \ 'g:dein#enable_notification', 0)
+
+  if !g:dein#enable_notification
+    return
+  endif
+
+  if executable('notify-send')
+    call dein#install#_system(
+          \ 'notify-send [dein] ' . string(a:msg))
+  elseif dein#util#_is_windows() && executable('Snarl_CMD')
+    call dein#install#_system(
+          \ printf('Snarl_CMD snShowMessage 2 [dein] "%s"', a:msg))
+  elseif dein#util#_is_mac()
+    call dein#install#_system(
+          \ printf("osascript -e 'display notification "
+          \        ."\"%s\" with title \"[dein]\"'", a:msg))
+  endif
 endfunction"}}}
 
 function! dein#util#_chomp(str) abort "{{{
   return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
-endfunction"}}}
-
-function! dein#util#_set_default(var, val, ...) abort "{{{
-  if !exists(a:var) || type({a:var}) != type(a:val)
-    let alternate_var = get(a:000, 0, '')
-
-    let {a:var} = exists(alternate_var) ?
-          \ {alternate_var} : a:val
-  endif
 endfunction"}}}
 
 function! dein#util#_uniq(list, ...) abort "{{{

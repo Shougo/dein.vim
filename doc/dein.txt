@@ -329,6 +329,21 @@ g:dein#enable_name_conversion
 
 		Defaults: "0".
 
+ 					*g:dein#enable_notification*
+g:dein#enable_notification
+		If you set it to 1, dein uses the notification feature.
+		You need the following commands to use it.
+
+		In Windows: "Snarl" and "Snarl_CMD" commands
+http://snarl.fullphat.net/
+https://www.tlhan-ghun.de/projects/snarl-command-line-tools/snarl_cmd-exe/
+
+		In Mac: "osascript" command
+
+		In Linux: "notify-send" command
+
+		Defaults: "0".
+
 						*g:dein#install_max_processes*
 g:dein#install_max_processes
 		The max number of processes used for dein/install source
