@@ -12,37 +12,6 @@ let g:dein#install_process_timeout =
 "}}}
 
 let s:git = dein#types#git#define()
-let s:options_default = {
-      \ 'rev': '',
-      \ 'if': 1,
-      \ 'local': 0,
-      \ 'frozen': 0,
-      \ 'depends': [],
-      \ 'timeout': g:dein#install_process_timeout,
-      \ 'build': '',
-      \ 'on_i': 0,
-      \ 'on_ft': [],
-      \ 'on_cmd': [],
-      \ 'on_func': [],
-      \ 'on_map': [],
-      \ 'on_path': [],
-      \ 'on_source': [],
-      \ 'on_idle': 0,
-      \ 'hook_add': '',
-      \ 'hook_source': '',
-      \ 'hook_post_source': '',
-      \ 'hook_post_update': '',
-      \ }
-let s:parse_default = extend(copy(s:options_default), {
-      \ 'type': 'none',
-      \ 'uri': '',
-      \ 'rtp': '',
-      \ 'sourced': 0,
-      \ 'dummy_commands': [],
-      \ 'dummy_mappings': [],
-      \ 'pre_cmd': [],
-      \ 'pre_func': [],
-      \ })
 
 function! dein#parse#_add(repo, options) abort "{{{
   let plugin = dein#parse#_dict(
@@ -77,7 +46,37 @@ function! dein#parse#_init(repo, options) abort "{{{
   return extend(plugin, a:options)
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
-  let plugin = extend(copy(s:parse_default), a:plugin)
+  let plugin = {
+        \ 'rev': '',
+        \ 'if': 1,
+        \ 'local': 0,
+        \ 'frozen': 0,
+        \ 'depends': [],
+        \ 'timeout': g:dein#install_process_timeout,
+        \ 'build': '',
+        \ 'on_i': 0,
+        \ 'on_ft': [],
+        \ 'on_cmd': [],
+        \ 'on_func': [],
+        \ 'on_map': [],
+        \ 'on_path': [],
+        \ 'on_source': [],
+        \ 'on_idle': 0,
+        \ 'hook_add': '',
+        \ 'hook_source': '',
+        \ 'hook_post_source': '',
+        \ 'hook_post_update': '',
+        \
+        \ 'type': 'none',
+        \ 'uri': '',
+        \ 'rtp': '',
+        \ 'sourced': 0,
+        \ 'dummy_commands': [],
+        \ 'dummy_mappings': [],
+        \ 'pre_cmd': [],
+        \ 'pre_func': [],
+        \ }
+  call extend(plugin, a:plugin)
 
   if !has_key(plugin, 'name')
     let plugin.name = dein#parse#_name_conversion(plugin.repo)
@@ -226,13 +225,29 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
 endfunction"}}}
 function! dein#parse#_plugins2toml(plugins) abort "{{{
   let toml = []
+  let default = dein#parse#_dict(dein#parse#_init('', {}))
+  let skip_default = {
+        \ 'type': 1,
+        \ 'directory': 1,
+        \ 'path': 1,
+        \ 'uri': 1,
+        \ 'rtp': 1,
+        \ 'sourced': 1,
+        \ 'dummy_commands': 1,
+        \ 'dummy_mappings': 1,
+        \ 'pre_cmd': 1,
+        \ 'pre_func': 1,
+        \ 'orig_opts': 1,
+        \ 'repo': 1,
+        \ }
   for plugin in dein#util#_sort_by(a:plugins, 'v:val.repo')
     let toml += ['[[plugins]]',
           \ 'repo = ' . string(plugin.repo)]
 
-    for key in filter(sort(keys(s:options_default)),
-          \ 'has_key(plugin, v:val)
-          \  && plugin[v:val] !=# s:options_default[v:val]')
+    for key in filter(sort(keys(default)),
+          \ '!has_key(skip_default, v:val)
+          \  && has_key(plugin, v:val)
+          \  && plugin[v:val] !=# default[v:val]')
       let val = plugin[key]
       if key =~ '^hook_'
         let toml += [
