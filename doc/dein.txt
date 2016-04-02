@@ -512,47 +512,16 @@ OPTIONS 					*dein-options*
 		useful for the plugin files conflicts.
 
 						*dein-options-build*
-		build			(Dictionary or String)
+		build			(String)
 		Specify the build script.
 		This command is executed by |system()| or |vimproc#system()|
 		in the plugin runtimepath.
-		Note: Type String is the syntax sugar for the Dictionary of
-		{"others": "cmd"}.
-
-		This dictionary accepts the following keys:
-
-			windows		(String)
-			Specify Windows environment build script.
-
-			mac		(String)
-			Specify Mac OS X environment build script.
-
-			cygwin		(String)
-			Specify Cygwin environment build script.
-
-			linux		(String)
-			Specify Linux environment build script.
-			Note: It is detected if "gmake" command is not
-			executable.
-
-			unix		(String)
-			Specify Unix environment build script.
-
-			others		(String)
-			Specify others environment build script.
-			If you don't specify other keys, it means "all".
+		Note: The dictionary type is no longer supported.
+		Please use |dein-options-post_update| instead.
 
 		Example:
 >
-		call dein#add('Shougo/vimproc.vim', {
-		\ 'build': {
-		\     'windows': 'tools\\update-dll-mingw',
-		\     'cygwin': 'make -f make_cygwin.mak',
-		\     'mac': 'make -f make_mac.mak',
-		\     'linux': 'make',
-		\     'unix': 'gmake',
-		\    },
-		\ })
+		call dein#add('Shougo/vimproc.vim', 'make')
 <
 		Note: The command is executed in plugin top directory.
 		If you need cd command, you must use "sh -c". >
@@ -649,9 +618,13 @@ OPTIONS 					*dein-options*
 						*dein-options-hook_post_source*
 		hook_post_source (String)
 
+						*dein-options-hook_post_update*
+		hook_post_update (String)
+
 		"hook_add" is executed after plugins are added.
 		"hook_source" is executed before plugins are sourced.
 		"hook_post_source" is executed after plugins are sourced.
+		"hook_post_update" is executed after plugins are updated.
 
 		The string will be split by the lines.
 		It is useful for the plugins initialization.

@@ -635,21 +635,23 @@ function! s:suite.build() abort "{{{
   call dein#begin(tempname())
 
   call dein#add('Shougo/vimproc.vim', {
-        \ 'build': {
-        \     'windows': 'tools\\update-dll-mingw',
-        \     'cygwin': 'make -f make_cygwin.mak',
-        \     'mac': 'make -f make_mac.mak',
-        \     'linux': 'make',
-        \     'unix': 'gmake',
-        \    },
+        \ 'build': 'make',
+        \ 'hook_add':
+        \   'let g:foobar = 1',
+        \ 'hook_post_update':
+        \   'let g:foobar = 4',
         \ })
 
   call dein#end()
+
+  call s:assert.equals(g:foobar, 1)
 
   call s:assert.true(dein#check_install())
   call s:assert.true(dein#check_install(['vimproc.vim']))
 
   call s:assert.equals(s:dein_install(), 0)
+
+  call s:assert.equals(g:foobar, 4)
 
   call vimproc#version()
   call s:assert.true(filereadable(g:vimproc#dll_path))

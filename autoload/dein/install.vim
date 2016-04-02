@@ -920,6 +920,7 @@ function! s:check_output(context, process) abort "{{{
     let plugin.old_rev = a:process.rev
     let plugin.new_rev = new_rev
 
+    call dein#call_hook('post_update', plugin)
     if s:build(plugin)
           \ && confirm('Build failed. Uninstall "'
           \   .plugin.name.'" now?', "yes\nNo", 2) == 1
@@ -1091,28 +1092,16 @@ endfunction"}}}
 function! s:build(plugin) abort "{{{
   " Environment check.
   let build = a:plugin.build
-  if type(build) == type('')
-    let cmd = build
-  elseif dein#util#_is_windows() && has_key(build, 'windows')
-    let cmd = build.windows
-  elseif dein#util#_is_mac() && has_key(build, 'mac')
-    let cmd = build.mac
-  elseif dein#util#_is_cygwin() && has_key(build, 'cygwin')
-    let cmd = build.cygwin
-  elseif !dein#util#_is_windows() && has_key(build, 'linux')
-        \ && !executable('gmake')
-    let cmd = build.linux
-  elseif !dein#util#_is_windows() && has_key(build, 'unix')
-    let cmd = build.unix
-  elseif has_key(build, 'others')
-    let cmd = build.others
-  else
+  if type(build) == type({})
+    call s:error('Dictionary type of build is no longer supported')
+    return 1
+  elseif build == ''
     return 0
   endif
 
   call s:print_progress_message('Building...')
 
-  call dein#install#_each(cmd, a:plugin)
+  call dein#install#_each(build, a:plugin)
 
   return dein#install#_get_last_status()
 endfunction"}}}

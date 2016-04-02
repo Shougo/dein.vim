@@ -60,7 +60,7 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'timeout': g:dein#install_process_timeout,
         \ 'dummy_commands': [],
         \ 'dummy_mappings': [],
-        \ 'build': {},
+        \ 'build': '',
         \ 'on_i': 0,
         \ 'on_ft': [],
         \ 'on_cmd': [],
@@ -74,6 +74,7 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'hook_add': '',
         \ 'hook_source': '',
         \ 'hook_post_source': '',
+        \ 'hook_post_update': '',
         \ }
 
   call extend(plugin, a:plugin)
@@ -170,6 +171,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   if plugin.hook_add != ''
         \ || plugin.hook_source != ''
         \ || plugin.hook_post_source != ''
+        \ || plugin.hook_post_update != ''
     let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
     let plugin.hook_add = substitute(
           \ plugin.hook_add, pattern, '', 'g')
@@ -177,6 +179,8 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ plugin.hook_source, pattern, '', 'g')
     let plugin.hook_post_source = substitute(
           \ plugin.hook_post_source, pattern, '', 'g')
+    let plugin.hook_post_update = substitute(
+          \ plugin.hook_post_update, pattern, '', 'g')
   endif
 
   if plugin.lazy
