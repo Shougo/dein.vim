@@ -83,7 +83,8 @@ function! dein#util#_notify(msg) abort "{{{
     call dein#install#_system(
           \ printf("%s osascript -e 'display notification "
           \        ."\"%s\" with title \"[dein]\"'",
-          \ (exists('$TMUX') ? 'reattach-to-user-namespace' : ''), a:msg))
+          \ (exists('$TMUX') && executable('reattach-to-user-namespace') ?
+          \  'reattach-to-user-namespace' : ''), a:msg))
   endif
 endfunction"}}}
 
