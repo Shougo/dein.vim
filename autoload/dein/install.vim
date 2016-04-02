@@ -15,6 +15,8 @@ let g:dein#install_max_processes =
       \ get(g:, 'dein#install_max_processes', 8)
 let g:dein#install_progress_type =
       \ get(g:, 'dein#install_progress_type', 'statusline')
+let g:dein#install_message_type =
+      \ get(g:, 'dein#install_message_type', 'echo')
 "}}}
 
 function! dein#install#_update(plugins, bang, async) abort "{{{
@@ -581,7 +583,6 @@ function! s:install_blocking(context) abort "{{{
   endtry
 
   call s:echomsg(s:get_updated_message(a:context.synced_plugins))
-
   call s:echomsg(s:get_errored_message(a:context.errored_plugins))
 
   if !empty(a:context.synced_plugins)
@@ -603,7 +604,6 @@ function! s:install_async(context) abort "{{{
     call s:restore_view(a:context)
 
     call s:echomsg(s:get_updated_message(a:context.synced_plugins))
-
     call s:echomsg(s:get_errored_message(a:context.errored_plugins))
 
     if !empty(a:context.synced_plugins)
@@ -668,6 +668,7 @@ function! s:init_context(plugins, bang, async) abort "{{{
         \ || has('vim_starting')
     let context.progress_type = 'echo'
   endif
+  let context.message_type = g:dein#install_message_type
   let context.laststatus = &g:laststatus
   let context.statusline = &l:statusline
   let context.showtabline = &g:showtabline
@@ -1026,7 +1027,9 @@ function! s:print_message(msg) abort "{{{
     return
   endif
 
-  call s:echo(msg, 'echo')
+  if s:global_context.message_type ==# 'echo'
+    call s:echo(msg, 'echo')
+  endif
 
   let s:log += msg
 endfunction"}}}
