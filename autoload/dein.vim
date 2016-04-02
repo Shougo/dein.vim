@@ -65,21 +65,6 @@ endfunction"}}}
 function! dein#is_sourced(name) abort "{{{
   return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
 endfunction"}}}
-function! dein#check_install(...) abort "{{{
-  let plugins = filter(empty(a:000) ? values(dein#get()) :
-        \ filter(map(copy(a:1), 'dein#get(v:val)'), '!empty(v:val)'),
-        \     '!isdirectory(v:val.path)')
-  if empty(plugins)
-    return 0
-  endif
-
-  call dein#util#_notify('Not installed plugins: ' .
-        \ string(map(plugins, 'v:val.name')))
-  return 1
-endfunction"}}}
-function! dein#check_clean() abort "{{{
-  return dein#util#_check_clean()
-endfunction"}}}
 
 function! dein#save_cache() abort "{{{
   call dein#util#_error('dein#save_cache() is deprecated.')
@@ -174,11 +159,28 @@ endfunction"}}}
 function! dein#source(...) abort "{{{
   return call('dein#autoload#_source', a:000)
 endfunction"}}}
+function! dein#check_install(...) abort "{{{
+  let plugins = filter(empty(a:000) ? values(dein#get()) :
+        \ filter(map(copy(a:1), 'dein#get(v:val)'), '!empty(v:val)'),
+        \     '!isdirectory(v:val.path)')
+  if empty(plugins)
+    return 0
+  endif
+
+  call dein#util#_notify('Not installed plugins: ' .
+        \ string(map(plugins, 'v:val.name')))
+  return 1
+endfunction"}}}
+function! dein#check_clean() abort "{{{
+  return dein#util#_check_clean()
+endfunction"}}}
 function! dein#install(...) abort "{{{
-  return dein#install#_update(get(a:000, 0, []), 0, dein#install#_is_async())
+  return dein#install#_update(get(a:000, 0, []),
+        \ 'install', dein#install#_is_async())
 endfunction"}}}
 function! dein#update(...) abort "{{{
-  return dein#install#_update(get(a:000, 0, []), 1, dein#install#_is_async())
+  return dein#install#_update(get(a:000, 0, []),
+        \ 'update', dein#install#_is_async())
 endfunction"}}}
 function! dein#direct_install(repo, ...) abort "{{{
   call dein#install#_direct_install(a:repo, (a:0 ? a:1 : {}))

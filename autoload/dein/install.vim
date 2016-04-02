@@ -19,10 +19,10 @@ let g:dein#install_message_type =
       \ get(g:, 'dein#install_message_type', 'echo')
 "}}}
 
-function! dein#install#_update(plugins, bang, async) abort "{{{
+function! dein#install#_update(plugins, update_type, async) abort "{{{
   let plugins = dein#util#_get_plugins(a:plugins)
 
-  if !a:bang
+  if a:update_type ==# 'install'
     let plugins = filter(plugins, '!isdirectory(v:val.path)')
   endif
 
@@ -34,7 +34,7 @@ function! dein#install#_update(plugins, bang, async) abort "{{{
   endif
 
   " Set context.
-  let context = s:init_context(plugins, a:bang, a:async)
+  let context = s:init_context(plugins, a:update_type, a:async)
 
   if a:async
     if !empty(s:global_context) &&
@@ -337,7 +337,7 @@ function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
-function! s:get_sync_command(bang, plugin, number, max) abort "{{{i
+function! s:get_sync_command(plugin, number, max) abort "{{{i
   let type = dein#util#_get_type(a:plugin.type)
 
   let cmd = has_key(type, 'get_sync_command') ?
@@ -658,9 +658,9 @@ function! s:restore_view(context) abort "{{{
     let &g:titlestring = a:context.titlestring
   endif
 endfunction"}}}
-function! s:init_context(plugins, bang, async) abort "{{{
+function! s:init_context(plugins, update_type, async) abort "{{{
   let context = {}
-  let context.bang = a:bang
+  let context.update_type = a:update_type
   let context.async = a:async
   let context.synced_plugins = []
   let context.errored_plugins = []
@@ -746,8 +746,7 @@ function! s:sync(plugin, context) abort "{{{
   endif
 
   let [cmd, message] = s:get_sync_command(
-        \   a:context.bang, a:plugin,
-        \   a:context.number, a:context.max_plugins)
+        \   a:plugin, a:context.number, a:context.max_plugins)
 
   if cmd == ''
     " Skip
