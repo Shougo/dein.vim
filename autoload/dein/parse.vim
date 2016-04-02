@@ -4,14 +4,43 @@
 " License: MIT license
 "=============================================================================
 
-let s:git = dein#types#git#define()
-
 " Global options definition." "{{{
 let g:dein#enable_name_conversion =
       \ get(g:, 'dein#enable_name_conversion', 0)
 let g:dein#install_process_timeout =
       \ get(g:, 'dein#install_process_timeout', 120)
 "}}}
+
+let s:git = dein#types#git#define()
+let s:default = {
+        \ 'type': 'none',
+        \ 'uri': '',
+        \ 'rev': '',
+        \ 'rtp': '',
+        \ 'if': 1,
+        \ 'sourced': 0,
+        \ 'local': 0,
+        \ 'frozen': 0,
+        \ 'depends': [],
+        \ 'timeout': g:dein#install_process_timeout,
+        \ 'dummy_commands': [],
+        \ 'dummy_mappings': [],
+        \ 'build': '',
+        \ 'on_i': 0,
+        \ 'on_ft': [],
+        \ 'on_cmd': [],
+        \ 'on_func': [],
+        \ 'on_map': [],
+        \ 'on_path': [],
+        \ 'on_source': [],
+        \ 'on_idle': 0,
+        \ 'pre_cmd': [],
+        \ 'pre_func': [],
+        \ 'hook_add': '',
+        \ 'hook_source': '',
+        \ 'hook_post_source': '',
+        \ 'hook_post_update': '',
+        \ }
 
 function! dein#parse#_add(repo, options) abort "{{{
   let plugin = dein#parse#_dict(
@@ -46,36 +75,8 @@ function! dein#parse#_init(repo, options) abort "{{{
   return extend(plugin, a:options)
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
-  let plugin = {
-        \ 'type': 'none',
-        \ 'uri': '',
-        \ 'rev': '',
-        \ 'rtp': '',
-        \ 'if': 1,
-        \ 'sourced': 0,
-        \ 'local': 0,
-        \ 'base': dein#util#_get_base_path() . '/repos',
-        \ 'frozen': 0,
-        \ 'depends': [],
-        \ 'timeout': g:dein#install_process_timeout,
-        \ 'dummy_commands': [],
-        \ 'dummy_mappings': [],
-        \ 'build': '',
-        \ 'on_i': 0,
-        \ 'on_ft': [],
-        \ 'on_cmd': [],
-        \ 'on_func': [],
-        \ 'on_map': [],
-        \ 'on_path': [],
-        \ 'on_source': [],
-        \ 'on_idle': 0,
-        \ 'pre_cmd': [],
-        \ 'pre_func': [],
-        \ 'hook_add': '',
-        \ 'hook_source': '',
-        \ 'hook_post_source': '',
-        \ 'hook_post_update': '',
-        \ }
+  let plugin = copy(s:default)
+  let plugin.base = dein#util#_get_base_path() . '/repos'
 
   call extend(plugin, a:plugin)
 
