@@ -154,8 +154,10 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call s:helptags()
 
   " Clear ftdetect and after/ftdetect directories.
-  call dein#install#_rm(dein#util#_get_runtime_path().'/ftdetect')
-  call dein#install#_rm(dein#util#_get_runtime_path().'/after/ftdetect')
+  call dein#install#_rm(
+        \ dein#util#_get_runtime_path().'/ftdetect')
+  call dein#install#_rm(
+        \ dein#util#_get_runtime_path().'/after/ftdetect')
 
   call s:merge_files(plugins, 'ftdetect')
   call s:merge_files(plugins, 'after/ftdetect')
@@ -174,7 +176,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#clear_state()
 
-  call dein#util#_notify(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
+  call dein#util#_notify(
+        \ strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
   if dein#util#_get_base_path() == ''
