@@ -527,7 +527,7 @@ OPTIONS 					*dein-options*
 
 		Example:
 >
-		call dein#add('Shougo/vimproc.vim', 'make')
+		call dein#add('Shougo/vimproc.vim', {'build': 'make'})
 <
 		Note: The command is executed in plugin top directory.
 		If you need cd command, you must use "sh -c". >
