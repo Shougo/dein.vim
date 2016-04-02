@@ -128,4 +128,24 @@ function! s:suite.load_dict() abort "{{{
   call s:assert.equals(dein#get('neocomplete').lazy, 1)
 endfunction"}}}
 
+function! s:suite.plugins2toml() abort "{{{
+  let parsed_plugin = dein#parse#_init('Shougo/unite.vim', {})
+  let parsed_plugin2 = dein#parse#_init('Shougo/deoplete.nvim',
+        \ {'on_ft': ['vim'], 'hook_add': "hoge\npiyo"})
+  call s:assert.equals(dein#plugins2toml(
+        \ [parsed_plugin, parsed_plugin2]), [
+        \ "[[plugins]]",
+        \ "repo = 'Shougo/deoplete.nvim'",
+        \ "hook_add = '''",
+        \ "hoge",
+        \ "piyo",
+        \ "'''",
+        \ "on_ft = 'vim'",
+        \ "",
+        \ "[[plugins]]",
+        \ "repo = 'Shougo/unite.vim'",
+        \ "",
+        \ ])
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:

@@ -316,6 +316,10 @@ dein#call_hook({hook-name})			 *dein#call_hook()*
 		Note: If {hook-name} is "source", dein will call "source"
 		hooks in sourced plugins.
 
+dein#plugins2toml({plugins})			 *dein#plugins2toml()*
+		Returns the toml configurations for {plugins}
+		{plugins} is the plugins dictionary from |dein#get()|.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 

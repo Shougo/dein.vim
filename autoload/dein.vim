@@ -225,5 +225,8 @@ endfunction"}}}
 function! dein#each(command, ...) abort "{{{
   return dein#install#_each(a:command, (a:0 ? a:1 : []))
 endfunction"}}}
+function! dein#plugins2toml(plugins) abort "{{{
+  return dein#parse#_plugins2toml(a:plugins)
+endfunction"}}}
 
 " vim: foldmethod=marker

@@ -384,6 +384,11 @@ function! dein#util#_add_dummy_mappings(plugin) abort "{{{
   endfor
 endfunction"}}}
 
+function! dein#util#_sort_by(list, expr) abort "{{{
+  let pairs = map(a:list, printf('[v:val, %s]', a:expr))
+  return map(s:sort(pairs,
+  \      'a:a[1] ==# a:b[1] ? 0 : a:a[1] ># a:b[1] ? 1 : -1'), 'v:val[0]')
+endfunction"}}}
 function! dein#util#_tsort(plugins) abort "{{{
   let sorted = []
   let mark = {}
@@ -478,9 +483,20 @@ function! s:msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction"}}}
 
-" Escape a path for runtimepath.
 function! s:escape(path) abort "{{{
+  " Escape a path for runtimepath.
   return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
+endfunction"}}}
+
+function! s:sort(list, expr) abort "{{{
+  if type(a:expr) == type(function('function'))
+    return sort(a:list, a:expr)
+  endif
+  let s:expr = a:expr
+  return sort(a:list, 's:_compare')
+endfunction"}}}
+function! s:_compare(a, b) abort "{{{
+  return eval(s:expr)
 endfunction"}}}
 
 " vim: foldmethod=marker
