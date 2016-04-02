@@ -61,8 +61,8 @@ function! s:source.gather_candidates(args, context) abort "{{{
 
   for candidate in _
     let candidate.abbr =
-          \ candidate.source__is_sourced ? '#' :
-          \ candidate.source__is_installed ? ' ' : 'X'
+          \ !candidate.source__is_installed ? 'X' :
+          \ candidate.source__is_sourced ? ' ' : '#'
     let candidate.abbr .= ' ' . unite#util#truncate(candidate.word, max)
 
     if a:context.source__bang
