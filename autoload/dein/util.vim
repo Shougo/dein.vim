@@ -187,11 +187,11 @@ function! dein#util#_load_merged_plugins() abort "{{{
   if !filereadable(path)
     return []
   endif
-  return dein#util#_json2vim(readfile(path)[0])
+  sandbox return eval(readfile(path)[0])
 endfunction"}}}
 function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
-  let json = dein#util#_vim2json(a:merged_plugins)
-  call writefile([json], dein#util#_get_base_path() . '/merged')
+  call writefile([string(a:merged_plugins)],
+        \ dein#util#_get_base_path() . '/merged')
 endfunction"}}}
 
 function! dein#util#_save_state(is_starting) abort "{{{
