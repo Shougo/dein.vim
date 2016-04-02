@@ -22,6 +22,7 @@ endfunction"}}}
 
 let s:type = {
       \ 'name': 'git',
+      \ 'command': g:dein#types#git#command_path,
       \ }
 
 function! s:type.init(repo, option) abort "{{{
@@ -80,7 +81,7 @@ function! s:type.init(repo, option) abort "{{{
 endfunction"}}}
 
 function! s:type.get_sync_command(plugin) abort "{{{
-  let git = g:dein#types#git#command_path
+  let git = self.command
   if !executable(git)
     return 'E: "git" command is not installed.'
   endif
@@ -109,30 +110,28 @@ function! s:type.get_sync_command(plugin) abort "{{{
 endfunction"}}}
 
 function! s:type.get_revision_number_command(plugin) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
     return ''
   endif
 
-  return g:dein#types#git#command_path .' rev-parse HEAD'
+  return self.command .' rev-parse HEAD'
 endfunction"}}}
 function! s:type.get_revision_pretty_command(plugin) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
     return ''
   endif
 
-  return g:dein#types#git#command_path .
-        \ ' log -1 --pretty=format:"%h [%cr] %s"'
+  return self.command . ' log -1 --pretty=format:"%h [%cr] %s"'
 endfunction"}}}
 function! s:type.get_commit_date_command(plugin) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
     return ''
   endif
 
-  return g:dein#types#git#command_path .
-        \ ' log -1 --pretty=format:"%ct"'
+  return self.command . ' log -1 --pretty=format:"%ct"'
 endfunction"}}}
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
         \ || a:new_rev == '' || a:old_rev == ''
     return ''
   endif
@@ -140,25 +139,21 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
   " Note: If the a:old_rev is not the ancestor of two branchs. Then do not use
   " %s^.  use %s^ will show one commit message which already shown last time.
   let is_not_ancestor = dein#install#_system(
-        \ g:dein#types#git#command_path . ' merge-base '
+        \ self.command . ' merge-base '
         \ . a:old_rev . ' ' . a:new_rev) ==# a:old_rev
-  return printf(g:dein#types#git#command_path .
+  return printf(self.command .
         \ ' log %s%s..%s --graph --pretty=format:"%%h [%%cr] %%s"',
         \ a:old_rev, (is_not_ancestor ? '' : '^'), a:new_rev)
-
-  " Test.
-  " return g:dein#types#git#command_path .
-  "      \ ' log HEAD^^^^..HEAD --graph --pretty=format:"%h [%cr] %s"'
 endfunction"}}}
 function! s:type.get_revision_lock_command(plugin) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
     return ''
   endif
 
   let rev = a:plugin.rev
   if rev ==# 'release'
     " Use latest released tag
-    let rev = get(split(dein#install#_system(g:dein#types#git#command_path
+    let rev = get(split(dein#install#_system(self.command
           \ . ' tag --list --sort -version:refname'), "\n"), 0, '')
   endif
   if rev == ''
@@ -166,17 +161,17 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
     let rev = 'master'
   endif
 
-  return g:dein#types#git#command_path . ' checkout ' . rev
+  return self.command . ' checkout ' . rev
 endfunction"}}}
 function! s:type.get_rollback_command(plugin, rev) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
     return ''
   endif
 
-  return g:dein#types#git#command_path . ' reset --hard ' . a:rev
+  return self.command . ' reset --hard ' . a:rev
 endfunction"}}}
 function! s:type.get_revision_remote_command(bundle) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
     return ''
   endif
 
@@ -185,14 +180,14 @@ function! s:type.get_revision_remote_command(bundle) abort "{{{
     let rev = 'HEAD'
   endif
 
-  return g:dein#types#git#command_path .' ls-remote origin ' . rev
+  return self.command .' ls-remote origin ' . rev
 endfunction"}}}
 function! s:type.get_fetch_remote_command(bundle) abort "{{{
-  if !executable(g:dein#types#git#command_path)
+  if !executable(self.command)
     return ''
   endif
 
-  return g:dein#types#git#command_path .' fetch origin '
+  return self.command .' fetch origin '
 endfunction"}}}
 
 function! s:is_git_dir(path) abort "{{{
