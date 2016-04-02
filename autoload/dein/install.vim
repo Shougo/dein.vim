@@ -151,7 +151,13 @@ function! dein#install#_recache_runtimepath() abort "{{{
   let plugins = values(dein#get())
 
   let merged_plugins = filter(copy(plugins), 'v:val.merged')
-  call s:copy_files(merged_plugins, '')
+
+  call s:copy_files(filter(copy(plugins), 'v:val.lazy'), '')
+  " Remove plugin directory
+  call dein#install#_rm(dein#util#_get_runtime_path() . '/plugin')
+  call dein#install#_rm(dein#util#_get_runtime_path() . '/after/plugin')
+
+  call s:copy_files(filter(copy(plugins), '!v:val.lazy'), '')
 
   call s:helptags()
 

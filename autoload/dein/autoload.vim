@@ -266,9 +266,11 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
     let a:plugin.dummy_mappings = []
   endif
 
-  call insert(a:rtps, a:plugin.rtp, a:index)
-  if isdirectory(a:plugin.rtp.'/after')
-    call add(a:rtps, a:plugin.rtp.'/after')
+  if !a:plugin.merged || a:plugin.local
+    call insert(a:rtps, a:plugin.rtp, a:index)
+    if isdirectory(a:plugin.rtp.'/after')
+      call add(a:rtps, a:plugin.rtp.'/after')
+    endif
   endif
 
   call add(a:sourced, a:plugin)
