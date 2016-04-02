@@ -244,6 +244,7 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
         call add(toml, key . ' = ' . string(
               \ (type(val) == type([]) && len(val) == 1) ? val[0] : val))
       endif
+      unlet! val
     endfor
 
     call add(toml, '')
