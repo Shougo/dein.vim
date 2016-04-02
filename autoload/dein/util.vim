@@ -54,6 +54,9 @@ function! dein#util#_error(msg) abort "{{{
     echohl WarningMsg | echomsg '[dein] ' . mes | echohl None
   endfor
 endfunction"}}}
+function! dein#util#_notify(msg) abort "{{{
+  call dein#util#_error(a:msg)
+endfunction"}}}
 
 function! dein#util#_chomp(str) abort "{{{
   return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str

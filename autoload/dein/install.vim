@@ -174,7 +174,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#clear_state()
 
-  call s:error(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
+  call dein#util#_notify(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
   if dein#util#_get_base_path() == ''
@@ -585,7 +585,7 @@ function! s:install_blocking(context) abort "{{{
         \ || !empty(a:context.errored_plugins)
     call dein#install#_recache_runtimepath()
   else
-    call s:error(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
+    call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
   endif
 
   let s:global_context = {}
@@ -607,7 +607,7 @@ function! s:install_async(context) abort "{{{
           \ || !empty(a:context.errored_plugins)
       call dein#install#_recache_runtimepath()
     else
-      call s:error(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
+      call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     endif
 
     " Disable installation handler
@@ -678,7 +678,7 @@ function! s:init_variables(context) abort "{{{
   let s:log = []
   let s:updates_log = []
 
-  call s:error(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
+  call dein#util#_notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 
 function! s:job_handler_neovim(job_id, data, event) abort "{{{
