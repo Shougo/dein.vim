@@ -258,7 +258,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
     let a:plugin.dummy_commands = []
   endif
 
-  if !empty(a:plugin.dummy_mappings)
+  if has_key(a:plugin, 'dummy_mappings')
     for map in a:plugin.dummy_mappings
       silent! execute map[0].'unmap' map[1]
     endfor

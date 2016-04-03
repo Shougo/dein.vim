@@ -61,7 +61,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'uri': '',
         \ 'rtp': '',
         \ 'sourced': 0,
-        \ 'dummy_mappings': [],
         \ }
   call extend(plugin, a:plugin)
 
@@ -155,7 +154,6 @@ function! dein#parse#_dict(plugin) abort "{{{
     endif
     if !empty(plugin.on_map)
       call s:generate_dummy_mappings(plugin)
-      call dein#util#_add_dummy_mappings(plugin)
     endif
   endif
 
@@ -204,7 +202,6 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
         \ 'uri': 1,
         \ 'rtp': 1,
         \ 'sourced': 1,
-        \ 'dummy_mappings': 1,
         \ 'orig_opts': 1,
         \ 'repo': 1,
         \ }
@@ -284,6 +281,7 @@ function! s:generate_dummy_commands(plugin) abort "{{{
   endfor
 endfunction"}}}
 function! s:generate_dummy_mappings(plugin) abort "{{{
+  let a:plugin.dummy_mappings = []
   for [modes, mappings] in map(copy(a:plugin.on_map), "
         \   type(v:val) == type([]) ?
         \     [split(v:val[0], '\\zs'), v:val[1:]] :
@@ -310,6 +308,7 @@ function! s:generate_dummy_mappings(plugin) abort "{{{
             \    mode ==# 'i' ? " \<C-o>:call " : " :\<C-u>call ") . prefix
             \ . string(mode) . ")<CR>"
         call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
+        silent! execute raw_map
       endfor
     endfor
   endfor

@@ -229,7 +229,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
     for command in get(plugin, 'dummy_commands', [])
       call add(lines, 'silent! ' . command[1])
     endfor
-    for mapping in plugin.dummy_mappings
+    for mapping in get(plugin, 'dummy_mappings', [])
       call add(lines, 'silent! ' . mapping[2])
     endfor
   endfor
@@ -369,12 +369,6 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
         call dein#util#_error(v:exception)
       endtry
     endif
-  endfor
-endfunction"}}}
-
-function! dein#util#_add_dummy_mappings(plugin) abort "{{{
-  for mapping in a:plugin.dummy_mappings
-    silent! execute mapping[2]
   endfor
 endfunction"}}}
 
