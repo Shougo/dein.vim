@@ -102,10 +102,6 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
 
-  if !has_key(plugin, 'augroup')
-    let plugin.augroup = plugin.normalized_name
-  endif
-
   " Auto convert2list.
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd',

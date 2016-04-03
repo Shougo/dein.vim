@@ -594,6 +594,11 @@ OPTIONS 					*dein-options*
 		If set to non-zero, dein will call |dein#source()| on
 		|FocusLost| or |CursorHold| autocmd.
 
+						*dein-options-augroup*
+		augroup		(String)
+		An augroup name that the plugin uses for |VimEnter| or
+		|GUIEnter| autocmd events.
+
 						*dein-options-hook_add*
 		hook_add	(String)
 						*dein-options-hook_source*

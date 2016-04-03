@@ -45,6 +45,17 @@ function! dein#autoload#_source(...) abort "{{{
         execute 'silent! unsilent source' fnameescape(file)
       endfor
     endfor
+
+    if !has('vim_starting')
+      let augroup = get(plugin, 'augroup', plugin.normalized_name)
+      if exists('#'.augroup.'#VimEnter')
+        execute 'doautocmd' augroup 'VimEnter'
+      endif
+      if has('gui_running') && &term ==# 'builtin_gui'
+            \ && exists('#'.augroup.'#GUIEnter')
+        execute 'doautocmd' augroup 'GUIEnter'
+      endif
+    endif
   endfor
 
   let filetype_after = dein#util#_redir('autocmd FileType')
