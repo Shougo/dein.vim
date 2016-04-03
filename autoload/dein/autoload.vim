@@ -113,7 +113,8 @@ function! dein#autoload#_on_path(path, event) abort "{{{
 
   let path = dein#util#_expand(path)
   let plugins = filter(dein#util#_get_lazy_plugins(),
-        \ "!empty(filter(copy(v:val.on_path), 'path =~? v:val'))")
+        \ "!empty(filter(copy(get(v:val, 'on_path', [])),
+        \                'path =~? v:val'))")
   if empty(plugins)
     return
   endif
@@ -248,7 +249,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
   endfor
 
   for on_source in filter(dein#util#_get_lazy_plugins(),
-        \ "index(v:val.on_source, a:plugin.name) >= 0")
+        \ "index(get(v:val, 'on_source', []), a:plugin.name) >= 0")
     if s:source_plugin(a:rtps, a:index, on_source, a:sourced)
       return 1
     endif

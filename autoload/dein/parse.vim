@@ -50,10 +50,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'rev': '',
         \ 'local': 0,
         \ 'depends': [],
-        \ 'on_map': [],
-        \ 'on_path': [],
-        \ 'on_source': [],
-        \
         \ 'type': 'none',
         \ 'uri': '',
         \ 'rtp': '',
@@ -111,9 +107,9 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ || has_key(plugin, 'on_ft')
           \ || has_key(plugin, 'on_cmd')
           \ || has_key(plugin, 'on_func')
-          \ || !empty(plugin.on_map)
-          \ || !empty(plugin.on_path)
-          \ || !empty(plugin.on_source)
+          \ || has_key(plugin, 'on_map')
+          \ || has_key(plugin, 'on_path')
+          \ || has_key(plugin, 'on_source')
   endif
 
   if !has_key(a:plugin, 'merged')
@@ -153,7 +149,7 @@ function! dein#parse#_dict(plugin) abort "{{{
     if has_key(plugin, 'on_cmd')
       call s:generate_dummy_commands(plugin)
     endif
-    if !empty(plugin.on_map)
+    if has_key(plugin, 'on_map')
       call s:generate_dummy_mappings(plugin)
     endif
   endif
