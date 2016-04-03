@@ -463,9 +463,11 @@ function! s:tsort_impl(target, mark, sorted) abort "{{{
   endif
 
   let a:mark[a:target.name] = 1
-  for depend in a:target.depends
-    call s:tsort_impl(dein#get(depend), a:mark, a:sorted)
-  endfor
+  if has_key(a:target, 'depends')
+    for depend in a:target.depends
+      call s:tsort_impl(dein#get(depend), a:mark, a:sorted)
+    endfor
+  endif
 
   call add(a:sorted, a:target)
 endfunction"}}}
