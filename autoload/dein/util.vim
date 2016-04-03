@@ -163,11 +163,12 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
 
   let plugins = deepcopy(dein#get())
 
-  if !a:is_state
-    for plugin in values(plugins)
+  for plugin in values(plugins)
+    if !a:is_state
       let plugin.sourced = 0
-    endfor
-  endif
+    endif
+    call remove(plugin, 'orig_opts')
+  endfor
 
   if !isdirectory(g:dein#_base_path)
     call mkdir(g:dein#_base_path, 'p')

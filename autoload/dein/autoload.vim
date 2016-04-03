@@ -92,7 +92,8 @@ function! dein#autoload#_on_ft() abort "{{{
 endfunction"}}}
 
 function! dein#autoload#_on_idle() abort "{{{
-  let plugins = filter(dein#util#_get_lazy_plugins(), 'v:val.on_idle')
+  let plugins = filter(dein#util#_get_lazy_plugins(),
+        \ "get(v:val, 'on_idle', 0)")
   if empty(plugins)
     augroup dein-idle
       autocmd!

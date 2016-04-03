@@ -595,8 +595,6 @@ function! s:suite.local() abort "{{{
   call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim', {'frozen': 1})
-  call s:assert.equals(dein#get('neopairs.vim').orig_opts, {'frozen': 1})
-
   call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1})
 
   call s:assert.equals(dein#get('neopairs.vim').sourced, 0)

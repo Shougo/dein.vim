@@ -40,7 +40,9 @@ function! dein#parse#_init(repo, options) abort "{{{
     let plugin.local = 1
   endif
   let plugin.repo = a:repo
-  let plugin.orig_opts = deepcopy(a:options)
+  if !empty(a:options)
+    let plugin.orig_opts = deepcopy(a:options)
+  endif
   return extend(plugin, a:options)
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
@@ -54,7 +56,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'on_map': [],
         \ 'on_path': [],
         \ 'on_source': [],
-        \ 'on_idle': 0,
         \
         \ 'type': 'none',
         \ 'uri': '',
@@ -108,7 +109,8 @@ function! dein#parse#_dict(plugin) abort "{{{
   endfor
 
   if !has_key(a:plugin, 'lazy')
-    let plugin.lazy = get(plugin, 'on_i', 0) || plugin.on_idle
+    let plugin.lazy =
+          \ get(plugin, 'on_i', 0) || get(plugin, 'on_idle', 0)
           \ || !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
           \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
           \ || !empty(plugin.on_path)   || !empty(plugin.on_source)
@@ -257,7 +259,9 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
         continue
       endif
 
-      call extend(options, copy(plugin.orig_opts), 'keep')
+      if has_key(plugin, 'orig_opts')
+        call extend(options, copy(plugin.orig_opts), 'keep')
+      endif
     endif
 
     call dein#add(dir, options)
