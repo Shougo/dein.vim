@@ -47,7 +47,6 @@ function! dein#parse#_init(repo, options) abort "{{{
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
-        \ 'local': 0,
         \ 'uri': '',
         \ 'rtp': '',
         \ 'sourced': 0,
@@ -70,7 +69,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   if !has_key(plugin, 'path')
-    let plugin.path = (plugin.local && plugin.repo =~# '^/\|^\a:[/\\]') ?
+    let plugin.path = (plugin.repo =~# '^/\|^\a:[/\\]') ?
           \ plugin.repo : dein#util#_get_base_path().'/repos/'.plugin.name
   endif
   if get(plugin, 'rev') != ''
@@ -112,8 +111,9 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   if !has_key(a:plugin, 'merged')
-    let plugin.merged =
-          \ !plugin.lazy && !plugin.local && !has_key(a:plugin, 'if')
+    let plugin.merged = !plugin.lazy
+          \ && !has_key(plugin, 'local')
+          \ && !has_key(a:plugin, 'if')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
   endif
 
@@ -181,6 +181,7 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   let default = dein#parse#_dict(dein#parse#_init('', {}))
   let default.if = ''
   let default.frozen = 0
+  let default.local = 0
   let default.depends = []
   let default.on_i = 0
   let default.on_idle = 0

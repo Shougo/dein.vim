@@ -72,7 +72,7 @@ function! dein#install#_reinstall(plugins) abort "{{{
   for plugin in plugins
     " Remove the plugin
     if plugin.type ==# 'none'
-          \ || plugin.local
+          \ || get(plugin, 'local', 0)
           \ || (plugin.sourced &&
           \     index(['dein', 'vimproc'], plugin.normalized_name) >= 0)
       call dein#util#_error(
@@ -126,8 +126,7 @@ function! dein#install#_rollback(date, plugins) abort "{{{
   call filter(plugins, "has_key(revisions, v:val.name)
         \ && has_key(dein#util#_get_type(v:val.type),
         \            'get_rollback_command')
-        \ && !v:val.local && !get(v:val, 'frozen', 0)
-        \ && get(v:val, 'rev', '') == ''
+        \ && s:check_rollback(v:val)
         \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
   if empty(plugins)
     return
@@ -259,9 +258,7 @@ function! s:list_directory(directory) abort "{{{
 endfunction"}}}
 function! s:save_rollback() abort "{{{
   let revisions = {}
-  for plugin in filter(values(dein#get()),
-        \ "!v:val.local && !get(v:val, 'frozen', 0)
-        \  && get(v:val, 'rev', '') == ''")
+  for plugin in filter(values(dein#get()), 's:check_rollback(v:val)')
     let rev = s:get_revision_number(plugin)
     if rev != ''
       let revisions[plugin.name] = rev
@@ -279,6 +276,11 @@ function! s:get_rollback_directory() abort "{{{
   endif
 
   return parent
+endfunction"}}}
+function! s:check_rollback(plugin) abort "{{{
+  return !has_key(a:plugin, 'local')
+        \ && !get(a:plugin, 'frozen', 0)
+        \ && get(a:plugin, 'rev', '') == ''
 endfunction"}}}
 
 function! dein#install#_is_async() abort "{{{
@@ -892,7 +894,8 @@ function! s:check_output(context, process) abort "{{{
   let plugin = a:process.plugin
 
   if isdirectory(plugin.path)
-        \ && get(plugin, 'rev', '') != '' && !plugin.local
+        \ && get(plugin, 'rev', '') != ''
+        \ && !get(plugin, 'local', 0)
     " Restore revision.
     call s:lock_revision(a:process, a:context)
   endif
