@@ -51,7 +51,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'local': 0,
         \ 'depends': [],
         \ 'on_cmd': [],
-        \ 'on_func': [],
         \ 'on_map': [],
         \ 'on_path': [],
         \ 'on_source': [],
@@ -112,7 +111,7 @@ function! dein#parse#_dict(plugin) abort "{{{
           \ get(plugin, 'on_i', 0) || get(plugin, 'on_idle', 0)
           \ || has_key(plugin, 'on_ft')
           \ || !empty(plugin.on_cmd)
-          \ || !empty(plugin.on_func)
+          \ || has_key(plugin, 'on_func')
           \ || !empty(plugin.on_map)
           \ || !empty(plugin.on_path)
           \ || !empty(plugin.on_source)

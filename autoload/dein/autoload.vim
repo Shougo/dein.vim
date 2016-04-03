@@ -139,7 +139,7 @@ function! dein#autoload#_on_func(name) abort "{{{
 
   call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
         \  "stridx(function_prefix, v:val.normalized_name.'#') == 0
-        \   || (index(v:val.on_func, a:name) >= 0)"))
+        \   || (index(get(v:val, 'on_func', []), a:name) >= 0)"))
 endfunction"}}}
 
 function! dein#autoload#_on_pre_cmd(name) abort "{{{
