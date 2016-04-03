@@ -87,7 +87,7 @@ endfunction"}}}
 function! dein#autoload#_on_ft() abort "{{{
   for filetype in split(&l:filetype, '\.')
     call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
-          \ 'index(v:val.on_ft, filetype) >= 0'))
+          \ "index(get(v:val, 'on_ft', []), filetype) >= 0"))
   endfor
 endfunction"}}}
 

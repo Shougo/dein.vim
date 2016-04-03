@@ -167,7 +167,9 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
     if !a:is_state
       let plugin.sourced = 0
     endif
-    call remove(plugin, 'orig_opts')
+    if has_key(plugin, 'orig_opts')
+      call remove(plugin, 'orig_opts')
+    endif
   endfor
 
   if !isdirectory(g:dein#_base_path)

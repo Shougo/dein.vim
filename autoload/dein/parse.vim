@@ -50,7 +50,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'rev': '',
         \ 'local': 0,
         \ 'depends': [],
-        \ 'on_ft': [],
         \ 'on_cmd': [],
         \ 'on_func': [],
         \ 'on_map': [],
@@ -111,9 +110,12 @@ function! dein#parse#_dict(plugin) abort "{{{
   if !has_key(a:plugin, 'lazy')
     let plugin.lazy =
           \ get(plugin, 'on_i', 0) || get(plugin, 'on_idle', 0)
-          \ || !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
-          \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
-          \ || !empty(plugin.on_path)   || !empty(plugin.on_source)
+          \ || has_key(plugin, 'on_ft')
+          \ || !empty(plugin.on_cmd)
+          \ || !empty(plugin.on_func)
+          \ || !empty(plugin.on_map)
+          \ || !empty(plugin.on_path)
+          \ || !empty(plugin.on_source)
   endif
 
   if !has_key(a:plugin, 'merged')
@@ -190,6 +192,14 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   let default = dein#parse#_dict(dein#parse#_init('', {}))
   let default.if = ''
   let default.frozen = 0
+  let default.on_i = 0
+  let default.on_idle = 0
+  let default.on_ft = []
+  let default.on_cmd = []
+  let default.on_func = []
+  let default.on_map = []
+  let default.on_path = []
+  let default.on_source = []
   let default.build = ''
   let default.hook_add = ''
   let default.hook_source = ''
