@@ -17,6 +17,8 @@ let g:dein#install_progress_type =
       \ get(g:, 'dein#install_progress_type', 'statusline')
 let g:dein#install_message_type =
       \ get(g:, 'dein#install_message_type', 'echo')
+let g:dein#install_process_timeout =
+      \ get(g:, 'dein#install_process_timeout', 120)
 "}}}
 
 function! dein#install#_update(plugins, update_type, async) abort "{{{
@@ -865,7 +867,8 @@ function! s:init_job(process, context, cmd) abort "{{{
 endfunction"}}}
 function! s:check_output(context, process) abort "{{{
   let is_timeout = (localtime() - a:process.start_time)
-        \             >= a:process.plugin.timeout
+        \             >= get(a:process.plugin, 'timeout',
+        \                    g:dein#install_process_timeout)
 
   if a:context.async && has_key(a:process, 'proc')
     let [is_skip, status] =

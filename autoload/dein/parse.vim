@@ -51,7 +51,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'if': 1,
         \ 'local': 0,
         \ 'depends': [],
-        \ 'timeout': g:dein#install_process_timeout,
         \ 'on_i': 0,
         \ 'on_ft': [],
         \ 'on_cmd': [],
