@@ -76,7 +76,8 @@ function! dein#autoload#_source(...) abort "{{{
 endfunction"}}}
 
 function! dein#autoload#_on_i() abort "{{{
-  let plugins = filter(dein#util#_get_lazy_plugins(), 'v:val.on_i')
+  let plugins = filter(dein#util#_get_lazy_plugins(),
+        \ "get(v:val, 'on_i', 0)")
   if !empty(plugins)
     call dein#autoload#_source(plugins)
     doautocmd <nomodeline> InsertEnter

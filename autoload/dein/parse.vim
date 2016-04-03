@@ -48,7 +48,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'rev': '',
         \ 'local': 0,
         \ 'depends': [],
-        \ 'on_i': 0,
         \ 'on_ft': [],
         \ 'on_cmd': [],
         \ 'on_func': [],
@@ -103,13 +102,13 @@ function! dein#parse#_dict(plugin) abort "{{{
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd',
         \ 'on_func', 'on_map', 'on_source',
-        \ ], "type(plugin[v:val]) != type([])
+        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) != type([])
         \")
     let plugin[key] = [plugin[key]]
   endfor
 
   if !has_key(a:plugin, 'lazy')
-    let plugin.lazy = plugin.on_i || plugin.on_idle
+    let plugin.lazy = get(plugin, 'on_i', 0) || plugin.on_idle
           \ || !empty(plugin.on_ft)     || !empty(plugin.on_cmd)
           \ || !empty(plugin.on_func)   || !empty(plugin.on_map)
           \ || !empty(plugin.on_path)   || !empty(plugin.on_source)
