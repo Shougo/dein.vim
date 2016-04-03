@@ -124,7 +124,7 @@ function! dein#install#_rollback(date, plugins) abort "{{{
   call filter(plugins, "has_key(revisions, v:val.name)
         \ && has_key(dein#util#_get_type(v:val.type),
         \            'get_rollback_command')
-        \ && !v:val.local && !v:val.frozen && v:val.rev == ''
+        \ && !v:val.local && !get(v:val, 'frozen', 0) && v:val.rev == ''
         \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
   if empty(plugins)
     return
@@ -257,7 +257,7 @@ endfunction"}}}
 function! s:save_rollback() abort "{{{
   let revisions = {}
   for plugin in filter(values(dein#get()),
-        \ "!v:val.local && !v:val.frozen && v:val.rev == ''")
+        \ "!v:val.local && !get(v:val, 'frozen', 0) && v:val.rev == ''")
     let rev = s:get_revision_number(plugin)
     if rev != ''
       let revisions[plugin.name] = rev
@@ -740,7 +740,7 @@ function! s:sync(plugin, context) abort "{{{
   let num = a:context.number
   let max = a:context.max_plugins
 
-  if isdirectory(a:plugin.path) && a:plugin.frozen
+  if isdirectory(a:plugin.path) && get(a:plugin, 'frozen', 0)
     " Skip frozen plugin
     call s:print_progress_message(
           \ printf('(%'.len(max).'d/%d): |%s| %s',

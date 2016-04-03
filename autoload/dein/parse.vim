@@ -50,7 +50,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'rev': '',
         \ 'if': 1,
         \ 'local': 0,
-        \ 'frozen': 0,
         \ 'depends': [],
         \ 'timeout': g:dein#install_process_timeout,
         \ 'on_i': 0,
@@ -215,6 +214,7 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   let toml = []
 
   let default = dein#parse#_dict(dein#parse#_init('', {}))
+  let default.frozen = 0
   let default.build = ''
   let default.hook_add = ''
   let default.hook_source = ''
