@@ -450,25 +450,6 @@ OPTIONS 					*dein-options*
 >
 		call dein#add('rstacruz/sparkup', {'rtp': 'vim'})
 <
-						*dein-options-directory*
-		directory	(String)
-		Specify relative directory path from the base directory (set
-		by |dein#begin()| or "base" option). If omitted, the "name"
-		option will be used.
-		Note: If you set rev "foo" when the name key is "dein",
-		the directory key is "dein_foo".
-
-		Example:
->
-		call dein#add('https://github.com/Shougo/unite.vim.git',
-		   \ {'directory': 'unite'})
-<
-						*dein-options-base*
-		base		(String)
-		The directory base path to use. If omitted, the path specified
-		with |dein#begin()| will be used. It is useful for loading
-		scripts from a different path.
-
 						*dein-options-normalized_name*
 		normalized_name		(String)
 		Specify the normalized name of the plugin.  If omitted, dein

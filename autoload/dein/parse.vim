@@ -7,8 +7,6 @@
 " Global options definition." "{{{
 let g:dein#enable_name_conversion =
       \ get(g:, 'dein#enable_name_conversion', 0)
-let g:dein#install_process_timeout =
-      \ get(g:, 'dein#install_process_timeout', 120)
 "}}}
 
 let s:git = dein#types#git#define()
@@ -84,28 +82,13 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.name = plugin.normalized_name
   endif
 
-  if !has_key(plugin, 'base')
-    let plugin.base = dein#util#_get_base_path() . '/repos'
-  endif
-
-  if !has_key(plugin, 'directory')
-    let plugin.directory = plugin.name
-  endif
-  let plugin.directory = dein#util#_chomp(plugin.directory)
-
-  if plugin.rev != ''
-    let plugin.directory .= '_' . substitute(plugin.rev,
-          \ '[^[:alnum:]_-]', '_', 'g')
-  endif
-
-  if plugin.base[0:] == '~'
-    let plugin.base = dein#util#_expand(plugin.base)
-  endif
-  let plugin.base = dein#util#_chomp(plugin.base)
-
   if !has_key(plugin, 'path')
     let plugin.path = (plugin.local && plugin.repo =~# '^/\|^\a:[/\\]') ?
-          \ plugin.repo : plugin.base.'/'.plugin.directory
+          \ plugin.repo : dein#util#_get_base_path().'/repos/'.plugin.name
+  endif
+  if plugin.rev != ''
+    let plugin.path .= '_' . substitute(plugin.rev,
+          \ '[^[:alnum:]_-]', '_', 'g')
   endif
   let plugin.path = dein#util#_chomp(plugin.path)
 
@@ -276,7 +259,7 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
   endfor
 
   for dir in dein#util#_uniq(directories)
-    let options = extend({ 'local': 1, 'base': base,
+    let options = extend({ 'local': 1, 'path': dir,
           \ 'name': fnamemodify(dir, ':t') }, a:options)
 
     let plugin = dein#get(options.name)

@@ -77,7 +77,8 @@ function! s:type.init(repo, option) abort "{{{
   let directory = substitute(directory, '^https:/\+\|^git@', '', '')
   let directory = substitute(directory, ':', '/', 'g')
 
-  return { 'uri': uri, 'type': 'git', 'directory': directory }
+  return { 'uri': uri, 'type': 'git',
+        \  'path': dein#util#_get_base_path().'/repos/'.directory }
 endfunction"}}}
 
 function! s:type.get_sync_command(plugin) abort "{{{

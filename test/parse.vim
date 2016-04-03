@@ -16,23 +16,16 @@ function! s:suite.parse_dict() abort "{{{
   let plugin = {'name': 'baz'}
   let parsed_plugin = dein#parse#_dict(plugin)
   call s:assert.equals(parsed_plugin.name, 'baz')
-  call s:assert.equals(parsed_plugin.base, s:path.'/repos')
 
-  let plugin = {'name': 'baz', 'rtp': 'foo/', 'base': 'bar/'}
+  let plugin = {'name': 'baz'}
   let parsed_plugin = dein#parse#_dict(plugin)
-  call s:assert.equals(parsed_plugin.base, 'bar')
-  call s:assert.equals(parsed_plugin.rtp, 'bar/baz/foo')
-  call s:assert.equals(parsed_plugin.path, 'bar/baz')
+  call s:assert.equals(parsed_plugin.rtp, s:path.'/repos/baz')
+  call s:assert.equals(parsed_plugin.path, s:path.'/repos/baz')
 
-  let plugin = {'name': 'baz', 'directory': 'foo'}
+  let plugin = {'name': 'baz', 'rev': 'bar'}
   let parsed_plugin = dein#parse#_dict(plugin)
-  call s:assert.equals(parsed_plugin.rtp, s:path.'/repos/foo')
-  call s:assert.equals(parsed_plugin.path, s:path.'/repos/foo')
-
-  let plugin = {'name': 'baz', 'directory': 'foo', 'rev': 'bar'}
-  let parsed_plugin = dein#parse#_dict(plugin)
-  call s:assert.equals(parsed_plugin.rtp, s:path.'/repos/foo_bar')
-  call s:assert.equals(parsed_plugin.path, s:path.'/repos/foo_bar')
+  call s:assert.equals(parsed_plugin.rtp, s:path.'/repos/baz_bar')
+  call s:assert.equals(parsed_plugin.path, s:path.'/repos/baz_bar')
 
   let plugin = {'name': 'baz', 'if': '1'}
   let parsed_plugin = dein#parse#_dict(plugin)
