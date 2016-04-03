@@ -104,7 +104,8 @@ function! dein#parse#_dict(plugin) abort "{{{
 
   if !has_key(a:plugin, 'lazy')
     let plugin.lazy =
-          \ get(plugin, 'on_i', 0) || get(plugin, 'on_idle', 0)
+          \    has_key(plugin, 'on_i')
+          \ || has_key(plugin, 'on_idle')
           \ || has_key(plugin, 'on_ft')
           \ || has_key(plugin, 'on_cmd')
           \ || has_key(plugin, 'on_func')
