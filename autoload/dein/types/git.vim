@@ -93,7 +93,8 @@ function! s:type.get_sync_command(plugin) abort "{{{
 
     let depth = get(a:plugin, 'type__depth',
           \ g:dein#types#git#clone_depth)
-    if depth > 0 && a:plugin.rev == '' && a:plugin.uri !~ '^git@'
+    if depth > 0 && get(a:plugin, 'rev', '') == ''
+          \ && a:plugin.uri !~ '^git@'
       let cmd .= ' --depth=' . depth
     endif
 
@@ -151,7 +152,7 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
     return ''
   endif
 
-  let rev = a:plugin.rev
+  let rev = get(a:plugin, 'rev', '')
   if rev ==# 'release'
     " Use latest released tag
     let rev = get(split(dein#install#_system(self.command
@@ -171,19 +172,19 @@ function! s:type.get_rollback_command(plugin, rev) abort "{{{
 
   return self.command . ' reset --hard ' . a:rev
 endfunction"}}}
-function! s:type.get_revision_remote_command(bundle) abort "{{{
+function! s:type.get_revision_remote_command(plugin) abort "{{{
   if !executable(self.command)
     return ''
   endif
 
-  let rev = a:bundle.rev
+  let rev = get(a:plugin, 'rev', '')
   if rev == ''
     let rev = 'HEAD'
   endif
 
   return self.command .' ls-remote origin ' . rev
 endfunction"}}}
-function! s:type.get_fetch_remote_command(bundle) abort "{{{
+function! s:type.get_fetch_remote_command(plugin) abort "{{{
   if !executable(self.command)
     return ''
   endif

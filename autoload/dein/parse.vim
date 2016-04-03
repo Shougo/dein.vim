@@ -86,7 +86,7 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.path = (plugin.local && plugin.repo =~# '^/\|^\a:[/\\]') ?
           \ plugin.repo : dein#util#_get_base_path().'/repos/'.plugin.name
   endif
-  if plugin.rev != ''
+  if get(plugin, 'rev') != ''
     let plugin.path .= '_' . substitute(plugin.rev,
           \ '[^[:alnum:]_-]', '_', 'g')
   endif

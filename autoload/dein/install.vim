@@ -126,7 +126,8 @@ function! dein#install#_rollback(date, plugins) abort "{{{
   call filter(plugins, "has_key(revisions, v:val.name)
         \ && has_key(dein#util#_get_type(v:val.type),
         \            'get_rollback_command')
-        \ && !v:val.local && !get(v:val, 'frozen', 0) && v:val.rev == ''
+        \ && !v:val.local && !get(v:val, 'frozen', 0)
+        \ && get(v:val, 'rev', '') == ''
         \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
   if empty(plugins)
     return
@@ -259,7 +260,8 @@ endfunction"}}}
 function! s:save_rollback() abort "{{{
   let revisions = {}
   for plugin in filter(values(dein#get()),
-        \ "!v:val.local && !get(v:val, 'frozen', 0) && v:val.rev == ''")
+        \ "!v:val.local && !get(v:val, 'frozen', 0)
+        \  && get(v:val, 'rev', '') == ''")
     let rev = s:get_revision_number(plugin)
     if rev != ''
       let revisions[plugin.name] = rev
@@ -430,7 +432,7 @@ function! s:lock_revision(process, context) abort "{{{
 
     let cmd = type.get_revision_lock_command(plugin)
 
-    if cmd == '' || plugin.new_rev ==# plugin.rev
+    if cmd == '' || plugin.new_rev ==# get(plugin, 'rev', '')
       " Skipped.
       return 0
     elseif cmd =~# '^E: '
@@ -440,7 +442,7 @@ function! s:lock_revision(process, context) abort "{{{
       return -1
     endif
 
-    if plugin.rev != ''
+    if get(plugin, 'rev', '') != ''
       call s:print_message(
             \ printf('(%'.len(max).'d/%d): |%s| %s',
             \ num, max, plugin.name, 'Locked'))
@@ -807,8 +809,9 @@ function! s:init_process(plugin, context, cmd) abort "{{{
           \ 'start_time': localtime(),
           \ }
 
-    if isdirectory(a:plugin.path) && a:plugin.rev != '' && !a:plugin.local
-      let rev_save = a:plugin.rev
+    if isdirectory(a:plugin.path)
+          \ && get(a:plugin, 'rev', '') != '' && !a:plugin.local
+      let rev_save = get(a:plugin, 'rev', '')
       try
         " Force checkout HEAD revision.
         " The repository may be checked out.
@@ -888,7 +891,8 @@ function! s:check_output(context, process) abort "{{{
   let max = a:context.max_plugins
   let plugin = a:process.plugin
 
-  if isdirectory(plugin.path) && plugin.rev != '' && !plugin.local
+  if isdirectory(plugin.path)
+        \ && get(plugin, 'rev', '') != '' && !plugin.local
     " Restore revision.
     call s:lock_revision(a:process, a:context)
   endif
