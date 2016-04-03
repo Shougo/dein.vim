@@ -50,7 +50,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'rev': '',
         \ 'local': 0,
         \ 'depends': [],
-        \ 'on_cmd': [],
         \ 'on_map': [],
         \ 'on_path': [],
         \ 'on_source': [],
@@ -110,7 +109,7 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin.lazy =
           \ get(plugin, 'on_i', 0) || get(plugin, 'on_idle', 0)
           \ || has_key(plugin, 'on_ft')
-          \ || !empty(plugin.on_cmd)
+          \ || has_key(plugin, 'on_cmd')
           \ || has_key(plugin, 'on_func')
           \ || !empty(plugin.on_map)
           \ || !empty(plugin.on_path)
@@ -151,7 +150,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   endif
 
   if plugin.lazy
-    if !empty(plugin.on_cmd)
+    if has_key(plugin, 'on_cmd')
       call s:generate_dummy_commands(plugin)
     endif
     if !empty(plugin.on_map)

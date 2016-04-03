@@ -145,7 +145,8 @@ endfunction"}}}
 function! dein#autoload#_on_pre_cmd(name) abort "{{{
   call dein#autoload#_source(
         \ filter(dein#util#_get_lazy_plugins(),
-        \ "index(map(copy(v:val.on_cmd), 'tolower(v:val)'), a:name) >= 0
+        \ "index(map(copy(get(v:val, 'on_cmd', [])),
+        \            'tolower(v:val)'), a:name) >= 0
         \  || stridx(tolower(a:name),
         \            substitute(tolower(v:val.normalized_name),
         \                       '[_-]', '', 'g')) == 0"))
