@@ -197,7 +197,6 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
 
   let skip_default = {
         \ 'type': 1,
-        \ 'directory': 1,
         \ 'path': 1,
         \ 'uri': 1,
         \ 'rtp': 1,
