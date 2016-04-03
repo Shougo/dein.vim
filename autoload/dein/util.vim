@@ -238,7 +238,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
   " Add hooks
   for plugin in dein#util#_tsort(values(dein#get()))
     if has_key(plugin, 'hook_add')
-      let lines += split(plugin.hook_add, '\n')
+      let lines += filter(split(plugin.hook_add, '\n'), "v:val != ''")
     endif
   endfor
 
