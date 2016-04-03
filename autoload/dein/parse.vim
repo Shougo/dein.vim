@@ -96,6 +96,7 @@ function! dein#parse#_dict(plugin) abort "{{{
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd',
         \ 'on_func', 'on_map', 'on_source',
+        \ 'depends',
         \ ], "has_key(plugin, v:val) && type(plugin[v:val]) != type([])
         \")
     let plugin[key] = [plugin[key]]
@@ -120,10 +121,6 @@ function! dein#parse#_dict(plugin) abort "{{{
 
   if has_key(a:plugin, 'if') && type(a:plugin.if) == type('')
     sandbox let plugin.if = eval(a:plugin.if)
-  endif
-
-  if has_key(a:plugin, 'depends')
-    let plugin.depends = dein#util#_convert2list(a:plugin.depends)
   endif
 
   " Hooks
@@ -186,6 +183,7 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   let default = dein#parse#_dict(dein#parse#_init('', {}))
   let default.if = ''
   let default.frozen = 0
+  let default.depends = []
   let default.on_i = 0
   let default.on_idle = 0
   let default.on_ft = []

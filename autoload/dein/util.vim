@@ -318,7 +318,7 @@ function! dein#util#_end() abort "{{{
   for plugin in filter(values(g:dein#_plugins),
         \ "!v:val.lazy && !v:val.sourced && v:val.rtp != ''")
     " Load dependencies
-    if !empty(plugin.depends)
+    if has_key(plugin, 'depends')
       let depends += plugin.depends
     endif
 

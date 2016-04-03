@@ -237,7 +237,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
   let a:plugin.sourced = 1
 
   " Load dependencies
-  for name in a:plugin.depends
+  for name in get(a:plugin, 'depends', [])
     if !has_key(g:dein#_plugins, name)
       call dein#util#_error(printf('Plugin name "%s" is not found.', name))
       return 1
