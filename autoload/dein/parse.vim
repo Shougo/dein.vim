@@ -16,7 +16,7 @@ function! dein#parse#_add(repo, options) abort "{{{
         \ dein#parse#_init(a:repo, a:options))
   if (has_key(g:dein#_plugins, plugin.name)
         \ && g:dein#_plugins[plugin.name].sourced)
-        \ || !plugin.if
+        \ || !get(plugin, 'if', 1)
     " Skip already loaded or not enabled plugin.
     return {}
   endif
@@ -46,7 +46,6 @@ endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
         \ 'rev': '',
-        \ 'if': 1,
         \ 'local': 0,
         \ 'depends': [],
         \ 'on_i': 0,
@@ -192,6 +191,7 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   let toml = []
 
   let default = dein#parse#_dict(dein#parse#_init('', {}))
+  let default.if = ''
   let default.frozen = 0
   let default.build = ''
   let default.hook_add = ''
