@@ -366,7 +366,6 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   return [cmd, message]
 endfunction"}}}
 function! s:get_revision_number(plugin) abort "{{{
-  let cwd = getcwd()
   let type = dein#util#_get_type(a:plugin.type)
 
   if !isdirectory(a:plugin.path)
@@ -379,10 +378,36 @@ function! s:get_revision_number(plugin) abort "{{{
     return ''
   endif
 
+  let cwd = getcwd()
   try
     call dein#install#_cd(a:plugin.path)
 
     let rev = dein#install#_system(cmd)
+
+    " If rev contains spaces, it is error message
+    return (rev !~ '\s') ? rev : ''
+  finally
+    call dein#install#_cd(cwd)
+  endtry
+endfunction"}}}
+function! s:get_revision_remote(plugin) abort "{{{
+  let type = dein#util#_get_type(a:plugin.type)
+
+  if !isdirectory(a:plugin.path)
+        \ || !has_key(type, 'get_revision_remote_command')
+    return ''
+  endif
+
+  let cmd = type.get_revision_remote_command(a:plugin)
+  if cmd == ''
+    return ''
+  endif
+
+  let cwd = getcwd()
+  try
+    call dein#install#_cd(a:plugin.path)
+
+    let rev = matchstr(dein#install#_system(cmd), '^\S\+')
 
     " If rev contains spaces, it is error message
     return (rev !~ '\s') ? rev : ''
@@ -893,7 +918,7 @@ function! s:check_output(context, process) abort "{{{
   endif
 
   let new_rev = (a:context.update_type ==# 'check_update') ?
-        \ matchstr(a:process.output, '^\S\+') :
+        \ s:get_revision_remote(plugin) :
         \ s:get_revision_number(plugin)
 
   if is_timeout || status
