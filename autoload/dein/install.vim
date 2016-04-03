@@ -1107,7 +1107,7 @@ function! s:vimproc_system(cmd) abort "{{{
 endfunction"}}}
 function! s:build(plugin) abort "{{{
   " Environment check.
-  let build = a:plugin.build
+  let build = get(a:plugin, 'build')
   if type(build) == type({})
     call s:error('Dictionary type of build is no longer supported')
     return 1

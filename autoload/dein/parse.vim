@@ -53,7 +53,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'frozen': 0,
         \ 'depends': [],
         \ 'timeout': g:dein#install_process_timeout,
-        \ 'build': '',
         \ 'on_i': 0,
         \ 'on_ft': [],
         \ 'on_cmd': [],
@@ -216,6 +215,7 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   let toml = []
 
   let default = dein#parse#_dict(dein#parse#_init('', {}))
+  let default.build = ''
   let default.hook_add = ''
   let default.hook_source = ''
   let default.hook_post_source = ''
