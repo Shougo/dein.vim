@@ -25,12 +25,29 @@ let s:type = {
       \ 'command': g:dein#types#git#command_path,
       \ }
 
-function! s:type.init(repo, option) abort "{{{
+function! s:type.init(repo, options) abort "{{{
   if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
     " Local repository.
-    return { 'uri': a:repo, 'type': 'git', 'local': 1 }
+    return { 'type': 'git', 'local': 1 }
   elseif isdirectory(a:repo)
     return {}
+  endif
+
+  let uri = self.get_uri(a:repo, a:options)
+  if uri == ''
+    return {}
+  endif
+
+  let directory = substitute(uri, '\.git$', '', '')
+  let directory = substitute(directory, '^https:/\+\|^git@', '', '')
+  let directory = substitute(directory, ':', '/', 'g')
+
+  return { 'type': 'git',
+        \  'path': dein#util#_get_base_path().'/repos/'.directory }
+endfunction"}}}
+function! s:type.get_uri(repo, options) abort "{{{
+  if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
+    return a:repo
   endif
 
   let protocol = matchstr(a:repo, '^.\{-}\ze://')
@@ -44,8 +61,8 @@ function! s:type.init(repo, option) abort "{{{
 
   if protocol == ''
         \ || a:repo =~# '\<\%(gh\|github\|bb\|bitbucket\):\S\+'
-        \ || has_key(a:option, 'type__protocol')
-    let protocol = get(a:option, 'type__protocol',
+        \ || has_key(a:options, 'type__protocol')
+    let protocol = get(a:options, 'type__protocol',
           \ g:dein#types#git#default_protocol)
   endif
 
@@ -53,7 +70,7 @@ function! s:type.init(repo, option) abort "{{{
     call dein#util#_error(
           \ printf('Repo: %s The protocol "%s" is unsecure and invalid.',
           \ a:repo, protocol))
-    return {}
+    return ''
   endif
 
   if a:repo !~ '/'
@@ -73,12 +90,7 @@ function! s:type.init(repo, option) abort "{{{
     let uri .= '.git'
   endif
 
-  let directory = substitute(uri, '\.git$', '', '')
-  let directory = substitute(directory, '^https:/\+\|^git@', '', '')
-  let directory = substitute(directory, ':', '/', 'g')
-
-  return { 'uri': uri, 'type': 'git',
-        \  'path': dein#util#_get_base_path().'/repos/'.directory }
+  return uri
 endfunction"}}}
 
 function! s:type.get_sync_command(plugin) abort "{{{
@@ -98,7 +110,8 @@ function! s:type.get_sync_command(plugin) abort "{{{
       let cmd .= ' --depth=' . depth
     endif
 
-    let cmd .= printf(' %s "%s"', a:plugin.uri, a:plugin.path)
+    let cmd .= printf(' %s "%s"',
+          \ self.get_uri(a:plugin.repo, a:plugin), a:plugin.path)
   else
     let shell = fnamemodify(split(&shell)[0], ':t')
     let and = (!dein#util#_has_vimproc() && shell ==# 'fish') ?

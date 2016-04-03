@@ -384,16 +384,8 @@ function! s:get_revision_number(plugin) abort "{{{
 
     let rev = dein#install#_system(cmd)
 
-    if type.name ==# 'vba' || type.name ==# 'raw'
-      " If rev is ok, the output is the checksum followed by the filename
-      " separated by two spaces.
-      let pat = '^[0-9a-f]\+  ' . a:plugin.path . '/' .
-            \ fnamemodify(a:plugin.uri, ':t') . '$'
-      return (rev =~# pat) ? matchstr(rev, '^[0-9a-f]\+') : ''
-    else
-      " If rev contains spaces, it is error message
-      return (rev !~ '\s') ? rev : ''
-    endif
+    " If rev contains spaces, it is error message
+    return (rev !~ '\s') ? rev : ''
   finally
     call dein#install#_cd(cwd)
   endtry
@@ -943,6 +935,10 @@ function! s:check_output(context, process) abort "{{{
 
     let plugin.old_rev = a:process.rev
     let plugin.new_rev = new_rev
+
+    let type = dein#util#_get_type(plugin.type)
+    let plugin.uri = has_key(type, 'get_uri') ?
+          \ type.get_uri(plugin.repo, plugin) : ''
 
     call dein#call_hook('post_update', plugin)
     if s:build(plugin)

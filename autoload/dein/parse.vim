@@ -47,7 +47,7 @@ function! dein#parse#_init(repo, options) abort "{{{
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
-        \ 'uri': '',
+        \ 'repo': '',
         \ 'rtp': '',
         \ 'sourced': 0,
         \ }
@@ -200,7 +200,6 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   let skip_default = {
         \ 'type': 1,
         \ 'path': 1,
-        \ 'uri': 1,
         \ 'rtp': 1,
         \ 'sourced': 1,
         \ 'orig_opts': 1,
