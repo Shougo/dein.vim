@@ -459,7 +459,7 @@ function! s:get_updated_message(context, plugins) abort "{{{
     return ''
   endif
 
-  return "\nUpdated plugins:\n".
+  return "Updated plugins:\n".
         \ join(map(a:plugins,
         \ "'  ' . v:val.name . (v:val.commit_count == 0 ? ''
         \                     : printf('(%d change%s)',
@@ -478,7 +478,7 @@ function! s:get_errored_message(plugins) abort "{{{
     return ''
   endif
 
-  let msg = "\nError installing plugins:\n".join(
+  let msg = "Error installing plugins:\n".join(
         \ map(copy(a:plugins), "'  ' . v:val.name"), "\n")
   let msg .= "\n"
   let msg .= "Please read the error message log with the :message command.\n"
