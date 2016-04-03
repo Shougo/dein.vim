@@ -47,10 +47,7 @@ function! dein#parse#_init(repo, options) abort "{{{
 endfunction"}}}
 function! dein#parse#_dict(plugin) abort "{{{
   let plugin = {
-        \ 'rev': '',
         \ 'local': 0,
-        \ 'depends': [],
-        \ 'type': 'none',
         \ 'uri': '',
         \ 'rtp': '',
         \ 'sourced': 0,
