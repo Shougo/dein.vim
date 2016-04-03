@@ -61,7 +61,6 @@ function! dein#parse#_dict(plugin) abort "{{{
         \ 'uri': '',
         \ 'rtp': '',
         \ 'sourced': 0,
-        \ 'dummy_commands': [],
         \ 'dummy_mappings': [],
         \ }
   call extend(plugin, a:plugin)
@@ -153,7 +152,6 @@ function! dein#parse#_dict(plugin) abort "{{{
   if plugin.lazy
     if !empty(plugin.on_cmd)
       call s:generate_dummy_commands(plugin)
-      call dein#util#_add_dummy_commands(plugin)
     endif
     if !empty(plugin.on_map)
       call s:generate_dummy_mappings(plugin)
@@ -206,7 +204,6 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
         \ 'uri': 1,
         \ 'rtp': 1,
         \ 'sourced': 1,
-        \ 'dummy_commands': 1,
         \ 'dummy_mappings': 1,
         \ 'orig_opts': 1,
         \ 'repo': 1,
@@ -272,6 +269,7 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
   endfor
 endfunction"}}}
 function! s:generate_dummy_commands(plugin) abort "{{{
+  let a:plugin.dummy_commands = []
   for name in a:plugin.on_cmd
     " Define dummy commands.
     let raw_cmd = 'command '
@@ -282,6 +280,7 @@ function! s:generate_dummy_commands(plugin) abort "{{{
           \   string(name), string(a:plugin.name))
 
     call add(a:plugin.dummy_commands, [name, raw_cmd])
+    silent! execute raw_cmd
   endfor
 endfunction"}}}
 function! s:generate_dummy_mappings(plugin) abort "{{{

@@ -251,7 +251,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
     endif
   endfor
 
-  if !empty(a:plugin.dummy_commands)
+  if has_key(a:plugin, 'dummy_commands')
     for command in a:plugin.dummy_commands
       silent! execute 'delcommand' command[0]
     endfor

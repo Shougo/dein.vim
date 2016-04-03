@@ -226,7 +226,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
 
   " Add dummy mappings/commands
   for plugin in dein#util#_get_lazy_plugins()
-    for command in plugin.dummy_commands
+    for command in get(plugin, 'dummy_commands', [])
       call add(lines, 'silent! ' . command[1])
     endfor
     for mapping in plugin.dummy_mappings
@@ -372,11 +372,6 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
   endfor
 endfunction"}}}
 
-function! dein#util#_add_dummy_commands(plugin) abort "{{{
-  for command in a:plugin.dummy_commands
-    silent! execute command[1]
-  endfor
-endfunction"}}}
 function! dein#util#_add_dummy_mappings(plugin) abort "{{{
   for mapping in a:plugin.dummy_mappings
     silent! execute mapping[2]
