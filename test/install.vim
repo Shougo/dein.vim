@@ -514,7 +514,7 @@ endfunction"}}}
 function! s:suite.hooks() abort "{{{
   call dein#begin(s:path)
 
-  let g:dein#_hook_add = 'let g:foobar = 0'
+  let g:dein#_hook_add = 'let g:foo = 0'
 
   call dein#add('Shougo/neocomplete.vim', {
         \ 'hook_add':
@@ -522,7 +522,7 @@ function! s:suite.hooks() abort "{{{
         \ 'hook_source':
         \   join(['let g:foobar = 2'], "\n"),
         \ 'hook_post_source':
-        \   join(['if 1', 'let g:foobar = 3', 'endif'], "\n"),
+        \   join(['if 1', 'let g:bar = 3', 'endif'], "\n"),
         \ })
 
   call s:assert.equals(g:foobar, 1)
@@ -534,12 +534,12 @@ function! s:suite.hooks() abort "{{{
   call s:assert.equals(s:dein_install(), 0)
 
   call s:assert.equals(dein#end(), 0)
-  call s:assert.equals(g:foobar, 0)
+  call s:assert.equals(g:foo, 0)
 
   call dein#call_hook('source')
   call s:assert.equals(g:foobar, 2)
   call dein#call_hook('post_source')
-  call s:assert.equals(g:foobar, 3)
+  call s:assert.equals(g:bar, 3)
 
   call s:assert.equals(s:test, 1)
 endfunction"}}}

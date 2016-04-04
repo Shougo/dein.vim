@@ -377,19 +377,15 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
       execute 'doautocmd <nomodeline> User' autocmd
     endif
     if has_key(plugin, hook)
-      try
-        execute plugin[hook]
-      catch
-        call dein#util#_error(
-              \ 'Error occurred while executing hook: ' . plugin.name)
-        call dein#util#_error(v:exception)
-      endtry
+      call dein#util#_execute_hook(plugin.name, plugin[hook])
     endif
   endfor
 endfunction"}}}
 function! dein#util#_execute_hook(hook_name, string) abort "{{{
   try
-    execute a:string
+    execute "function! _dein_dummy() abort\n" . a:string . "\nendfunction"
+    call _dein_dummy()
+    delfunction _dein_dummy
   catch
     call dein#util#_error(
           \ 'Error occurred while executing hook: ' . a:hook_name)
