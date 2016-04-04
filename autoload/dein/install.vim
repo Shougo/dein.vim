@@ -188,8 +188,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#clear_state()
 
-  call dein#util#_notify(
-        \ strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
+  call s:notify(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
   if dein#util#_get_base_path() == ''
@@ -694,20 +693,18 @@ function! s:init_variables(context) abort "{{{
   let s:log = []
   let s:updates_log = []
 
-  call dein#util#_notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
+  call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:done(context) abort "{{{
-  call dein#util#_notify(
-        \ s:get_updated_message(a:context, a:context.synced_plugins))
-  call dein#util#_notify(
-        \ s:get_errored_message(a:context.errored_plugins))
+  call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
+  call s:notify(s:get_errored_message(a:context.errored_plugins))
 
   if a:context.update_type !=# 'check_update'
         \ && (!empty(a:context.synced_plugins)
         \     || !empty(a:context.errored_plugins))
     call dein#install#_recache_runtimepath()
   else
-    call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
+    call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
   endif
 
   " Disable installation handler
@@ -1103,13 +1100,13 @@ function! s:nonskip_error(msg) abort "{{{
   let s:updates_log += msg
   let s:log += msg
 endfunction"}}}
-function! s:echomsg(msg) abort "{{{
+function! s:notify(msg) abort "{{{
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
   endif
 
-  call s:echo(msg, 'echomsg')
+  call dein#util#_notify(msg)
 
   let s:updates_log += msg
   let s:log += msg
