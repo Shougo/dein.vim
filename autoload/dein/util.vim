@@ -73,18 +73,24 @@ function! dein#util#_notify(msg) abort "{{{
     return
   endif
 
+  let cmd = ''
   if executable('notify-send')
-    call dein#install#_system(
-          \ 'notify-send [dein] ' . string(a:msg))
+    let cmd = 'notify-send [dein] ' . string(a:msg)
   elseif dein#util#_is_windows() && executable('Snarl_CMD')
-    call dein#install#_system(
-          \ printf('Snarl_CMD snShowMessage 2 [dein] "%s"', a:msg))
+    let cmd = printf('Snarl_CMD snShowMessage 2 [dein] "%s"', a:msg)
   elseif dein#util#_is_mac()
-    call dein#install#_system(
-          \ printf("%s osascript -e 'display notification "
-          \        ."\"%s\" with title \"[dein]\"'",
-          \ (exists('$TMUX') && executable('reattach-to-user-namespace') ?
-          \  'reattach-to-user-namespace' : ''), a:msg))
+    if executable('terminal-notifier')
+      let cmd = 'terminal-notifier -title "[dein]" ' . string(a:msg)
+    else
+      let cmd = printf("%s osascript -e 'display notification "
+            \        ."\"%s\" with title \"[dein]\"'",
+            \ (exists('$TMUX') && executable('reattach-to-user-namespace') ?
+            \  'reattach-to-user-namespace' : ''), a:msg)
+    endif
+  endif
+
+  if cmd != ''
+    call dein#install#_system(cmd)
   endif
 endfunction"}}}
 
