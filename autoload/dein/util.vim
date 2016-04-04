@@ -383,9 +383,12 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
 endfunction"}}}
 function! dein#util#_execute_hook(hook_name, string) abort "{{{
   try
-    execute "function! _dein_dummy() abort\n" . a:string . "\nendfunction"
-    call _dein_dummy()
-    delfunction _dein_dummy
+    let dummy = '_dein_dummy_' .
+          \ substitute(a:hook_name, '\W', '_', 'g')
+    execute "function! ".dummy."() abort\n"
+          \ . a:string . "\nendfunction"
+    call {dummy}()
+    execute 'delfunction' dummy
   catch
     call dein#util#_error(
           \ 'Error occurred while executing hook: ' . a:hook_name)
