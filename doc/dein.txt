@@ -139,6 +139,9 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		# TOML sample
 		hook_add = 'let g:foo = 0'
 
+		[ftplugin]
+		c = 'let g:bar = 0'
+
 		[[plugins]]
 		# repository name is required.
 		repo = 'kana/vim-niceblock'

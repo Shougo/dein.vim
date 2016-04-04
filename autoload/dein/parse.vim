@@ -162,6 +162,9 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
   if has_key(toml, 'hook_add')
     let g:dein#_hook_add .= "\n" . toml.hook_add
   endif
+  if has_key(toml, 'ftplugin')
+    call extend(g:dein#_ftplugin, toml.ftplugin)
+  endif
 
   for plugin in toml.plugins
     if !has_key(plugin, 'repo')

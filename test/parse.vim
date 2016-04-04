@@ -65,6 +65,9 @@ function! s:suite.load_toml() abort "{{{
         \ '# TOML sample',
         \ 'hook_add = "let g:foo = 0"',
         \ '',
+        \ '[ftplugin]',
+        \ 'c = "let g:bar = 0"',
+        \ '',
         \ '[[plugins]]',
         \ '# repository name is required.',
         \ "repo = 'kana/vim-niceblock'",
@@ -87,8 +90,10 @@ function! s:suite.load_toml() abort "{{{
 
   call dein#begin(s:path)
   call s:assert.equals(g:dein#_hook_add, '')
+  call s:assert.equals(g:dein#_ftplugin, {})
   call s:assert.equals(dein#load_toml(toml), 0)
   call s:assert.equals(g:dein#_hook_add, "\nlet g:foo = 0")
+  call s:assert.equals(g:dein#_ftplugin, {'c': 'let g:bar = 0'})
   call dein#end()
 
   call s:assert.equals(dein#get('neosnippet.vim').on_i, 1)
