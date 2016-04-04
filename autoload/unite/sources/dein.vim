@@ -22,6 +22,10 @@ endfunction"}}}
 " Filters "{{{
 function! s:source.source__converter(candidates, context) abort "{{{
   for candidate in a:candidates
+    let type = dein#util#_get_type(candidate.source__type)
+    let candidate.source__uri = has_key(type, 'get_uri') ?
+          \ type.get_uri(candidate.action__plugin.repo,
+          \              candidate.action__plugin) : ''
     if candidate.source__uri =~
           \ '^\%(https\?\|git\)://github.com/'
       let candidate.action__uri = candidate.source__uri
@@ -47,7 +51,7 @@ function! s:source.gather_candidates(args, context) abort "{{{
         \ 'action__directory': v:val.path,
         \ 'action__plugin': v:val,
         \ 'action__plugin_name': v:val.name,
-        \ 'source__uri': v:val.uri,
+        \ 'source__type': v:val.type,
         \ 'source__is_sourced': v:val.sourced,
         \ 'source__is_installed': isdirectory(v:val.path),
         \ 'is_multiline': 1,
