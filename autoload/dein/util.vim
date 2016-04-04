@@ -244,9 +244,12 @@ function! dein#util#_save_state(is_starting) abort "{{{
   endfor
 
   " Add hooks
+  if !empty(g:dein#_hook_add)
+    let lines += s:skipempty(g:dein#_hook_add)
+  endif
   for plugin in dein#util#_tsort(values(dein#get()))
     if has_key(plugin, 'hook_add')
-      let lines += filter(split(plugin.hook_add, '\n'), "v:val != ''")
+      let lines += s:skipempty(plugin.hook_add)
     endif
   endfor
 
@@ -351,6 +354,10 @@ function! dein#util#_end() abort "{{{
     call dein#source(depends)
   endif
 
+  if g:dein#_hook_add != ''
+    call dein#util#_execute_hook('global hook_add', g:dein#_hook_add)
+  endif
+
   if !has('vim_starting')
     call dein#call_hook('source')
     call dein#call_hook('post_source')
@@ -379,6 +386,15 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
       endtry
     endif
   endfor
+endfunction"}}}
+function! dein#util#_execute_hook(hook_name, string) abort "{{{
+  try
+    execute a:string
+  catch
+    call dein#util#_error(
+          \ 'Error occurred while executing hook: ' . a:hook_name)
+    call dein#util#_error(v:exception)
+  endtry
 endfunction"}}}
 
 function! dein#util#_sort_by(list, expr) abort "{{{
@@ -480,6 +496,9 @@ endfunction"}}}
 
 function! s:msg2list(expr) abort "{{{
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
+endfunction"}}}
+function! s:skipempty(string) abort "{{{
+  return filter(split(a:string, '\n'), "v:val != ''")
 endfunction"}}}
 
 function! s:escape(path) abort "{{{

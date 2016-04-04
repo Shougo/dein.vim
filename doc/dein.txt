@@ -137,6 +137,8 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		TOML file sample is here:
 >
 		# TOML sample
+		hook_add = 'let g:foo = 0'
+
 		[[plugins]]
 		# repository name is required.
 		repo = 'kana/vim-niceblock'
@@ -155,7 +157,6 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		  nmap <silent>k <Plug>(accelerated_jk_gk)
 		'''
 
-<
 dein#load_dict({dict}, [{options}])		*dein#load_dict()*
 		Load the plugin configuration from {dict}.  {dict} is the
 		|Dictionary|.   The key is the repository URI and the value is

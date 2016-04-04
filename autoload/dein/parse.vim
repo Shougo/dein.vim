@@ -23,13 +23,7 @@ function! dein#parse#_add(repo, options) abort "{{{
 
   let g:dein#_plugins[plugin.name] = plugin
   if has_key(plugin, 'hook_add')
-    try
-      execute plugin.hook_add
-    catch
-      call dein#util#_error(
-            \ 'Error occurred while executing hook: ' . plugin.name)
-      call dein#util#_error(v:exception)
-    endtry
+    call dein#util#_execute_hook(plugin.name, plugin.hook_add)
   endif
   return plugin
 endfunction"}}}
@@ -165,6 +159,10 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
   endif
 
   " Parse.
+  if has_key(toml, 'hook_add')
+    let g:dein#_hook_add .= "\n" . toml.hook_add
+  endif
+
   for plugin in toml.plugins
     if !has_key(plugin, 'repo')
       call dein#util#_error('No repository plugin data: ' . a:filename)
