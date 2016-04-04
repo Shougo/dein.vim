@@ -25,7 +25,6 @@ function! dein#_init() abort "{{{
 
   augroup dein
     autocmd!
-    autocmd InsertEnter * call dein#autoload#_on_i()
     autocmd FileType * nested
           \ if &filetype != '' |
           \   call dein#autoload#_on_ft() |
@@ -33,12 +32,18 @@ function! dein#_init() abort "{{{
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
   augroup END
 
+  augroup dein-insert
+    autocmd!
+    autocmd InsertEnter * call dein#autoload#_on_i()
+  augroup END
+
   augroup dein-idle
+    autocmd!
     autocmd FocusLost,CursorHold * call dein#autoload#_on_idle()
   augroup END
 
   if exists('##CmdUndefined')
-    autocmd CmdUndefined *
+    autocmd dein CmdUndefined *
           \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
   endif
 

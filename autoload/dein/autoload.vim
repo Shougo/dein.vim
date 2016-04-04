@@ -82,6 +82,10 @@ function! dein#autoload#_on_i() abort "{{{
     call dein#autoload#_source(plugins)
     doautocmd <nomodeline> InsertEnter
   endif
+
+  augroup dein-insert
+    autocmd!
+  augroup END
 endfunction"}}}
 
 function! dein#autoload#_on_ft() abort "{{{
