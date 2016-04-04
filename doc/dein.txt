@@ -353,6 +353,7 @@ http://snarl.fullphat.net/
 https://www.tlhan-ghun.de/projects/snarl-command-line-tools/snarl_cmd-exe/
 
 		In Mac: "terminal-notifier" or "osascript" command
+https://github.com/julienXX/terminal-notifier
 
 		In Linux: "notify-send" command
 
