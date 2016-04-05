@@ -73,19 +73,22 @@ function! dein#util#_notify(msg) abort "{{{
     return
   endif
 
+  let title = '[dein]'
   let cmd = ''
   if executable('notify-send')
-    let cmd = 'notify-send [dein] ' . string(a:msg)
+    let cmd = 'notify-send'
+            \ . string(title) . ' ' . string(a:msg)
   elseif dein#util#_is_windows() && executable('Snarl_CMD')
-    let cmd = printf('Snarl_CMD snShowMessage 2 [dein] "%s"', a:msg)
+    let cmd = printf('Snarl_CMD snShowMessage 2 "%s" "%s"', title, a:msg)
   elseif dein#util#_is_mac()
     if executable('terminal-notifier')
-      let cmd = 'terminal-notifier -title "[dein]" ' . string(a:msg)
+      let cmd = 'terminal-notifier -title '
+            \ . string(title) . ' ' . string(a:msg)
     else
       let cmd = printf("%s osascript -e 'display notification "
-            \        ."\"%s\" with title \"[dein]\"'",
+            \        ."\"%s\" with title \"%s\"'",
             \ (exists('$TMUX') && executable('reattach-to-user-namespace') ?
-            \  'reattach-to-user-namespace' : ''), a:msg)
+            \  'reattach-to-user-namespace' : ''), a:msg, title)
     endif
   endif
 
