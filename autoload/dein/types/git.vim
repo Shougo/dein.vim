@@ -106,7 +106,7 @@ function! s:type.get_sync_command(plugin) abort "{{{
     let depth = get(a:plugin, 'type__depth',
           \ g:dein#types#git#clone_depth)
     if depth > 0 && get(a:plugin, 'rev', '') == ''
-          \ && a:plugin.uri !~ '^git@'
+          \ && self.get_uri(a:plugin.repo, a:plugin) !~ '^git@'
       let cmd .= ' --depth=' . depth
     endif
 
