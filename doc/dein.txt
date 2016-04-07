@@ -512,7 +512,7 @@ OPTIONS 					*dein-options*
 		This command is executed by |system()| or |vimproc#system()|
 		in the plugin runtimepath.
 		Note: The dictionary type is no longer supported.
-		Please use |dein-options-post_update| instead.
+		Please use |dein-options-hook_post_update| instead.
 
 		Example:
 >
