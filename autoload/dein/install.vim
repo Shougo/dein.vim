@@ -826,7 +826,8 @@ function! s:init_process(plugin, context, cmd) abort "{{{
           \ }
 
     if isdirectory(a:plugin.path)
-          \ && get(a:plugin, 'rev', '') != '' && !a:plugin.local
+          \ && get(a:plugin, 'rev', '') != ''
+          \ && !get(a:plugin, 'local', 0)
       let rev_save = get(a:plugin, 'rev', '')
       try
         " Force checkout HEAD revision.
