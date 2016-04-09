@@ -68,22 +68,35 @@ function! dein#util#_notify(msg) abort "{{{
 
   call dein#util#_set_default(
         \ 'g:dein#enable_notification', 0)
+  call dein#util#_set_default(
+        \ 'g:dein#notification_icon', '')
 
   if !g:dein#enable_notification || a:msg == ''
     return
   endif
 
+  let icon = dein#util#_expand(g:dein#notification_icon)
+
   let title = '[dein]'
   let cmd = ''
   if executable('notify-send')
     let cmd = 'notify-send'
-            \ . string(title) . ' ' . string(a:msg)
+    if icon != ''
+      let cmd .= ' --icon=' . string(icon)
+    endif
+    let cmd .= ' ' . string(title) . ' ' . string(a:msg)
   elseif dein#util#_is_windows() && executable('Snarl_CMD')
     let cmd = printf('Snarl_CMD snShowMessage 2 "%s" "%s"', title, a:msg)
+    if icon != ''
+      let cmd .= ' "' . icon . '"'
+    endif
   elseif dein#util#_is_mac()
     if executable('terminal-notifier')
       let cmd = 'terminal-notifier -title '
             \ . string(title) . ' ' . string(a:msg)
+      if icon != ''
+        let cmd .= ' -appIcon ' . string(icon)
+      endif
     else
       let cmd = printf("%s osascript -e 'display notification "
             \        ."\"%s\" with title \"%s\"'",

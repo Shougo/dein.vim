@@ -348,7 +348,7 @@ g:dein#enable_name_conversion
 		|dein-options-normalized_name| is used as plugin name.
 		It is useful for absorbing difference of repository name.
 
-		Defaults: "0".
+		Defaults: "0"
 
  					*g:dein#enable_notification*
 g:dein#enable_notification
@@ -364,20 +364,26 @@ https://github.com/julienXX/terminal-notifier
 
 		In Linux: "notify-send" command
 
-		Defaults: "0".
+		Defaults: "0"
+
+ 					*g:dein#notification_icon*
+g:dein#notification_icon
+		The notification icon path.
+
+		Defaults: ""
 
 						*g:dein#install_max_processes*
 g:dein#install_max_processes
 		The max number of processes used for dein/install source
 		asynchronous update.
 
-		Defaults: "8".
+		Defaults: "8"
 
 					*g:dein#install_process_timeout*
 g:dein#install_process_timeout
 		The time of timeout seconds when updating/installing plugins.
 
-		Defaults: "120".
+		Defaults: "120"
 
 						*g:dein#install_progress_type*
 g:dein#install_progress_type
@@ -395,7 +401,7 @@ g:dein#install_progress_type
 		"title":
 			Displayed in the 'titlestring'.
 
-		Defaults: "statusline".
+		Defaults: "statusline"
 
 						*g:dein#install_message_type*
 g:dein#install_message_type
