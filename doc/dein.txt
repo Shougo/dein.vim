@@ -298,6 +298,22 @@ dein#disable({plugins})				*dein#disable()*
 		Note: This command must be executed before dein loads
 		the plugins.
 
+dein#config({plugin-name}, {options})	 *dein#config()*
+dein#config({options})
+		Change plugin options for {plugin-name}.
+		It you omit {plugin-name}, it uses |dein#name| variable.
+		If {plugin-name} is list, you can change the options in the
+		multiple plugins.
+		If {plugin-name} is already loaded or invalid, it will be
+		ignored.
+
+		Note: You must call it within |dein#begin()| / ||dein#end()| block.
+>
+	call dein#add('Shougo/neocomplete.vim')
+	call dein#config('neocomplete.vim', {
+	\ 'lazy' : 1, 'on_i' : 1,
+	\ })
+<
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 

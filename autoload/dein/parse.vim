@@ -12,7 +12,7 @@ let g:dein#enable_name_conversion =
 let s:git = dein#types#git#define()
 
 function! dein#parse#_add(repo, options) abort "{{{
-  let plugin = dein#parse#_dict(
+  let plugin = dein#parse#_dict(a:repo,
         \ dein#parse#_init(a:repo, a:options))
   if (has_key(g:dein#_plugins, plugin.name)
         \ && g:dein#_plugins[plugin.name].sourced)
@@ -39,9 +39,9 @@ function! dein#parse#_init(repo, options) abort "{{{
   endif
   return extend(plugin, a:options)
 endfunction"}}}
-function! dein#parse#_dict(plugin) abort "{{{
+function! dein#parse#_dict(repo, plugin) abort "{{{
   let plugin = {
-        \ 'repo': '',
+        \ 'repo': a:repo,
         \ 'rtp': '',
         \ 'sourced': 0,
         \ }
@@ -191,7 +191,7 @@ endfunction"}}}
 function! dein#parse#_plugins2toml(plugins) abort "{{{
   let toml = []
 
-  let default = dein#parse#_dict(dein#parse#_init('', {}))
+  let default = dein#parse#_dict('', dein#parse#_init('', {}))
   let default.if = ''
   let default.frozen = 0
   let default.local = 0

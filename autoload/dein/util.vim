@@ -379,6 +379,23 @@ function! dein#util#_end() abort "{{{
     call dein#call_hook('post_source')
   endif
 endfunction"}}}
+function! dein#util#_config(arg, dict) abort "{{{
+  let name = type(a:arg) == type({}) ?
+        \   g:dein#name : a:arg
+  let dict = type(a:arg) == type({}) ?
+        \   a:arg : a:dict
+  if !has_key(g:dein#_plugins, name)
+        \ || g:dein#_plugins[name].sourced
+    return {}
+  endif
+
+  let plugin = g:dein#_plugins[name]
+  let options = extend({'repo': plugin.repo}, dict)
+  if has_key(plugin, 'orig_opts')
+    call extend(options, copy(plugin.orig_opts), 'keep')
+  endif
+  return dein#parse#_add(options.repo, options)
+endfunction"}}}
 
 function! dein#util#_call_hook(hook_name, ...) abort "{{{
   let prefix = '#User#dein#'.a:hook_name.'#'
