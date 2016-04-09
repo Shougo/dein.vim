@@ -358,7 +358,7 @@ function! dein#util#_end() abort "{{{
   endif
 
   if g:dein#_hook_add != ''
-    call dein#util#_execute_hook('global hook_add', g:dein#_hook_add)
+    call dein#util#_execute_hook({}, g:dein#_hook_add)
   endif
 
   if !has('vim_starting')
@@ -380,21 +380,23 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
       execute 'doautocmd <nomodeline> User' autocmd
     endif
     if has_key(plugin, hook)
-      call dein#util#_execute_hook(plugin.name, plugin[hook])
+      call dein#util#_execute_hook(plugin, plugin[hook])
     endif
   endfor
 endfunction"}}}
-function! dein#util#_execute_hook(hook_name, string) abort "{{{
+function! dein#util#_execute_hook(plugin, string) abort "{{{
   try
     let dummy = '_dein_dummy_' .
-          \ substitute(a:hook_name, '\W', '_', 'g')
+          \ substitute(reltimestr(reltime()), '\W', '_', 'g')
     execute "function! ".dummy."() abort\n"
           \ . a:string . "\nendfunction"
+    let g:dein#plugin = a:plugin
     call {dummy}()
     execute 'delfunction' dummy
   catch
     call dein#util#_error(
-          \ 'Error occurred while executing hook: ' . a:hook_name)
+          \ 'Error occurred while executing hook: ' .
+          \ get(a:plugin, 'name', ''))
     call dein#util#_error(v:exception)
   endtry
 endfunction"}}}

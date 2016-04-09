@@ -23,7 +23,7 @@ function! dein#parse#_add(repo, options) abort "{{{
 
   let g:dein#_plugins[plugin.name] = plugin
   if has_key(plugin, 'hook_add')
-    call dein#util#_execute_hook(plugin.name, plugin.hook_add)
+    call dein#util#_execute_hook(plugin, plugin.hook_add)
   endif
   return plugin
 endfunction"}}}
