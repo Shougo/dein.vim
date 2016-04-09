@@ -559,7 +559,7 @@ function! s:suite.no_plugins() abort "{{{
   call dein#begin(s:path)
 
   call writefile([], g:temp)
-  call s:assert.equals(dein#load_toml(g:temp), 1)
+  call s:assert.equals(dein#load_toml(g:temp), 0)
 
   call s:assert.equals(dein#end(), 0)
 endfunction"}}}
