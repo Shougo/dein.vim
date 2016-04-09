@@ -13,6 +13,7 @@ Interface		|dein-interface|
   Functions		  |dein-functions|
   Variables		  |dein-variables|
   Options		  |dein-options|
+  Toml			  |dein-toml|
 Unite Sources		|dein-unite-sources|
 Configuration Examples	|dein-examples|
 FAQ			|dein-faq|
@@ -125,47 +126,7 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		|dein-options| for keys to set in {options}.
 		Note: TOML parser is slow.
 
-		TOML file format specification:
-		https://github.com/toml-lang/toml
-		Note: Original TOML parser is created by kamichidu.
-		https://github.com/kamichidu
->
-		" Load toml from "~/.vim/plugins.toml".
-		call dein#load_toml("~/.vim/plugins.toml", {})
-<
-		TOML file sample is here:
->
-		# TOML sample
-		hook_add = 'let g:foo = 0'
-
-		[ftplugin]
-		# Execute after ftplugin.
-		_ = '''
-		  setl formatoptions-=ro | setl formatoptions+=mMBl
-		'''
-		# b:undo_ftplugin is set automatically.
-		python = '''
-		let b:undo_ftplugin .= 'setlocal foldmethod<'
-		setlocal foldmethod=indent
-		'''
-
-		[[plugins]]
-		# repository name is required.
-		repo = 'kana/vim-niceblock'
-		on_map = '<Plug>'
-
-		[[plugins]]
-		repo = 'Shougo/neosnippet.vim'
-		on_i = 1
-		on_ft = 'snippet'
-
-		[[plugins]]
-		repo = 'rhysd/accelerated-jk'
-		on_map = '<Plug>'
-		hook_add = '''
-		  nmap <silent>j <Plug>(accelerated_jk_gj)
-		  nmap <silent>k <Plug>(accelerated_jk_gk)
-		'''
+		For toml file formats: |dein-toml|
 
 dein#load_dict({dict}, [{options}])		*dein#load_dict()*
 		Load the plugin configuration from {dict}.  {dict} is the
@@ -706,6 +667,68 @@ HOOKS 						*dein-hooks*
 						*dein-hooks-post_source*
 		User#dein#post_source#{name}
 		Called or sourced after scripts are sourced.
+
+------------------------------------------------------------------------------
+TOML 						*dein-toml*
+
+		TOML file format specification:
+		https://github.com/toml-lang/toml
+		Note: Original TOML parser is created by kamichidu.
+		https://github.com/kamichidu
+
+						*dein-toml-hook_add*
+		hook_add	(String)
+		It is the global |dein-options-hook_add|.
+		It is executed in |dein#end()|.
+
+						*dein-toml-ftplugin*
+		ftplugin	(Dictionary)
+		"_" key is executed after all ftplugin.
+		"{filetype}" key is executed {filetype} ftplugin.
+		You can define multiple filetypes by "{filetype1}_{filetype2}"
+		key.
+		|b:undo_ftplugin| is defined automatically.
+
+						*dein-toml-plugins*
+		plugins		(Dictionary)
+		It is converted to |dein#add()|.
+		"repo" key is needed.
+>
+		" Load toml from "~/.vim/plugins.toml".
+		call dein#load_toml("~/.vim/plugins.toml", {})
+<
+		TOML file sample is here:
+>
+		# TOML sample
+		hook_add = 'let g:foo = 0'
+
+		[ftplugin]
+		# Execute after ftplugin.
+		_ = '''
+		  setl formatoptions-=ro | setl formatoptions+=mMBl
+		'''
+		python = '''
+		let b:undo_ftplugin .= 'setlocal foldmethod<'
+		setlocal foldmethod=indent
+		'''
+
+		[[plugins]]
+		# repository name is required.
+		repo = 'kana/vim-niceblock'
+		on_map = '<Plug>'
+
+		[[plugins]]
+		repo = 'Shougo/neosnippet.vim'
+		on_i = 1
+		on_ft = 'snippet'
+
+		[[plugins]]
+		repo = 'rhysd/accelerated-jk'
+		on_map = '<Plug>'
+		hook_add = '''
+		  nmap <silent>j <Plug>(accelerated_jk_gj)
+		  nmap <silent>k <Plug>(accelerated_jk_gk)
+		'''
 
 ==============================================================================
 UNITE SOURCES					*dein-unite-sources*
