@@ -168,15 +168,17 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
     call extend(g:dein#_ftplugin, toml.ftplugin)
   endif
 
-  for plugin in toml.plugins
-    if !has_key(plugin, 'repo')
-      call dein#util#_error('No repository plugin data: ' . a:filename)
-      return 1
-    endif
+  if has_key(toml, 'plugins')
+    for plugin in toml.plugins
+      if !has_key(plugin, 'repo')
+        call dein#util#_error('No repository plugin data: ' . a:filename)
+        return 1
+      endif
 
-    let options = extend(plugin, a:default, 'keep')
-    call dein#add(plugin.repo, options)
-  endfor
+      let options = extend(plugin, a:default, 'keep')
+      call dein#add(plugin.repo, options)
+    endfor
+  endif
 endfunction"}}}
 function! dein#parse#_plugins2toml(plugins) abort "{{{
   let toml = []
