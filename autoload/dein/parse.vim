@@ -262,22 +262,16 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
   endfor
 
   for dir in dein#util#_uniq(directories)
-    let options = extend({ 'local': 1, 'path': dir,
-          \ 'name': fnamemodify(dir, ':t') }, a:options)
+    let options = extend({
+          \ 'repo': dir, 'local': 1, 'path': dir,
+          \ 'name': fnamemodify(dir, ':t')
+          \ }, a:options)
 
-    let plugin = dein#get(options.name)
-    if !empty(plugin)
-      if plugin.sourced
-        " Ignore already sourced plugins
-        continue
-      endif
-
-      if has_key(plugin, 'orig_opts')
-        call extend(options, copy(plugin.orig_opts), 'keep')
-      endif
+    if has_key(g:dein#_plugins, options.name)
+      call dein#config(options.name, options)
+    else
+      call dein#add(dir, options)
     endif
-
-    call dein#add(dir, options)
   endfor
 endfunction"}}}
 function! s:generate_dummy_commands(plugin) abort "{{{
