@@ -92,6 +92,14 @@ function! dein#parse#_dict(plugin) abort "{{{
     let plugin[key] = [plugin[key]]
   endfor
 
+  " Deprecated check.
+  for key in filter([
+        \ 'directory', 'base',
+        \ ], "has_key(plugin, v:val)")
+    call dein#util#_error('plugin name = ' . plugin.name)
+    call dein#util#_error(string(key) . ' is deprecated.')
+  endfor
+
   if !has_key(a:plugin, 'lazy')
     let plugin.lazy =
           \    has_key(plugin, 'on_i')
