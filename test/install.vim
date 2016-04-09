@@ -705,4 +705,28 @@ function! s:get_revision(plugin) abort "{{{
   endtry
 endfunction"}}}
 
+function! s:suite.ftplugin() abort "{{{
+  let g:dein#_ftplugin = {
+        \ '_': 'echo 5555',
+        \ 'python': 'setlocal foldmethod=indent',
+        \ }
+  call dein#begin(s:path)
+  call dein#add('Shougo/neocomplete.vim')
+  call dein#end()
+
+  call dein#recache_runtimepath()
+
+  let ftplugin = readfile(dein#util#_get_runtime_path() . '/ftplugin.vim')
+  let after = readfile($VIMRUNTIME  . '/ftplugin.vim') + [
+        \ 'autocmd filetypeplugin FileType * call s:AfterFTPlugin()',
+        \ 'function! s:AfterFTPlugin()',
+        \ ] + split(get(g:dein#_ftplugin, '_', ''), '\n')
+        \ + ['endfunction']
+  call s:assert.equals(ftplugin, after)
+
+  let python = readfile(dein#util#_get_runtime_path()
+        \ . '/after/ftplugin/python.vim')
+  call s:assert.equals(python[-1], g:dein#_ftplugin['python'])
+endfunction"}}}
+
 " vim:foldmethod=marker:fen:

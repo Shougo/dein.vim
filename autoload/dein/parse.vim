@@ -153,7 +153,7 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
     call dein#util#_error(v:exception)
     return 1
   endtry
-  if type(toml) != type({}) || !has_key(toml, 'plugins')
+  if type(toml) != type({})
     call dein#util#_error('Invalid toml file: ' . a:filename)
     return 1
   endif

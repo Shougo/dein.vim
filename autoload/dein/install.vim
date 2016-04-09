@@ -165,6 +165,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call s:helptags()
 
+  call s:generate_ftplugin()
+
   " Clear ftdetect and after/ftdetect directories.
   call dein#install#_rm(
         \ dein#util#_get_runtime_path().'/ftdetect')
@@ -280,6 +282,45 @@ function! s:check_rollback(plugin) abort "{{{
   return !has_key(a:plugin, 'local')
         \ && !get(a:plugin, 'frozen', 0)
         \ && get(a:plugin, 'rev', '') == ''
+endfunction"}}}
+function! s:generate_ftplugin() abort "{{{
+  " Create after/ftplugin
+  let after = dein#util#_get_runtime_path() . '/after/ftplugin'
+  if !isdirectory(after)
+    call mkdir(after, 'p')
+  endif
+
+  " Merge g:dein#_ftplugin
+  let ftplugin = {}
+  for [key, string] in items(g:dein#_ftplugin)
+    for ft in (key == '_' ? ['_'] : split(key, '_'))
+      if !has_key(ftplugin, ft)
+        let ftplugin[ft] = (ft == '_') ? [] : [
+              \ "if exists('b:undo_ftplugin')",
+              \ "  let b:undo_ftplugin .= '|'",
+              \ "else",
+              \ "  let b:undo_ftplugin = ''",
+              \ "endif",
+              \ ]
+      endif
+      let ftplugin[ft] += split(string, '\n')
+    endfor
+  endfor
+
+  " Generate ftplugin.vim
+  let base = get(split(globpath(&runtimepath, 'ftplugin.vim'), '\n'), 0, '')
+  if base != ''
+    call writefile(readfile(base) + [
+          \ 'autocmd filetypeplugin FileType * call s:AfterFTPlugin()',
+          \ 'function! s:AfterFTPlugin()',
+          \ ] + get(ftplugin, '_', []) + ['endfunction'],
+          \ dein#util#_get_runtime_path() . '/ftplugin.vim')
+  endif
+
+  " Generate after/ftplugin
+  for [filetype, list] in items(ftplugin)
+    call writefile(list, printf('%s/%s.vim', after, filetype))
+  endfor
 endfunction"}}}
 
 function! dein#install#_is_async() abort "{{{

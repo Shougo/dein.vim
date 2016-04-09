@@ -139,7 +139,15 @@ dein#load_toml({filename}, [{options}])		*dein#load_toml()*
 		hook_add = 'let g:foo = 0'
 
 		[ftplugin]
-		c = 'let g:bar = 0'
+		# Execute after ftplugin.
+		_ = '''
+		  setl formatoptions-=ro | setl formatoptions+=mMBl
+		'''
+		# b:undo_ftplugin is set automatically.
+		python = '''
+		let b:undo_ftplugin .= 'setlocal foldmethod<'
+		setlocal foldmethod=indent
+		'''
 
 		[[plugins]]
 		# repository name is required.
