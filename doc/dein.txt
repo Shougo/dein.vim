@@ -620,18 +620,34 @@ HOOKS 						*dein-hooks*
 
 						*dein-options-hook_add*
 		hook_add	(String)
+		It is executed after plugins are added.
+>
+		call dein#add('Shougo/vimfiler.vim', {
+		\ 'hook_add': 'nnoremap <silent>   [Space]v
+		\              :<C-u>VimFiler -invisible<CR>'
+		\ })
+		call dein#add('kana/vim-niceblock', {
+		\ 'hook_add': join(['xmap I  <Plug>(niceblock-I)',
+		                    'xmap A  <Plug>(niceblock-A)'], "\n")
+		\ })
+<
 						*dein-options-hook_source*
 		hook_source	(String)
+		It is executed before plugins are sourced.
+>
+		call dein#add('artur-shaik/vim-javacomplete2')
+		call dein#config('artur-shaik/vim-javacomplete2', {
+		\ 'hook_source': 'autocmd FileType java
+		\                 setlocal omnifunc=javacomplete#Complete'
+		\ })
+<
 						*dein-options-hook_post_source*
 		hook_post_source (String)
+		It is executed after plugins are sourced.
 
 						*dein-options-hook_post_update*
 		hook_post_update (String)
-
-		"hook_add" is executed after plugins are added.
-		"hook_source" is executed before plugins are sourced.
-		"hook_post_source" is executed after plugins are sourced.
-		"hook_post_update" is executed after plugins are updated.
+		It is executed after plugins are updated.
 
 		The string will be split by the lines.
 		It is useful for the plugins initialization.
