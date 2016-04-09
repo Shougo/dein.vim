@@ -390,6 +390,8 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
     if exists('#User#'.autocmd)
+      call dein#util#_error('#User#'.autocmd . ' is deprecated.')
+      call dein#util#_error('Please use new hook feature instead.')
       execute 'doautocmd <nomodeline> User' autocmd
     endif
     if has_key(plugin, hook)

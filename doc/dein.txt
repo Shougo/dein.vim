@@ -631,44 +631,6 @@ HOOKS 						*dein-hooks*
 	autocmd VimEnter * call dein#call_hook('post_source')
 
 ------------------------------------------------------------------------------
-						*dein-hooks-source*
-		User#dein#source#{name}
-		Called or sourced before scripts are sourced. It is
-		useful for plugin initialization in lazy plugins.
-		Note: You can use |g:dein#name| as {name} in |dein#tap()|
-		block.
-
-		Example: >
-
-	if dein#tap('open-browser.vim')
-	  nmap gs <Plug>(open-browser-wwwsearch)
-	
-	  function! s:open_browser_on_source() abort
-	    nnoremap <Plug>(open-browser-wwwsearch)
-	          \ :<C-u>call <SID>www_search()<CR>
-	    function! s:www_search() abort
-	      let search_word = input('Please input search word: ')
-	      if search_word != ''
-	        execute 'OpenBrowserSearch' escape(search_word, '"')
-	      endif
-	    endfunction
-	  endfunction
-	  execute 'autocmd MyAutoCmd User' 'dein#source#'.g:dein#name
-	        \ 'call s:open_browser_on_source()'
-	endif
-
-	if dein#tap('deoplete.nvim') && has('nvim')
-	  let g:deoplete#enable_at_startup = 1
-	  execute 'autocmd MyAutoCmd User' 'dein#source#'.g:dein#name
-	        \ 'source ~/.vim/rc/plugins/deoplete.rc.vim'
-	endif
-<
-
-						*dein-hooks-post_source*
-		User#dein#post_source#{name}
-		Called or sourced after scripts are sourced.
-
-------------------------------------------------------------------------------
 TOML 						*dein-toml*
 
 		TOML file format specification:

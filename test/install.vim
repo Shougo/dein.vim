@@ -527,10 +527,6 @@ function! s:suite.hooks() abort "{{{
 
   call s:assert.equals(g:foobar, 1)
 
-  let s:test = 0
-
-  autocmd User dein#source#neocomplete.vim let s:test = 1
-
   call s:assert.equals(s:dein_install(), 0)
 
   call s:assert.equals(dein#end(), 0)
@@ -540,8 +536,6 @@ function! s:suite.hooks() abort "{{{
   call s:assert.equals(g:foobar, 2)
   call dein#call_hook('post_source')
   call s:assert.equals(g:bar, 3)
-
-  call s:assert.equals(s:test, 1)
 endfunction"}}}
 
 function! s:suite.no_toml() abort "{{{
