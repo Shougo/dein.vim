@@ -235,5 +235,8 @@ endfunction"}}}
 function! dein#plugins2toml(plugins) abort "{{{
   return dein#parse#_plugins2toml(a:plugins)
 endfunction"}}}
+function! dein#disable(names) abort "{{{
+  return dein#util#_disable(a:names)
+endfunction"}}}
 
 " vim: foldmethod=marker

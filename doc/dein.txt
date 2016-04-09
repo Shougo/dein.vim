@@ -323,6 +323,12 @@ dein#plugins2toml({plugins})			 *dein#plugins2toml()*
 		Returns the toml configurations for {plugins}
 		{plugins} is the plugins dictionary from |dein#get()|.
 
+dein#disable({plugins})				*dein#disable()*
+		Disables plugins specified by {plugins}.
+		{plugins} is the plugins name list.
+		Note: This command must be executed before dein loads
+		the plugins.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 

@@ -483,6 +483,14 @@ function! dein#util#_get_plugins(plugins) abort "{{{
         \   '!empty(v:val)')
 endfunction"}}}
 
+function! dein#util#_disable(names) abort "{{{
+  for name in dein#util#_convert2list(a:names)
+    if has_key(g:dein#_plugins, name) && !g:dein#_plugins[name].sourced
+      call remove(g:dein#_plugins, name)
+    endif
+  endfor
+endfunction"}}}
+
 function! s:tsort_impl(target, mark, sorted) abort "{{{
   if empty(a:target) || has_key(a:mark, a:target.name)
     return

@@ -132,6 +132,17 @@ function! s:suite.load_dict() abort "{{{
   call s:assert.equals(dein#get('neocomplete').lazy, 1)
 endfunction"}}}
 
+function! s:suite.disable() abort "{{{
+  call dein#begin(s:path)
+  call dein#load_dict({
+        \ 'Shougo/unite.vim': {}
+        \ })
+  call dein#disable('unite.vim')
+  call dein#end()
+
+  call s:assert.equals(dein#get('unite.vim'), {})
+endfunction"}}}
+
 function! s:suite.plugins2toml() abort "{{{
   let parsed_plugin = dein#parse#_init('Shougo/unite.vim', {})
   let parsed_plugin2 = dein#parse#_init('Shougo/deoplete.nvim',
