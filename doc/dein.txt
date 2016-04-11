@@ -828,5 +828,38 @@ file.
 A: It is the plugins problem.  The plugins should not create the conflited
 name file.  But you can avoid the problem by |dein-options-merged|.
 
+Q: How to remove the disabled plugins?
+
+A: You can get them by |dein#check_clean()|.
+So you can remote them like below.
+>
+	call map(dein#check_clean(), "delete(v:val, 'rf')")
+<
+
+Q: How to use the script functions for hooks feature?
+
+A: You can use them like this.
+Note: You cannot use the script functions for cached plugins.
+The SID will be changed in the next run.
+>
+	function s:SID()
+	  return matchstr(expand('<sfile>'), '\zs<SNR>\d\+_\zeSID$')
+	endfun
+	function! s:test()
+	endfunction
+	call dein#add('Shougo/neocomplete.vim',
+	\ {'hook_source': 'call ' . s:SID() . 'test()'})
+<
+Or you can execute the autocmd manually.
+>
+	autocmd User dein#source#neocomplete.vim call s:test()
+	call dein#add('Shougo/neocomplete.vim', {
+	\ 'hook_source':
+	\  'execute "doautocmd <nomodeline> User" "dein#source#".
+	\   g:dein#plugin.name'
+	\ })
+<
+But you must define the autocmd.
+
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:
