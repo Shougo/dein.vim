@@ -311,15 +311,10 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
     execute 'set rtp-='.fnameescape(g:dein#_runtime_path.'/after')
   endif
 
-  " Join to the tail in runtimepath.
+  " Insert dein runtimepath to the head in 'runtimepath'.
   let rtps = dein#util#_split_rtp(&runtimepath)
-  let n = index(rtps, $VIMRUNTIME)
-  if n < 0
-    call dein#util#_error('Invalid runtimepath.')
-    return 1
-  endif
   let &runtimepath = dein#util#_join_rtp(
-        \ add(insert(rtps, g:dein#_runtime_path, n-1),
+        \ add(insert(rtps, g:dein#_runtime_path),
         \     g:dein#_runtime_path.'/after'),
         \ &runtimepath, g:dein#_runtime_path)
 endfunction"}}}

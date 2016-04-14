@@ -442,17 +442,6 @@ function! s:suite.lazy_on_idle() abort "{{{
         \     'v:val ==# plugin.rtp')), 1)
 endfunction"}}}
 
-function! s:suite.invalide_runtimepath() abort "{{{
-  let &runtimepath = ''
-  call s:assert.equals(dein#begin(s:path), 1)
-
-  call s:suite.before_each()
-
-  call s:assert.equals(dein#begin(s:path), 0)
-  let &runtimepath = ''
-  call s:assert.equals(dein#end(), 1)
-endfunction"}}}
-
 function! s:suite.depends() abort "{{{
   call dein#begin(s:path)
 
