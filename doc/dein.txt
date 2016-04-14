@@ -630,6 +630,12 @@ HOOKS 						*dein-hooks*
 		\ 'hook_add': join(['xmap I  <Plug>(niceblock-I)',
 		                    'xmap A  <Plug>(niceblock-A)'], "\n")
 		\ })
+		call dein#add('godlygeek/csapprox', {
+		\ 'hook_add': "
+		\ let g:CSApprox_konsole = 1\n
+		\ let g:CSApprox_attr_map =
+		\     { 'bold' : 'bold', 'italic' : '', 'sp' : '' }\n
+		\ "})
 <
 						*dein-options-hook_source*
 		hook_source	(String)
