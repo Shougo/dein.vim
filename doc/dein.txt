@@ -831,7 +831,7 @@ name file.  But you can avoid the problem by |dein-options-merged|.
 Q: How to remove the disabled plugins?
 
 A: You can get them by |dein#check_clean()|.
-So you can remote them like below.
+So you can remove them like below.
 >
 	call map(dein#check_clean(), "delete(v:val, 'rf')")
 <
