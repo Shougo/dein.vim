@@ -23,7 +23,11 @@ function! s:suite.state() abort "{{{
 
   call dein#begin(s:path)
 
-  call dein#add('Shougo/neocomplete.vim')
+  function! Test() abort
+  endfunction
+
+  call dein#add('Shougo/neocomplete.vim',
+        \ {'hook_source': function('Test')})
   call s:assert.equals(dein#end(), 0)
 
   let plugins = deepcopy(g:dein#_plugins)

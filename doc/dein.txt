@@ -619,7 +619,7 @@ OPTIONS 					*dein-options*
 HOOKS 						*dein-hooks*
 
 						*dein-options-hook_add*
-		hook_add	(String)
+		hook_add	(String) or (Function)
 		It is executed after plugins are added.
 >
 		call dein#add('Shougo/vimfiler.vim', {
@@ -638,7 +638,7 @@ HOOKS 						*dein-hooks*
 		\ "})
 <
 						*dein-options-hook_source*
-		hook_source	(String)
+		hook_source	(String) or (Function)
 		It is executed before plugins are sourced.
 >
 		call dein#add('artur-shaik/vim-javacomplete2')
@@ -646,17 +646,24 @@ HOOKS 						*dein-hooks*
 		\ 'hook_source': 'autocmd FileType java
 		\                 setlocal omnifunc=javacomplete#Complete'
 		\ })
+		function! Func() abort
+		  autocmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
+		endfunction
+		call dein#source('thinca/vim-qfreplace',
+		\ 'hook_source': function('Func'))
 <
 						*dein-options-hook_post_source*
-		hook_post_source (String)
+		hook_post_source (String) or (Function)
 		It is executed after plugins are sourced.
 
 						*dein-options-hook_post_update*
-		hook_post_update (String)
+		hook_post_update (String) or (Function)
 		It is executed after plugins are updated.
 
 		The string will be split by the lines.
 		It is useful for the plugins initialization.
+		Note: The Function hooks cannot be cached.  You must
+		initialize it.
 
 		Note: You can use |g:dein#plugin| in the hooks.
 		Note: The loading order is not guaranteed in non lazy plugins.

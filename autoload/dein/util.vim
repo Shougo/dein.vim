@@ -192,6 +192,15 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
     if has_key(plugin, 'orig_opts')
       call remove(plugin, 'orig_opts')
     endif
+
+    " Hooks
+    for hook in filter([
+          \ 'hook_add', 'hook_source',
+          \ 'hook_post_source', 'hook_post_update',
+          \ ], "has_key(plugin, v:val)
+          \     && type(plugin[v:val]) == type(function('tr'))")
+      call remove(plugin, hook)
+    endfor
   endfor
 
   if !isdirectory(g:dein#_base_path)
@@ -264,7 +273,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
     let lines += s:skipempty(g:dein#_hook_add)
   endif
   for plugin in dein#util#_tsort(values(dein#get()))
-    if has_key(plugin, 'hook_add')
+    if has_key(plugin, 'hook_add') && type(plugin.hook_add) == type('')
       let lines += s:skipempty(plugin.hook_add)
     endif
   endfor
@@ -411,15 +420,20 @@ function! dein#util#_call_hook(hook_name, ...) abort "{{{
     endif
   endfor
 endfunction"}}}
-function! dein#util#_execute_hook(plugin, string) abort "{{{
+function! dein#util#_execute_hook(plugin, hook) abort "{{{
   try
-    let dummy = '_dein_dummy_' .
-          \ substitute(reltimestr(reltime()), '\W', '_', 'g')
-    execute "function! ".dummy."() abort\n"
-          \ . a:string . "\nendfunction"
     let g:dein#plugin = a:plugin
-    call {dummy}()
-    execute 'delfunction' dummy
+
+    if type(a:hook) == type('')
+      let dummy = '_dein_dummy_' .
+            \ substitute(reltimestr(reltime()), '\W', '_', 'g')
+      execute "function! ".dummy."() abort\n"
+            \ . a:hook . "\nendfunction"
+      call {dummy}()
+      execute 'delfunction' dummy
+    else
+      call call(a:hook, [])
+    endif
   catch
     call dein#util#_error(
           \ 'Error occurred while executing hook: ' .

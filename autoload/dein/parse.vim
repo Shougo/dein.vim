@@ -124,23 +124,13 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
   endif
 
   " Hooks
-  let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
-  if has_key(plugin, 'hook_add')
-    let plugin.hook_add = substitute(
-          \ plugin.hook_add, pattern, '', 'g')
-  endif
-  if has_key(plugin, 'hook_source')
-    let plugin.hook_source = substitute(
-          \ plugin.hook_source, pattern, '', 'g')
-  endif
-  if has_key(plugin, 'hook_post_source')
-    let plugin.hook_post_source = substitute(
-          \ plugin.hook_post_source, pattern, '', 'g')
-  endif
-  if has_key(plugin, 'hook_post_update')
-    let plugin.hook_post_update = substitute(
-          \ plugin.hook_post_update, pattern, '', 'g')
-  endif
+  for hook in filter([
+        \ 'hook_add', 'hook_source',
+        \ 'hook_post_source', 'hook_post_update',
+        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) == type('')")
+    let plugin[hook] = substitute(plugin[hook],
+          \ '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
+  endfor
 
   if plugin.lazy
     if has_key(plugin, 'on_cmd')
@@ -229,8 +219,6 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
           \      && plugin[v:val] !=# default[v:val]")
       let val = plugin[key]
       if key =~ '^hook_'
-        let toml += [
-              \ ]
         call add(toml, key . " = '''")
         let toml += split(val, '\n')
         call add(toml, "'''")

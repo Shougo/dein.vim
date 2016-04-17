@@ -505,6 +505,8 @@ function! s:suite.hooks() abort "{{{
 
   let g:dein#_hook_add = 'let g:foo = 0'
 
+  function! Foo() abort
+  endfunction
   call dein#add('Shougo/neocomplete.vim', {
         \ 'hook_add':
         \   'let g:foobar = 1',
@@ -512,6 +514,11 @@ function! s:suite.hooks() abort "{{{
         \   join(['let g:foobar = 2'], "\n"),
         \ 'hook_post_source':
         \   join(['if 1', 'let g:bar = 3', 'endif'], "\n"),
+        \ })
+  call dein#add('Shougo/neosnippet.vim', {
+        \ 'hook_add': function('Foo'),
+        \ 'hook_source': function('Foo'),
+        \ 'hook_post_source': function('Foo'),
         \ })
 
   call s:assert.equals(g:foobar, 1)
