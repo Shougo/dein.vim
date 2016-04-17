@@ -97,7 +97,7 @@ function! s:suite.update() abort "{{{
   call dein#add('Shougo/neopairs.vim', {'frozen': 1})
 
   " Travis Git does not support the feature.
-  " call dein#add('Shougo/neobundle.vim', {'rev': 'release'})
+  " call dein#add('Shougo/neobundle.vim', {'rev': '*'})
 
   call s:assert.equals(s:dein_update(), 0)
 

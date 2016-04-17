@@ -166,10 +166,11 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
   endif
 
   let rev = get(a:plugin, 'rev', '')
-  if rev ==# 'release'
-    " Use latest released tag
+  if rev =~# '*'
+    " Use the released tag (git 1.9.2 or above required)
     let rev = get(split(dein#install#_system(self.command
-          \ . ' tag --list --sort -version:refname'), "\n"), 0, '')
+          \ . ' tag --list ' . escape(rev, '*')
+          \ . '--sort -version:refname'), "\n"), 0, '')
   endif
   if rev == ''
     " Fix detach HEAD.

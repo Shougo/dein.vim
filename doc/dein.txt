@@ -467,9 +467,9 @@ OPTIONS 					*dein-options*
 						*dein-options-rev*
 		rev			(String)
 		Specify a revision number or branch/tag name.
-		If it is "release" in "git" type, dein will use latest
-		released tag.
-		Note: If the type is "raw", rev is hash number.
+		If it is "*" in "git" type, dein will use latest released tag.
+		You can specify the wildcards like "0.*".
+		Note: If the type is "raw", rev must be hash number.
 
 		Example:
 >
