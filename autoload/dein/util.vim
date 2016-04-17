@@ -306,7 +306,7 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
   let g:dein#_vimrcs = a:vimrcs
 
   " Filetype off
-  if exists('g:did_load_filetypes')
+  if exists('g:did_load_filetypes') || has('nvim')
     let g:dein#_off1 = 'filetype off'
     execute g:dein#_off1
   endif
