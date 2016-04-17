@@ -304,6 +304,7 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
   endif
   let g:dein#_runtime_path = g:dein#_base_path . '/.dein'
   let g:dein#_vimrcs = a:vimrcs
+  let g:dein#_hook_add = ''
 
   " Filetype off
   if exists('g:did_load_filetypes') || has('nvim')
