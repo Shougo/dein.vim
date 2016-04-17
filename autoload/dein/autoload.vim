@@ -201,12 +201,12 @@ function! dein#autoload#_on_map(mapping, name, mode) abort "{{{
           \ ':<C-U>\zs.*\ze<CR>')
   else
     let mapping = a:mapping
-    while mapping =~ '<[[:alnum:]-]\+>'
+    while mapping =~ '<[[:alnum:]_-]\+>'
       let mapping = substitute(mapping, '\c<Leader>',
             \ get(g:, 'mapleader', '\'), 'g')
       let mapping = substitute(mapping, '\c<LocalLeader>',
             \ get(g:, 'maplocalleader', '\'), 'g')
-      let ctrl = matchstr(mapping, '<\zs[[:alnum:]-]\+\ze>')
+      let ctrl = matchstr(mapping, '<\zs[[:alnum:]_-]\+\ze>')
       execute 'let mapping = substitute(
             \ mapping, "<' . ctrl . '>", "\<' . ctrl . '>", "")'
     endwhile
