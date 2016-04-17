@@ -62,11 +62,11 @@ Note: You need to have git installed.
 <
 And set up a path to the repository directory.
 >
-	set runtimepath+={path to dein directory}
+	set runtimepath^={path to dein directory}
 <
 Example:
 >
-	set runtimepath+=~/.vim/bundle/repos/github.com/Shougo/dein.vim
+	set runtimepath^=~/.vim/bundle/repos/github.com/Shougo/dein.vim
 <
 Now configure your bundles. (Refer to |dein-examples|)
 
