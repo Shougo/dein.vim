@@ -25,10 +25,6 @@ function! dein#_init() abort "{{{
 
   augroup dein
     autocmd!
-    autocmd FileType * nested
-          \ if &filetype != '' |
-          \   call dein#autoload#_on_ft() |
-          \ endif
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
   augroup END
 
@@ -49,10 +45,10 @@ function! dein#_init() abort "{{{
 
   for event in [
         \ 'BufRead', 'BufCreate', 'BufEnter',
-        \ 'BufWinEnter', 'BufNew', 'VimEnter'
+        \ 'BufWinEnter', 'BufNew', 'VimEnter', 'FileType',
         \ ]
     execute 'autocmd dein' event '*'
-          \ "if !has('vim_starting')
+          \ "if !has('vim_starting') || &filetype != ''
           \  || bufnr('$') != 1 || expand('<afile>') != '' |
           \    call dein#autoload#_on_path(expand('<afile>'), "
           \                           .string(event) . ") |

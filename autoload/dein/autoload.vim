@@ -88,13 +88,6 @@ function! dein#autoload#_on_i() abort "{{{
   augroup END
 endfunction"}}}
 
-function! dein#autoload#_on_ft() abort "{{{
-  for filetype in split(&l:filetype, '\.')
-    call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
-          \ "index(get(v:val, 'on_ft', []), filetype) >= 0"))
-  endfor
-endfunction"}}}
-
 function! dein#autoload#_on_idle() abort "{{{
   let plugins = filter(dein#util#_get_lazy_plugins(),
         \ "get(v:val, 'on_idle', 0)")
@@ -109,6 +102,11 @@ function! dein#autoload#_on_idle() abort "{{{
 endfunction"}}}
 
 function! dein#autoload#_on_path(path, event) abort "{{{
+  for filetype in split(&l:filetype, '\.')
+    call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
+          \ "index(get(v:val, 'on_ft', []), filetype) >= 0"))
+  endfor
+
   let path = a:path
   " For ":edit ~".
   if fnamemodify(path, ':t') ==# '~'

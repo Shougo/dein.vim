@@ -248,14 +248,12 @@ function! s:suite.lazy_on_ft() abort "{{{
         \     'v:val ==# plugin.rtp')), 0)
 
   set filetype=c
-  call dein#autoload#_on_ft()
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 0)
 
   set filetype=cpp
-  call dein#autoload#_on_ft()
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
