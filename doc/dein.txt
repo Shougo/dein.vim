@@ -829,10 +829,16 @@ Q: Cannot load colorscheme when reloading .vimrc.
 
 A: You must write |:colorscheme| lines after |dein#end()|.
 >
-	call dein#add('tomasr/molokai')
+	call dein#add('tomasr/molokai', {'merged': 0})
 	...
 
 	call dein#end()
+	colorscheme molokai
+<
+Or you can use |dein#source()| for it.
+>
+	call dein#add('tomasr/molokai', {'merged': 0})
+	call dein#source('molokai')
 	colorscheme molokai
 <
 Q: There is the conflict between "jedi-vim" and "vim-pyenv" "initialize.py"
