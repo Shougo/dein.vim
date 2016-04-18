@@ -52,10 +52,11 @@ function! dein#_init() abort "{{{
         \ 'BufWinEnter', 'BufNew', 'VimEnter'
         \ ]
     execute 'autocmd dein' event '*'
-          \ "if expand('<afile>') != '' |
-          \   call dein#autoload#_on_path(expand('<afile>'), "
+          \ "if !has('vim_starting')
+          \  || bufnr('$') != 1 || expand('<afile>') != '' |
+          \    call dein#autoload#_on_path(expand('<afile>'), "
           \                           .string(event) . ") |
-          \ endif"
+          \  endif"
   endfor
 endfunction"}}}
 
