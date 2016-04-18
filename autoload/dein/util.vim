@@ -207,7 +207,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
     call mkdir(g:dein#_base_path, 'p')
   endif
 
-  call writefile([string(a:vimrcs), dein#util#_vim2json(plugins)],
+  call writefile([string(a:vimrcs), dein#_vim2json(plugins)],
         \ dein#_get_cache_file())
 endfunction"}}}
 function! dein#util#_check_vimrcs() abort "{{{
@@ -496,12 +496,6 @@ function! dein#util#_split(expr) abort "{{{
   return type(a:expr) ==# type([]) ? copy(a:expr) :
         \ split(a:expr, '\r\?\n')
 endfunction"}}}
-function! dein#util#_vim2json(expr) abort "{{{
-  return has('patch-7.4.1498') ? js_encode(a:expr) : string(a:expr)
-endfunction "}}}
-function! dein#util#_json2vim(expr) abort "{{{
-  sandbox return has('patch-7.4.1498') ? js_decode(a:expr) : eval(a:expr)
-endfunction "}}}
 
 function! dein#util#_redir(cmd) abort "{{{
   let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]

@@ -101,15 +101,19 @@ function! dein#load_cache_raw(...) abort "{{{
         \ || string(g:dein#_vimrcs) !=# list[0]
     return {}
   endif
-
-  sandbox let plugins = has('patch-7.4.1498') ?
-        \ js_decode(list[1]) : eval(list[1])
-
-  return plugins
+  return dein#_json2vim(list[1])
 endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
   return g:dein#_base_path.'/cache_'.fnamemodify(v:progname, ':r')
 endfunction"}}}
+function! dein#_vim2json(expr) abort "{{{
+  return   (has('nvim') && exists('*json_encode')) ? json_encode(a:expr)
+        \ : has('patch-7.4.1498') ? js_encode(a:expr) : string(a:expr)
+endfunction "}}}
+function! dein#_json2vim(expr) abort "{{{
+  sandbox return (has('nvim') && exists('*json_encode') ? json_decode(a:expr)
+        \ : has('patch-7.4.1498') ? js_decode(a:expr) : eval(a:expr))
+endfunction "}}}
 
 function! dein#load_state(path, ...) abort "{{{
   let starting = a:0 > 0 ? a:1 : has('vim_starting')
