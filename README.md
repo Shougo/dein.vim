@@ -11,7 +11,6 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 * "rsync" command in $PATH
 * "git" command in $PATH (if you want to install github or vim.org plugins)
 
-
 ## Quick start
 
 #### If you are using Unix/Linux or Mac OS X.
@@ -25,23 +24,22 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 2. Edit your .vimrc like this.
 
-     ```vim
-     if &compatible
-       set nocompatible
-     endif
-     set runtimepath^={path to dein.vim directory}
+```vim
+if &compatible
+  set nocompatible
+endif
+set runtimepath^={path to dein.vim directory}
 
-     call dein#begin(expand('~/.cache/dein'))
+call dein#begin(expand('~/.cache/dein'))
 
-     call dein#add({path to dein.vim directory})
-     call dein#add('Shougo/neocomplete.vim')
-     ...
+call dein#add({path to dein.vim directory})
+call dein#add('Shougo/neocomplete.vim')
+...
 
-     call dein#end()
+call dein#end()
 
-     filetype plugin indent on
-     ```
-
+filetype plugin indent on
+```
 
 ## Concept
 
@@ -55,9 +53,21 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 * No Vundle/NeoBundle compatibility
 
-
 ## Future works (not implemented yet)
 
 * Other types support
 
 * Unite log viewer
+
+### Options
+
+Some common options. For a more detailed list, run `:h dein-options`
+
+| Option    | Type               | Description                                                                           |
+|-----------|--------------------|---------------------------------------------------------------------------------------|
+| `name`    | `string`           | A name for the plugin. If it is omitted, the tail of the repository name will be used |
+| `rev`     | `string`           | The revision number or branch/tag name for the repo                                   |
+| `build`   | `string`           | Command to run after the plugin is installed                                          |
+| `on_ft`   | `string` or `list` | Load a plugin for the current filetype                                                |
+| `on_cmd`  | `string` or `list` | Load the plugin for these commands                                                    |
+
