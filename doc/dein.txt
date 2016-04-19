@@ -618,6 +618,14 @@ OPTIONS 					*dein-options*
 
 HOOKS 						*dein-hooks*
 
+		The string will be split by the lines.
+		It is useful for the plugins initialization.
+		Note: The Function hooks cannot be cached.  You must
+		initialize it.
+
+		Note: You can use |g:dein#plugin| in the hooks.
+		Note: The loading order is not guaranteed in non lazy plugins.
+
 						*dein-options-hook_add*
 		hook_add	(String) or (Function)
 		It is executed after plugins are added.
@@ -652,28 +660,21 @@ HOOKS 						*dein-hooks*
 		call dein#source('thinca/vim-qfreplace',
 		\ 'hook_source': function('Func'))
 <
+		Note: non lazy plugins' |dein-options-hook_source| cannot be
+		called.  You must call it by |dein#call_hook()| if needed.
+
 						*dein-options-hook_post_source*
 		hook_post_source (String) or (Function)
 		It is executed after plugins are sourced.
 
+		Note: In Vim initializing, you must call the
+		"hook_post_source" hooks manually in |VimEnter| if needed.
+>
+	autocmd VimEnter * call dein#call_hook('post_source')
+<
 						*dein-options-hook_post_update*
 		hook_post_update (String) or (Function)
 		It is executed after plugins are updated.
-
-		The string will be split by the lines.
-		It is useful for the plugins initialization.
-		Note: The Function hooks cannot be cached.  You must
-		initialize it.
-
-		Note: You can use |g:dein#plugin| in the hooks.
-		Note: The loading order is not guaranteed in non lazy plugins.
-		Note: non lazy plugins' |dein-options-hook_source| cannot be
-		called.  You must call it manually if needed.
-
-		Note: In Vim initializing, you must call the
-		"hook_post_source" hooks manually in |VimEnter| if needed. >
-
-	autocmd VimEnter * call dein#call_hook('post_source')
 
 ------------------------------------------------------------------------------
 TOML 						*dein-toml*
