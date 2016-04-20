@@ -276,8 +276,34 @@ function! s:suite.lazy_on_path() abort "{{{
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 0)
 
-  execut 'edit' tempname()
+  execute 'edit' tempname()
 
+  call s:assert.equals(plugin.sourced, 1)
+  call s:assert.equals(
+        \ len(filter(dein#util#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 1)
+endfunction"}}}
+
+function! s:suite.lazy_on_if() abort "{{{
+  call dein#begin(s:path)
+
+  let temp = tempname()
+  call dein#add('Shougo/neosnippet.vim',
+        \ { 'on_if': '&filetype ==# "foobar"' })
+
+  call s:assert.equals(s:dein_install(), 0)
+
+  call dein#end()
+
+  let plugin = dein#get('neosnippet.vim')
+
+  call s:assert.equals(
+        \ len(filter(dein#util#_split_rtp(&runtimepath),
+        \     'v:val ==# plugin.rtp')), 0)
+
+  set filetype=foobar
+
+  call s:assert.equals(plugin.lazy, 1)
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),

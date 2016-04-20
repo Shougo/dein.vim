@@ -120,6 +120,8 @@ function! dein#autoload#_on_event(event) abort "{{{
   let plugins += filter(copy(lazy_plugins),
         \ "!empty(filter(copy(get(v:val, 'on_path', [])),
         \                'path =~? v:val'))")
+  sandbox let plugins += filter(copy(lazy_plugins),
+        \ "has_key(v:val, 'on_if') && eval(v:val.on_if)")
   if empty(plugins)
     return
   endif

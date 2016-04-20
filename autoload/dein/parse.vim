@@ -109,6 +109,7 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
           \ || has_key(plugin, 'on_func')
           \ || has_key(plugin, 'on_map')
           \ || has_key(plugin, 'on_path')
+          \ || has_key(plugin, 'on_if')
           \ || has_key(plugin, 'on_source')
   endif
 

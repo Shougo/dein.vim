@@ -552,6 +552,15 @@ OPTIONS 					*dein-options*
 		Note: It is useful for explorer behavior plugins.
 		Ex: vimfiler, metarw, vim-gnupg ...
 
+						*dein-options-on_if*
+		on_if		(String)
+		If it is evaluated and it is non zero, dein will call
+		|dein#source()|.
+
+		For example: >
+		call dein#add('blueyed/vim-diminactive',
+		\ {'on_if': 'winnr("$") > 1'})
+<
 						*dein-options-on_func*
 		on_func		(List) or (String)
 		If it is matched to the called function, dein will call
