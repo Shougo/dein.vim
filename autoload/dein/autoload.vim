@@ -101,20 +101,23 @@ function! dein#autoload#_on_idle() abort "{{{
   endif
 endfunction"}}}
 
-function! dein#autoload#_on_path(path, event) abort "{{{
-  for filetype in split(&l:filetype, '\.')
-    call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
-          \ "index(get(v:val, 'on_ft', []), filetype) >= 0"))
-  endfor
+function! dein#autoload#_on_event(event) abort "{{{
+  let lazy_plugins = dein#util#_get_lazy_plugins()
+  let plugins = []
 
-  let path = a:path
+  let path = expand('<afile>')
   " For ":edit ~".
   if fnamemodify(path, ':t') ==# '~'
     let path = '~'
   endif
-
   let path = dein#util#_expand(path)
-  let plugins = filter(dein#util#_get_lazy_plugins(),
+
+  for filetype in split(&l:filetype, '\.')
+    let plugins += filter(copy(lazy_plugins),
+          \ "index(get(v:val, 'on_ft', []), filetype) >= 0")
+  endfor
+
+  let plugins += filter(copy(lazy_plugins),
         \ "!empty(filter(copy(get(v:val, 'on_path', [])),
         \                'path =~? v:val'))")
   if empty(plugins)

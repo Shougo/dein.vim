@@ -50,8 +50,7 @@ function! dein#_init() abort "{{{
     execute 'autocmd dein' event '*'
           \ "if &filetype != '' || bufnr('$') != 1
           \  || expand('<afile>') != '' |
-          \    call dein#autoload#_on_path(expand('<afile>'), "
-          \                           .string(event) . ") |
+          \    call dein#autoload#_on_event(".string(event).") |
           \  endif"
   endfor
 endfunction"}}}
