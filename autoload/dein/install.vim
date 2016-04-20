@@ -251,8 +251,10 @@ function! s:merge_files(plugins, directory) abort "{{{
     endfor
   endfor
 
-  call dein#util#_writefile(printf('.dein/%s/%s.vim',
-        \ a:directory, a:directory), files)
+  if !empty(files)
+    call dein#util#_writefile(printf('.dein/%s/%s.vim',
+          \ a:directory, a:directory), files)
+  endif
 endfunction"}}}
 function! s:list_directory(directory) abort "{{{
   return dein#util#_globlist(a:directory . '/*')
