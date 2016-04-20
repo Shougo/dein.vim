@@ -198,7 +198,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort "{{{
 
   if a:mode ==# 'o' && v:operator ==# 'c'
     " Note: This is the dirty hack.
-    execute matchstr(maparg(a:mapping . input, a:mode),
+    execute matchstr(s:mapargrec(a:mapping . input, a:mode),
           \ ':<C-U>\zs.*\ze<CR>')
   else
     let mapping = a:mapping
@@ -340,6 +340,13 @@ function! s:is_reset_ftplugin(plugins) abort "{{{
     endif
   endfor
   return 0
+endfunction"}}}
+function! s:mapargrec(map, mode) abort "{{{
+  let arg = maparg(a:map, a:mode)
+  while maparg(arg, a:mode) != ''
+    let arg = maparg(arg, a:mode)
+  endwhile
+  return arg
 endfunction"}}}
 
 " vim: foldmethod=marker
