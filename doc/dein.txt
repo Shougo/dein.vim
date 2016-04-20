@@ -885,7 +885,7 @@ Q: I don't want to call |dein#recache_runtimepath()| manually.
 A: Please specify your vimrc path to |dein#begin()| 2nd argument.
 It detects the vimrc changes.
 >
-	call dein#begin(path, expand('<sfile>'))
+	call dein#begin(path, [expand('<sfile>')])
 <
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:
