@@ -242,5 +242,8 @@ function! dein#config(arg, ...) abort "{{{
         \ dein#util#_config(a:arg, get(a:000, 0, {})) :
         \ map(copy(a:arg), 'dein#util#_config(v:val, a:1)')
 endfunction"}}}
+function! dein#set_hook(name, hook_name, hook) abort "{{{
+  return dein#util#_set_hook(a:name, a:hook_name, a:hook)
+endfunction"}}}
 
 " vim: foldmethod=marker

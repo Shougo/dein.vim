@@ -297,7 +297,7 @@ dein#disable({plugins})				*dein#disable()*
 		Note: This command must be executed before dein loads
 		the plugins.
 
-dein#config({plugin-name}, {options})	 *dein#config()*
+dein#config({plugin-name}, {options})		 *dein#config()*
 dein#config({options})
 		Change plugin options for {plugin-name}.
 		It you omit {plugin-name}, it uses |dein#name| variable.
@@ -313,6 +313,17 @@ dein#config({options})
 	\ 'lazy' : 1, 'on_i' : 1,
 	\ })
 <
+						*dein#set_hook()*
+dein#set_hook({plugin-name}, {hook-name}, {hook})
+		Set hook {hook} as {hook-name} in {plugin-name}.
+		It can be called after |dein#begin()| / |dein#end()| block.
+>
+	call dein#add('Shougo/neosnippet.vim', {'lazy': 1})
+	function! Foo() abort
+	endfunction
+	call dein#set_hook('neosnippet.vim', 'hook_source' : function('Foo'))
+<
+
 ------------------------------------------------------------------------------
 VARIABLES 					*dein-variables*
 

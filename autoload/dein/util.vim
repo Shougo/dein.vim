@@ -442,6 +442,15 @@ function! dein#util#_execute_hook(plugin, hook) abort "{{{
     call dein#util#_error(v:exception)
   endtry
 endfunction"}}}
+function! dein#util#_set_hook(name, hook_name, hook) abort "{{{
+  if !has_key(g:dein#_plugins, a:name)
+    call dein#util#_error(a:name . ' is not found.')
+    return 1
+  endif
+  let g:dein#_plugins[a:name][a:hook_name] =
+        \ type(a:hook) != type('') ? a:hook :
+        \   substitute(a:hook, '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
+endfunction"}}}
 
 function! dein#util#_sort_by(list, expr) abort "{{{
   let pairs = map(a:list, printf('[v:val, %s]', a:expr))
