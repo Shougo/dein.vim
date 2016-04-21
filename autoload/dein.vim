@@ -44,8 +44,7 @@ function! dein#_init() abort "{{{
   endif
 
   for event in [
-        \ 'BufRead', 'BufCreate', 'BufEnter',
-        \ 'BufWinEnter', 'BufNew', 'VimEnter', 'FileType',
+        \ 'BufRead', 'BufNewFile', 'BufNew', 'VimEnter', 'FileType',
         \ ]
     execute 'autocmd dein' event '*'
           \ "if &filetype != '' || bufnr('$') != 1
