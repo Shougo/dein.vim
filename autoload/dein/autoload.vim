@@ -101,7 +101,7 @@ function! dein#autoload#_on_idle() abort "{{{
   endif
 endfunction"}}}
 
-function! dein#autoload#_on_event(event) abort "{{{
+function! dein#autoload#_on_default_event(event) abort "{{{
   let lazy_plugins = dein#util#_get_lazy_plugins()
   let plugins = []
 
@@ -126,7 +126,10 @@ function! dein#autoload#_on_event(event) abort "{{{
     return
   endif
 
-  call dein#autoload#_source(plugins)
+  call s:source_events(a:event, plugins)
+endfunction"}}}
+function! s:source_events(event, plugins) abort "{{{
+  call dein#autoload#_source(a:plugins)
   execute 'doautocmd <nomodeline>' a:event
 
   if !exists('s:loaded_path') && has('vim_starting')

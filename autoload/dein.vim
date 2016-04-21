@@ -28,6 +28,10 @@ function! dein#_init() abort "{{{
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
   augroup END
 
+  augroup dein-events
+    autocmd!
+  augroup END
+
   augroup dein-insert
     autocmd!
     autocmd InsertEnter * call dein#autoload#_on_i()
@@ -49,7 +53,7 @@ function! dein#_init() abort "{{{
     execute 'autocmd dein' event '*'
           \ "if &filetype != '' || bufnr('$') != 1
           \  || expand('<afile>') != '' |
-          \    call dein#autoload#_on_event(".string(event).") |
+          \    call dein#autoload#_on_default_event(".string(event).") |
           \  endif"
   endfor
 endfunction"}}}
