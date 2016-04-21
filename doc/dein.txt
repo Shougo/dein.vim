@@ -556,6 +556,8 @@ OPTIONS 					*dein-options*
 		on_if		(String)
 		If it is evaluated and it is non zero, dein will call
 		|dein#source()|.
+		The default evaluate timings are "BufRead", "BufNewFile",
+		"BufNew", "VimEnter" and "FileType".
 
 		For example: >
 		call dein#add('blueyed/vim-diminactive',
