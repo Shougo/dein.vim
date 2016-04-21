@@ -82,15 +82,9 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
 
-  " Auto convert2list.
-  for key in filter([
-        \ 'on_ft', 'on_path', 'on_cmd',
-        \ 'on_func', 'on_map', 'on_source',
-        \ 'depends',
-        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) != type([])
-        \")
-    let plugin[key] = [plugin[key]]
-  endfor
+  if has_key(plugin, 'depends') && type(plugin.depends) != type([])
+    let plugin.depends = [plugin.depends]
+  endif
 
   " Deprecated check.
   for key in filter([
@@ -124,6 +118,19 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
     sandbox let plugin.if = eval(a:plugin.if)
   endif
 
+  if !plugin.lazy
+    return plugin
+  endif
+
+  " Auto convert2list.
+  for key in filter([
+        \ 'on_ft', 'on_path', 'on_cmd',
+        \ 'on_func', 'on_map', 'on_source',
+        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) != type([])
+        \")
+    let plugin[key] = [plugin[key]]
+  endfor
+
   " Hooks
   for hook in filter([
         \ 'hook_add', 'hook_source',
@@ -133,13 +140,11 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
           \ '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
   endfor
 
-  if plugin.lazy
-    if has_key(plugin, 'on_cmd')
-      call s:generate_dummy_commands(plugin)
-    endif
-    if has_key(plugin, 'on_map')
-      call s:generate_dummy_mappings(plugin)
-    endif
+  if has_key(plugin, 'on_cmd')
+    call s:generate_dummy_commands(plugin)
+  endif
+  if has_key(plugin, 'on_map')
+    call s:generate_dummy_mappings(plugin)
   endif
 
   return plugin
