@@ -278,6 +278,13 @@ function! dein#util#_save_state(is_starting) abort "{{{
     endif
   endfor
 
+  " Add events
+  for [event, plugins] in items(g:dein#_event_plugins)
+    call add(lines, printf('autocmd dein-events %s * call '
+          \. 'dein#autoload#_on_event("%s", %s)',
+          \ event, event, string(plugins)))
+  endfor
+
   call writefile(lines, dein#_get_state_file())
 endfunction"}}}
 function! dein#util#_clear_state() abort "{{{
@@ -378,6 +385,12 @@ function! dein#util#_end() abort "{{{
   if g:dein#_hook_add != ''
     call dein#util#_execute_hook({}, g:dein#_hook_add)
   endif
+
+  for [event, plugins] in items(g:dein#_event_plugins)
+    execute printf('autocmd dein-events %s * call '
+          \. 'dein#autoload#_on_event("%s", %s)',
+          \ event, event, string(plugins))
+  endfor
 
   if !has('vim_starting')
     call dein#call_hook('source')

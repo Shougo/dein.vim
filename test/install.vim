@@ -218,13 +218,16 @@ function! s:suite.lazy_on_i() abort "{{{
 
   call dein#end()
 
+  call s:assert.equals(g:dein#_event_plugins,
+        \ {'InsertEnter': ['neocomplete.vim']})
+
   let plugin = dein#get('neocomplete.vim')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 0)
 
-  call dein#autoload#_on_i()
+  doautocmd InsertEnter
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
@@ -451,6 +454,9 @@ function! s:suite.lazy_on_idle() abort "{{{
   call s:assert.equals(s:dein_install(), 0)
 
   call dein#end()
+
+  call s:assert.equals(g:dein#_event_plugins,
+        \ {'CursorHold': ['vimfiler.vim'], 'FocusLost': ['vimfiler.vim']})
 
   let plugin = dein#get('vimfiler.vim')
 

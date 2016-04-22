@@ -75,32 +75,6 @@ function! dein#autoload#_source(...) abort "{{{
   endif
 endfunction"}}}
 
-function! dein#autoload#_on_i() abort "{{{
-  let plugins = filter(dein#util#_get_lazy_plugins(),
-        \ "get(v:val, 'on_i', 0)")
-  if !empty(plugins)
-    call dein#autoload#_source(plugins)
-    doautocmd <nomodeline> InsertEnter
-  endif
-
-  augroup dein-insert
-    autocmd!
-  augroup END
-endfunction"}}}
-
-function! dein#autoload#_on_idle() abort "{{{
-  let plugins = filter(dein#util#_get_lazy_plugins(),
-        \ "get(v:val, 'on_idle', 0)")
-  if empty(plugins)
-    augroup dein-idle
-      autocmd!
-    augroup END
-  else
-    call dein#autoload#_source(plugins[: 5])
-    call feedkeys("g\<ESC>", 'n')
-  endif
-endfunction"}}}
-
 function! dein#autoload#_on_default_event(event) abort "{{{
   let lazy_plugins = dein#util#_get_lazy_plugins()
   let plugins = []
@@ -122,13 +96,26 @@ function! dein#autoload#_on_default_event(event) abort "{{{
         \                'path =~? v:val'))")
   sandbox let plugins += filter(copy(lazy_plugins),
         \ "has_key(v:val, 'on_if') && eval(v:val.on_if)")
-  if empty(plugins)
-    return
-  endif
 
   call s:source_events(a:event, plugins)
 endfunction"}}}
+function! dein#autoload#_on_event(event, plugins) abort "{{{
+  let lazy_plugins = filter(dein#util#_get_plugins(a:plugins),
+        \ '!v:val.sourced')
+  if empty(lazy_plugins)
+    execute 'autocmd! dein-events' a:event
+    return
+  endif
+
+  sandbox let plugins = filter(copy(lazy_plugins),
+        \ "!has_key(v:val, 'on_if') || eval(v:val.on_if)")
+  call s:source_events(a:event, plugins)
+endfunction"}}}
 function! s:source_events(event, plugins) abort "{{{
+  if empty(a:plugins)
+    return
+  endif
+
   call dein#autoload#_source(a:plugins)
   execute 'doautocmd <nomodeline>' a:event
 

@@ -534,6 +534,11 @@ OPTIONS 					*dein-options*
 		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
 		\ })
 <
+						*dein-options-augroup*
+		augroup		(String)
+		An augroup name that the plugin uses for |VimEnter| or
+		|GUIEnter| autocmd events.
+
 						*dein-options-lazy*
 		lazy		(Number)
 		If set to non-zero, dein doesn't add the path to 'runtimepath'
@@ -544,11 +549,6 @@ OPTIONS 					*dein-options*
 		"plugin/" directory as lazy load plugins.  It is meaningless
 		and just increases the overhead.  You can get the no meaning
 		lazy plugins by |dein#check_lazy_plugins()|.
-
-						*dein-options-on_i*
-		on_i		(Number)
-		If set to non-zero, dein will call |dein#source()| on
-		|InsertEnter| autocmd.
 
 						*dein-options-on_ft*
 		on_ft		(List) or (String)
@@ -563,17 +563,6 @@ OPTIONS 					*dein-options*
 		Note: It is useful for explorer behavior plugins.
 		Ex: vimfiler, metarw, vim-gnupg ...
 
-						*dein-options-on_if*
-		on_if		(String)
-		If it is evaluated and it is non zero, dein will call
-		|dein#source()|.
-		The default evaluate timings are "BufRead", "BufNewFile",
-		"BufNew", "VimEnter" and "FileType".
-
-		For example: >
-		call dein#add('blueyed/vim-diminactive',
-		\ {'on_if': 'winnr("$") > 1'})
-<
 						*dein-options-on_func*
 		on_func		(List) or (String)
 		If it is matched to the called function, dein will call
@@ -613,16 +602,37 @@ OPTIONS 					*dein-options*
 		nmap n <Plug>(anzu-jump-n)<Plug>(anzu-echo-search-status)zv
 		nmap N <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
 <
+						*dein-options-on_i*
+		on_i		(Number)
+		If set to non-zero, dein will call |dein#source()| on
+		|InsertEnter| autocmd.
+		Note: This is deprecated option.  You should use
+		|dein-options-on_event| instead.
+
 						*dein-options-on_idle*
 		on_idle		(Number)
 		If set to non-zero, dein will call |dein#source()| on
 		|FocusLost| or |CursorHold| autocmd.
+		Note: This is deprecated option.  You should use
+		|dein-options-on_event| instead.
 
-						*dein-options-augroup*
-		augroup		(String)
-		An augroup name that the plugin uses for |VimEnter| or
-		|GUIEnter| autocmd events.
+						*dein-options-on_event*
+		on_event	(String) or (List)
+		dein will call |dein#source()| on the events.
 
+						*dein-options-on_if*
+		on_if		(String)
+		If it is evaluated and it is non zero, dein will call
+		|dein#source()|.
+		The default evaluate timings are "BufRead", "BufNewFile",
+		"BufNew", "VimEnter" and "FileType".
+		If |dein-options-on_event| exists, it is evaluated when
+		|dein-options-on_event|.
+
+		For example: >
+		call dein#add('blueyed/vim-diminactive',
+		\ {'on_event': 'WinEnter', 'on_if': 'winnr("$") > 1'})
+<
 						*dein-options-type__depth*
 		type__depth		(Number)
 		The history depth for "git clone".

@@ -118,19 +118,6 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
     sandbox let plugin.if = eval(a:plugin.if)
   endif
 
-  if !plugin.lazy
-    return plugin
-  endif
-
-  " Auto convert2list.
-  for key in filter([
-        \ 'on_ft', 'on_path', 'on_cmd',
-        \ 'on_func', 'on_map', 'on_source',
-        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) != type([])
-        \")
-    let plugin[key] = [plugin[key]]
-  endfor
-
   " Hooks
   for hook in filter([
         \ 'hook_add', 'hook_source',
@@ -139,6 +126,35 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
     let plugin[hook] = substitute(plugin[hook],
           \ '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
   endfor
+
+  if !plugin.lazy
+    return plugin
+  endif
+
+  " Auto convert2list.
+  for key in filter([
+        \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
+        \ 'on_source', 'on_event',
+        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) != type([])
+        \")
+    let plugin[key] = [plugin[key]]
+  endfor
+
+  if get(plugin, 'on_i', 0)
+    let plugin.on_event = ['InsertEnter']
+  endif
+  if get(plugin, 'on_idle', 0)
+    let plugin.on_event = ['FocusLost', 'CursorHold']
+  endif
+  if has_key(plugin, 'on_event')
+    for event in plugin.on_event
+      if !has_key(g:dein#_event_plugins, event)
+        let g:dein#_event_plugins[event] = [plugin.name]
+      else
+        call add(g:dein#_event_plugins[event], plugin.name)
+      endif
+    endfor
+  endif
 
   if has_key(plugin, 'on_cmd')
     call s:generate_dummy_commands(plugin)

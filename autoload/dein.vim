@@ -22,6 +22,7 @@ function! dein#_init() abort "{{{
   let g:dein#_off2 = ''
   let g:dein#_vimrcs = []
   let g:dein#_block_level = 0
+  let g:dein#_event_plugins = {}
 
   augroup dein
     autocmd!
@@ -30,16 +31,6 @@ function! dein#_init() abort "{{{
 
   augroup dein-events
     autocmd!
-  augroup END
-
-  augroup dein-insert
-    autocmd!
-    autocmd InsertEnter * call dein#autoload#_on_i()
-  augroup END
-
-  augroup dein-idle
-    autocmd!
-    autocmd FocusLost,CursorHold * call dein#autoload#_on_idle()
   augroup END
 
   if exists('##CmdUndefined')
