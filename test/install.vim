@@ -547,7 +547,7 @@ function! s:suite.hooks() abort "{{{
         \ })
   call dein#add('Shougo/neosnippet.vim', {
         \ 'hook_add': function('Foo'),
-        \ 'hook_source': function('Foo'),
+        \ 'hook_post_source': function('Foo'),
         \ })
   call dein#set_hook('neosnippet.vim', 'hook_source', function('Foo'))
 
