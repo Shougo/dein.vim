@@ -321,7 +321,7 @@ dein#set_hook({plugin-name}, {hook-name}, {hook})
 	call dein#add('Shougo/neosnippet.vim', {'lazy': 1})
 	function! Foo() abort
 	endfunction
-	call dein#set_hook('neosnippet.vim', 'hook_source' : function('Foo'))
+	call dein#set_hook('neosnippet.vim', 'hook_source', function('Foo'))
 <
 
 ------------------------------------------------------------------------------
