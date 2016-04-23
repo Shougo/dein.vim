@@ -367,6 +367,12 @@ g:dein#notification_icon
 
 		Defaults: ""
 
+ 					*g:dein#download_command*
+g:dein#download_command
+		The default download command.
+
+		Defaults: "curl --fail -s -o" or "wget -q -O"
+
 						*g:dein#install_max_processes*
 g:dein#install_max_processes
 		The max number of processes used for dein/install source

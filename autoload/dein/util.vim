@@ -549,6 +549,20 @@ function! dein#util#_disable(names) abort "{{{
   endfor
 endfunction"}}}
 
+function! dein#util#_download(uri, outpath) abort "{{{
+  if !exists('g:dein#download_command')
+    let g:dein#download_command =
+          \ executable('curl') ? 'curl --fail -s -o' :
+          \ executable('wget') ? 'wget -q -O' : ''
+  endif
+  if g:dein#download_command != ''
+    return printf('%s "%s" "%s"',
+          \ g:dein#download_command, a:outpath, a:uri)
+  else
+    return 'E: curl or wget command is not available!'
+  endif
+endfunction"}}}
+
 function! s:tsort_impl(target, mark, sorted) abort "{{{
   if empty(a:target) || has_key(a:mark, a:target.name)
     return
