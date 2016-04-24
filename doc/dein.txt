@@ -726,7 +726,12 @@ HOOKS 						*dein-hooks*
 <
 		Note: non lazy plugins' |dein-options-hook_source| cannot be
 		called.  You must call it by |dein#call_hook()| if needed.
-
+>
+		call dein#begin()
+		...
+		call dein#end()
+		call dein#call_hook('source')
+<
 						*dein-options-hook_post_source*
 		hook_post_source (String) or (Function)
 		It is executed after plugins are sourced.
