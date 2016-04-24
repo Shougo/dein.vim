@@ -540,6 +540,22 @@ OPTIONS 					*dein-options*
 		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
 		\ })
 <
+						*dein-options-script_type*
+		script_type		(String)
+		Specify the script type. It is useful for non-official
+		categorized plugins.
+		For example: "indent", "plugin", "ftplugin", ...
+		Note: You must not specify it for categorized plugins.
+		Example:
+>
+		call dein#add(
+		\ 'https://raw.githubusercontent.com/Shougo/'
+		\ . 'shougo-s-github/master/vim/colors/candy.vim',
+		\ {'script_type' : 'colors'})
+		call dein#add(
+		\ 'https://github.com/bronzehedwick/impactjs-colorscheme',
+		\ {'script_type' : 'colors'})
+<
 						*dein-options-augroup*
 		augroup		(String)
 		An augroup name that the plugin uses for |VimEnter| or

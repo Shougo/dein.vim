@@ -66,6 +66,7 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
     let plugin.path = (plugin.repo =~# '^/\|^\a:[/\\]') ?
           \ plugin.repo : dein#util#_get_base_path().'/repos/'.plugin.name
   endif
+
   if get(plugin, 'rev') != ''
     let plugin.path .= '_' . substitute(plugin.rev,
           \ '[^[:alnum:]_-]', '_', 'g')
@@ -81,6 +82,11 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
     let plugin.rtp = dein#util#_expand(plugin.rtp)
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
+
+  if has_key(plugin, 'script_type')
+    " Add script_type.
+    let plugin.path .= '/' . plugin.script_type
+  endif
 
   if has_key(plugin, 'depends') && type(plugin.depends) != type([])
     let plugin.depends = [plugin.depends]

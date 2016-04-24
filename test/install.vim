@@ -712,6 +712,21 @@ function! s:suite.rollback() abort "{{{
   call s:assert.equals(s:get_revision(plugin), old_rev)
 endfunction"}}}
 
+function! s:suite.script_type() abort "{{{
+  call dein#begin(s:path)
+
+  call dein#add(
+        \ 'https://github.com/bronzehedwick/impactjs-colorscheme',
+        \ {'script_type' : 'colors'})
+
+  call s:assert.equals(dein#end(), 0)
+
+  call s:assert.equals(s:dein_update(), 0)
+
+  call s:assert.true(filereadable(
+        \ dein#get('impactjs-colorscheme').rtp . '/colors/impactjs.vim'))
+endfunction"}}}
+
 function! s:get_revision(plugin) abort "{{{
   let cwd = getcwd()
   try
