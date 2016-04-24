@@ -26,7 +26,6 @@ function! s:suite.copy_directories() abort "{{{
   call dein#install#_copy_directories([temp, temp3], temp2)
 
   call s:assert.true(isdirectory(temp2))
-  echomsg string(system('ls -R ' . temp2))
   call s:assert.true(filereadable(temp2.'/foo'))
   call s:assert.true(filereadable(temp2.'/bar'))
 endfunction"}}}

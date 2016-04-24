@@ -174,7 +174,7 @@ function! dein#util#_writefile(path, list) abort "{{{
 endfunction"}}}
 
 function! dein#util#_get_type(name) abort "{{{
-  return get({'git': dein#types#git#define()}, a:name, {})
+  return get(dein#parse#_get_types(), a:name, {})
 endfunction"}}}
 
 function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{

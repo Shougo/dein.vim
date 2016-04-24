@@ -719,12 +719,20 @@ function! s:suite.script_type() abort "{{{
         \ 'https://github.com/bronzehedwick/impactjs-colorscheme',
         \ {'script_type' : 'colors'})
 
+  call dein#add(
+        \ 'https://raw.githubusercontent.com/Shougo/'
+        \ . 'shougo-s-github/master/vim/colors/candy.vim',
+        \ {'script_type' : 'colors'})
+  call s:assert.equals(dein#get('candy.vim').type, 'raw')
+
   call s:assert.equals(dein#end(), 0)
 
   call s:assert.equals(s:dein_update(), 0)
 
   call s:assert.true(filereadable(
         \ dein#get('impactjs-colorscheme').rtp . '/colors/impactjs.vim'))
+  call s:assert.true(filereadable(
+        \ dein#get('candy.vim').rtp . '/colors/candy.vim'))
 endfunction"}}}
 
 function! s:get_revision(plugin) abort "{{{

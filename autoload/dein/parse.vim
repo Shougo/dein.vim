@@ -28,10 +28,13 @@ function! dein#parse#_add(repo, options) abort "{{{
   return plugin
 endfunction"}}}
 function! dein#parse#_init(repo, options) abort "{{{
-  let plugin = s:git.init(a:repo, a:options)
-  if empty(plugin)
-    let plugin.type = 'none'
-    let plugin.local = 1
+  if has_key(a:options, 'type')
+    let plugin = dein#util#_get_type(a:options.type).init(a:repo, a:options)
+  else
+    let plugin = s:git.init(a:repo, a:options)
+    if empty(plugin)
+      let plugin = s:check_type(a:repo, a:options)
+    endif
   endif
   let plugin.repo = a:repo
   if !empty(a:options)
@@ -338,6 +341,35 @@ function! s:generate_dummy_mappings(plugin) abort "{{{
       endfor
     endfor
   endfor
+endfunction"}}}
+
+function! dein#parse#_get_types() abort "{{{
+  if !exists('s:types')
+    " Load types.
+    let s:types = {}
+    for type in filter(map(split(globpath(&runtimepath,
+          \ 'autoload/dein/types/*.vim', 1), '\n'),
+          \ "dein#types#{fnamemodify(v:val, ':t:r')}#define()"),
+          \ '!empty(v:val)')
+      let s:types[type.name] = type
+    endfor
+  endif
+  return s:types
+endfunction"}}}
+function! s:check_type(repo, options) abort "{{{
+  let plugin = {}
+  for type in values(dein#parse#_get_types())
+    let plugin = type.init(a:repo, a:options)
+    if !empty(plugin)
+      break
+    endif
+  endfor
+  if empty(plugin)
+    let plugin.type = 'none'
+    let plugin.local = 1
+  endif
+
+  return plugin
 endfunction"}}}
 
 function! dein#parse#_name_conversion(path) abort "{{{

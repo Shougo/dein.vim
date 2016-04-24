@@ -29,7 +29,8 @@ function! s:type.init(repo, options) abort "{{{
   if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
     " Local repository.
     return { 'type': 'git', 'local': 1 }
-  elseif isdirectory(a:repo)
+  elseif isdirectory(a:repo) || a:repo =~#
+        \ '//\%(raw\|gist\)\.githubusercontent\.com/'
     return {}
   endif
 
@@ -85,7 +86,7 @@ function! s:type.get_uri(repo, options) abort "{{{
           \ protocol . '://' . host . '/' . name
   endif
 
-  if uri !~ '\.git\s*$'
+  if uri !~# '\.git\s*$'
     " Add .git suffix.
     let uri .= '.git'
   endif

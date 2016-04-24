@@ -540,6 +540,17 @@ OPTIONS 					*dein-options*
 		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
 		\ })
 <
+						*dein-options-type*
+		type			(String)
+		Specify the repository type. If it is omitted, a guess is made
+		based on {repository}.
+
+		The available types:
+		"none"      : None repository
+		"raw"       : Raw plugin file ("script_type" attribute is
+		              needed)
+		"git"       : Git
+
 						*dein-options-script_type*
 		script_type		(String)
 		Specify the script type. It is useful for non-official
