@@ -371,7 +371,8 @@ g:dein#notification_icon
 g:dein#download_command
 		The default download command.
 
-		Defaults: "curl --fail -s -o" or "wget -q -O"
+		Defaults: "curl --silent --location --output" or "wget -q -O"
+		or use PowerShell.
 
 						*g:dein#install_max_processes*
 g:dein#install_max_processes

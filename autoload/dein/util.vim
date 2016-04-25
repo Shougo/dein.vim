@@ -552,12 +552,20 @@ endfunction"}}}
 function! dein#util#_download(uri, outpath) abort "{{{
   if !exists('g:dein#download_command')
     let g:dein#download_command =
-          \ executable('curl') ? 'curl --fail -s -o' :
-          \ executable('wget') ? 'wget -q -O' : ''
+          \ executable('curl') ?
+          \   'curl --silent --location --output' :
+          \ executable('wget') ?
+          \   'wget -q -O' : ''
   endif
   if g:dein#download_command != ''
     return printf('%s "%s" "%s"',
           \ g:dein#download_command, a:outpath, a:uri)
+  elseif dein#util#_is_windows()
+    " Use powershell
+    " Todo: Proxy support
+    let pscmd = printf("(New-Object Net.WebClient).DownloadFile('%s', '%s')",
+          \ a:url, a:outpath)
+    return printf('powershell -Command "%s"', pscmd)
   else
     return 'E: curl or wget command is not available!'
   endif
