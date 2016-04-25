@@ -23,9 +23,14 @@ endfunction"}}}
 let s:type = {
       \ 'name': 'git',
       \ 'command': g:dein#types#git#command_path,
+      \ 'executable': executable(g:dein#types#git#command_path),
       \ }
 
 function! s:type.init(repo, options) abort "{{{
+  if !self.executable
+    return {}
+  endif
+
   if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
     " Local repository.
     return { 'type': 'git', 'local': 1 }
@@ -96,9 +101,6 @@ endfunction"}}}
 
 function! s:type.get_sync_command(plugin) abort "{{{
   let git = self.command
-  if !executable(git)
-    return 'E: "git" command is not installed.'
-  endif
 
   if !isdirectory(a:plugin.path)
     let cmd = 'clone'
@@ -126,29 +128,28 @@ function! s:type.get_sync_command(plugin) abort "{{{
 endfunction"}}}
 
 function! s:type.get_revision_number_command(plugin) abort "{{{
-  if !executable(self.command)
+  if !self.executable
     return ''
   endif
 
   return self.command .' rev-parse HEAD'
 endfunction"}}}
 function! s:type.get_revision_pretty_command(plugin) abort "{{{
-  if !executable(self.command)
+  if !self.executable
     return ''
   endif
 
   return self.command . ' log -1 --pretty=format:"%h [%cr] %s"'
 endfunction"}}}
 function! s:type.get_commit_date_command(plugin) abort "{{{
-  if !executable(self.command)
+  if !self.executable
     return ''
   endif
 
   return self.command . ' log -1 --pretty=format:"%ct"'
 endfunction"}}}
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
-  if !executable(self.command)
-        \ || a:new_rev == '' || a:old_rev == ''
+  if !self.executable || a:new_rev == '' || a:old_rev == ''
     return ''
   endif
 
@@ -162,7 +163,7 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
         \ a:old_rev, (is_not_ancestor ? '' : '^'), a:new_rev)
 endfunction"}}}
 function! s:type.get_revision_lock_command(plugin) abort "{{{
-  if !executable(self.command)
+  if !self.executable
     return ''
   endif
 
@@ -181,14 +182,14 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
   return self.command . ' checkout ' . rev
 endfunction"}}}
 function! s:type.get_rollback_command(plugin, rev) abort "{{{
-  if !executable(self.command)
+  if !self.executable
     return ''
   endif
 
   return self.command . ' reset --hard ' . a:rev
 endfunction"}}}
 function! s:type.get_revision_remote_command(plugin) abort "{{{
-  if !executable(self.command)
+  if !self.executable
     return ''
   endif
 
@@ -200,7 +201,7 @@ function! s:type.get_revision_remote_command(plugin) abort "{{{
   return self.command .' ls-remote origin ' . rev
 endfunction"}}}
 function! s:type.get_fetch_remote_command(plugin) abort "{{{
-  if !executable(self.command)
+  if !self.executable
     return ''
   endif
 
