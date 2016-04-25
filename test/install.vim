@@ -753,8 +753,8 @@ function! s:suite.ftplugin() abort "{{{
         \ '_': 'echo 5555',
         \ 'python': 'setlocal foldmethod=indent',
         \ }
-  call dein#begin(s:path)
-  call dein#add('Shougo/neocomplete.vim')
+  call dein#begin(tempname())
+  call dein#add('Shougo/echodoc.vim')
   call dein#end()
 
   call dein#recache_runtimepath()
