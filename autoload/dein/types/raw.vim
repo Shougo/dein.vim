@@ -14,9 +14,6 @@ let s:type = {
 
 function! s:type.init(repo, options) abort "{{{
   " No auto detect.
-  let type = ''
-  let name = ''
-
   if a:repo !~# '^https://.*\.vim$' || !has_key(a:options, 'script_type')
     return {}
   endif
