@@ -564,7 +564,7 @@ function! dein#util#_download(uri, outpath) abort "{{{
     " Use powershell
     " Todo: Proxy support
     let pscmd = printf("(New-Object Net.WebClient).DownloadFile('%s', '%s')",
-          \ a:url, a:outpath)
+          \ a:uri, a:outpath)
     return printf('powershell -Command "%s"', pscmd)
   else
     return 'E: curl or wget command is not available!'
