@@ -35,7 +35,7 @@ function! s:type.init(repo, options) abort "{{{
     " Local repository.
     return { 'type': 'git', 'local': 1 }
   elseif isdirectory(a:repo) || a:repo =~#
-        \ '//\%(raw\|gist\)\.githubusercontent\.com/'
+        \ '//\%(raw\|gist\)\.githubusercontent\.com/\|/archive/[^/]\+\.zip$'
     return {}
   endif
 

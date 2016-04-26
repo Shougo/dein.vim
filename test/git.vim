@@ -6,6 +6,7 @@ let s:path = tempname()
 let s:base = s:path . '/repos/'
 
 function! s:suite.protocol() abort "{{{
+  call dein#begin(s:path)
   " Protocol errors
   call s:assert.equals(s:type.init(
         \ 'http://github.com/Shougo/dein.vim', {}),
@@ -14,6 +15,15 @@ function! s:suite.protocol() abort "{{{
   call s:assert.equals(s:type.init(
         \ 'foo://github.com/Shougo/dein.vim', {}),
         \ {})
+
+  call s:assert.equals(s:type.init(
+        \ 'https://github.com/vim/vim/archive/master.zip', {}),
+        \ {})
+
+  call s:assert.not_equals(s:type.init(
+        \ 'test.zip', {}),
+        \ {})
+  call dein#end()
 endfunction"}}}
 
 function! s:suite.init() abort "{{{
