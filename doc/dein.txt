@@ -242,6 +242,8 @@ dein#load_state({base-path})				 *dein#load_state()*
 		It is faster than |dein#load_cache()| feature.
 		Note: You must call it before |dein#begin()|.  It clears dein
 		all configuration.
+		Note: It overwrites your 'runtimepath' completely, you must
+		not call it after change 'runtimepath' dynamically.
 
 		It returns 1, if the cache script is old or invalid or not
 		found.
@@ -259,6 +261,8 @@ dein#save_state()
 		Save dein's state in the cache script.
 		It must be after |dein#end()|.
 		Note: It is available when loading .vimrc.
+		Note: It saves your 'runtimepath' completely, you must not
+		call it after change 'runtimepath' dynamically.
 
 						*dein#clear_state()*
 dein#clear_state()
