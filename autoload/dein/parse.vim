@@ -118,6 +118,7 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
   if !has_key(a:plugin, 'merged')
     let plugin.merged = !plugin.lazy
           \ && !has_key(plugin, 'local')
+          \ && !has_key(plugin, 'build')
           \ && !has_key(a:plugin, 'if')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
   endif
