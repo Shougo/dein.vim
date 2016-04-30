@@ -222,7 +222,10 @@ function! s:clear_runtimepath() abort "{{{
 endfunction"}}}
 function! s:helptags() abort "{{{
   try
-    let tags = dein#util#_get_tags_path()
+    let tags = dein#util#_get_runtime_path() . '/doc'
+    if !isdirectory(tags)
+      call mkdir(tags, 'p')
+    endif
     call s:copy_files(filter(
           \ values(dein#get()), '!v:val.merged'), 'doc')
     silent execute 'helptags' fnameescape(tags)

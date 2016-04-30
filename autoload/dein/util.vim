@@ -54,17 +54,6 @@ function! dein#util#_get_cache_path() abort "{{{
 
   return cache
 endfunction"}}}
-function! dein#util#_get_tags_path() abort "{{{
-  if g:dein#_runtime_path == '' || dein#util#_is_sudo()
-    return ''
-  endif
-
-  let dir = g:dein#_runtime_path . '/doc'
-  if !isdirectory(dir)
-    call mkdir(dir, 'p')
-  endif
-  return dir
-endfunction"}}}
 
 function! dein#util#_error(msg) abort "{{{
   for mes in s:msg2list(a:msg)
