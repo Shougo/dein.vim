@@ -378,6 +378,12 @@ g:dein#download_command
 		Defaults: "curl --silent --location --output" or "wget -q -O"
 		or use PowerShell.
 
+g:dein#cache_directory				*g:dein#cache_directory*
+		The cache directory to use.
+
+		The default is under the base directory you have already
+		specified by |dein#begin()|.
+
 						*g:dein#install_max_processes*
 g:dein#install_max_processes
 		The max number of processes used for dein/install source

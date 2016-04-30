@@ -193,12 +193,12 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call s:notify(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
-  if dein#util#_get_base_path() == ''
+  if dein#util#_get_cache_path() == ''
     call dein#util#_error('Invalid base path.')
     return
   endif
 
-  let parent = printf('%s/temp/%d', dein#util#_get_base_path(), getpid())
+  let parent = printf('%s/temp/%d', dein#util#_get_cache_path(), getpid())
   let dest = parent . '/' . strftime('%Y%m%d%H%M%S')
   if !isdirectory(parent)
     call mkdir(parent, 'p')
@@ -215,7 +215,7 @@ function! s:clear_runtimepath() abort "{{{
 
   " Remove previous runtime path
   for path in filter(dein#util#_globlist(
-        \ dein#util#_get_base_path().'/temp/*'),
+        \ dein#util#_get_cache_path().'/temp/*'),
         \   "fnamemodify(v:val, ':t') !=# getpid()")
     call dein#install#_rm(path)
   endfor
@@ -272,8 +272,8 @@ function! s:save_rollback() abort "{{{
   call writefile([dein#_vim2json(revisions)], dest)
 endfunction"}}}
 function! s:get_rollback_directory() abort "{{{
-  let parent = printf('%s/rollbacks/%s', dein#util#_get_base_path(),
-        \ fnamemodify(v:progname, ':r'))
+  let parent = printf('%s/rollbacks/%s',
+        \ dein#util#_get_cache_path(), fnamemodify(v:progname, ':r'))
   if !isdirectory(parent)
     call mkdir(parent, 'p')
   endif

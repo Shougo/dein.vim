@@ -46,6 +46,14 @@ function! dein#util#_get_runtime_path() abort "{{{
 
   return g:dein#_runtime_path
 endfunction"}}}
+function! dein#util#_get_cache_path() abort "{{{
+  let cache = get(g:, 'dein#cache_directory', g:dein#_base_path)
+  if cache != '' && !isdirectory(cache)
+    call mkdir(cache, 'p')
+  endif
+
+  return cache
+endfunction"}}}
 function! dein#util#_get_tags_path() abort "{{{
   if g:dein#_runtime_path == '' || dein#util#_is_sudo()
     return ''
@@ -160,11 +168,11 @@ function! dein#util#_check_clean() abort "{{{
 endfunction"}}}
 
 function! dein#util#_writefile(path, list) abort "{{{
-  if dein#util#_is_sudo() || !filewritable(dein#util#_get_base_path())
+  if dein#util#_is_sudo() || !filewritable(dein#util#_get_cache_path())
     return 1
   endif
 
-  let path = dein#util#_get_base_path() . '/' . a:path
+  let path = dein#util#_get_cache_path() . '/' . a:path
   let dir = fnamemodify(path, ':h')
   if !isdirectory(dir)
     call mkdir(dir, 'p')
@@ -178,7 +186,7 @@ function! dein#util#_get_type(name) abort "{{{
 endfunction"}}}
 
 function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
-  if dein#util#_get_base_path() == '' || !a:is_starting
+  if dein#util#_get_cache_path() == '' || !a:is_starting
     " Ignore
     return 1
   endif
@@ -216,7 +224,7 @@ function! dein#util#_check_vimrcs() abort "{{{
         \ 'time < v:val'))
 endfunction"}}}
 function! dein#util#_load_merged_plugins() abort "{{{
-  let path = dein#util#_get_base_path() . '/merged'
+  let path = dein#util#_get_cache_path() . '/merged'
   if !filereadable(path)
     return []
   endif
@@ -224,7 +232,7 @@ function! dein#util#_load_merged_plugins() abort "{{{
 endfunction"}}}
 function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
   call writefile([string(a:merged_plugins)],
-        \ dein#util#_get_base_path() . '/merged')
+        \ dein#util#_get_cache_path() . '/merged')
 endfunction"}}}
 
 function! dein#util#_save_state(is_starting) abort "{{{
@@ -233,7 +241,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
     return 1
   endif
 
-  if dein#util#_get_base_path() == '' || !a:is_starting
+  if dein#util#_get_cache_path() == '' || !a:is_starting
     " Ignore
     return 1
   endif
