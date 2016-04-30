@@ -221,6 +221,10 @@ function! s:clear_runtimepath() abort "{{{
   endfor
 endfunction"}}}
 function! s:helptags() abort "{{{
+  if g:dein#_runtime_path == '' || dein#util#_is_sudo()
+    return ''
+  endif
+
   try
     let tags = dein#util#_get_runtime_path() . '/doc'
     if !isdirectory(tags)
