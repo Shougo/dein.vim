@@ -79,13 +79,15 @@ function! dein#util#_notify(msg) abort "{{{
   let title = '[dein]'
   let cmd = ''
   if executable('notify-send')
-    let cmd = printf('notify-send --expire-time=%d', g:dein#notification_time * 1000)
+    let cmd = printf('notify-send --expire-time=%d',
+          \ g:dein#notification_time * 1000)
     if icon != ''
       let cmd .= ' --icon=' . string(icon)
     endif
     let cmd .= ' ' . string(title) . ' ' . string(a:msg)
   elseif dein#util#_is_windows() && executable('Snarl_CMD')
-    let cmd = printf('Snarl_CMD snShowMessage %d "%s" "%s"', g:dein#notification_time, title, a:msg)
+    let cmd = printf('Snarl_CMD snShowMessage %d "%s" "%s"',
+          \ g:dein#notification_time, title, a:msg)
     if icon != ''
       let cmd .= ' "' . icon . '"'
     endif
