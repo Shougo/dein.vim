@@ -371,6 +371,13 @@ g:dein#notification_icon
 
 		Defaults: ""
 
+					*g:dein#notification_time*
+g:dein#notification_time
+		This is the time the notification should be displayed in seconds.
+		For Linux and Windows only.
+
+		Defaults: 2
+
  					*g:dein#download_command*
 g:dein#download_command
 		The default download command.
