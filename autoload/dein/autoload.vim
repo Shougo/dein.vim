@@ -118,7 +118,14 @@ function! s:source_events(event, plugins) abort "{{{
   endif
 
   call dein#autoload#_source(a:plugins)
-  execute 'doautocmd <nomodeline>' a:event
+
+  if a:event ==# 'InsertCharPre'
+    " Queue this key again
+    call feedkeys(v:char)
+    let v:char = ''
+  else
+    execute 'doautocmd <nomodeline>' a:event
+  endif
 
   if !exists('s:loaded_path') && has('vim_starting')
         \ && dein#util#_redir('filetype') =~# 'detection:ON'
