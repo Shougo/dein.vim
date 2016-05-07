@@ -135,9 +135,11 @@ endfunction"}}}
 function! s:suite.disable() abort "{{{
   call dein#begin(s:path)
   call dein#load_dict({
-        \ 'Shougo/unite.vim': {}
+        \ 'Shougo/unite.vim': {'on_cmd': 'Unite'}
         \ })
+  call s:assert.false(!exists(':Unite'))
   call dein#disable('unite.vim')
+  call s:assert.false(exists(':Unite'))
   call dein#end()
 
   call s:assert.equals(dein#get('unite.vim'), {})

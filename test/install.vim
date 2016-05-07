@@ -171,9 +171,10 @@ endfunction"}}}
 function! s:suite.if() abort "{{{
   call dein#begin(s:path)
 
-  call dein#add('Shougo/neocomplete.vim', {'if': 0})
+  call dein#add('Shougo/neocomplete.vim', {'if': 0, 'on_cmd': 'FooBar'})
 
   call s:assert.equals(dein#get('neocomplete.vim'), {})
+  call s:assert.false(exists(':FooBar'))
 
   call dein#end()
 

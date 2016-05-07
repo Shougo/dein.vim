@@ -543,10 +543,24 @@ function! dein#util#_get_plugins(plugins) abort "{{{
 endfunction"}}}
 
 function! dein#util#_disable(names) abort "{{{
-  for name in dein#util#_convert2list(a:names)
-    if has_key(g:dein#_plugins, name) && !g:dein#_plugins[name].sourced
-      call remove(g:dein#_plugins, name)
+  for plugin in map(filter(dein#util#_convert2list(a:names),
+        \ 'has_key(g:dein#_plugins, v:val)
+        \  && !g:dein#_plugins[v:val].sourced'), 'g:dein#_plugins[v:val]')
+    if has_key(plugin, 'dummy_commands')
+      for command in plugin.dummy_commands
+        silent! execute 'delcommand' command[0]
+      endfor
+      let plugin.dummy_commands = []
     endif
+
+    if has_key(plugin, 'dummy_mappings')
+      for map in plugin.dummy_mappings
+        silent! execute map[0].'unmap' map[1]
+      endfor
+      let plugin.dummy_mappings = []
+    endif
+
+    call remove(g:dein#_plugins, plugin.name)
   endfor
 endfunction"}}}
 

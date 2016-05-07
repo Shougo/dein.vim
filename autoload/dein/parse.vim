@@ -21,6 +21,10 @@ function! dein#parse#_add(repo, options) abort "{{{
     return {}
   endif
 
+  if plugin.lazy
+    call s:parse_lazy(plugin)
+  endif
+
   let g:dein#_plugins[plugin.name] = plugin
   if has_key(plugin, 'hook_add')
     call dein#util#_execute_hook(plugin, plugin.hook_add)
@@ -135,42 +139,6 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
     let plugin[hook] = substitute(plugin[hook],
           \ '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
   endfor
-
-  if !plugin.lazy
-    return plugin
-  endif
-
-  " Auto convert2list.
-  for key in filter([
-        \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
-        \ 'on_source', 'on_event',
-        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) != type([])
-        \")
-    let plugin[key] = [plugin[key]]
-  endfor
-
-  if get(plugin, 'on_i', 0)
-    let plugin.on_event = ['InsertEnter']
-  endif
-  if get(plugin, 'on_idle', 0)
-    let plugin.on_event = ['FocusLost', 'CursorHold']
-  endif
-  if has_key(plugin, 'on_event')
-    for event in plugin.on_event
-      if !has_key(g:dein#_event_plugins, event)
-        let g:dein#_event_plugins[event] = [plugin.name]
-      else
-        call add(g:dein#_event_plugins[event], plugin.name)
-      endif
-    endfor
-  endif
-
-  if has_key(plugin, 'on_cmd')
-    call s:generate_dummy_commands(plugin)
-  endif
-  if has_key(plugin, 'on_map')
-    call s:generate_dummy_mappings(plugin)
-  endif
 
   return plugin
 endfunction"}}}
@@ -292,6 +260,39 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
       call dein#add(dir, options)
     endif
   endfor
+endfunction"}}}
+function! s:parse_lazy(plugin) abort "{{{
+  " Auto convert2list.
+  for key in filter([
+        \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
+        \ 'on_source', 'on_event',
+        \ ], "has_key(a:plugin, v:val) && type(a:plugin[v:val]) != type([])
+        \")
+    let a:plugin[key] = [a:plugin[key]]
+  endfor
+
+  if get(a:plugin, 'on_i', 0)
+    let a:plugin.on_event = ['InsertEnter']
+  endif
+  if get(a:plugin, 'on_idle', 0)
+    let a:plugin.on_event = ['FocusLost', 'CursorHold']
+  endif
+  if has_key(a:plugin, 'on_event')
+    for event in a:plugin.on_event
+      if !has_key(g:dein#_event_plugins, event)
+        let g:dein#_event_plugins[event] = [a:plugin.name]
+      else
+        call add(g:dein#_event_plugins[event], a:plugin.name)
+      endif
+    endfor
+  endif
+
+  if has_key(a:plugin, 'on_cmd')
+    call s:generate_dummy_commands(a:plugin)
+  endif
+  if has_key(a:plugin, 'on_map')
+    call s:generate_dummy_mappings(a:plugin)
+  endif
 endfunction"}}}
 function! s:generate_dummy_commands(plugin) abort "{{{
   let a:plugin.dummy_commands = []
