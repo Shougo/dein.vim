@@ -333,7 +333,7 @@ function! s:generate_ftplugin() abort "{{{
 endfunction"}}}
 
 function! dein#install#_is_async() abort "{{{
-  if has('vim_starting')
+  if has('vim_starting') || g:dein#install_max_processes <= 1
     return 0
   endif
   return has('nvim') || (has('job') && has('channel')

@@ -395,6 +395,7 @@ g:dein#cache_directory				*g:dein#cache_directory*
 g:dein#install_max_processes
 		The max number of processes used for dein/install source
 		asynchronous update.
+		If it is less than equal 1, this feature is disabled.
 
 		Defaults: "8"
 
