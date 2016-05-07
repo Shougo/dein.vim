@@ -539,8 +539,9 @@ function! s:get_updated_message(context, plugins) abort "{{{
         \                     : printf('(%d change%s)',
         \                              v:val.commit_count,
         \                              (v:val.commit_count == 1 ? '' : 's')))
-        \    . ((a:context.update_type !=# 'check_update' &&
-        \        v:val.uri =~ '^\\h\\w*://github.com/') ? \"\\n\"
+        \    . ((a:context.update_type !=# 'check_update'
+        \        && v:val.old_rev != ''
+        \        && v:val.uri =~ '^\\h\\w*://github.com/') ? \"\\n\"
         \      . printf('    %s/compare/%s...%s',
         \        substitute(substitute(v:val.uri, '\\.git$', '', ''),
         \          '^\\h\\w*:', 'https:', ''),
