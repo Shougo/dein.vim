@@ -125,7 +125,7 @@ dein#direct_install({repo}[, {options}])
 
 		" Try neocomplete without the configuration.
 		call dein#direct_install('Shougo/neocomplete.vim')
-
+<
                                                               *dein#load_toml()*
 dein#load_toml({filename}, [{options}])
 		Load TOML plugin configuration from {filename}.  See
@@ -145,7 +145,7 @@ dein#load_dict({dict}, [{options}])
 		\ 'Shougo/unite.vim': {},
 		\ 'Shougo/neocomplete.vim': {'name': 'neocomplete'}
 		\ })
-
+<
                                                                   *dein#local()*
 dein#local({directory}, [{options}, [{names}]])
 		Add the subdirectories in {directory} to 'runtimepath', like
