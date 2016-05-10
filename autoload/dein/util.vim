@@ -144,13 +144,11 @@ function! dein#util#_has_vimproc() abort "{{{
 endfunction"}}}
 
 function! dein#util#_check_lazy_plugins() abort "{{{
-  let no_meaning_plugins = map(filter(dein#util#_get_lazy_plugins(),
+  return map(filter(dein#util#_get_lazy_plugins(),
         \   "isdirectory(v:val.rtp)
         \    && !isdirectory(v:val.rtp . '/plugin')
         \    && !isdirectory(v:val.rtp . '/after/plugin')"),
         \   'v:val.name')
-  echomsg 'No meaning lazy plugins: ' string(no_meaning_plugins)
-  return len(no_meaning_plugins)
 endfunction"}}}
 function! dein#util#_check_clean() abort "{{{
   let plugins_directories = map(values(dein#get()), 'v:val.path')
