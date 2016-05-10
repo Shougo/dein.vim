@@ -87,11 +87,11 @@ function! dein#load_cache_raw(...) abort "{{{
   endif
 
   let list = readfile(cache)
-  if len(list) != 2
+  if len(list) != 3
         \ || string(g:dein#_vimrcs) !=# list[0]
-    return {}
+    return [{}, {}]
   endif
-  return dein#_json2vim(list[1])
+  return [dein#_json2vim(list[1]), dein#_json2vim(list[2])]
 endfunction"}}}
 function! dein#_get_cache_file() abort "{{{
   return g:dein#_base_path.'/cache_'.fnamemodify(v:progname, ':r')
