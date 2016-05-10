@@ -156,13 +156,14 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
   endif
 
   " Parse.
+  let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
   if has_key(toml, 'hook_add')
-    let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
     let g:dein#_hook_add .= "\n" . substitute(
           \ toml.hook_add, pattern, '', 'g')
   endif
   if has_key(toml, 'ftplugin')
     call extend(g:dein#_ftplugin, toml.ftplugin)
+    call map(g:dein#_ftplugin, "substitute(v:val, pattern, '', 'g')")
   endif
 
   if has_key(toml, 'plugins')
