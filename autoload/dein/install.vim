@@ -48,6 +48,7 @@ function! dein#install#_update(plugins, update_type, async) abort "{{{
     endif
 
     call s:init_variables(context)
+    call s:start()
     call s:install_async(context)
     augroup dein-install
       autocmd!
@@ -55,6 +56,7 @@ function! dein#install#_update(plugins, update_type, async) abort "{{{
     augroup END
   else
     call s:init_variables(context)
+    call s:start()
     try
       let errored = s:install_blocking(context)
     catch
@@ -357,9 +359,14 @@ function! dein#install#_remote_plugins() abort "{{{
 endfunction"}}}
 
 function! dein#install#_each(cmd, plugins) abort "{{{
+  let plugins = filter(dein#util#_get_plugins(a:plugins), 'isdirectory(v:val.path)')
+
+  let context = s:init_context(plugins, 'each', 0)
+  call s:init_variables(context)
+
   let cwd = getcwd()
   try
-    for plugin in dein#util#_get_plugins(a:plugins)
+    for plugin in plugins
       call dein#install#_cd(plugin.path)
 
       if !dein#util#_has_vimproc()
@@ -743,7 +750,8 @@ function! s:init_variables(context) abort "{{{
   let s:global_context = a:context
   let s:log = []
   let s:updates_log = []
-
+endfunction"}}}
+function! s:start() abort "{{{
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:done(context) abort "{{{
