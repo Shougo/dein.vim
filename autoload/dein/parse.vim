@@ -267,7 +267,9 @@ function! s:parse_lazy(plugin) abort "{{{
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
         \ 'on_source', 'on_event',
-        \ ], "has_key(a:plugin, v:val) && type(a:plugin[v:val]) != type([])
+        \ ], "has_key(a:plugin, v:val)
+        \     && type(a:plugin[v:val]) != type([])
+        \     && type(a:plugin[v:val]) != type({})
         \")
     let a:plugin[key] = [a:plugin[key]]
   endfor
@@ -312,11 +314,14 @@ function! s:generate_dummy_commands(plugin) abort "{{{
 endfunction"}}}
 function! s:generate_dummy_mappings(plugin) abort "{{{
   let a:plugin.dummy_mappings = []
-  for [modes, mappings] in map(copy(a:plugin.on_map), "
-        \   type(v:val) == type([]) ?
+  let items = type(a:plugin.on_map) == type({}) ?
+        \ map(items(a:plugin.on_map),
+        \   "[split(v:val[0], '\\zs'), dein#util#_convert2list(v:val[1])]") :
+        \ map(copy(a:plugin.on_map),
+        \  "type(v:val) == type([]) ?
         \     [split(v:val[0], '\\zs'), v:val[1:]] :
-        \     [['n', 'x', 'o'], [v:val]]
-        \ ")
+        \     [['n', 'x', 'o'], [v:val]]")
+  for [modes, mappings] in items
     if mappings ==# ['<Plug>']
       " Use plugin name.
       let mappings = ['<Plug>(' . a:plugin.normalized_name]

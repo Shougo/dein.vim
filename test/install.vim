@@ -403,21 +403,29 @@ function! s:suite.lazy_on_map() abort "{{{
 
   call dein#add('Shougo/unite.vim', { 'lazy': 1 })
   call dein#add('Shougo/vimfiler.vim',
-        \ { 'on_map': '<Plug>', 'depends': 'unite.vim' })
+        \ { 'on_map': [['n', '<Plug>']], 'depends': 'unite.vim' })
+  call dein#add('Shougo/vimshell.vim', { 'on_map': {'n': '<Plug>'} })
+  call dein#add('thinca/vim-ref', { 'on_map': '<Plug>' })
 
   call s:assert.equals(s:dein_install(), 0)
 
   call dein#end()
 
   let plugin = dein#get('vimfiler.vim')
+  let plugin2 = dein#get('vimshell.vim')
+  let plugin3 = dein#get('vim-ref')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 0)
 
   call dein#autoload#_on_map('', 'vimfiler.vim', 'n')
+  call dein#autoload#_on_map('', 'vimshell.vim', 'n')
+  call dein#autoload#_on_map('', 'vim-ref', 'n')
 
   call s:assert.equals(plugin.sourced, 1)
+  call s:assert.equals(plugin2.sourced, 1)
+  call s:assert.equals(plugin3.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)

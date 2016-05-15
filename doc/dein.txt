@@ -660,14 +660,21 @@ OPTIONS                                                         *dein-options*
 		|dein#source()|.
 
                                                          *dein-options-on_map*
-		on_map		(List) or (String)
-		It is the mappings list. The items are {mapping} or
-		[{mode}, {mapping1}, [{mapping2}, ...]].  If {mode} is
-		omitted, "nxo" is used.
+		on_map		(Dictionary) or (List) or (String)
+		If it is the Dictionary, the key is {mode} and the items are
+		{mapping} or [{mapping1}, {mapping2}, ...].
+		If it is the List, the items are {mapping} or [{mode},
+		{mapping1}, [{mapping2}, ...]].
+		If {mode} is omitted, "nxo" is used.
 		Note: You can use plugin prefix mappings.
 		For example, you can use "<Plug>(ref-" instead of
 		"<Plug>(ref-back)" and so on.
-
+		For example: >
+		call dein#add('Shougo/vimshell.vim',
+		\ { 'on_map': {'n': '<Plug>'} })
+		call dein#add('Shougo/vimfiler.vim',
+		\ { 'on_map': [['n', '<Plug>']], 'depends': 'unite.vim' })
+<
 		Note: You can use "<Plug>" keyword as {mapping}. If
 		{mapping} is "<Plug>", "<Plug>(normalized_name" is
 		used.
