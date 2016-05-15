@@ -225,7 +225,7 @@ function! s:is_git_dir(path) abort "{{{
       " if there's no tail, the path probably ends in a directory separator
       let path = fnamemodify(path, ':h')
     endif
-    let git_dir = dein#util#join_paths(path, matches[1])
+    let git_dir = s:join_paths(path, matches[1])
     if !isdirectory(git_dir)
       return 0
     endif
