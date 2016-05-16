@@ -494,7 +494,7 @@ OPTIONS                                                         *dein-options*
 		The {options} accepts the following keys:
 
                                                            *dein-options-name*
-		name		(String)
+name		(String)
 		Specify the name of the plugin.  This is used for dein
 		management and other functions.  If it is omitted, the tail of
 		the repository name will be used.
@@ -505,7 +505,7 @@ OPTIONS                                                         *dein-options*
 		overwriting an existing plugin setting.
 
                                                             *dein-options-rtp*
-		rtp		(String)
+rtp		(String)
 		Specify the runtime path.
 		You can use it when the repository has the Vim plugin in a
 		subdirectory.
@@ -518,7 +518,7 @@ OPTIONS                                                         *dein-options*
 		call dein#add('rstacruz/sparkup', {'rtp': 'vim'})
 <
                                                 *dein-options-normalized_name*
-		normalized_name		(String)
+normalized_name	(String)
 		Specify the normalized name of the plugin.  If omitted, dein
 		will normalize the tail of the repository name.
 		Note: Must be unique across all plugins.
@@ -529,7 +529,7 @@ OPTIONS                                                         *dein-options*
 		vim-quickrun      quickrun
 <
                                                             *dein-options-rev*
-		rev			(String)
+rev		(String)
 		Specify a revision number or branch/tag name.
 		If it is "*" in "git" type, dein will use latest released tag.
 		You can specify the wildcards like "0.*".
@@ -540,37 +540,37 @@ OPTIONS                                                         *dein-options*
 		call dein#add('Shougo/vimshell', { 'rev': '3787e5' })
 <
                                                         *dein-options-depends*
-		depends		(List or String)
+depends		(List or String)
 		Specify a list of plugins a plugin depends on.
 		List items are '{plugin-name}'.
 		Those specified in the list are NOT installed automatically.
 		Note: The loading order is not guaranteed in non lazy plugins.
 
                                                              *dein-options-if*
-		if		(Number) or (String)
+if		(Number) or (String)
 		If set to zero, dein doesn't register the plugin, i.e. the
 		plugin will be disabled.
 		If it is String, dein will eval it.
 		If you don't set it, dein will register (enable) the plugin.
 
                                                         *dein-options-timeout*
-		timeout		 (Number)
+timeout		(Number)
 		The time of timeout seconds when updating/installing plugins.
 		If omit it, |g:dein#install_process_timeout| will be used.
 		Note: This feature is available if you installed |vimproc|.
 
                                                          *dein-options-frozen*
-		frozen		(Number)
+frozen		(Number)
 		If set to 1, dein doesn't update it automatically. It is
 		useful for outdated plugins that can no longer be updated.
 
                                                          *dein-options-merged*
-		merged		(Number)
+merged		(Number)
 		If set to 0, dein doesn't merge the plugin directory.  It is
 		useful for the plugin files conflicts.
 
                                                           *dein-options-build*
-		build			(String)
+build		(String)
 		Specify the build script.
 		This command is executed by |system()| or |vimproc#system()|
 		in the plugin runtimepath.
@@ -589,7 +589,7 @@ OPTIONS                                                         *dein-options*
 		\ })
 <
                                                            *dein-options-type*
-		type			(String)
+type		(String)
 		Specify the repository type. If it is omitted, a guess is made
 		based on {repository}.
 
@@ -600,7 +600,7 @@ OPTIONS                                                         *dein-options*
 		"git"       : Git
 
                                                     *dein-options-script_type*
-		script_type		(String)
+script_type	(String)
 		Specify the script type. It is useful for non-official
 		categorized plugins.
 		For example: "indent", "plugin", "ftplugin", ...
@@ -616,12 +616,12 @@ OPTIONS                                                         *dein-options*
 		\ {'script_type' : 'colors'})
 <
                                                         *dein-options-augroup*
-		augroup		(String)
+augroup		(String)
 		An augroup name that the plugin uses for |VimEnter| or
 		|GUIEnter| autocmd events.
 
                                                            *dein-options-lazy*
-		lazy		(Number)
+lazy		(Number)
 		If set to non-zero, dein doesn't add the path to 'runtimepath'
 		automatically.
 		If you don't set it, dein will set it automatically when the
@@ -632,12 +632,12 @@ OPTIONS                                                         *dein-options*
 		lazy plugins by |dein#check_lazy_plugins()|.
 
                                                           *dein-options-on_ft*
-		on_ft		(List) or (String)
+on_ft		(List) or (String)
 		If it is matched to 'filetype', dein will call
 		|dein#source()|.
 
                                                         *dein-options-on_path*
-		on_path		(List) or (String)
+on_path		(List) or (String)
 		If set to ".*", dein will call |dein#source()| on editing all
 		files.  Otherwise, dein will call |dein#source()| if the
 		buffer name is matched to the string pattern.
@@ -645,22 +645,22 @@ OPTIONS                                                         *dein-options*
 		Ex: vimfiler, metarw, vim-gnupg ...
 
                                                         *dein-options-on_func*
-		on_func		(List) or (String)
+on_func		(List) or (String)
 		If it is matched to the called function, dein will call
 		|dein#source()|.
 
                                                       *dein-options-on_source*
-		on_source	(List) or (String)
+on_source	(List) or (String)
 		Load the plugin before the listed plugins are loaded.
 		Note: The plugins must be lazy loaded plugins.
 
                                                          *dein-options-on_cmd*
-		on_cmd		(List) or (String)
+on_cmd		(List) or (String)
 		If it is matched to the executed command, dein will call
 		|dein#source()|.
 
                                                          *dein-options-on_map*
-		on_map		(Dictionary) or (List) or (String)
+on_map		(Dictionary) or (List) or (String)
 		If it is the Dictionary, the key is {mode} and the items are
 		{mapping} or [{mapping1}, {mapping2}, ...].
 		If it is the List, the items are {mapping} or [{mode},
@@ -691,25 +691,25 @@ OPTIONS                                                         *dein-options*
 		nmap N <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
 <
                                                            *dein-options-on_i*
-		on_i		(Number)
+on_i		(Number)
 		If set to non-zero, dein will call |dein#source()| on
 		|InsertEnter| autocmd.
 		Note: This is deprecated option.  You should use
 		|dein-options-on_event| instead.
 
                                                         *dein-options-on_idle*
-		on_idle		(Number)
+on_idle		(Number)
 		If set to non-zero, dein will call |dein#source()| on
 		|FocusLost| or |CursorHold| autocmd.
 		Note: This is deprecated option.  You should use
 		|dein-options-on_event| instead.
 
                                                        *dein-options-on_event*
-		on_event	(String) or (List)
+on_event	(String) or (List)
 		dein will call |dein#source()| on the events.
 
                                                           *dein-options-on_if*
-		on_if		(String)
+on_if		(String)
 		If it is evaluated and it is non zero, dein will call
 		|dein#source()|.
 		The default evaluate timings are "BufRead", "BufNewFile",
@@ -722,7 +722,7 @@ OPTIONS                                                         *dein-options*
 		\ {'on_event': 'WinEnter', 'on_if': 'winnr("$") > 1'})
 <
                                                     *dein-options-type__depth*
-		type__depth		(Number)
+type__depth		(Number)
 		The history depth for "git clone".
 		If omitted, |g:dein#types#git#clone_depth| is used.
 		If it is than 0, dein clones the repository by shallow
@@ -747,7 +747,7 @@ HOOKS                                                             *dein-hooks*
 		Note: The loading order is not guaranteed in non lazy plugins.
 
                                                        *dein-options-hook_add*
-		hook_add	(String) or (Function)
+hook_add	(String) or (Function)
 		It is executed after plugins are added.
 >
 		call dein#add('Shougo/vimfiler.vim', {
@@ -766,7 +766,7 @@ HOOKS                                                             *dein-hooks*
 		\ "})
 <
                                                     *dein-options-hook_source*
-		hook_source	(String) or (Function)
+hook_source	(String) or (Function)
 		It is executed before plugins are sourced.
 >
 		call dein#add('artur-shaik/vim-javacomplete2')
@@ -789,7 +789,7 @@ HOOKS                                                             *dein-hooks*
 		call dein#call_hook('source')
 <
                                                *dein-options-hook_post_source*
-		hook_post_source (String) or (Function)
+hook_post_source (String) or (Function)
 		It is executed after plugins are sourced.
 
 		Note: In Vim initializing, you must call the
