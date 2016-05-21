@@ -229,11 +229,10 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort "{{{
 
   if exists(':'.command)
     " Print the candidates
-    call feedkeys((&wildmode ==# 'full' && &wildmenu ?
-          \ a:arglead : '')."\<C-d>", 'n')
+    call feedkeys("\<C-d>", 'n')
   endif
 
-  return ['']
+  return [a:arglead]
 endfunction"}}}
 
 function! s:source_plugin(rtps, index, plugin, sourced) abort "{{{
