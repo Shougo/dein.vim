@@ -14,12 +14,17 @@ function! s:suite.normal() abort "{{{
         \ '# This is a TOML document.',
         \ '',
         \ 'title = "TOML Example"',
+        \ 'foo = {i = ''Plug''}',
+        \ 'map = {i = "Plug", c = "Plug"}',
         \ '',
         \ '[owner]',
         \ 'name = "Tom Preston-Werner"',
         \ 'dob = 1979 # First class dates',
         \ ], g:temp)
-  call s:assert.equals(dein#toml#parse_file(g:temp),
-        \ {'title': 'TOML Example',
-        \  'owner': {'name': 'Tom Preston-Werner', 'dob': 1979}})
+  call s:assert.equals(dein#toml#parse_file(g:temp), {
+        \ 'title': 'TOML Example',
+        \ 'foo': {'i': 'Plug'},
+        \ 'map': {'i': 'Plug', 'c': 'Plug'},
+        \ 'owner': {'name': 'Tom Preston-Werner', 'dob': 1979}
+        \ })
 endfunction"}}}

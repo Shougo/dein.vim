@@ -74,7 +74,8 @@ function! s:_error(input) abort
     let offset += 1
   endwhile
 
-  throw printf("vital: Text.TOML: Illegal toml format at `%s':%d.",
+  throw printf("vital: Text.TOML: Illegal toml format at L%d:`%s':%d.",
+      \ len(split(a:input.text[: a:input.p], "\n", 1)),
       \ join(buf, ''), a:input.p)
 endfunction
 
@@ -141,6 +142,8 @@ function! s:_value(input) abort
     return s:_datetime(a:input)
   elseif s:_match(a:input, '[+-]\?\%(\d\+\.\d\|\d\+\%(\.\d\+\)\?[eE]\)')
     return s:_float(a:input)
+  elseif s:_match(a:input, '{')
+    return s:_inline_table(a:input)
   else
     return s:_integer(a:input)
   endif
@@ -256,6 +259,24 @@ function! s:_table(input) abort
     call s:_skip(a:input)
   endwhile
   return [name, tbl]
+endfunction
+
+"
+" Inline Table
+"
+function! s:_inline_table(input) abort
+  let tbl = {}
+  let _ = s:_consume(a:input, '{')
+  call s:_skip(a:input)
+  while !s:_eof(a:input) && !s:_match(a:input, '}')
+    let key = s:_key(a:input)
+    call s:_equals(a:input)
+    let tbl[key] = s:_value(a:input)
+    call s:_consume(a:input, ',\?')
+    call s:_skip(a:input)
+  endwhile
+  let _ = s:_consume(a:input, '}')
+  return tbl
 endfunction
 
 "
