@@ -57,8 +57,6 @@ filetype plugin indent on
 
 * Other types support (zip, svn, hg, ...)
 
-* Unite log viewer
-
 * Metadata repository support
 
 ### Options

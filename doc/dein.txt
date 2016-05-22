@@ -875,6 +875,11 @@ dein
 		Note:
 		If argument is bang(!), print plugins status.
 
+						*dein-unite-source-dein-log*
+dein/log
+		Print previous dein install logs.
+		And you can jump the diff URI in github.
+
 
 ==============================================================================
 EXAMPLES                                                       *dein-examples*
