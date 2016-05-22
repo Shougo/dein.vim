@@ -72,10 +72,6 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
           \ plugin.repo : dein#util#_get_base_path().'/repos/'.plugin.name
   endif
 
-  if get(plugin, 'rev') != ''
-    let plugin.path .= '_' . substitute(plugin.rev,
-          \ '[^[:alnum:]_-]', '_', 'g')
-  endif
   let plugin.path = dein#util#_chomp(plugin.path)
 
   " Check relative path
