@@ -78,12 +78,12 @@ function! dein#load_cache_raw(...) abort "{{{
   let starting = a:0 > 1 ? a:2 : has('vim_starting')
 
   let cache = dein#_get_cache_file()
-  if !starting || !filereadable(cache) | return {} | endif
+  if !starting || !filereadable(cache) | return [{}, {}] | endif
 
   let time = getftime(cache)
   if !empty(filter(map(copy(g:dein#_vimrcs),
         \ 'getftime(expand(v:val))'), 'time < v:val'))
-    return {}
+    return [{}, {}]
   endif
 
   let list = readfile(cache)
