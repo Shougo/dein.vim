@@ -673,10 +673,9 @@ function! s:install_blocking(context) abort "{{{
       endif
     endwhile
   finally
-    call s:restore_view(a:context)
+    call s:done(a:context)
   endtry
 
-  call s:done(a:context)
 
   return len(a:context.errored_plugins)
 endfunction"}}}
@@ -685,7 +684,6 @@ function! s:install_async(context) abort "{{{
 
   if empty(a:context.processes)
         \ && a:context.number == a:context.max_plugins
-    call s:restore_view(a:context)
     call s:done(a:context)
   endif
 
@@ -755,6 +753,8 @@ function! s:start() abort "{{{
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction"}}}
 function! s:done(context) abort "{{{
+  call s:restore_view(a:context)
+
   call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
   call s:notify(s:get_errored_message(a:context.errored_plugins))
 
