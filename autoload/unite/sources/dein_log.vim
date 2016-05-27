@@ -31,7 +31,12 @@ function! s:source.hooks.on_syntax(args, context) abort "{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) abort "{{{
-  return map(copy(dein#install#_get_log()), "{
+  let a:context.source__is_bang =
+        \ (get(a:args, 0, '') ==# '!')
+  let log = a:context.source__is_bang ?
+        \   dein#install#_get_updates_log()
+        \ : dein#install#_get_log()
+  return map(copy(log), "{
         \ 'word' : (v:val =~ '^\\s*\\h\\w*://' ? ' -> diff URI' : v:val),
         \ 'kind' : (v:val =~ '^\\s*\\h\\w*://' ? 'uri' : 'word'),
         \ 'action__uri' : substitute(v:val, '^\\s\\+', '', ''),

@@ -880,6 +880,10 @@ dein/log
 		Print previous dein install logs.
 		And you can jump the diff URI in github.
 
+		If argument 1 is "!", the updated logs are displayed.
+
+		Source arguments:
+		1. "!"
 
 ==============================================================================
 EXAMPLES                                                       *dein-examples*
