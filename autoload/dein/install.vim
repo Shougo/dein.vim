@@ -52,10 +52,27 @@ function! dein#install#_update(plugins, update_type, async) abort "{{{
     call s:init_variables(context)
     call s:start()
     call s:install_async(context)
+
     augroup dein-install
       autocmd!
-      autocmd CursorHold * call s:on_hold()
     augroup END
+    if !has('timers') ||
+          \ (!has('nvim') && context.progress_type ==# 'title')
+      autocmd dein-install CursorHold * call s:on_hold()
+    else
+      if exists('s:timer')
+        call timer_stop(s:timer)
+        unlet s:timer
+      endif
+
+      function! s:timer_handler(timer) abort "{{{
+        call s:install_async(s:global_context)
+      endfunction"}}}
+      let s:timer = timer_start(&updatetime,
+            \ function('s:timer_handler'), {'repeat': -1})
+      autocmd dein-install VimLeavePre *
+            \ call timer_stop(s:timer)
+    endif
   else
     call s:init_variables(context)
     call s:start()
@@ -688,6 +705,10 @@ function! s:install_blocking(context) abort "{{{
   return len(a:context.errored_plugins)
 endfunction"}}}
 function! s:install_async(context) abort "{{{
+  if empty(a:context)
+    return
+  endif
+
   call s:check_loop(a:context)
 
   if empty(a:context.processes)
@@ -779,6 +800,10 @@ function! s:done(context) abort "{{{
   augroup dein-install
     autocmd!
   augroup END
+  if exists('s:timer')
+    call timer_stop(s:timer)
+    unlet s:timer
+  endif
 endfunction"}}}
 
 function! s:job_handler_neovim(job_id, data, event) abort "{{{
@@ -1336,10 +1361,6 @@ function! s:strwidthpart_reverse(str, width) abort "{{{
 endfunction"}}}
 
 function! s:on_hold() abort "{{{
-  if empty(s:global_context)
-    return
-  endif
-
   call s:install_async(s:global_context)
   call feedkeys("g\<ESC>", 'n')
 endfunction"}}}
