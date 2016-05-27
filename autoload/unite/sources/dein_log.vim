@@ -33,13 +33,22 @@ endfunction"}}}
 function! s:source.gather_candidates(args, context) abort "{{{
   let a:context.source__is_bang =
         \ (get(a:args, 0, '') ==# '!')
+  let a:context.source__log = []
+  return []
+endfunction"}}}
+function! s:source.async_gather_candidates(args, context) abort "{{{
+  if empty(dein#install#_get_context())
+    let a:context.is_async = 0
+  endif
   let log = a:context.source__is_bang ?
         \   dein#install#_get_updates_log()
         \ : dein#install#_get_log()
-  return map(copy(log), "{
+  let candidates = map(copy(log[len(a:context.source__log):]), "{
         \ 'word' : (v:val =~ '^\\s*\\h\\w*://' ? ' -> diff URI' : v:val),
         \ 'kind' : (v:val =~ '^\\s*\\h\\w*://' ? 'uri' : 'word'),
         \ 'action__uri' : substitute(v:val, '^\\s\\+', '', ''),
         \ }")
+  let a:context.source__log = copy(log)
+  return candidates
 endfunction"}}}
 

@@ -415,6 +415,9 @@ endfunction"}}}
 function! dein#install#_get_updates_log() abort "{{{
   return s:updates_log
 endfunction"}}}
+function! dein#install#_get_context() abort "{{{
+  return s:global_context
+endfunction"}}}
 
 function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
@@ -1155,7 +1158,7 @@ function! s:print_progress_message(msg) abort "{{{
     call s:echo(msg, 'echo')
   endif
 
-  call s:updates_log(msg)
+  call s:log(msg)
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
   let msg = dein#util#_convert2list(a:msg)
