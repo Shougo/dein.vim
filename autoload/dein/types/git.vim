@@ -176,7 +176,9 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
   endif
   if rev == ''
     " Fix detach HEAD.
-    let rev = 'master'
+    " Use symbolic-ref feature (git 1.8.7 or above required)
+    let rev = dein#install#_system(self.command
+          \ . ' symbolic-ref --short HEAD ')
   endif
 
   return self.command . ' checkout ' . rev
