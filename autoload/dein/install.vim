@@ -596,7 +596,13 @@ function! dein#install#_rm(path) abort "{{{
   endif
 
   if has('patch-7.4.1120')
-    call delete(a:path, 'rf')
+    try
+      call delete(a:path, 'rf')
+    catch
+      call s:error('Error deleting directory: ' . a:path)
+      call s:error(v:exception)
+      call s:error(v:throwpoint)
+    endtry
   else
     let cmdline = ' "' . a:path . '"'
     if dein#util#_is_windows()
