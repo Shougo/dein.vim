@@ -461,6 +461,11 @@ g:dein#install_message_type
 		"echo":
 			Displayed in the echo area.
 
+g:neobundle#install_log_filename			*g:dein#log_filename*
+		The log filename. Set it to "" to disable logging.
+
+		Defaults to "".
+
                                                *g:dein#types#git#command_path*
 g:dein#types#git#command_path
 		The "git" command path used for git type.

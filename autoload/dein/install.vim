@@ -19,6 +19,8 @@ let g:dein#install_message_type =
       \ get(g:, 'dein#install_message_type', 'echo')
 let g:dein#install_process_timeout =
       \ get(g:, 'dein#install_process_timeout', 120)
+let g:dein#install_log_filename =
+      \ get(g:, 'dein#install_log_filename', '')
 "}}}
 
 function! dein#install#_update(plugins, update_type, async) abort "{{{
@@ -1122,8 +1124,7 @@ function! s:print_progress_message(msg) abort "{{{
     call s:echo(msg, 'echo')
   endif
 
-  let s:updates_log += msg
-  let s:log += msg
+  call s:updates_log(msg)
 endfunction"}}}
 function! s:print_message(msg) abort "{{{
   let msg = dein#util#_convert2list(a:msg)
@@ -1135,7 +1136,7 @@ function! s:print_message(msg) abort "{{{
     call s:echo(msg, 'echo')
   endif
 
-  let s:log += msg
+  call s:log(msg)
 endfunction"}}}
 function! s:error(msg) abort "{{{
   let msg = dein#util#_convert2list(a:msg)
@@ -1145,8 +1146,7 @@ function! s:error(msg) abort "{{{
 
   call s:echo(msg, 'error')
 
-  let s:updates_log += msg
-  let s:log += msg
+  call s:updates_log(msg)
 endfunction"}}}
 function! s:nonskip_error(msg) abort "{{{
   let msg = dein#util#_convert2list(a:msg)
@@ -1156,8 +1156,7 @@ function! s:nonskip_error(msg) abort "{{{
 
   call s:echo_mode(join(msg, "\n"), 'error')
 
-  let s:updates_log += msg
-  let s:log += msg
+  call s:updates_log(msg)
 endfunction"}}}
 function! s:notify(msg) abort "{{{
   let msg = dein#util#_convert2list(a:msg)
@@ -1167,8 +1166,7 @@ function! s:notify(msg) abort "{{{
 
   call dein#util#_notify(a:msg)
 
-  let s:updates_log += msg
-  let s:log += msg
+  call s:updates_log(msg)
 endfunction"}}}
 function! s:vimproc_system(cmd) abort "{{{
   let proc = vimproc#pgroup_open(a:cmd, 1)
@@ -1211,6 +1209,33 @@ endfunction"}}}
 function! s:channel2id(channel) abort "{{{
   return matchstr(a:channel, '\d\+')
 endfunction"}}}
+function! s:updates_log(msg) abort "{{{
+  let s:updates_log += a:msg
+  call s:log(a:msg)
+endfunction"}}}
+function! s:log(msg) abort "{{{
+  let s:log += a:msg
+  call s:append_log_file(a:msg)
+endfunction"}}}
+function! s:append_log_file(msg) abort "{{{
+  let logfile = g:dein#install_log_filename
+  if logfile == ''
+    return
+  endif
+
+  let msg = a:msg
+  " Appends to log file.
+  if filereadable(logfile)
+    let msg = readfile(logfile) + msg
+  endif
+
+  let dir = fnamemodify(logfile, ':h')
+  if !isdirectory(dir)
+    call mkdir(dir, 'p')
+  endif
+  call writefile(msg, logfile)
+endfunction"}}}
+
 
 function! s:echo(expr, mode) abort "{{{
   let msg = map(filter(dein#util#_convert2list(a:expr), "v:val != ''"),
