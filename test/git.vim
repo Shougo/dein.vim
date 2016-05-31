@@ -71,6 +71,9 @@ function! s:suite.init() abort "{{{
         \ 'https://git.code.sf.net/p/atp-vim/code', {'type': 'git'}),
         \ 'https://git.code.sf.net/p/atp-vim/code.git')
 
+  call s:assert.equals(s:type.get_uri('git@example.com:vim/snippets', {}),
+        \ 'git@example.com:vim/snippets.git')
+
   let g:dein#types#git#default_protocol = 'ssh'
 
   call s:assert.equals(s:type.init('Shougo/dein.vim', {}),

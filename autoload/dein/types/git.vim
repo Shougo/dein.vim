@@ -56,11 +56,18 @@ function! s:type.get_uri(repo, options) abort "{{{
     return a:repo
   endif
 
-  let protocol = matchstr(a:repo, '^.\{-}\ze://')
-  let name = substitute(a:repo[len(protocol):],
-        \   '^://[^/]*/', '', '')
-  let host = substitute(matchstr(a:repo[len(protocol):],
-        \ '^://\zs[^/]*\ze/'), ':.*$', '', '')
+  if a:repo =~ '^git@'
+    " Parse "git@host:name" pattern
+    let protocol = 'ssh'
+    let host = matchstr(a:repo[4:], '[^:]*')
+    let name = a:repo[4 + len(host) + 1 :]
+  else
+    let protocol = matchstr(a:repo, '^.\{-}\ze://')
+    let rest = a:repo[len(protocol):]
+    let name = substitute(rest, '^://[^/]*/', '', '')
+    let host = substitute(matchstr(rest, '^://\zs[^/]*\ze/'),
+          \ ':.*$', '', '')
+  endif
   if host == ''
     let host = 'github.com'
   endif
@@ -87,7 +94,7 @@ function! s:type.get_uri(repo, options) abort "{{{
     let uri .= name
   else
     let uri = (protocol ==# 'ssh') ?
-          \ 'git@github.com:' . name :
+          \ 'git@' . host . ':' . name :
           \ protocol . '://' . host . '/' . name
   endif
 
