@@ -126,13 +126,6 @@ function! s:source_events(event, plugins) abort "{{{
   else
     execute 'doautocmd <nomodeline>' a:event
   endif
-
-  if !exists('s:loaded_path') && has('vim_starting')
-        \ && dein#util#_redir('filetype') =~# 'detection:ON'
-    " Force enable auto detection if path plugins are loaded
-    autocmd dein VimEnter * filetype detect
-    let s:loaded_path = 1
-  endif
 endfunction"}}}
 
 function! dein#autoload#_on_func(name) abort "{{{
