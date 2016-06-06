@@ -666,8 +666,8 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
       call delete(temp)
       call delete(exclude)
     endtry
-    if v:shell_error
-      let status = 1
+    let status = v:shell_error
+    if status
       call dein#util#_error('copy command failed.')
       call dein#util#_error(s:iconv(result, 'char', &encoding))
       call dein#util#_error('cmdline: ' . temp)
@@ -681,15 +681,18 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
       let cmdline = printf("rsync -a --exclude '/.git/' %s %s",
             \ join(srcs), shellescape(a:dest))
       let result = dein#install#_system(cmdline)
-      let error = dein#install#_get_last_status()
+      let status = dein#install#_get_last_status()
     else
-      let cmdline = printf('cp -Ra %s %s',
-            \ join(srcs, '* '), shellescape(a:dest))
-      let result = system(cmdline)
-      let error = v:shell_error
+      for src in srcs
+        let cmdline = printf('cp -Ra %s* %s', src, shellescape(a:dest))
+        let result = system(cmdline)
+        let status = v:shell_error
+        if status
+          break
+        endif
+      endfor
     endif
-    if error
-      let status = 1
+    if status
       call dein#util#_error('copy command failed.')
       call dein#util#_error(result)
       call dein#util#_error('cmdline: ' . cmdline)
