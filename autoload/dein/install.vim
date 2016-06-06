@@ -676,12 +676,19 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
   else
     let srcs = map(filter(copy(a:srcs),
           \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . "/")')
-    let cmdline = printf(
-          \ (executable('rsync') ?
-          \  "rsync -a --exclude '/.git/' %s %s" : 'cp -Ra %s %s'),
-          \ join(srcs), shellescape(a:dest))
-    let result = dein#install#_system(cmdline)
-    if dein#install#_get_last_status()
+    let is_rsync = executable('rsync')
+    if is_rsync
+      let cmdline = printf("rsync -a --exclude '/.git/' %s %s",
+            \ join(srcs), shellescape(a:dest))
+      let result = dein#install#_system(cmdline)
+      let error = dein#install#_get_last_status()
+    else
+      let cmdline = printf('cp -Ra %s %s',
+            \ join(srcs, '* '), shellescape(a:dest))
+      let result = system(cmdline)
+      let error = v:shell_error
+    endif
+    if error
       let status = 1
       call dein#util#_error('copy command failed.')
       call dein#util#_error(result)
