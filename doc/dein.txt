@@ -90,6 +90,8 @@ dein#begin({base-path}, [{vimrcs}])
 		"{base-path}/repos/github.com/Shougo/dein.vim" directory.
 		{vimrcs} is a list of compared .vimrc and/or other
 		configuration files. The default is |$MYVIMRC|.
+		The typical {base-path} is "~/.cache/dein" or
+		"~/.local/share/dein".
 
 		Note: You must not call the function inside a
 		"has('vim_starting')" block.
@@ -899,7 +901,7 @@ EXAMPLES                                                       *dein-examples*
 	endif
 	set runtimepath^={path to dein.vim directory}
 
-	call dein#begin(expand('~/.local/dein'))
+	call dein#begin({path to plugin base path directory})
 
 	call dein#add({path to dein.vim directory})
 	call dein#add('Shougo/neocomplete.vim')

@@ -30,7 +30,7 @@ if &compatible
 endif
 set runtimepath^={path to dein.vim directory}
 
-call dein#begin(expand('~/.local/dein'))
+call dein#begin({path to plugin base path directory})
 
 call dein#add({path to dein.vim directory})
 call dein#add('Shougo/neocomplete.vim')
