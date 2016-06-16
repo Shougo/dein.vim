@@ -925,6 +925,7 @@ function! s:init_process(plugin, context, cmd) abort "{{{
 
     let process = {
           \ 'number': a:context.number,
+          \ 'max_plugins': a:context.max_plugins,
           \ 'rev': rev,
           \ 'plugin': a:plugin,
           \ 'output': '',
@@ -1049,7 +1050,7 @@ function! s:check_output(context, process) abort "{{{
     call s:print_message(s:get_plugin_message(
           \ plugin, num, max, 'Updated'))
 
-    if a:process.rev != '' && a:context.update_type !=# 'check_update'
+    if a:context.update_type !=# 'check_update'
       let log_messages = split(s:get_updated_log_message(
             \   plugin, new_rev, a:process.rev), '\n')
       let plugin.commit_count = len(log_messages)
@@ -1099,7 +1100,9 @@ function! s:get_async_result(process, is_timeout) abort "{{{
     let output = join(job.candidates[: -2], "\n")
     if output != ''
       let a:process.output .= output
-      call s:print_message(output)
+      call s:print_message(s:get_short_message(
+            \ a:process.plugin, a:process.number,
+            \ a:process.max_plugins, output))
     endif
     let job.candidates = job.candidates[-1:]
     return [1, -1]
@@ -1112,7 +1115,9 @@ function! s:get_async_result(process, is_timeout) abort "{{{
     let output = join(job.candidates, "\n")
     if output != ''
       let a:process.output .= output
-      call s:print_message(output)
+      call s:print_message(s:get_short_message(
+            \ a:process.plugin, a:process.number,
+            \ a:process.max_plugins, output))
     endif
     let a:process.output = substitute(
           \ a:process.output, 'DETACH', '', '')
@@ -1128,7 +1133,9 @@ function! s:get_vimproc_result(process, is_timeout) abort "{{{
         \ a:process.proc.stdout.read(-1, 300), 'char', &encoding)
   if output != ''
     let a:process.output .= output
-    call s:print_message(output)
+    call s:print_message(s:get_short_message(
+          \ a:process.plugin, a:process.number,
+          \ a:process.max_plugins, output))
   endif
   if !a:process.proc.stdout.eof && !a:is_timeout
     return [1, -1]
