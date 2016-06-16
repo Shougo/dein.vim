@@ -423,6 +423,13 @@ function! s:get_progress_message(plugin, number, max) abort "{{{
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
 endfunction"}}}
+function! s:get_plugin_message(plugin, number, max, message) abort "{{{
+  return printf('(%'.len(a:max).'d/%d) |%-20s| %s',
+        \ a:number, a:max, a:plugin.name, a:message)
+endfunction"}}}
+function! s:get_short_message(plugin, number, max, message) abort "{{{
+  return printf('(%'.len(a:max).'d/%d) %s', a:number, a:max, a:message)
+endfunction"}}}
 function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   let type = dein#util#_get_type(a:plugin.type)
 
@@ -438,8 +445,7 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
     return ['', '']
   endif
 
-  let message = printf('(%'.len(a:max).'d/%d): |%s| %s',
-        \ a:number, a:max, a:plugin.name, cmd)
+  let message = s:get_plugin_message(a:plugin, a:number, a:max, cmd)
 
   return [cmd, message]
 endfunction"}}}
@@ -540,9 +546,7 @@ function! s:lock_revision(process, context) abort "{{{
     endif
 
     if get(plugin, 'rev', '') != ''
-      call s:print_message(
-            \ printf('(%'.len(max).'d/%d): |%s| %s',
-            \ num, max, plugin.name, 'Locked'))
+      call s:print_message(s:get_plugin_message(plugin, num, max, 'Locked'))
     endif
 
     let result = dein#install#_system(cmd)
@@ -869,9 +873,8 @@ function! s:sync(plugin, context) abort "{{{
 
   if isdirectory(a:plugin.path) && get(a:plugin, 'frozen', 0)
     " Skip frozen plugin
-    call s:print_progress_message(
-          \ printf('(%'.len(max).'d/%d): |%s| %s',
-          \ num, max, a:plugin.name, 'is frozen.'))
+    call s:print_progress_message(s:get_plugin_message(
+          \ a:plugin, num, max, 'is frozen.'))
     return
   endif
 
@@ -882,17 +885,15 @@ function! s:sync(plugin, context) abort "{{{
   if cmd == ''
     " Skip
     call s:print_progress_message(
-          \ printf('(%'.len(max).'d/%d): |%s| %s',
-          \ num, max, a:plugin.name, message))
+          \ s:get_plugin_message(a:plugin, num, max, message))
     return
   endif
 
   if cmd =~# '^E: '
     " Errored.
 
-    call s:print_progress_message(
-          \ printf('(%'.len(max).'d/%d): |%s| %s',
-          \ num, max, a:plugin.name, 'Error'))
+    call s:print_progress_message(s:get_plugin_message(
+          \ a:plugin, num, max, 'Error'))
     call s:error(cmd[3:])
     call add(a:context.errored_plugins,
           \ a:plugin)
@@ -1026,8 +1027,7 @@ function! s:check_output(context, process) abort "{{{
         \ s:get_revision_number(plugin)
 
   if is_timeout || status
-    let message = printf('(%'.len(max).'d/%d): |%s| %s',
-          \ num, max, plugin.name, 'Error')
+    let message = s:get_plugin_message(plugin, num, max, 'Error')
     call s:print_progress_message(message)
     call s:error(plugin.path)
     if !isdirectory(plugin.path)
@@ -1042,22 +1042,19 @@ function! s:check_output(context, process) abort "{{{
   elseif a:process.rev ==# new_rev
         \ || (a:context.update_type ==# 'check_update' && new_rev == '')
     if a:context.update_type !=# 'check_update'
-      call s:print_message(
-            \ printf('(%'.len(max).'d/%d): |%s| %s',
-            \ num, max, plugin.name, 'Same revision'))
+      call s:print_message(s:get_plugin_message(
+            \ plugin, num, max, 'Same revision'))
     endif
   else
-    call s:print_message(
-          \ printf('(%'.len(max).'d/%d): |%s| %s',
-          \ num, max, plugin.name, 'Updated'))
+    call s:print_message(s:get_plugin_message(
+          \ plugin, num, max, 'Updated'))
 
     if a:process.rev != '' && a:context.update_type !=# 'check_update'
       let log_messages = split(s:get_updated_log_message(
             \   plugin, new_rev, a:process.rev), '\n')
       let plugin.commit_count = len(log_messages)
-      call s:print_message(
-            \  map(log_messages, "printf('|%s| ' .
-            \   substitute(v:val, '%', '%%', 'g'), plugin.name)"))
+      call s:print_message(map(log_messages,
+            \   "s:get_short_message(plugin, num, max, v:val)"))
     else
       let plugin.commit_count = 0
     endif
