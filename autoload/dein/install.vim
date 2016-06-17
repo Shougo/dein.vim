@@ -469,7 +469,12 @@ function! s:get_revision_number(plugin) abort "{{{
     let rev = dein#install#_system(cmd)
 
     " If rev contains spaces, it is error message
-    return (rev !~ '\s') ? rev : ''
+    if rev =~ '\s'
+      call s:error(a:plugin.name)
+      call s:error('Error revision number: ' . rev)
+      return ''
+    endif
+    return rev
   finally
     call dein#install#_cd(cwd)
   endtry
