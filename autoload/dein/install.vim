@@ -473,6 +473,10 @@ function! s:get_revision_number(plugin) abort "{{{
       call s:error(a:plugin.name)
       call s:error('Error revision number: ' . rev)
       return ''
+    elseif rev == ''
+      call s:error(a:plugin.name)
+      call s:error('Empty revision number: ' . rev)
+      return ''
     endif
     return rev
   finally
@@ -610,7 +614,7 @@ function! dein#install#_system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
   let output = dein#util#_has_vimproc() ?
-        \ vimproc#system(command) : system(command)
+        \ vimproc#system(command, '', -1) : system(command)
 
   let output = s:iconv(output, 'char', &encoding)
 
