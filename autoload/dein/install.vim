@@ -613,8 +613,8 @@ endfunction"}}}
 function! dein#install#_system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
-  let output = dein#util#_has_vimproc() ?
-        \ vimproc#system(command, '', -1) : system(command)
+  let output = dein#util#_has_vimproc() && !has('nvim') ?
+        \ vimproc#system(command) : system(command)
 
   let output = s:iconv(output, 'char', &encoding)
 
