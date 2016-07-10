@@ -94,7 +94,7 @@ function! dein#util#_notify(msg) abort "{{{
   elseif dein#util#_is_mac()
     if executable('terminal-notifier')
       let cmd = 'terminal-notifier -title '
-            \ . string(title) . ' ' . string(a:msg)
+            \ . string(title) . ' -message ' . string(a:msg)
       if icon != ''
         let cmd .= ' -appIcon ' . string(icon)
       endif
