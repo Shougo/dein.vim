@@ -206,7 +206,8 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
     call mkdir(g:dein#_base_path, 'p')
   endif
 
-  call writefile([string(a:vimrcs), dein#_vim2json(plugins), dein#_vim2json(g:dein#_ftplugin)],
+  call writefile([string(a:vimrcs),
+        \         dein#_vim2json(plugins), dein#_vim2json(g:dein#_ftplugin)],
         \ dein#_get_cache_file())
 endfunction"}}}
 function! dein#util#_check_vimrcs() abort "{{{
