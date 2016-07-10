@@ -280,7 +280,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
   endfor
 
   " Add events
-  for [event, plugins] in items(g:dein#_event_plugins)
+  for [event, plugins] in filter(items(g:dein#_event_plugins),
+        \ "exists('##' . v:val[0])")
     call add(lines, printf('autocmd dein-events %s * call '
           \. 'dein#autoload#_on_event("%s", %s)',
           \ event, event, string(plugins)))
@@ -387,7 +388,8 @@ function! dein#util#_end() abort "{{{
     call dein#util#_execute_hook({}, g:dein#_hook_add)
   endif
 
-  for [event, plugins] in items(g:dein#_event_plugins)
+  for [event, plugins] in filter(items(g:dein#_event_plugins),
+        \ "exists('##' . v:val[0])")
     execute printf('autocmd dein-events %s * call '
           \. 'dein#autoload#_on_event("%s", %s)',
           \ event, event, string(plugins))

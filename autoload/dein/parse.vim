@@ -282,6 +282,8 @@ function! s:parse_lazy(plugin) abort "{{{
         let g:dein#_event_plugins[event] = [a:plugin.name]
       else
         call add(g:dein#_event_plugins[event], a:plugin.name)
+        let g:dein#_event_plugins[event] = dein#util#_uniq(
+              \ g:dein#_event_plugins[event])
       endif
     endfor
   endif
