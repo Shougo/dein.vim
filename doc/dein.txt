@@ -942,10 +942,6 @@ Q: I want to disable plugins.
 
 A: Please use |dein-options-if|.
 
-Q: I want to uninstall plugins directories.
-
-A: Nothing.  You must remove the directories manually.
-
 Q: Defined autocmd does not work in source/post_source hooks. >
 
 	function! s:on_source() abort
@@ -992,8 +988,7 @@ name file.  But you can avoid the problem by |dein-options-merged|.
 
 Q: How to remove the disabled plugins?
 
-A: You can get them by |dein#check_clean()|.
-So you can remove them like below.
+A: You can remove them like below.
 Note: You need Vim 7.4.1107+ or latest version of neovim.
 >
 	call map(dein#check_clean(), "delete(v:val, 'rf')")
