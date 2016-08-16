@@ -42,6 +42,12 @@ call dein#end()
 filetype plugin indent on
 ```
 
+3. Open vim and install dein
+
+```vim
+:call dein#install()
+```
+
 ## Concept
 
 * Faster than NeoBundle
