@@ -8,8 +8,11 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-# Installation directory
-PLUGIN_DIR=`realpath "$1"`
+# Convert the installation directory to absolute path
+case $1 in
+  /*) PLUGIN_DIR=$1;;
+  *) PLUGIN_DIR=$PWD/$1;;
+esac
 INSTALL_DIR="${PLUGIN_DIR}/repos/github.com/Shougo/dein.vim"
 echo "Install to \"$INSTALL_DIR\"..."
 if [ -e "$INSTALL_DIR" ]; then
