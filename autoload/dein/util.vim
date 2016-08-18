@@ -332,8 +332,13 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
 
   " Insert dein runtimepath to the head in 'runtimepath'.
   let rtps = dein#util#_split_rtp(&runtimepath)
+  let idx = index(rtps, $VIMRUNTIME)
+  if idx < 0
+    call dein#util#_error('Invalid runtimepath.')
+    return 1
+  endif
   let &runtimepath = dein#util#_join_rtp(
-        \ add(insert(rtps, g:dein#_runtime_path),
+        \ add(insert(rtps, g:dein#_runtime_path, idx - 1),
         \     g:dein#_runtime_path.'/after'),
         \ &runtimepath, g:dein#_runtime_path)
 endfunction"}}}
