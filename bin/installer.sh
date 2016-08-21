@@ -51,7 +51,7 @@ echo "Please add the following settings for dein to the top of your vimrc (Vim) 
     echo "endif"
     echo ""
     echo "\" Required:"
-    echo "set runtimepath^=$INSTALL_DIR"
+    echo "set runtimepath+=$INSTALL_DIR"
     echo ""
     echo "\" Required:"
     echo "call dein#begin('$PLUGIN_DIR')"

@@ -29,7 +29,7 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 if &compatible
   set nocompatible
 endif
-set runtimepath^={path to dein.vim directory}
+set runtimepath+={path to dein.vim directory}
 
 call dein#begin({path to plugin base path directory})
 
