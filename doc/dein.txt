@@ -30,10 +30,16 @@ scratch.
 Concepts are:
 
 * Faster than NeoBundle
+
 * Simple
+
 * No commands, Functions only
+
 * Easy to test and maintain
+
 * No Vundle/NeoBundle compatibility
+
+* neovim/Vim8 asynchronous API installation support
 
 
 ==============================================================================

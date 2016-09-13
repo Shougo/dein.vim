@@ -60,6 +60,8 @@ filetype plugin indent on
 
 * No Vundle/NeoBundle compatibility
 
+* neovim/Vim8 asynchronous API installation support
+
 ## Future works (not implemented yet)
 
 * Other types support (zip, svn, hg, ...)
