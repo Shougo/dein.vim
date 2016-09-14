@@ -40,6 +40,7 @@ call dein#add('Shougo/neocomplete.vim')
 call dein#end()
 
 filetype plugin indent on
+syntax enable
 ```
 
 3. Open vim and install dein

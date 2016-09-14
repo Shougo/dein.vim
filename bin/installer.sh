@@ -72,6 +72,7 @@ echo "Please add the following settings for dein to the top of your vimrc (Vim) 
     echo ""
     echo "\" Required:"
     echo "filetype plugin indent on"
+    echo "syntax enable"
     echo ""
     echo "\" If you want to install not installed plugins on startup."
     echo "\"if dein#check_install()"

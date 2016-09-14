@@ -917,6 +917,7 @@ EXAMPLES						*dein-examples*
 	call dein#end()
 
 	filetype plugin indent on
+	syntax enable
 <
 
 ==============================================================================
