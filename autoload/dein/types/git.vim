@@ -124,8 +124,8 @@ function! s:type.get_sync_command(plugin) abort "{{{
           \ self.get_uri(a:plugin.repo, a:plugin), a:plugin.path)
   else
     let shell = fnamemodify(split(&shell)[0], ':t')
-    let and = (!dein#util#_has_vimproc() && shell ==# 'fish') ?
-          \ '; and ' : ' && '
+    let and = ((!dein#util#_has_vimproc() || dein#install#_is_async())
+          \    && shell ==# 'fish') ? '; and ' : ' && '
 
     let cmd = g:dein#types#git#pull_command
     let cmd .= and . git . ' submodule update --init --recursive'
