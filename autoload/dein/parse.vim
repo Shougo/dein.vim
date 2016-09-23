@@ -124,7 +124,7 @@ function! dein#parse#_dict(repo, plugin) abort "{{{
   endif
 
   if has_key(a:plugin, 'if') && type(a:plugin.if) == type('')
-    sandbox let plugin.if = eval(a:plugin.if)
+    let plugin.if = eval(a:plugin.if)
   endif
 
   " Hooks
