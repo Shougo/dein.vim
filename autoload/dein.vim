@@ -63,16 +63,6 @@ function! dein#is_sourced(name) abort "{{{
   return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
 endfunction"}}}
 
-function! dein#save_cache() abort "{{{
-  call dein#util#_error('dein#save_cache() is deprecated.')
-  call dein#util#_error('Please use dein#save_state() instead.')
-  return 1
-endfunction"}}}
-function! dein#load_cache(...) abort "{{{
-  call dein#util#_error('dein#load_cache() is deprecated.')
-  call dein#util#_error('Please use dein#load_state() instead.')
-  return 1
-endfunction"}}}
 function! dein#load_cache_raw(...) abort "{{{
   if a:0 | let g:dein#_vimrcs = a:1 | endif
   let starting = a:0 > 1 ? a:2 : has('vim_starting')

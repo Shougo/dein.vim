@@ -251,16 +251,6 @@ dein#get([{plugin-name}])
 		dictionary.  The key is the plugin name.  The value is the
 		plugin dictionary.
 
-							*dein#load_cache()*
-dein#load_cache([{vimrcs}])
-		It is the deprecated function.
-		Please use |dein#load_state()| instead.
-
-							*dein#save_cache()*
-dein#save_cache()
-		It is the deprecated function.
-		Please use |dein#save_state()| instead.
-
 							*dein#load_state()*
 dein#load_state({base-path})
 		Load dein's state from the cache script,
