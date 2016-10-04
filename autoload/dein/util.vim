@@ -235,6 +235,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
     return 1
   endif
 
+  let g:dein#_vimrcs = dein#util#_uniq(g:dein#_vimrcs)
+
   call dein#util#_save_cache(g:dein#_vimrcs, 1, a:is_starting)
 
   " Version check
@@ -309,7 +311,7 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
     let g:dein#_base_path = g:dein#_base_path[: -2]
   endif
   let g:dein#_runtime_path = g:dein#_base_path . '/.dein'
-  let g:dein#_vimrcs = a:vimrcs
+  let g:dein#_vimrcs = dein#util#_convert2list(a:vimrcs)
   let g:dein#_hook_add = ''
 
   " Filetype off
