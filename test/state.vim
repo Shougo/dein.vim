@@ -16,10 +16,7 @@ function! s:suite.before_each() abort "{{{
 endfunction"}}}
 
 function! s:suite.state() abort "{{{
-  call s:assert.equals(dein#load_cache([$MYVIMRC], 0), 1)
-
   call delete(dein#_get_state_file())
-  call s:assert.equals(dein#load_cache([$MYVIMRC], 1), 1)
 
   call dein#begin(s:path)
 

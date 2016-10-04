@@ -257,7 +257,6 @@ dein#load_state({base-path})
 		which is located in `dein#util#_get_runtime_path() . '/state_'
 		.  fnamemodify(v:progname, ':r') . '.vim'`.
 		{base-path} is where your downloaded plugins will be placed.
-		It is faster than |dein#load_cache()| feature.
 		Note: You must call it before |dein#begin()|.  It clears dein
 		all configuration.
 		Note: It overwrites your 'runtimepath' completely, you must
