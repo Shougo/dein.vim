@@ -16,6 +16,7 @@ Interface		|dein-interface|
   Options		  |dein-options|
   Toml			  |dein-toml|
 Unite Sources		|dein-unite-sources|
+Denite Sources		|dein-denite-sources|
 Configuration Examples	|dein-examples|
 FAQ			|dein-faq|
 Compatibility		|dein-compatibility|
@@ -888,6 +889,15 @@ dein/log
 
 		Source arguments:
 		1. "!"
+
+==============================================================================
+DENITE SOURCES						*dein-denite-sources*
+
+Here let me explain about a source for |denite| provided in dein.
+
+						*dein-denite-source-dein*
+dein
+		Nominates dein plugins as candidates.
 
 ==============================================================================
 EXAMPLES						*dein-examples*
