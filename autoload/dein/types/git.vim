@@ -124,7 +124,7 @@ function! s:type.get_sync_command(plugin) abort "{{{
           \ self.get_uri(a:plugin.repo, a:plugin), a:plugin.path)
   else
     let cmd = g:dein#types#git#pull_command
-    let and = dein#util#_is_windows() ? ' && ' : '; '
+    let and = dein#util#_is_fish() ? '; and ' : ' && '
     let cmd .= and . git . ' submodule update --init --recursive'
   endif
 

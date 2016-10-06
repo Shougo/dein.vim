@@ -139,6 +139,10 @@ function! dein#util#_has_vimproc() abort "{{{
 
   return exists('*vimproc#version')
 endfunction"}}}
+function! dein#util#_is_fish() abort "{{{
+  return (dein#install#_is_async() || !dein#util#_has_vimproc())
+        \ && fnamemodify(&shell, ':t:r') ==# 'fish'
+endfunction"}}}
 
 function! dein#util#_check_lazy_plugins() abort "{{{
   return map(filter(dein#util#_get_lazy_plugins(),
