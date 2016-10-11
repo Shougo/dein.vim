@@ -115,13 +115,12 @@ function! dein#util#_chomp(str) abort "{{{
   return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
 endfunction"}}}
 
-function! dein#util#_uniq(list, ...) abort "{{{
-  let list = a:0 ? map(copy(a:list),
-        \              printf('[v:val, %s]', a:1)) : copy(a:list)
+function! dein#util#_uniq(list) abort "{{{
+  let list = copy(a:list)
   let i = 0
   let seen = {}
   while i < len(list)
-    let key = string(a:0 ? list[i][1] : list[i])
+    let key = list[i]
     if has_key(seen, key)
       call remove(list, i)
     else
@@ -129,7 +128,7 @@ function! dein#util#_uniq(list, ...) abort "{{{
       let i += 1
     endif
   endwhile
-  return a:0 ? map(list, 'v:val[0]') : list
+  return list
 endfunction"}}}
 
 function! dein#util#_has_vimproc() abort "{{{
