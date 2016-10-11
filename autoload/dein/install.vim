@@ -225,7 +225,8 @@ function! s:clear_runtimepath() abort "{{{
   if !isdirectory(parent)
     call mkdir(parent, 'p')
   endif
-  if rename(dein#util#_get_runtime_path(), dest)
+  silent! let err = rename(dein#util#_get_runtime_path(), dest)
+  if get(l:, 'err', -1)
     call dein#util#_error('Rename failed.')
     call dein#util#_error('src=' . dein#util#_get_runtime_path())
     call dein#util#_error('dest=' . dest)
