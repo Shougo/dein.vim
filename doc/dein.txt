@@ -1037,6 +1037,11 @@ Q: I need the wrapper commands for dein.vim.
 A: You can use it.
 https://github.com/haya14busa/dein-command.vim
 
+Q: Why the install script does not use "curl | bash" ?
+https://github.com/Shougo/neobundle.vim/pull/515
+
+A: https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
