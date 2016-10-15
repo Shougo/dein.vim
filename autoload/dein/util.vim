@@ -131,10 +131,12 @@ function! dein#util#_uniq(list) abort "{{{
   let seen = {}
   while i < len(list)
     let key = list[i]
-    if has_key(seen, key)
+    if key != '' && has_key(seen, key)
       call remove(list, i)
     else
-      let seen[key] = 1
+      if key != ''
+        let seen[key] = 1
+      endif
       let i += 1
     endif
   endwhile
