@@ -92,17 +92,27 @@ function! dein#util#_notify(msg) abort "{{{
       let cmd .= ' "' . icon . '"'
     endif
   elseif dein#util#_is_mac()
+    let cmd = ''
+    if exists('$TMUX')
+      if !executable('reattach-to-user-namespace')
+        call dein#util#_error(
+              \ 'Please install "reattach-to-user-namespace" command'
+              \ . 'to use notification in tmux.')
+        return
+      endif
+
+      " Use reattach-to-user-namespace in tmux
+      let cmd .= 'reattach-to-user-namespace '
+    endif
     if executable('terminal-notifier')
-      let cmd = 'terminal-notifier -title '
+      let cmd .= 'terminal-notifier -title '
             \ . string(title) . ' -message ' . string(a:msg)
       if icon != ''
         let cmd .= ' -appIcon ' . string(icon)
       endif
     else
-      let cmd = printf("%s osascript -e 'display notification "
-            \        ."\"%s\" with title \"%s\"'",
-            \ (exists('$TMUX') && executable('reattach-to-user-namespace') ?
-            \  'reattach-to-user-namespace' : ''), a:msg, title)
+      let cmd .= printf("osascript -e 'display notification "
+            \        ."\"%s\" with title \"%s\"'", a:msg, title)
     endif
   endif
 

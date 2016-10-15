@@ -388,6 +388,7 @@ https://www.tlhan-ghun.de/projects/snarl-command-line-tools/snarl_cmd-exe/
 
 		In Mac: "terminal-notifier" or "osascript" command
 https://github.com/julienXX/terminal-notifier
+		Note: "reattach-to-user-namespace" command is needed in tmux.
 
 		In Linux: "notify-send" command
 
