@@ -251,6 +251,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
   endif
 
   let g:dein#_vimrcs = dein#util#_uniq(g:dein#_vimrcs)
+  let &runtimepath = dein#util#_join_rtp(dein#util#_uniq(
+        \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
 
   call dein#util#_save_cache(g:dein#_vimrcs, 1, a:is_starting)
 
