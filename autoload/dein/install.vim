@@ -374,6 +374,9 @@ function! dein#install#_remote_plugins() abort "{{{
         \ values(dein#get()),
         \ "isdirectory(v:val.rtp . '/rplugin')"))
 
+  let &runtimepath = dein#util#_join_rtp(dein#util#_uniq(
+        \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
+
   if exists(':UpdateRemotePlugins')
     UpdateRemotePlugins
   endif
