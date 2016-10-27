@@ -977,7 +977,7 @@ endfunction"}}}
 function! s:init_job(process, context, cmd) abort "{{{
   if has('nvim') && a:context.async
     " Use neovim async jobs
-    let a:process.proc = jobstart(a:cmd, {
+    let a:process.proc = jobstart([&shell, &shellcmdflag, a:cmd], {
           \ 'on_stdout': function('s:job_handler_neovim'),
           \ 'on_stderr': function('s:job_handler_neovim'),
           \ 'on_exit': function('s:job_handler_neovim'),
