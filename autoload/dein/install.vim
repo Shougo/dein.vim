@@ -383,7 +383,8 @@ function! dein#install#_remote_plugins() abort "{{{
 endfunction"}}}
 
 function! dein#install#_each(cmd, plugins) abort "{{{
-  let plugins = filter(dein#util#_get_plugins(a:plugins), 'isdirectory(v:val.path)')
+  let plugins = filter(dein#util#_get_plugins(a:plugins),
+        \ 'isdirectory(v:val.path)')
 
   let global_context_save = s:global_context
 
