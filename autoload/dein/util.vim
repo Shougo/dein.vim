@@ -317,6 +317,11 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
     call dein#_init()
   endif
 
+  if v:version < 704
+    call dein#util#_error('Does not work in the Vim (' . v:version . ').')
+    return 1
+  endif
+
   if a:path == '' || g:dein#_block_level != 0
     call dein#util#_error('Invalid begin/end block usage.')
     return 1

@@ -4,15 +4,9 @@
 " License: MIT license
 "=============================================================================
 
-if v:version < 704
-  call dein#util#_error('Does not work in the Vim (' . v:version . ').')
-  finish
-endif
-
 function! dein#_init() abort "{{{
   let g:dein#name = ''
   let g:dein#plugin = {}
-
   let g:dein#_plugins = {}
   let g:dein#_base_path = ''
   let g:dein#_runtime_path = ''
@@ -25,26 +19,18 @@ function! dein#_init() abort "{{{
   let g:dein#_event_plugins = {}
 
   augroup dein
-    autocmd!
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
+    autocmd BufRead *? call dein#autoload#_on_default_event('BufRead')
+    autocmd BufNewFile *? call dein#autoload#_on_default_event('BufNewFile')
+    autocmd BufNew *? call dein#autoload#_on_default_event('BufNew')
+    autocmd VimEnter *? call dein#autoload#_on_default_event('VimEnter')
+    autocmd FileType *? call dein#autoload#_on_default_event('FileType')
   augroup END
+  augroup dein-events | augroup END
 
-  augroup dein-events
-    autocmd!
-  augroup END
-
-  if exists('##CmdUndefined')
-    autocmd dein CmdUndefined *
-          \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
-  endif
-
-  for event in [ 'BufRead', 'BufNewFile', 'BufNew', 'VimEnter', 'FileType' ]
-    execute 'autocmd dein' event '*'
-          \ "if &filetype != '' || bufnr('$') != 1
-          \  || expand('<afile>') != '' |
-          \    call dein#autoload#_on_default_event(".string(event).") |
-          \  endif"
-  endfor
+  if !exists('##CmdUndefined') | return | endif
+  autocmd dein CmdUndefined *
+        \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
 endfunction"}}}
 
 function! dein#tap(name) abort "{{{
@@ -90,8 +76,7 @@ function! dein#_json2vim(expr) abort "{{{
         \ : has('patch-7.4.1498') ? js_decode(a:expr) : eval(a:expr))
 endfunction "}}}
 function! dein#load_state(path, ...) abort "{{{
-  let starting = a:0 > 0 ? a:1 : has('vim_starting')
-  if !starting | return 1 | endif
+  if !(a:0 > 0 ? a:1 : has('vim_starting')) | return 1 | endif
 
   call dein#_init()
   let g:dein#_base_path = expand(a:path)
