@@ -203,6 +203,11 @@ dein#each({command}[, {plugins}])
 		{plugins} is the plugins name list.
 		You can execute "git gc" command for the plugins.
 
+							*dein#build()*
+dein#build([{plugins}])
+		Build for {plugins}.
+		{plugins} is the plugins name list.
+
 							*dein#rollback()*
 dein#rollback({date}[, {plugins}])
 		Rollback to the latest matched {date} revisions for {plugins}.

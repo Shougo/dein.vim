@@ -417,6 +417,14 @@ function! dein#install#_each(cmd, plugins) abort "{{{
     call dein#install#_cd(cwd)
   endtry
 endfunction"}}}
+function! dein#install#_build(plugins) abort "{{{
+  for plugin in filter(dein#util#_get_plugins(a:plugins),
+        \ "isdirectory(v:val.path) && has_key(v:val, 'build')")
+    call s:print_progress_message('Building: ' . plugin.name)
+    call dein#install#_each(plugin.build, plugin)
+  endfor
+  return dein#install#_get_last_status()
+endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
   return s:log
@@ -1086,7 +1094,7 @@ function! s:check_output(context, process) abort "{{{
           \ type.get_uri(plugin.repo, plugin) : ''
 
     call dein#call_hook('post_update', plugin)
-    if s:build(plugin)
+    if dein#install#_build([plugin.name])
           \ && confirm('Build failed. Uninstall "'
           \   .plugin.name.'" now?', "yes\nNo", 2) == 1
       " Remove.
@@ -1258,22 +1266,6 @@ function! s:vimproc_system(cmd) abort "{{{
   endwhile
 
   call proc.waitpid()
-endfunction"}}}
-function! s:build(plugin) abort "{{{
-  " Environment check.
-  let build = get(a:plugin, 'build')
-  if type(build) == type({})
-    call s:error('Dictionary type of build is no longer supported')
-    return 1
-  elseif build == ''
-    return 0
-  endif
-
-  call s:print_progress_message('Building...')
-
-  call dein#install#_each(build, a:plugin)
-
-  return dein#install#_get_last_status()
 endfunction"}}}
 function! s:channel2id(channel) abort "{{{
   return matchstr(a:channel, '\d\+')
