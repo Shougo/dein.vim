@@ -32,7 +32,6 @@ function! dein#_init() abort "{{{
   autocmd dein CmdUndefined *
         \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
 endfunction"}}}
-
 function! dein#tap(name) abort "{{{
   if !has_key(g:dein#_plugins, a:name)
         \ || !isdirectory(g:dein#_plugins[a:name].path) | return 0 | endif
@@ -44,7 +43,6 @@ endfunction"}}}
 function! dein#is_sourced(name) abort "{{{
   return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
 endfunction"}}}
-
 function! dein#load_cache_raw(...) abort "{{{
   if a:0 | let g:dein#_vimrcs = a:1 | endif
   let starting = a:0 > 1 ? a:2 : has('vim_starting')
@@ -87,8 +85,7 @@ function! dein#load_state(path, ...) abort "{{{
     execute 'source' fnameescape(state)
   catch
     if v:exception !=# 'Cache loading error'
-      call dein#util#_error('Error occurred while loading state : '
-            \ . v:exception)
+      call dein#util#_error('Loading state error: ' . v:exception)
     endif
     call dein#clear_state()
     return 1
@@ -103,7 +100,6 @@ endfunction"}}}
 function! dein#_get_state_file() abort "{{{
   return g:dein#_base_path.'/state_'.fnamemodify(v:progname, ':r').'.vim'
 endfunction"}}}
-
 function! dein#begin(path, ...) abort "{{{
   return dein#util#_begin(a:path, empty(a:000) ? [$MYVIMRC] : a:1)
 endfunction"}}}
