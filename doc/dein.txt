@@ -1048,6 +1048,14 @@ https://github.com/Shougo/neobundle.vim/pull/515
 
 A: https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/
 
+Q: I want to use "git" or "http" protocol instead of "https".
+
+A: No, you cannot.
+
+Q: Why dein.vim only accepts "https" or "ssh"?
+
+A: https://glyph.twistedmatrix.com/2015/11/editor-malware.html
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
