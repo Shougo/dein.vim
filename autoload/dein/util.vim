@@ -158,6 +158,7 @@ endfunction"}}}
 function! dein#util#_check_lazy_plugins() abort "{{{
   return map(filter(dein#util#_get_lazy_plugins(),
         \   "isdirectory(v:val.rtp)
+        \    && get(v:val, 'hook_source', '') == ''
         \    && !isdirectory(v:val.rtp . '/plugin')
         \    && !isdirectory(v:val.rtp . '/after/plugin')"),
         \   'v:val.name')
