@@ -396,21 +396,13 @@ function! dein#install#_each(cmd, plugins) abort "{{{
     for plugin in plugins
       call dein#install#_cd(plugin.path)
 
-      if !dein#util#_has_vimproc()
-        let output = system(a:cmd)
-        if v:shell_error
-          call s:print_message(output)
-        else
-          call s:error(output)
-        endif
-      else
-        call s:vimproc_system(a:cmd)
+      execute '!' . a:cmd
+      if !v:shell_error
+        redraw
       endif
     endfor
   catch
-    " Build error from vimproc.
-    let message = v:exception . ' ' . v:throwpoint
-    call s:nonskip_error(message)
+    call s:nonskip_error(v:exception . ' ' . v:throwpoint)
     return 1
   finally
     let s:global_context = global_context_save
@@ -423,7 +415,7 @@ function! dein#install#_build(plugins) abort "{{{
     call s:print_progress_message('Building: ' . plugin.name)
     call dein#install#_each(plugin.build, plugin)
   endfor
-  return dein#install#_get_last_status()
+  return v:shell_error
 endfunction"}}}
 
 function! dein#install#_get_log() abort "{{{
@@ -1244,28 +1236,6 @@ function! s:notify(msg) abort "{{{
   call dein#util#_notify(a:msg)
 
   call s:updates_log(msg)
-endfunction"}}}
-function! s:vimproc_system(cmd) abort "{{{
-  let proc = vimproc#pgroup_open(a:cmd, 1)
-
-  " Close handles.
-  call proc.stdin.close()
-
-  while !proc.stdout.eof
-    if !proc.stderr.eof
-      " Print error.
-      call s:error(proc.stderr.read_lines(-1, 100))
-    endif
-
-    call s:print_message(proc.stdout.read_lines(-1, 100))
-  endwhile
-
-  while !proc.stderr.eof
-    " Print error.
-    call s:error(proc.stderr.read_lines(-1, 100))
-  endwhile
-
-  call proc.waitpid()
 endfunction"}}}
 function! s:channel2id(channel) abort "{{{
   return matchstr(a:channel, '\d\+')
