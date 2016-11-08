@@ -9,6 +9,7 @@ function! dein#_init() abort "{{{
   let g:dein#plugin = {}
   let g:dein#_plugins = {}
   let g:dein#_base_path = ''
+  let g:dein#_cache_path = ''
   let g:dein#_runtime_path = ''
   let g:dein#_hook_add = ''
   let g:dein#_ftplugin = {}
@@ -32,22 +33,12 @@ function! dein#_init() abort "{{{
   autocmd dein CmdUndefined *
         \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
 endfunction"}}}
-function! dein#tap(name) abort "{{{
-  if !has_key(g:dein#_plugins, a:name)
-        \ || !isdirectory(g:dein#_plugins[a:name].path) | return 0 | endif
-
-  let g:dein#name = a:name
-  let g:dein#plugin = g:dein#_plugins[a:name]
-  return 1
-endfunction"}}}
-function! dein#is_sourced(name) abort "{{{
-  return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
-endfunction"}}}
 function! dein#load_cache_raw(...) abort "{{{
   if a:0 | let g:dein#_vimrcs = a:1 | endif
   let starting = a:0 > 1 ? a:2 : has('vim_starting')
 
-  let cache = dein#_get_cache_file()
+  let cache = get(g:, 'dein#cache_directory', g:dein#_base_path)
+        \ .'/cache_'.fnamemodify(v:progname, ':r')
   if !starting || !filereadable(cache) | return [{}, {}] | endif
 
   let time = getftime(cache)
@@ -61,9 +52,6 @@ function! dein#load_cache_raw(...) abort "{{{
     return [{}, {}]
   endif
   return [dein#_json2vim(list[1]), dein#_json2vim(list[2])]
-endfunction"}}}
-function! dein#_get_cache_file() abort "{{{
-  return g:dein#_base_path.'/cache_'.fnamemodify(v:progname, ':r')
 endfunction"}}}
 function! dein#_vim2json(expr) abort "{{{
   return   has('nvim') ? json_encode(a:expr)
@@ -79,7 +67,8 @@ function! dein#load_state(path, ...) abort "{{{
   call dein#_init()
   let g:dein#_base_path = expand(a:path)
 
-  let state = dein#_get_state_file()
+  let state = get(g:, 'dein#cache_directory', g:dein#_base_path)
+        \ .'/state_' .fnamemodify(v:progname, ':r').'.vim'
   if !filereadable(state) | return 1 | endif
   try
     execute 'source' fnameescape(state)
@@ -91,14 +80,17 @@ function! dein#load_state(path, ...) abort "{{{
     return 1
   endtry
 endfunction"}}}
-function! dein#save_state() abort "{{{
-  return dein#util#_save_state(has('vim_starting'))
+
+function! dein#tap(name) abort "{{{
+  if !has_key(g:dein#_plugins, a:name)
+        \ || !isdirectory(g:dein#_plugins[a:name].path) | return 0 | endif
+
+  let g:dein#name = a:name
+  let g:dein#plugin = g:dein#_plugins[a:name]
+  return 1
 endfunction"}}}
-function! dein#clear_state() abort "{{{
-  return dein#util#_clear_state()
-endfunction"}}}
-function! dein#_get_state_file() abort "{{{
-  return g:dein#_base_path.'/state_'.fnamemodify(v:progname, ':r').'.vim'
+function! dein#is_sourced(name) abort "{{{
+  return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
 endfunction"}}}
 function! dein#begin(path, ...) abort "{{{
   return dein#util#_begin(a:path, empty(a:000) ? [$MYVIMRC] : a:1)
@@ -197,6 +189,12 @@ function! dein#config(arg, ...) abort "{{{
 endfunction"}}}
 function! dein#set_hook(name, hook_name, hook) abort "{{{
   return dein#util#_set_hook(a:name, a:hook_name, a:hook)
+endfunction"}}}
+function! dein#save_state() abort "{{{
+  return dein#util#_save_state(has('vim_starting'))
+endfunction"}}}
+function! dein#clear_state() abort "{{{
+  return dein#util#_clear_state()
 endfunction"}}}
 
 " vim: foldmethod=marker

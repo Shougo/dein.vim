@@ -51,12 +51,16 @@ function! dein#util#_get_runtime_path() abort "{{{
   return g:dein#_runtime_path
 endfunction"}}}
 function! dein#util#_get_cache_path() abort "{{{
-  let cache = get(g:, 'dein#cache_directory', g:dein#_base_path)
-  if cache != '' && !isdirectory(cache)
-    call mkdir(cache, 'p')
+  if g:dein#_cache_path != ''
+    return g:dein#_cache_path
   endif
 
-  return cache
+  let g:dein#_cache_path = get(g:,
+        \ 'dein#cache_directory', g:dein#_base_path)
+  if !isdirectory(g:dein#_cache_path)
+    call mkdir(g:dein#_cache_path, 'p')
+  endif
+  return g:dein#_cache_path
 endfunction"}}}
 
 function! dein#util#_error(msg) abort "{{{
@@ -225,7 +229,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
 
   call writefile([string(a:vimrcs),
         \         dein#_vim2json(plugins), dein#_vim2json(g:dein#_ftplugin)],
-        \ dein#_get_cache_file())
+        \ g:dein#_cache_path.'/cache_'.fnamemodify(v:progname, ':r'))
 endfunction"}}}
 function! dein#util#_check_vimrcs() abort "{{{
   let time = getftime(dein#util#_get_runtime_path())
@@ -270,6 +274,7 @@ function! dein#util#_save_state(is_starting) abort "{{{
         \ 'let g:dein#_ftplugin = ftplugin',
         \ 'let g:dein#_base_path = ' . string(g:dein#_base_path),
         \ 'let g:dein#_runtime_path = ' . string(g:dein#_runtime_path),
+        \ 'let g:dein#_cache_path = ' . string(g:dein#_cache_path),
         \ 'let &runtimepath = ' . string(&runtimepath),
         \ ]
 
@@ -308,7 +313,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
           \ event, event, string(plugins)))
   endfor
 
-  call writefile(lines, dein#_get_state_file())
+  call writefile(lines,
+        \ g:dein#_cache_path.'/state_'.fnamemodify(v:progname, ':r').'.vim')
 endfunction"}}}
 function! dein#util#_clear_state() abort "{{{
   for cache in dein#util#_globlist(g:dein#_base_path.'/state_*.vim')
@@ -338,6 +344,7 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
     let g:dein#_base_path = g:dein#_base_path[: -2]
   endif
   call dein#util#_get_runtime_path()
+  call dein#util#_get_cache_path()
   let g:dein#_vimrcs = dein#util#_convert2list(a:vimrcs)
   let g:dein#_hook_add = ''
 
