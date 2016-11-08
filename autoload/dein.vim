@@ -33,20 +33,15 @@ function! dein#_init() abort "{{{
   autocmd dein CmdUndefined *
         \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
 endfunction"}}}
-function! dein#load_cache_raw(...) abort "{{{
-  if a:0 | let g:dein#_vimrcs = a:1 | endif
-  let starting = a:0 > 1 ? a:2 : has('vim_starting')
-
+function! dein#load_cache_raw(vimrcs) abort "{{{
+  let g:dein#_vimrcs = a:vimrcs
   let cache = get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/cache_'.fnamemodify(v:progname, ':r')
-  if !starting || !filereadable(cache) | return [{}, {}] | endif
-
   let time = getftime(cache)
   if !empty(filter(map(copy(g:dein#_vimrcs),
         \ 'getftime(expand(v:val))'), 'time < v:val'))
     return [{}, {}]
   endif
-
   let list = readfile(cache)
   if len(list) != 3 || string(g:dein#_vimrcs) !=# list[0]
     return [{}, {}]

@@ -268,7 +268,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
   " Version check
 
   let lines = [
-        \ 'let [plugins, ftplugin] = dein#load_cache_raw('. string(g:dein#_vimrcs) .', 1)',
+        \ 'let [plugins, ftplugin] = dein#load_cache_raw('.
+        \      string(g:dein#_vimrcs) .')',
         \ "if empty(plugins) | throw 'Cache loading error' | endif",
         \ 'let g:dein#_plugins = plugins',
         \ 'let g:dein#_ftplugin = ftplugin',
