@@ -62,6 +62,15 @@ function! dein#util#_get_cache_path() abort "{{{
   endif
   return g:dein#_cache_path
 endfunction"}}}
+function! dein#util#_get_vimrcs(vimrcs) abort "{{{
+  return !empty(a:vimrcs) ?
+        \ dein#util#_convert2list(a:vimrcs) : [dein#util#_get_myvimrc()]
+endfunction"}}}
+function! dein#util#_get_myvimrc() abort "{{{
+  return $MYVIMRC != '' ? $MYVIMRC :
+        \ matchstr(split(dein#util#_redir('scriptnames'), '\n')[0],
+        \  '^\s*\d\+:\s\zs.*')
+endfunction"}}}
 
 function! dein#util#_error(msg) abort "{{{
   for mes in s:msg2list(a:msg)
@@ -346,7 +355,7 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
   endif
   call dein#util#_get_runtime_path()
   call dein#util#_get_cache_path()
-  let g:dein#_vimrcs = dein#util#_convert2list(a:vimrcs)
+  let g:dein#_vimrcs = dein#util#_get_vimrcs(a:vimrcs)
   let g:dein#_hook_add = ''
 
   " Filetype off
@@ -567,8 +576,8 @@ function! dein#util#_split(expr) abort "{{{
 endfunction"}}}
 
 function! dein#util#_redir(cmd) abort "{{{
-  if exists('*capture')
-    return capture(a:cmd)
+  if exists('*execute')
+    return execute(a:cmd)
   else
     let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
     set verbose=0 verbosefile=

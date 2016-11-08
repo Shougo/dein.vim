@@ -88,7 +88,7 @@ function! dein#is_sourced(name) abort "{{{
   return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
 endfunction"}}}
 function! dein#begin(path, ...) abort "{{{
-  return dein#util#_begin(a:path, empty(a:000) ? [$MYVIMRC] : a:1)
+  return dein#util#_begin(a:path, (empty(a:000) ? [] : a:1))
 endfunction"}}}
 function! dein#end() abort "{{{
   return dein#util#_end()
