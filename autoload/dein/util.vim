@@ -238,7 +238,8 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort "{{{
 
   call writefile([string(a:vimrcs),
         \         dein#_vim2json(plugins), dein#_vim2json(g:dein#_ftplugin)],
-        \ g:dein#_cache_path.'/cache_'.fnamemodify(v:progname, ':r'))
+        \ get(g:, 'dein#cache_directory', g:dein#_base_path)
+        \ .'/cache_'.fnamemodify(v:progname, ':r'))
 endfunction"}}}
 function! dein#util#_check_vimrcs() abort "{{{
   let time = getftime(dein#util#_get_runtime_path())
@@ -323,8 +324,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
           \ event, event, string(plugins)))
   endfor
 
-  call writefile(lines,
-        \ g:dein#_cache_path.'/state_'.fnamemodify(v:progname, ':r').'.vim')
+  call writefile(lines, get(g:, 'dein#cache_directory', g:dein#_base_path)
+        \ .'/state_'.fnamemodify(v:progname, ':r').'.vim')
 endfunction"}}}
 function! dein#util#_clear_state() abort "{{{
   for cache in dein#util#_globlist(g:dein#_base_path.'/state_*.vim')
