@@ -40,10 +40,14 @@ function! dein#util#_get_base_path() abort "{{{
   return g:dein#_base_path
 endfunction"}}}
 function! dein#util#_get_runtime_path() abort "{{{
+  if g:dein#_runtime_path != ''
+    return g:dein#_runtime_path
+  endif
+
+  let g:dein#_runtime_path = dein#util#_get_cache_path() . '/.dein'
   if !isdirectory(g:dein#_runtime_path)
     call mkdir(g:dein#_runtime_path, 'p')
   endif
-
   return g:dein#_runtime_path
 endfunction"}}}
 function! dein#util#_get_cache_path() abort "{{{
@@ -333,7 +337,7 @@ function! dein#util#_begin(path, vimrcs) abort "{{{
   if g:dein#_base_path[-1:] == '/'
     let g:dein#_base_path = g:dein#_base_path[: -2]
   endif
-  let g:dein#_runtime_path = g:dein#_base_path . '/.dein'
+  call dein#util#_get_runtime_path()
   let g:dein#_vimrcs = dein#util#_convert2list(a:vimrcs)
   let g:dein#_hook_add = ''
 
