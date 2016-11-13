@@ -57,6 +57,7 @@ function! dein#util#_get_cache_path() abort "{{{
 
   let g:dein#_cache_path = get(g:,
         \ 'dein#cache_directory', g:dein#_base_path)
+        \ . '/' . fnamemodify(dein#util#_get_myvimrc(), ':t')
   if !isdirectory(g:dein#_cache_path)
     call mkdir(g:dein#_cache_path, 'p')
   endif
