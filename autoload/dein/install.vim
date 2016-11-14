@@ -110,7 +110,7 @@ function! dein#install#_reinstall(plugins) abort "{{{
   endfor
 
   call dein#install#_update(dein#util#_convert2list(a:plugins),
-        \ 'install', dein#install#_is_async())
+        \ 'install', 0)
 endfunction"}}}
 function! dein#install#_direct_install(repo, options) abort "{{{
   let options = copy(a:options)
