@@ -212,7 +212,7 @@ function! dein#install#_recache_runtimepath() abort "{{{
 
   call dein#clear_state()
 
-  call s:notify(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
+  call s:log([strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)')])
 endfunction"}}}
 function! s:clear_runtimepath() abort "{{{
   if dein#util#_get_cache_path() == ''
