@@ -949,7 +949,6 @@ function! s:init_process(plugin, context, cmd) abort "{{{
           \ 'output': '',
           \ 'status': -1,
           \ 'eof': 0,
-          \ 'start_time': localtime(),
           \ }
 
     if isdirectory(a:plugin.path)
@@ -1010,6 +1009,8 @@ function! s:init_job(process, context, cmd) abort "{{{
     let a:process.output = dein#install#_system(a:cmd)
     let a:process.status = dein#install#_get_last_status()
   endif
+
+  let a:process.start_time = localtime()
 endfunction"}}}
 function! s:check_output(context, process) abort "{{{
   let is_timeout = (localtime() - a:process.start_time)
@@ -1024,6 +1025,7 @@ function! s:check_output(context, process) abort "{{{
           \ s:get_vimproc_result(a:process, is_timeout)
   else
     let [is_skip, status] = [0, a:process.status]
+    let is_timeout = 0
   endif
 
   if is_skip
@@ -1119,6 +1121,7 @@ function! s:get_async_result(process, is_timeout) abort "{{{
     let output = join(job.candidates[: -2], "\n")
     if output != ''
       let a:process.output .= output
+      let a:process.start_time = localtime()
       call s:print_message(s:get_short_message(
             \ a:process.plugin, a:process.number,
             \ a:process.max_plugins, output))
@@ -1134,6 +1137,7 @@ function! s:get_async_result(process, is_timeout) abort "{{{
     let output = join(job.candidates, "\n")
     if output != ''
       let a:process.output .= output
+      let a:process.start_time = localtime()
       call s:print_message(s:get_short_message(
             \ a:process.plugin, a:process.number,
             \ a:process.max_plugins, output))
@@ -1152,6 +1156,7 @@ function! s:get_vimproc_result(process, is_timeout) abort "{{{
         \ a:process.proc.stdout.read(-1, 300), 'char', &encoding)
   if output != ''
     let a:process.output .= output
+    let a:process.start_time = localtime()
     call s:print_message(s:get_short_message(
           \ a:process.plugin, a:process.number,
           \ a:process.max_plugins, output))
