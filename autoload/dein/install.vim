@@ -233,8 +233,8 @@ function! s:clear_runtimepath() abort "{{{
     return
   endif
 
-  " Dummy call to create runtime path
-  call dein#util#_get_runtime_path()
+  " Create runtime path
+  call mkdir(dein#util#_get_runtime_path(), 'p')
 
   " Remove previous runtime path
   for path in filter(dein#util#_globlist(
