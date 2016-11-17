@@ -1056,6 +1056,13 @@ Q: Why dein.vim only accepts "https" or "ssh"?
 
 A: https://glyph.twistedmatrix.com/2015/11/editor-malware.html
 
+Q: YouCompleteMe installation is failed.
+https://github.com/Shougo/dein.vim/issues/144
+
+A: Please check |:message| result.
+If you have found "Process timeout" error, you should increase
+|g:dein#install_process_timeout| value.
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
