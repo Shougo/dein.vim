@@ -1015,22 +1015,15 @@ function! s:init_job(process, context, cmd) abort "{{{
   let a:process.start_time = localtime()
 endfunction"}}}
 function! s:check_output(context, process) abort "{{{
-  let is_timeout = (localtime() - a:process.start_time)
-        \             >= get(a:process.plugin, 'timeout',
-        \                    g:dein#install_process_timeout)
-
   if a:context.async && has_key(a:process, 'proc')
-    let [is_skip, status] =
-          \ s:get_async_result(a:process, is_timeout)
+    let [is_timeout, is_skip, status] = s:get_async_result(a:process)
   elseif dein#util#_has_vimproc() && has_key(a:process, 'proc')
-    let [is_skip, status] =
-          \ s:get_vimproc_result(a:process, is_timeout)
+    let [is_timeout, is_skip, status] = s:get_vimproc_result(a:process)
   else
-    let [is_skip, status] = [0, a:process.status]
-    let is_timeout = 0
+    let [is_timeout, is_skip, status] = [0, 0, a:process.status]
   endif
 
-  if is_skip
+  if is_skip && !is_timeout
     return
   endif
 
@@ -1057,8 +1050,10 @@ function! s:check_output(context, process) abort "{{{
       call s:error('Maybe wrong username or repository.')
     endif
 
-    call s:error((is_timeout ? 'Process timeout.' :
-          \    split(a:process.output, '\n')))
+    call s:error((is_timeout ?
+          \    strftime('Process timeout: (%Y/%m/%d %H:%M:%S)') :
+          \    split(a:process.output, '\n')
+          \ ))
 
     call add(a:context.errored_plugins,
           \ plugin)
@@ -1103,9 +1098,9 @@ function! s:check_output(context, process) abort "{{{
 
   let a:process.eof = 1
 endfunction"}}}
-function! s:get_async_result(process, is_timeout) abort "{{{
+function! s:get_async_result(process) abort "{{{
   if !has_key(s:job_info, a:process.proc)
-    return [1, -1]
+    return [0, 1, -1]
   endif
 
   let job = s:job_info[a:process.proc]
@@ -1119,39 +1114,40 @@ function! s:get_async_result(process, is_timeout) abort "{{{
     endif
   endif
 
-  if !job.eof && !a:is_timeout
-    let output = join(job.candidates[: -2], "\n")
-    if output != ''
-      let a:process.output .= output
-      let a:process.start_time = localtime()
-      call s:print_message(s:get_short_message(
-            \ a:process.plugin, a:process.number,
-            \ a:process.max_plugins, output))
-    endif
-    let job.candidates = job.candidates[-1:]
-    return [1, -1]
+  let output = join((job.eof ?
+        \ job.candidates : job.candidates[: -2]), "\n")
+  if output != ''
+    let a:process.output .= output
+    let a:process.start_time = localtime()
+    call s:print_message(s:get_short_message(
+          \ a:process.plugin, a:process.number,
+          \ a:process.max_plugins, output))
+  endif
+  let job.candidates = job.eof ? [] : job.candidates[-1:]
+
+  let is_timeout = (localtime() - a:process.start_time)
+        \             >= get(a:process.plugin, 'timeout',
+        \                    g:dein#install_process_timeout)
+
+  if job.eof
+    let is_timeout = 0
+    let is_skip = 0
+    let status = job.status
   else
-    if a:is_timeout
-      silent! call call(
-            \ (has('nvim') ? 'jobstop' : 'job_stop'),
-            \ (has('nvim') ? a:process.proc : a:process.job))
-    endif
-    let output = join(job.candidates, "\n")
-    if output != ''
-      let a:process.output .= output
-      let a:process.start_time = localtime()
-      call s:print_message(s:get_short_message(
-            \ a:process.plugin, a:process.number,
-            \ a:process.max_plugins, output))
-    endif
-    let job.candidates = []
+    let is_skip = 1
+    let status = -1
   endif
 
-  let status = job.status
+  if is_timeout
+    silent! call call(
+          \ (has('nvim') ? 'jobstop' : 'job_stop'),
+          \ (has('nvim') ? a:process.proc : a:process.job))
+    let status = -1
+  endif
 
-  return [0, status]
+  return [is_timeout, is_skip, status]
 endfunction"}}}
-function! s:get_vimproc_result(process, is_timeout) abort "{{{
+function! s:get_vimproc_result(process) abort "{{{
   let output = s:iconv(a:process.proc.stdout.read(-1, 300),
         \ 'char', &encoding)
   if output != ''
@@ -1161,14 +1157,24 @@ function! s:get_vimproc_result(process, is_timeout) abort "{{{
           \ a:process.plugin, a:process.number,
           \ a:process.max_plugins, output))
   endif
-  if !a:process.proc.stdout.eof && !a:is_timeout
-    return [1, -1]
+
+  let is_timeout = (localtime() - a:process.start_time)
+        \             >= get(a:process.plugin, 'timeout',
+        \                    g:dein#install_process_timeout)
+
+  if !a:process.proc.stdout.eof && !is_timeout
+    return [is_timeout, 1, -1]
   endif
+
+  if a:process.proc.stdout.eof
+    let is_timeout = 0
+  endif
+
   call a:process.proc.stdout.close()
 
   let status = a:process.proc.waitpid()[1]
 
-  return [0, status]
+  return [is_timeout, 0, status]
 endfunction"}}}
 
 function! s:iconv(expr, from, to) abort "{{{
