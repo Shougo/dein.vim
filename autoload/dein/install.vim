@@ -1142,8 +1142,6 @@ function! s:get_async_result(process, is_timeout) abort "{{{
             \ a:process.plugin, a:process.number,
             \ a:process.max_plugins, output))
     endif
-    let a:process.output = substitute(
-          \ a:process.output, 'DETACH', '', '')
     let job.candidates = []
   endif
 
