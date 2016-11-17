@@ -622,15 +622,17 @@ endfunction"}}}
 function! dein#install#_system(command) abort "{{{
   let command = s:iconv(a:command, &encoding, 'char')
 
-  let output = dein#util#_has_vimproc() && !has('nvim') ?
-        \ vimproc#system(command) : system(command)
+  let output = s:has_vimproc() ? vimproc#system(command) : system(command)
 
   let output = s:iconv(output, 'char', &encoding)
 
   return substitute(output, '\n$', '', '')
 endfunction"}}}
+function! s:has_vimproc() abort "{{{
+  return dein#util#_has_vimproc() && dein#util#_is_windows()
+endfunction"}}}
 function! dein#install#_get_last_status() abort "{{{
-  return dein#util#_has_vimproc() ? vimproc#get_last_status() : v:shell_error
+  return s:has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction"}}}
 function! dein#install#_rm(path) abort "{{{
   if !isdirectory(a:path) && !filereadable(a:path)
@@ -1150,8 +1152,8 @@ function! s:get_async_result(process, is_timeout) abort "{{{
   return [0, status]
 endfunction"}}}
 function! s:get_vimproc_result(process, is_timeout) abort "{{{
-  let output = vimproc#util#iconv(
-        \ a:process.proc.stdout.read(-1, 300), 'char', &encoding)
+  let output = s:iconv(a:process.proc.stdout.read(-1, 300),
+        \ 'char', &encoding)
   if output != ''
     let a:process.output .= output
     let a:process.start_time = localtime()
