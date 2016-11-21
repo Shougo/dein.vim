@@ -827,12 +827,9 @@ function! s:done(context) abort "{{{
   call s:notify(s:get_errored_message(a:context.errored_plugins))
 
   if a:context.update_type !=# 'check_update'
-        \ && (!empty(a:context.synced_plugins)
-        \     || !empty(a:context.errored_plugins))
     call dein#install#_recache_runtimepath()
-  else
-    call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
   endif
+  call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
 
   " Disable installation handler
   let s:global_context = {}
