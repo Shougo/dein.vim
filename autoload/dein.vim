@@ -79,13 +79,14 @@ endfunction"}}}
 function! dein#tap(name) abort "{{{
   if !has_key(g:dein#_plugins, a:name)
         \ || !isdirectory(g:dein#_plugins[a:name].path) | return 0 | endif
-
   let g:dein#name = a:name
   let g:dein#plugin = g:dein#_plugins[a:name]
   return 1
 endfunction"}}}
 function! dein#is_sourced(name) abort "{{{
-  return get(get(g:dein#_plugins, a:name, {}), 'sourced', 0)
+  return has_key(g:dein#_plugins, a:name)
+        \ && isdirectory(g:dein#_plugins[a:name].path)
+        \ && g:dein#_plugins[a:name].sourced
 endfunction"}}}
 function! dein#begin(path, ...) abort "{{{
   return dein#util#_begin(a:path, (empty(a:000) ? [] : a:1))
