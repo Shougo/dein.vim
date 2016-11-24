@@ -252,10 +252,14 @@ function! dein#util#_load_merged_plugins() abort "{{{
   if !filereadable(path)
     return []
   endif
-  sandbox return eval(readfile(path)[0])
+  let merged = readfile(path)
+  if len(merged) != 2
+    return []
+  endif
+  sandbox return [merged[0]] + eval(merged[1])
 endfunction"}}}
 function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
-  call writefile([string(a:merged_plugins)],
+  call writefile([g:dein#_cache_version, string(a:merged_plugins)],
         \ dein#util#_get_cache_path() . '/merged')
 endfunction"}}}
 
@@ -279,6 +283,8 @@ function! dein#util#_save_state(is_starting) abort "{{{
   " Version check
 
   let lines = [
+        \ "if g:dein#_cache_version != " . g:dein#_cache_version .
+        \      " | throw 'Cache loading error' | endif",
         \ 'let [plugins, ftplugin] = dein#load_cache_raw('.
         \      string(g:dein#_vimrcs) .')',
         \ "if empty(plugins) | throw 'Cache loading error' | endif",
@@ -423,8 +429,9 @@ function! dein#util#_end() abort "{{{
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
   if dein#util#_check_vimrcs()
-    if sort(map(filter(values(g:dein#_plugins),
-          \ 'v:val.merged'), 'v:val.name'))
+    if [g:dein#_cache_version] +
+          \ sort(map(filter(values(g:dein#_plugins),
+          \      'v:val.merged'), 'v:val.name'))
           \ !=# dein#util#_load_merged_plugins()
       call dein#recache_runtimepath()
     endif

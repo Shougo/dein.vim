@@ -5,6 +5,7 @@
 "=============================================================================
 
 function! dein#_init() abort "{{{
+  let g:dein#_cache_version = 100
   let g:dein#name = ''
   let g:dein#plugin = {}
   let g:dein#_plugins = {}
