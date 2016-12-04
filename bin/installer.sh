@@ -22,13 +22,10 @@ fi
 echo ""
 
 # check git command
-if type git; then
-  : # You have git command. No Problem.
-else
+type git || {
   echo 'Please install git or update your path to include the git executable!'
   exit 1
-fi
-
+}
 echo ""
 
 # make plugin dir and fetch dein
