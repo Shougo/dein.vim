@@ -31,13 +31,14 @@ function! dein#parse#_add(repo, options) abort "{{{
   return plugin
 endfunction"}}}
 function! dein#parse#_init(repo, options) abort "{{{
+  let repo = expand(a:repo)
   let plugin = has_key(a:options, 'type') ?
-        \ dein#util#_get_type(a:options.type).init(a:repo, a:options) :
-        \ s:git.init(a:repo, a:options)
+        \ dein#util#_get_type(a:options.type).init(repo, a:options) :
+        \ s:git.init(repo, a:options)
   if empty(plugin)
-    let plugin = s:check_type(a:repo, a:options)
+    let plugin = s:check_type(repo, a:options)
   endif
-  let plugin.repo = a:repo
+  let plugin.repo = repo
   if !empty(a:options)
     let plugin.orig_opts = deepcopy(a:options)
   endif
