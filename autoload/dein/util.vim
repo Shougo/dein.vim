@@ -163,7 +163,10 @@ endfunction"}}}
 
 function! dein#util#_has_vimproc() abort "{{{
   if !exists('*vimproc#version')
-    silent! call vimproc#version()
+    try
+      call vimproc#version()
+    catch
+    endtry
   endif
 
   return exists('*vimproc#version')
