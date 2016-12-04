@@ -259,7 +259,8 @@ function! dein#util#_load_merged_plugins() abort "{{{
   sandbox return [merged[0]] + eval(merged[1])
 endfunction"}}}
 function! dein#util#_save_merged_plugins(merged_plugins) abort "{{{
-  call writefile([g:dein#_cache_version, string(a:merged_plugins)],
+  call writefile([g:dein#_cache_version,
+        \ string(sort(a:merged_plugins))],
         \ dein#util#_get_cache_path() . '/merged')
 endfunction"}}}
 
@@ -429,9 +430,9 @@ function! dein#util#_end() abort "{{{
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
   if dein#util#_check_vimrcs()
-    if [g:dein#_cache_version] +
+    if [string(g:dein#_cache_version)] +
           \ sort(map(filter(values(g:dein#_plugins),
-          \      'v:val.merged'), 'v:val.name'))
+          \      'v:val.merged'), 'v:val.repo'))
           \ !=# dein#util#_load_merged_plugins()
       call dein#recache_runtimepath()
     endif
