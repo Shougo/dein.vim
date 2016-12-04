@@ -16,21 +16,11 @@ function! s:suite.parse_dict() abort "{{{
   call dein#begin(s:path)
 
   let plugin = {'name': 'baz'}
-  let parsed_plugin = dein#parse#_dict('', plugin)
+  let parsed_plugin = dein#parse#_dict(dein#parse#_init('', plugin))
   call s:assert.equals(parsed_plugin.name, 'baz')
 
-  let plugin = {'name': 'baz'}
-  let parsed_plugin = dein#parse#_dict('', plugin)
-  call s:assert.equals(parsed_plugin.rtp, s:path.'/repos/baz')
-  call s:assert.equals(parsed_plugin.path, s:path.'/repos/baz')
-
-  let plugin = {'name': 'baz', 'rev': 'bar'}
-  let parsed_plugin = dein#parse#_dict('', plugin)
-  call s:assert.equals(parsed_plugin.rtp, s:path.'/repos/baz')
-  call s:assert.equals(parsed_plugin.path, s:path.'/repos/baz')
-
   let plugin = {'name': 'baz', 'if': '1'}
-  let parsed_plugin = dein#parse#_dict('', plugin)
+  let parsed_plugin = dein#parse#_dict(dein#parse#_init('', plugin))
   call s:assert.equals(parsed_plugin.merged, 0)
 
   call dein#end()
@@ -40,20 +30,20 @@ function! s:suite.name_conversion() abort "{{{
   let g:dein#enable_name_conversion = 1
 
   let plugin = dein#parse#_dict(
-        \ 'https://github.com/Shougo/dein.vim.git', {})
+        \ {'repo': 'https://github.com/Shougo/dein.vim.git'})
   call s:assert.equals(plugin.name, 'dein')
 
   let plugin = dein#parse#_dict(
-        \ 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git', {})
+        \ {'repo': 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git'})
   call s:assert.equals(plugin.name, 'qt-syntax')
 
   let plugin = dein#parse#_dict(
-        \ 'https://bitbucket.org/kh3phr3n/qt-syntax-vim.git', {})
+        \ {'repo': 'https://bitbucket.org/kh3phr3n/qt-syntax-vim.git'})
   call s:assert.equals(plugin.name, 'qt-syntax')
 
   let plugin = dein#parse#_dict(
-        \ 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git',
-        \ {'name': 'vim-qt-syntax'})
+        \ {'repo': 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git',
+        \  'name': 'vim-qt-syntax'})
   call s:assert.equals(plugin.name, 'vim-qt-syntax')
 
   let g:dein#enable_name_conversion = 0
