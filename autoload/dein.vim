@@ -24,7 +24,6 @@ function! dein#_init() abort "{{{
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
     autocmd BufRead *? call dein#autoload#_on_default_event('BufRead')
     autocmd BufNewFile *? call dein#autoload#_on_default_event('BufNewFile')
-    autocmd BufNew *? call dein#autoload#_on_default_event('BufNew')
     autocmd VimEnter *? call dein#autoload#_on_default_event('VimEnter')
     autocmd FileType *? call dein#autoload#_on_default_event('FileType')
   augroup END

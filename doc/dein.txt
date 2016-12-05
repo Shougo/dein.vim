@@ -725,7 +725,7 @@ on_if		(String)
 		If it is evaluated and it is non zero, dein will call
 		|dein#source()|.
 		The default evaluate timings are "BufRead", "BufNewFile",
-		"BufNew", "VimEnter" and "FileType".
+		"VimEnter" and "FileType".
 		If |dein-options-on_event| exists, it is evaluated when
 		|dein-options-on_event|.
 
