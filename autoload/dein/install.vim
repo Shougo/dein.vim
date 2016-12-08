@@ -10,7 +10,7 @@ let s:job_info = {}
 let s:log = []
 let s:updates_log = []
 
-" Global options definition." "{{{
+" Global options definition.
 let g:dein#install_max_processes =
       \ get(g:, 'dein#install_max_processes', 8)
 let g:dein#install_progress_type =
@@ -21,9 +21,8 @@ let g:dein#install_process_timeout =
       \ get(g:, 'dein#install_process_timeout', 120)
 let g:dein#install_log_filename =
       \ get(g:, 'dein#install_log_filename', '')
-"}}}
 
-function! dein#install#_update(plugins, update_type, async) abort "{{{
+function! dein#install#_update(plugins, update_type, async) abort
   let plugins = dein#util#_get_plugins(a:plugins)
 
   if a:update_type ==# 'install'
@@ -65,9 +64,9 @@ function! dein#install#_update(plugins, update_type, async) abort "{{{
         unlet s:timer
       endif
 
-      function! s:timer_handler(timer) abort "{{{
+      function! s:timer_handler(timer) abort
         call s:install_async(s:global_context)
-      endfunction"}}}
+      endfunction
       let s:timer = timer_start(&updatetime,
             \ function('s:timer_handler'), {'repeat': -1})
       autocmd dein-install VimLeavePre *
@@ -86,8 +85,8 @@ function! dein#install#_update(plugins, update_type, async) abort "{{{
 
     return errored
   endif
-endfunction"}}}
-function! dein#install#_reinstall(plugins) abort "{{{
+endfunction
+function! dein#install#_reinstall(plugins) abort
   let plugins = dein#util#_get_plugins(a:plugins)
 
   for plugin in plugins
@@ -111,8 +110,8 @@ function! dein#install#_reinstall(plugins) abort "{{{
 
   call dein#install#_update(dein#util#_convert2list(a:plugins),
         \ 'install', 0)
-endfunction"}}}
-function! dein#install#_direct_install(repo, options) abort "{{{
+endfunction
+function! dein#install#_direct_install(repo, options) abort
   let options = copy(a:options)
   let options.merged = 0
 
@@ -133,8 +132,8 @@ function! dein#install#_direct_install(repo, options) abort "{{{
   else
     call writefile(add(readfile(file), line), file)
   endif
-endfunction"}}}
-function! dein#install#_rollback(date, plugins) abort "{{{
+endfunction
+function! dein#install#_rollback(date, plugins) abort
   let plugins = dein#util#_get_plugins(a:plugins)
 
   let glob = s:get_rollback_directory() . '/' . a:date . '*'
@@ -163,9 +162,9 @@ function! dein#install#_rollback(date, plugins) abort "{{{
 
   call dein#recache_runtimepath()
   call s:error('Rollback to '.fnamemodify(rollbacks[0], ':t').' version.')
-endfunction"}}}
+endfunction
 
-function! dein#install#_recache_runtimepath() abort "{{{
+function! dein#install#_recache_runtimepath() abort
   if dein#util#_is_sudo()
     call s:error('"sudo vim" is detected. This feature is disabled.')
     return
@@ -213,8 +212,8 @@ function! dein#install#_recache_runtimepath() abort "{{{
   call dein#clear_state()
 
   call s:log([strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)')])
-endfunction"}}}
-function! s:clear_runtimepath() abort "{{{
+endfunction
+function! s:clear_runtimepath() abort
   if dein#util#_get_cache_path() == ''
     call dein#util#_error('Invalid base path.')
     return
@@ -242,8 +241,8 @@ function! s:clear_runtimepath() abort "{{{
         \   "fnamemodify(v:val, ':t') !=# getpid()")
     call dein#install#_rm(path)
   endfor
-endfunction"}}}
-function! s:helptags() abort "{{{
+endfunction
+function! s:helptags() abort
   if g:dein#_runtime_path == '' || dein#util#_is_sudo()
     return ''
   endif
@@ -263,15 +262,15 @@ function! s:helptags() abort "{{{
     call s:error(v:exception)
     call s:error(v:throwpoint)
   endtry
-endfunction"}}}
-function! s:copy_files(plugins, directory) abort "{{{
+endfunction
+function! s:copy_files(plugins, directory) abort
   let directory = (a:directory == '' ? '' : '/' . a:directory)
   let srcs = filter(map(copy(a:plugins), "v:val.rtp . directory"),
         \ 'isdirectory(v:val)')
   call dein#install#_copy_directories(srcs,
         \ dein#util#_get_runtime_path() . directory)
-endfunction"}}}
-function! s:merge_files(plugins, directory) abort "{{{
+endfunction
+function! s:merge_files(plugins, directory) abort
   let files = []
   for plugin in a:plugins
     for file in filter(split(globpath(
@@ -285,11 +284,11 @@ function! s:merge_files(plugins, directory) abort "{{{
     call dein#util#_writefile(printf('.dein/%s/%s.vim',
           \ a:directory, a:directory), files)
   endif
-endfunction"}}}
-function! s:list_directory(directory) abort "{{{
+endfunction
+function! s:list_directory(directory) abort
   return dein#util#_globlist(a:directory . '/*')
-endfunction"}}}
-function! s:save_rollback() abort "{{{
+endfunction
+function! s:save_rollback() abort
   let revisions = {}
   for plugin in filter(values(dein#get()), 's:check_rollback(v:val)')
     let rev = s:get_revision_number(plugin)
@@ -300,8 +299,8 @@ function! s:save_rollback() abort "{{{
 
   let dest = s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S')
   call writefile([dein#_vim2json(revisions)], dest)
-endfunction"}}}
-function! s:get_rollback_directory() abort "{{{
+endfunction
+function! s:get_rollback_directory() abort
   let parent = printf('%s/rollbacks/%s',
         \ dein#util#_get_cache_path(), fnamemodify(v:progname, ':r'))
   if !isdirectory(parent)
@@ -309,13 +308,13 @@ function! s:get_rollback_directory() abort "{{{
   endif
 
   return parent
-endfunction"}}}
-function! s:check_rollback(plugin) abort "{{{
+endfunction
+function! s:check_rollback(plugin) abort
   return !has_key(a:plugin, 'local')
         \ && !get(a:plugin, 'frozen', 0)
         \ && get(a:plugin, 'rev', '') == ''
-endfunction"}}}
-function! s:generate_ftplugin() abort "{{{
+endfunction
+function! s:generate_ftplugin() abort
   " Create after/ftplugin
   let after = dein#util#_get_runtime_path() . '/after/ftplugin'
   if !isdirectory(after)
@@ -353,18 +352,18 @@ function! s:generate_ftplugin() abort "{{{
   for [filetype, list] in items(ftplugin)
     call writefile(list, printf('%s/%s.vim', after, filetype))
   endfor
-endfunction"}}}
+endfunction
 
-function! dein#install#_is_async() abort "{{{
+function! dein#install#_is_async() abort
   if has('vim_starting') || g:dein#install_max_processes <= 1
     return 0
   endif
   return has('nvim') || (has('job') && has('channel')
         \                && exists('*job_getchannel')
         \                && exists('*job_info'))
-endfunction"}}}
+endfunction
 
-function! dein#install#_remote_plugins() abort "{{{
+function! dein#install#_remote_plugins() abort
   if !has('nvim')
     return
   endif
@@ -380,9 +379,9 @@ function! dein#install#_remote_plugins() abort "{{{
   if exists(':UpdateRemotePlugins')
     UpdateRemotePlugins
   endif
-endfunction"}}}
+endfunction
 
-function! dein#install#_each(cmd, plugins) abort "{{{
+function! dein#install#_each(cmd, plugins) abort
   let plugins = filter(dein#util#_get_plugins(a:plugins),
         \ 'isdirectory(v:val.path)')
 
@@ -408,37 +407,37 @@ function! dein#install#_each(cmd, plugins) abort "{{{
     let s:global_context = global_context_save
     call dein#install#_cd(cwd)
   endtry
-endfunction"}}}
-function! dein#install#_build(plugins) abort "{{{
+endfunction
+function! dein#install#_build(plugins) abort
   for plugin in filter(dein#util#_get_plugins(a:plugins),
         \ "isdirectory(v:val.path) && has_key(v:val, 'build')")
     call s:print_progress_message('Building: ' . plugin.name)
     call dein#install#_each(plugin.build, plugin)
   endfor
   return v:shell_error
-endfunction"}}}
+endfunction
 
-function! dein#install#_get_log() abort "{{{
+function! dein#install#_get_log() abort
   return s:log
-endfunction"}}}
-function! dein#install#_get_updates_log() abort "{{{
+endfunction
+function! dein#install#_get_updates_log() abort
   return s:updates_log
-endfunction"}}}
-function! dein#install#_get_context() abort "{{{
+endfunction
+function! dein#install#_get_context() abort
   return s:global_context
-endfunction"}}}
+endfunction
 
-function! s:get_progress_message(plugin, number, max) abort "{{{
+function! s:get_progress_message(plugin, number, max) abort
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
         \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
-endfunction"}}}
-function! s:get_plugin_message(plugin, number, max, message) abort "{{{
+endfunction
+function! s:get_plugin_message(plugin, number, max, message) abort
   return printf('(%'.len(a:max).'d/%d) |%-20s| %s',
         \ a:number, a:max, a:plugin.name, a:message)
-endfunction"}}}
-function! s:get_short_message(plugin, number, max, message) abort "{{{
+endfunction
+function! s:get_short_message(plugin, number, max, message) abort
   return printf('(%'.len(a:max).'d/%d) %s', a:number, a:max, a:message)
-endfunction"}}}
+endfunction
 function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   let type = dein#util#_get_type(a:plugin.type)
 
@@ -457,8 +456,8 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   let message = s:get_plugin_message(a:plugin, a:number, a:max, cmd)
 
   return [cmd, message]
-endfunction"}}}
-function! s:get_revision_number(plugin) abort "{{{
+endfunction
+function! s:get_revision_number(plugin) abort
   let type = dein#util#_get_type(a:plugin.type)
 
   if !isdirectory(a:plugin.path)
@@ -491,8 +490,8 @@ function! s:get_revision_number(plugin) abort "{{{
   finally
     call dein#install#_cd(cwd)
   endtry
-endfunction"}}}
-function! s:get_revision_remote(plugin) abort "{{{
+endfunction
+function! s:get_revision_remote(plugin) abort
   let type = dein#util#_get_type(a:plugin.type)
 
   if !isdirectory(a:plugin.path)
@@ -516,8 +515,8 @@ function! s:get_revision_remote(plugin) abort "{{{
   finally
     call dein#install#_cd(cwd)
   endtry
-endfunction"}}}
-function! s:get_updated_log_message(plugin, new_rev, old_rev) abort "{{{
+endfunction
+function! s:get_updated_log_message(plugin, new_rev, old_rev) abort
   let cwd = getcwd()
   try
     let type = dein#util#_get_type(a:plugin.type)
@@ -534,8 +533,8 @@ function! s:get_updated_log_message(plugin, new_rev, old_rev) abort "{{{
   finally
     call dein#install#_cd(cwd)
   endtry
-endfunction"}}}
-function! s:lock_revision(process, context) abort "{{{
+endfunction
+function! s:lock_revision(process, context) abort
   let num = a:process.number
   let max = a:context.max_plugins
   let plugin = a:process.plugin
@@ -578,8 +577,8 @@ function! s:lock_revision(process, context) abort "{{{
     call s:error(result)
     return -1
   endif
-endfunction"}}}
-function! s:get_updated_message(context, plugins) abort "{{{
+endfunction
+function! s:get_updated_message(context, plugins) abort
   if empty(a:plugins)
     return ''
   endif
@@ -598,8 +597,8 @@ function! s:get_updated_message(context, plugins) abort "{{{
         \          '^\\h\\w*:', 'https:', ''),
         \        v:val.old_rev, v:val.new_rev) : '')")
         \ , "\n")
-endfunction"}}}
-function! s:get_errored_message(plugins) abort "{{{
+endfunction
+function! s:get_errored_message(plugins) abort
   if empty(a:plugins)
     return ''
   endif
@@ -610,16 +609,16 @@ function! s:get_errored_message(plugins) abort "{{{
   let msg .= "Please read the error message log with the :message command.\n"
 
   return msg
-endfunction"}}}
+endfunction
 
 
 " Helper functions
-function! dein#install#_cd(path) abort "{{{
+function! dein#install#_cd(path) abort
   if isdirectory(a:path)
     execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
   endif
-endfunction"}}}
-function! dein#install#_system(command) abort "{{{
+endfunction
+function! dein#install#_system(command) abort
   let command = s:iconv(a:command, &encoding, 'char')
 
   let output = s:has_vimproc() ? vimproc#system(command) : system(command)
@@ -627,14 +626,14 @@ function! dein#install#_system(command) abort "{{{
   let output = s:iconv(output, 'char', &encoding)
 
   return substitute(output, '\n$', '', '')
-endfunction"}}}
-function! s:has_vimproc() abort "{{{
+endfunction
+function! s:has_vimproc() abort
   return dein#util#_has_vimproc() && dein#util#_is_windows()
-endfunction"}}}
-function! dein#install#_get_last_status() abort "{{{
+endfunction
+function! dein#install#_get_last_status() abort
   return s:has_vimproc() ? vimproc#get_last_status() : v:shell_error
-endfunction"}}}
-function! dein#install#_rm(path) abort "{{{
+endfunction
+function! dein#install#_rm(path) abort
   if !isdirectory(a:path) && !filereadable(a:path)
     return
   endif
@@ -661,8 +660,8 @@ function! dein#install#_rm(path) abort "{{{
       call dein#util#_error(result)
     endif
   endif
-endfunction"}}}
-function! dein#install#_copy_directories(srcs, dest) abort "{{{
+endfunction
+function! dein#install#_copy_directories(srcs, dest) abort
   if empty(a:srcs)
     return 0
   endif
@@ -724,9 +723,9 @@ function! dein#install#_copy_directories(srcs, dest) abort "{{{
   endif
 
   return status
-endfunction"}}}
+endfunction
 
-function! s:install_blocking(context) abort "{{{
+function! s:install_blocking(context) abort
   try
     while 1
       call s:check_loop(a:context)
@@ -742,8 +741,8 @@ function! s:install_blocking(context) abort "{{{
 
 
   return len(a:context.errored_plugins)
-endfunction"}}}
-function! s:install_async(context) abort "{{{
+endfunction
+function! s:install_async(context) abort
   if empty(a:context)
     return
   endif
@@ -756,8 +755,8 @@ function! s:install_async(context) abort "{{{
   endif
 
   return len(a:context.errored_plugins)
-endfunction"}}}
-function! s:check_loop(context) abort "{{{
+endfunction
+function! s:check_loop(context) abort
   while a:context.number < a:context.max_plugins
         \ && len(a:context.processes) < g:dein#install_max_processes
 
@@ -774,8 +773,8 @@ function! s:check_loop(context) abort "{{{
 
   " Filter eof processes.
   call filter(a:context.processes, '!v:val.eof')
-endfunction"}}}
-function! s:restore_view(context) abort "{{{
+endfunction
+function! s:restore_view(context) abort
   if a:context.progress_type ==# 'statusline'
     let &l:statusline = a:context.statusline
     let &g:laststatus = a:context.laststatus
@@ -786,8 +785,8 @@ function! s:restore_view(context) abort "{{{
     let &g:title = a:context.title
     let &g:titlestring = a:context.titlestring
   endif
-endfunction"}}}
-function! s:init_context(plugins, update_type, async) abort "{{{
+endfunction
+function! s:init_context(plugins, update_type, async) abort
   let context = {}
   let context.update_type = a:update_type
   let context.async = a:async
@@ -811,16 +810,16 @@ function! s:init_context(plugins, update_type, async) abort "{{{
   let context.title = &g:title
   let context.titlestring = &g:titlestring
   return context
-endfunction"}}}
-function! s:init_variables(context) abort "{{{
+endfunction
+function! s:init_variables(context) abort
   let s:global_context = a:context
   let s:log = []
   let s:updates_log = []
-endfunction"}}}
-function! s:start() abort "{{{
+endfunction
+function! s:start() abort
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
-endfunction"}}}
-function! s:done(context) abort "{{{
+endfunction
+function! s:done(context) abort
   call s:restore_view(a:context)
 
   call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
@@ -840,15 +839,15 @@ function! s:done(context) abort "{{{
     call timer_stop(s:timer)
     unlet s:timer
   endif
-endfunction"}}}
+endfunction
 
-function! s:job_handler_neovim(job_id, data, event) abort "{{{
+function! s:job_handler_neovim(job_id, data, event) abort
   call s:job_handler(a:job_id, a:data, a:event)
-endfunction"}}}
-function! s:job_handler_vim(channel, msg) abort "{{{
+endfunction
+function! s:job_handler_vim(channel, msg) abort
   call s:job_handler(s:channel2id(a:channel), a:msg, '')
-endfunction"}}}
-function! s:job_handler(id, msg, event) abort "{{{
+endfunction
+function! s:job_handler(id, msg, event) abort
   if !has_key(s:job_info, a:id)
     let s:job_info[a:id] = {
           \ 'candidates': [],
@@ -880,9 +879,9 @@ function! s:job_handler(id, msg, event) abort "{{{
   endif
 
   let candidates += lines
-endfunction"}}}
+endfunction
 
-function! s:sync(plugin, context) abort "{{{
+function! s:sync(plugin, context) abort
   let a:context.number += 1
 
   let num = a:context.number
@@ -923,8 +922,8 @@ function! s:sync(plugin, context) abort "{{{
   if !empty(process)
     call add(a:context.processes, process)
   endif
-endfunction"}}}
-function! s:init_process(plugin, context, cmd) abort "{{{
+endfunction
+function! s:init_process(plugin, context, cmd) abort
   let process = {}
 
   let cwd = getcwd()
@@ -972,8 +971,8 @@ function! s:init_process(plugin, context, cmd) abort "{{{
   endtry
 
   return process
-endfunction"}}}
-function! s:init_job(process, context, cmd) abort "{{{
+endfunction
+function! s:init_job(process, context, cmd) abort
   if has('nvim') && a:context.async
     " Use neovim async jobs
     let a:process.proc = jobstart([&shell, &shellcmdflag, a:cmd], {
@@ -1010,8 +1009,8 @@ function! s:init_job(process, context, cmd) abort "{{{
   endif
 
   let a:process.start_time = localtime()
-endfunction"}}}
-function! s:check_output(context, process) abort "{{{
+endfunction
+function! s:check_output(context, process) abort
   if a:context.async && has_key(a:process, 'proc')
     let [is_timeout, is_skip, status] = s:get_async_result(a:process)
   elseif dein#util#_has_vimproc() && has_key(a:process, 'proc')
@@ -1094,8 +1093,8 @@ function! s:check_output(context, process) abort "{{{
   endif
 
   let a:process.eof = 1
-endfunction"}}}
-function! s:get_async_result(process) abort "{{{
+endfunction
+function! s:get_async_result(process) abort
   if !has_key(s:job_info, a:process.proc)
     return [0, 1, -1]
   endif
@@ -1143,8 +1142,8 @@ function! s:get_async_result(process) abort "{{{
   endif
 
   return [is_timeout, is_skip, status]
-endfunction"}}}
-function! s:get_vimproc_result(process) abort "{{{
+endfunction
+function! s:get_vimproc_result(process) abort
   let output = s:iconv(a:process.proc.stdout.read(-1, 300),
         \ 'char', &encoding)
   if output != ''
@@ -1172,16 +1171,16 @@ function! s:get_vimproc_result(process) abort "{{{
   let status = a:process.proc.waitpid()[1]
 
   return [is_timeout, 0, status]
-endfunction"}}}
+endfunction
 
-function! s:iconv(expr, from, to) abort "{{{
+function! s:iconv(expr, from, to) abort
   if a:from == '' || a:to == '' || a:from ==? a:to
     return a:expr
   endif
   let result = iconv(a:expr, a:from, a:to)
   return result != '' ? result : a:expr
-endfunction"}}}
-function! s:print_progress_message(msg) abort "{{{
+endfunction
+function! s:print_progress_message(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg) || empty(s:global_context)
     return
@@ -1202,8 +1201,8 @@ function! s:print_progress_message(msg) abort "{{{
   endif
 
   call s:log(msg)
-endfunction"}}}
-function! s:print_message(msg) abort "{{{
+endfunction
+function! s:print_message(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
@@ -1214,8 +1213,8 @@ function! s:print_message(msg) abort "{{{
   endif
 
   call s:log(msg)
-endfunction"}}}
-function! s:error(msg) abort "{{{
+endfunction
+function! s:error(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
@@ -1224,8 +1223,8 @@ function! s:error(msg) abort "{{{
   call s:echo(msg, 'error')
 
   call s:updates_log(msg)
-endfunction"}}}
-function! s:nonskip_error(msg) abort "{{{
+endfunction
+function! s:nonskip_error(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
@@ -1234,8 +1233,8 @@ function! s:nonskip_error(msg) abort "{{{
   call s:echo_mode(join(msg, "\n"), 'error')
 
   call s:updates_log(msg)
-endfunction"}}}
-function! s:notify(msg) abort "{{{
+endfunction
+function! s:notify(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
     return
@@ -1244,19 +1243,19 @@ function! s:notify(msg) abort "{{{
   call dein#util#_notify(a:msg)
 
   call s:updates_log(msg)
-endfunction"}}}
-function! s:channel2id(channel) abort "{{{
+endfunction
+function! s:channel2id(channel) abort
   return matchstr(a:channel, '\d\+')
-endfunction"}}}
-function! s:updates_log(msg) abort "{{{
+endfunction
+function! s:updates_log(msg) abort
   let s:updates_log += a:msg
   call s:log(a:msg)
-endfunction"}}}
-function! s:log(msg) abort "{{{
+endfunction
+function! s:log(msg) abort
   let s:log += a:msg
   call s:append_log_file(a:msg)
-endfunction"}}}
-function! s:append_log_file(msg) abort "{{{
+endfunction
+function! s:append_log_file(msg) abort
   let logfile = g:dein#install_log_filename
   if logfile == ''
     return
@@ -1273,10 +1272,10 @@ function! s:append_log_file(msg) abort "{{{
     call mkdir(dir, 'p')
   endif
   call writefile(msg, logfile)
-endfunction"}}}
+endfunction
 
 
-function! s:echo(expr, mode) abort "{{{
+function! s:echo(expr, mode) abort
   let msg = map(filter(dein#util#_convert2list(a:expr), "v:val != ''"),
         \ "'[dein] ' .  v:val")
   if empty(msg)
@@ -1310,8 +1309,8 @@ function! s:echo(expr, mode) abort "{{{
     let &showcmd = showcmd_save
     let &ruler = ruler_save
   endtry
-endfunction"}}}
-function! s:echo_mode(m, mode) abort "{{{
+endfunction
+function! s:echo_mode(m, mode) abort
   for m in split(a:m, '\r\?\n', 1)
     if !has('vim_starting') && a:mode !=# 'error'
       let m = s:truncate_skipping(m, &columns - 1, &columns/3, '...')
@@ -1325,9 +1324,9 @@ function! s:echo_mode(m, mode) abort "{{{
       echo m
     endif
   endfor
-endfunction"}}}
+endfunction
 
-function! s:truncate_skipping(str, max, footer_width, separator) abort "{{{
+function! s:truncate_skipping(str, max, footer_width, separator) abort
   let width = strwidth(a:str)
   if width <= a:max
     let ret = a:str
@@ -1338,8 +1337,8 @@ function! s:truncate_skipping(str, max, footer_width, separator) abort "{{{
   endif
 
   return ret
-endfunction"}}}
-function! s:strwidthpart(str, width) abort "{{{
+endfunction
+function! s:strwidthpart(str, width) abort
   if a:width <= 0
     return ''
   endif
@@ -1352,8 +1351,8 @@ function! s:strwidthpart(str, width) abort "{{{
   endwhile
 
   return ret
-endfunction"}}}
-function! s:strwidthpart_reverse(str, width) abort "{{{
+endfunction
+function! s:strwidthpart_reverse(str, width) abort
   if a:width <= 0
     return ''
   endif
@@ -1366,11 +1365,9 @@ function! s:strwidthpart_reverse(str, width) abort "{{{
   endwhile
 
   return ret
-endfunction"}}}
+endfunction
 
-function! s:on_hold() abort "{{{
+function! s:on_hold() abort
   call s:install_async(s:global_context)
   call feedkeys("g\<ESC>", 'n')
-endfunction"}}}
-
-" vim: foldmethod=marker
+endfunction

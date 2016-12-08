@@ -5,7 +5,7 @@ let s:type = dein#types#git#define()
 let s:path = tempname()
 let s:base = s:path . '/repos/'
 
-function! s:suite.protocol() abort "{{{
+function! s:suite.protocol() abort
   call dein#begin(s:path)
   " Protocol errors
   call s:assert.equals(s:type.init(
@@ -24,9 +24,9 @@ function! s:suite.protocol() abort "{{{
         \ 'test.zip', {}),
         \ {})
   call dein#end()
-endfunction"}}}
+endfunction
 
-function! s:suite.init() abort "{{{
+function! s:suite.init() abort
   call dein#begin(s:path)
   call s:assert.equals(s:type.init(
         \ 'https://github.com/Shougo/dein.vim', {}),
@@ -84,6 +84,4 @@ function! s:suite.init() abort "{{{
 
   let g:dein#types#git#default_protocol = 'https'
   call dein#end()
-endfunction"}}}
-
-" vim:foldmethod=marker:fen:
+endfunction

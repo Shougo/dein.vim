@@ -28,16 +28,16 @@ function! s:dein_check_update() abort
   return dein#install#_update([], 'check_update', 0)
 endfunction
 
-function! s:suite.before_each() abort "{{{
+function! s:suite.before_each() abort
   call dein#_init()
   let &runtimepath = s:runtimepath_save
   let &l:filetype = s:filetype_save
   let g:temp = tempname()
   let g:dein#install_progress_type = 'echo'
   let g:dein#enable_notification = 0
-endfunction"}}}
+endfunction
 
-function! s:suite.install() abort "{{{
+function! s:suite.install() abort
   let g:dein#install_progress_type = 'title'
   let g:dein#enable_notification = 1
 
@@ -52,9 +52,9 @@ function! s:suite.install() abort "{{{
   let plugin = dein#get('neocomplete.vim')
   call s:assert.true(isdirectory(plugin.rtp))
   call s:assert.equals(dein#each('git gc'), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.tap() abort "{{{
+function! s:suite.tap() abort
   call dein#begin(s:path)
   call s:assert.equals(dein#tap('neocomplete.vim'), 0)
   call dein#add('Shougo/neocomplete.vim')
@@ -63,9 +63,9 @@ function! s:suite.tap() abort "{{{
   call s:assert.equals(dein#tap('neocomplete.vim'), 1)
   call s:assert.equals(dein#tap('unite.vim'), 0)
   call dein#end()
-endfunction"}}}
+endfunction
 
-function! s:suite.reinstall() abort "{{{
+function! s:suite.reinstall() abort
   let g:dein#install_progress_type = 'statusline'
   let g:dein#install_progress_type = 'none'
 
@@ -78,18 +78,18 @@ function! s:suite.reinstall() abort "{{{
   call dein#end()
 
   call s:assert.equals(dein#reinstall('neocomplete.vim'), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.direct_install() abort "{{{
+function! s:suite.direct_install() abort
   let g:dein#install_progress_type = 'none'
   call dein#begin(s:path)
   call dein#end()
 
   call s:assert.equals(dein#direct_install('Shougo/neocomplete.vim'), 0)
   call s:assert.equals(dein#get('neocomplete.vim').sourced, 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.update() abort "{{{
+function! s:suite.update() abort
   let g:dein#install_progress_type = 'echo'
 
   call dein#begin(s:path2)
@@ -114,9 +114,9 @@ function! s:suite.update() abort "{{{
   " Latest neobundle release is 3.2
   " call s:assert.equals(s:get_revision(plugin2),
   "       \ '47576978549f16ef21784a6d15e6a5ae38ddb800')
-endfunction"}}}
+endfunction
 
-function! s:suite.check_install() abort "{{{
+function! s:suite.check_install() abort
   let g:dein#install_progress_type = 'tabline'
 
   call dein#begin(s:path)
@@ -130,9 +130,9 @@ function! s:suite.check_install() abort "{{{
   call s:assert.false(dein#check_install(['neocomplete.vim']))
 
   call dein#end()
-endfunction"}}}
+endfunction
 
-function! s:suite.fetch() abort "{{{
+function! s:suite.fetch() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', { 'rtp': '' })
@@ -146,9 +146,9 @@ function! s:suite.fetch() abort "{{{
   call dein#end()
 
   call s:assert.equals(plugin.sourced, 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.reload() abort "{{{
+function! s:suite.reload() abort
   " 1st load
   call dein#begin(s:path)
 
@@ -166,9 +166,9 @@ function! s:suite.reload() abort "{{{
   call dein#end()
 
   let plugin = dein#get('neocomplete.vim')
-endfunction"}}}
+endfunction
 
-function! s:suite.if() abort "{{{
+function! s:suite.if() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', {'if': 0, 'on_cmd': 'FooBar'})
@@ -185,9 +185,9 @@ function! s:suite.if() abort "{{{
   call s:assert.equals(dein#get('neocomplete.vim').if, 2)
 
   call dein#end()
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_manual() abort "{{{
+function! s:suite.lazy_manual() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', { 'lazy': 1 })
@@ -208,9 +208,9 @@ function! s:suite.lazy_manual() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_i() abort "{{{
+function! s:suite.lazy_on_i() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', { 'on_i': 1 })
@@ -234,9 +234,9 @@ function! s:suite.lazy_on_i() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_ft() abort "{{{
+function! s:suite.lazy_on_ft() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', { 'on_ft': 'cpp' })
@@ -263,9 +263,9 @@ function! s:suite.lazy_on_ft() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_path() abort "{{{
+function! s:suite.lazy_on_path() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', { 'on_path': '.*' })
@@ -286,9 +286,9 @@ function! s:suite.lazy_on_path() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_if() abort "{{{
+function! s:suite.lazy_on_if() abort
   call dein#begin(s:path)
 
   let temp = tempname()
@@ -312,9 +312,9 @@ function! s:suite.lazy_on_if() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_source() abort "{{{
+function! s:suite.lazy_on_source() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim',
@@ -337,9 +337,9 @@ function! s:suite.lazy_on_source() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_func() abort "{{{
+function! s:suite.lazy_on_func() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/vimshell.vim', { 'lazy': 1 })
@@ -375,9 +375,9 @@ function! s:suite.lazy_on_func() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin2.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_cmd() abort "{{{
+function! s:suite.lazy_on_cmd() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim',
@@ -396,9 +396,9 @@ function! s:suite.lazy_on_cmd() abort "{{{
   NeoCompleteDisable
 
   call s:assert.equals(plugin.sourced, 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_map() abort "{{{
+function! s:suite.lazy_on_map() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/unite.vim', { 'lazy': 1 })
@@ -429,9 +429,9 @@ function! s:suite.lazy_on_map() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_pre_cmd() abort "{{{
+function! s:suite.lazy_on_pre_cmd() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', { 'lazy': 1 })
@@ -453,9 +453,9 @@ function! s:suite.lazy_on_pre_cmd() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.lazy_on_idle() abort "{{{
+function! s:suite.lazy_on_idle() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/vimfiler.vim', { 'on_idle': 1})
@@ -479,9 +479,9 @@ function! s:suite.lazy_on_idle() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.depends() abort "{{{
+function! s:suite.depends() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim', { 'depends': 'vimshell.vim' })
@@ -496,9 +496,9 @@ function! s:suite.depends() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.depends_lazy() abort "{{{
+function! s:suite.depends_lazy() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim',
@@ -524,9 +524,9 @@ function! s:suite.depends_lazy() abort "{{{
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.depends_error_lazy() abort "{{{
+function! s:suite.depends_error_lazy() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim',
@@ -537,9 +537,9 @@ function! s:suite.depends_error_lazy() abort "{{{
   call s:assert.equals(dein#end(), 0)
 
   call s:assert.equals(dein#source(['neocomplete.vim']), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.hooks() abort "{{{
+function! s:suite.hooks() abort
   call dein#begin(s:path)
 
   let g:dein#_hook_add = 'let g:foo = 0'
@@ -570,9 +570,9 @@ function! s:suite.hooks() abort "{{{
   call s:assert.equals(g:foobar, 2)
   call dein#call_hook('post_source')
   call s:assert.equals(g:bar, 3)
-endfunction"}}}
+endfunction
 
-function! s:suite.no_toml() abort "{{{
+function! s:suite.no_toml() abort
   call dein#begin(s:path)
 
   call writefile([
@@ -581,18 +581,18 @@ function! s:suite.no_toml() abort "{{{
   call s:assert.equals(dein#load_toml(g:temp, {}), 1)
 
   call s:assert.equals(dein#end(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.no_plugins() abort "{{{
+function! s:suite.no_plugins() abort
   call dein#begin(s:path)
 
   call writefile([], g:temp)
   call s:assert.equals(dein#load_toml(g:temp), 0)
 
   call s:assert.equals(dein#end(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.no_repository() abort "{{{
+function! s:suite.no_repository() abort
   call dein#begin(s:path)
 
   call writefile([
@@ -604,9 +604,9 @@ function! s:suite.no_repository() abort "{{{
   call s:assert.equals(dein#load_toml(g:temp), 1)
 
   call s:assert.equals(dein#end(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.normal() abort "{{{
+function! s:suite.normal() abort
   call dein#begin(s:path)
 
   call writefile([
@@ -621,9 +621,9 @@ function! s:suite.normal() abort "{{{
   call s:assert.equals(plugin.on_ft, ['all'])
 
   call s:assert.equals(dein#end(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.local() abort "{{{
+function! s:suite.local() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim', {'frozen': 1})
@@ -638,18 +638,18 @@ function! s:suite.local() abort "{{{
 
   call s:assert.equals(plugin2.rtp,
         \ s:path2.'repos/github.com/Shougo/neopairs.vim')
-endfunction"}}}
+endfunction
 
-function! s:suite.clean() abort "{{{
+function! s:suite.clean() abort
   call dein#begin(s:path2)
 
   call s:assert.equals(dein#end(), 0)
 
   call s:assert.equals(dein#check_clean(),
         \ [s:path2.'repos/github.com/Shougo/neopairs.vim'])
-endfunction"}}}
+endfunction
 
-function! s:suite.local_nongit() abort "{{{
+function! s:suite.local_nongit() abort
   let temp = tempname()
   call mkdir(temp.'/plugin', 'p')
   call dein#begin(s:path)
@@ -661,9 +661,9 @@ function! s:suite.local_nongit() abort "{{{
   call s:assert.equals(dein#get('plugin').type, 'none')
 
   call s:assert.equals(s:dein_update(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.build() abort "{{{
+function! s:suite.build() abort
   call dein#begin(tempname())
 
   call dein#add('Shougo/vimproc.vim', {
@@ -688,9 +688,9 @@ function! s:suite.build() abort "{{{
 
   call vimproc#version()
   call s:assert.true(filereadable(g:vimproc#dll_path))
-endfunction"}}}
+endfunction
 
-function! s:suite.rollback() abort "{{{
+function! s:suite.rollback() abort
   call dein#begin(tempname())
 
   call dein#add('Shougo/neocomplete.vim')
@@ -718,9 +718,9 @@ function! s:suite.rollback() abort "{{{
   call dein#rollback('', ['neocomplete.vim'])
 
   call s:assert.equals(s:get_revision(plugin), old_rev)
-endfunction"}}}
+endfunction
 
-function! s:suite.script_type() abort "{{{
+function! s:suite.script_type() abort
   call dein#begin(s:path)
 
   call dein#add(
@@ -741,9 +741,9 @@ function! s:suite.script_type() abort "{{{
         \ dein#get('impactjs-colorscheme').rtp . '/colors/impactjs.vim'))
   call s:assert.true(filereadable(
         \ dein#get('candy.vim').rtp . '/colors/candy.vim'))
-endfunction"}}}
+endfunction
 
-function! s:get_revision(plugin) abort "{{{
+function! s:get_revision(plugin) abort
   let cwd = getcwd()
   try
     execute 'lcd' fnameescape(a:plugin.path)
@@ -754,9 +754,9 @@ function! s:get_revision(plugin) abort "{{{
   finally
     execute 'lcd' fnameescape(cwd)
   endtry
-endfunction"}}}
+endfunction
 
-function! s:suite.ftplugin() abort "{{{
+function! s:suite.ftplugin() abort
   let g:dein#_ftplugin = {
         \ '_': 'echo 5555',
         \ 'python': 'setlocal foldmethod=indent',
@@ -778,6 +778,4 @@ function! s:suite.ftplugin() abort "{{{
   let python = readfile(dein#util#_get_runtime_path()
         \ . '/after/ftplugin/python.vim')
   call s:assert.equals(python[-1], g:dein#_ftplugin['python'])
-endfunction"}}}
-
-" vim:foldmethod=marker:fen:
+endfunction

@@ -4,14 +4,14 @@
 " License: MIT license
 "=============================================================================
 
-" Global options definition." "{{{
+" Global options definition."
 let g:dein#enable_name_conversion =
       \ get(g:, 'dein#enable_name_conversion', 0)
-"}}}
+
 
 let s:git = dein#types#git#define()
 
-function! dein#parse#_add(repo, options) abort "{{{
+function! dein#parse#_add(repo, options) abort
   let plugin = dein#parse#_dict(dein#parse#_init(a:repo, a:options))
   if (has_key(g:dein#_plugins, plugin.name)
         \ && g:dein#_plugins[plugin.name].sourced)
@@ -29,8 +29,8 @@ function! dein#parse#_add(repo, options) abort "{{{
     call dein#util#_execute_hook(plugin, plugin.hook_add)
   endif
   return plugin
-endfunction"}}}
-function! dein#parse#_init(repo, options) abort "{{{
+endfunction
+function! dein#parse#_init(repo, options) abort
   let repo = dein#util#_expand(a:repo)
   let plugin = has_key(a:options, 'type') ?
         \ dein#util#_get_type(a:options.type).init(repo, a:options) :
@@ -43,8 +43,8 @@ function! dein#parse#_init(repo, options) abort "{{{
     let plugin.orig_opts = deepcopy(a:options)
   endif
   return extend(plugin, a:options)
-endfunction"}}}
-function! dein#parse#_dict(plugin) abort "{{{
+endfunction
+function! dein#parse#_dict(plugin) abort
   let plugin = {
         \ 'rtp': '',
         \ 'sourced': 0,
@@ -136,8 +136,8 @@ function! dein#parse#_dict(plugin) abort "{{{
   endfor
 
   return plugin
-endfunction"}}}
-function! dein#parse#_load_toml(filename, default) abort "{{{
+endfunction
+function! dein#parse#_load_toml(filename, default) abort
   try
     let toml = dein#toml#parse_file(dein#util#_expand(a:filename))
   catch /vital: Text.TOML:/
@@ -175,8 +175,8 @@ function! dein#parse#_load_toml(filename, default) abort "{{{
 
   " Add to g:dein#_vimrcs
   call add(g:dein#_vimrcs, dein#util#_expand(a:filename))
-endfunction"}}}
-function! dein#parse#_plugins2toml(plugins) abort "{{{
+endfunction
+function! dein#parse#_plugins2toml(plugins) abort
   let toml = []
 
   let default = dein#parse#_dict(dein#parse#_init('', {}))
@@ -231,13 +231,13 @@ function! dein#parse#_plugins2toml(plugins) abort "{{{
   endfor
 
   return toml
-endfunction"}}}
-function! dein#parse#_load_dict(dict, default) abort "{{{
+endfunction
+function! dein#parse#_load_dict(dict, default) abort
   for [repo, options] in items(a:dict)
     call dein#add(repo, extend(copy(options), a:default, 'keep'))
   endfor
-endfunction"}}}
-function! dein#parse#_local(localdir, options, includes) abort "{{{
+endfunction
+function! dein#parse#_local(localdir, options, includes) abort
   let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
@@ -259,8 +259,8 @@ function! dein#parse#_local(localdir, options, includes) abort "{{{
       call dein#add(dir, options)
     endif
   endfor
-endfunction"}}}
-function! s:parse_lazy(plugin) abort "{{{
+endfunction
+function! s:parse_lazy(plugin) abort
   " Auto convert2list.
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
@@ -296,8 +296,8 @@ function! s:parse_lazy(plugin) abort "{{{
   if has_key(a:plugin, 'on_map')
     call s:generate_dummy_mappings(a:plugin)
   endif
-endfunction"}}}
-function! s:generate_dummy_commands(plugin) abort "{{{
+endfunction
+function! s:generate_dummy_commands(plugin) abort
   let a:plugin.dummy_commands = []
   for name in a:plugin.on_cmd
     " Define dummy commands.
@@ -311,8 +311,8 @@ function! s:generate_dummy_commands(plugin) abort "{{{
     call add(a:plugin.dummy_commands, [name, raw_cmd])
     silent! execute raw_cmd
   endfor
-endfunction"}}}
-function! s:generate_dummy_mappings(plugin) abort "{{{
+endfunction
+function! s:generate_dummy_mappings(plugin) abort
   let a:plugin.dummy_mappings = []
   let items = type(a:plugin.on_map) == type({}) ?
         \ map(items(a:plugin.on_map),
@@ -347,9 +347,9 @@ function! s:generate_dummy_mappings(plugin) abort "{{{
       endfor
     endfor
   endfor
-endfunction"}}}
+endfunction
 
-function! dein#parse#_get_types() abort "{{{
+function! dein#parse#_get_types() abort
   if !exists('s:types')
     " Load types.
     let s:types = {}
@@ -361,8 +361,8 @@ function! dein#parse#_get_types() abort "{{{
     endfor
   endif
   return s:types
-endfunction"}}}
-function! s:check_type(repo, options) abort "{{{
+endfunction
+function! s:check_type(repo, options) abort
   let plugin = {}
   for type in values(dein#parse#_get_types())
     let plugin = type.init(a:repo, a:options)
@@ -376,11 +376,9 @@ function! s:check_type(repo, options) abort "{{{
   endif
 
   return plugin
-endfunction"}}}
+endfunction
 
-function! dein#parse#_name_conversion(path) abort "{{{
+function! dein#parse#_name_conversion(path) abort
   return fnamemodify(get(split(a:path, ':'), -1, ''),
         \ ':s?/$??:t:s?\c\.git\s*$??')
-endfunction"}}}
-
-" vim: foldmethod=marker
+endfunction

@@ -4,7 +4,7 @@
 " License: MIT license
 "=============================================================================
 
-function! dein#_init() abort "{{{
+function! dein#_init() abort
   let g:dein#_cache_version = 100
   let g:dein#name = ''
   let g:dein#plugin = {}
@@ -32,8 +32,8 @@ function! dein#_init() abort "{{{
   if !exists('##CmdUndefined') | return | endif
   autocmd dein CmdUndefined *
         \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
-endfunction"}}}
-function! dein#load_cache_raw(vimrcs) abort "{{{
+endfunction
+function! dein#load_cache_raw(vimrcs) abort
   let g:dein#_vimrcs = a:vimrcs
   let cache = get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/cache_'.fnamemodify(v:progname, ':r')
@@ -47,16 +47,16 @@ function! dein#load_cache_raw(vimrcs) abort "{{{
     return [{}, {}]
   endif
   return [dein#_json2vim(list[1]), dein#_json2vim(list[2])]
-endfunction"}}}
-function! dein#_vim2json(expr) abort "{{{
+endfunction
+function! dein#_vim2json(expr) abort
   return   has('nvim') ? json_encode(a:expr)
         \ : has('patch-7.4.1498') ? js_encode(a:expr) : string(a:expr)
-endfunction "}}}
-function! dein#_json2vim(expr) abort "{{{
+endfunction
+function! dein#_json2vim(expr) abort
   sandbox return (has('nvim') ? json_decode(a:expr)
         \ : has('patch-7.4.1498') ? js_decode(a:expr) : eval(a:expr))
-endfunction "}}}
-function! dein#load_state(path, ...) abort "{{{
+endfunction
+function! dein#load_state(path, ...) abort
   if !(a:0 > 0 ? a:1 : has('vim_starting')) | return 1 | endif
 
   call dein#_init()
@@ -74,39 +74,39 @@ function! dein#load_state(path, ...) abort "{{{
     call dein#clear_state()
     return 1
   endtry
-endfunction"}}}
+endfunction
 
-function! dein#tap(name) abort "{{{
+function! dein#tap(name) abort
   if !has_key(g:dein#_plugins, a:name)
         \ || !isdirectory(g:dein#_plugins[a:name].path) | return 0 | endif
   let g:dein#name = a:name
   let g:dein#plugin = g:dein#_plugins[a:name]
   return 1
-endfunction"}}}
-function! dein#is_sourced(name) abort "{{{
+endfunction
+function! dein#is_sourced(name) abort
   return has_key(g:dein#_plugins, a:name)
         \ && isdirectory(g:dein#_plugins[a:name].path)
         \ && g:dein#_plugins[a:name].sourced
-endfunction"}}}
-function! dein#begin(path, ...) abort "{{{
+endfunction
+function! dein#begin(path, ...) abort
   return dein#util#_begin(a:path, (empty(a:000) ? [] : a:1))
-endfunction"}}}
-function! dein#end() abort "{{{
+endfunction
+function! dein#end() abort
   return dein#util#_end()
-endfunction"}}}
-function! dein#add(repo, ...) abort "{{{
+endfunction
+function! dein#add(repo, ...) abort
   return dein#parse#_add(a:repo, get(a:000, 0, {}))
-endfunction"}}}
-function! dein#local(dir, ...) abort "{{{
+endfunction
+function! dein#local(dir, ...) abort
   return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))
-endfunction"}}}
-function! dein#get(...) abort "{{{
+endfunction
+function! dein#get(...) abort
   return empty(a:000) ? copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
-endfunction"}}}
-function! dein#source(...) abort "{{{
+endfunction
+function! dein#source(...) abort
   return call('dein#autoload#_source', a:000)
-endfunction"}}}
-function! dein#check_install(...) abort "{{{
+endfunction
+function! dein#check_install(...) abort
   let plugins = filter(empty(a:000) ? values(dein#get()) :
         \ filter(map(copy(a:1), 'dein#get(v:val)'), '!empty(v:val)'),
         \     '!isdirectory(v:val.path)')
@@ -114,84 +114,82 @@ function! dein#check_install(...) abort "{{{
   call dein#util#_notify('Not installed plugins: ' .
         \ string(map(plugins, 'v:val.name')))
   return 1
-endfunction"}}}
-function! dein#check_clean() abort "{{{
+endfunction
+function! dein#check_clean() abort
   return dein#util#_check_clean()
-endfunction"}}}
-function! dein#install(...) abort "{{{
+endfunction
+function! dein#install(...) abort
   return dein#install#_update(get(a:000, 0, []),
         \ 'install', dein#install#_is_async())
-endfunction"}}}
-function! dein#update(...) abort "{{{
+endfunction
+function! dein#update(...) abort
   return dein#install#_update(get(a:000, 0, []),
         \ 'update', dein#install#_is_async())
-endfunction"}}}
-function! dein#check_update(...) abort "{{{
+endfunction
+function! dein#check_update(...) abort
   return dein#install#_update(get(a:000, 0, []),
         \ 'check_update', dein#install#_is_async())
-endfunction"}}}
-function! dein#direct_install(repo, ...) abort "{{{
+endfunction
+function! dein#direct_install(repo, ...) abort
   call dein#install#_direct_install(a:repo, (a:0 ? a:1 : {}))
-endfunction"}}}
-function! dein#get_direct_plugins_path() abort "{{{
+endfunction
+function! dein#get_direct_plugins_path() abort
   return get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/direct_install.vim'
-endfunction"}}}
-function! dein#reinstall(plugins) abort "{{{
+endfunction
+function! dein#reinstall(plugins) abort
   call dein#install#_reinstall(a:plugins)
-endfunction"}}}
-function! dein#rollback(date, ...) abort "{{{
+endfunction
+function! dein#rollback(date, ...) abort
   call dein#install#_rollback(a:date, (a:0 ? a:1 : []))
-endfunction"}}}
-function! dein#remote_plugins() abort "{{{
+endfunction
+function! dein#remote_plugins() abort
   return dein#install#_remote_plugins()
-endfunction"}}}
-function! dein#recache_runtimepath() abort "{{{
+endfunction
+function! dein#recache_runtimepath() abort
   call dein#install#_recache_runtimepath()
-endfunction"}}}
-function! dein#call_hook(hook_name, ...) abort "{{{
+endfunction
+function! dein#call_hook(hook_name, ...) abort
   return call('dein#util#_call_hook', [a:hook_name] + a:000)
-endfunction"}}}
-function! dein#check_lazy_plugins() abort "{{{
+endfunction
+function! dein#check_lazy_plugins() abort
   return dein#util#_check_lazy_plugins()
-endfunction"}}}
-function! dein#load_toml(filename, ...) abort "{{{
+endfunction
+function! dein#load_toml(filename, ...) abort
   return dein#parse#_load_toml(a:filename, get(a:000, 0, {}))
-endfunction"}}}
-function! dein#load_dict(dict, ...) abort "{{{
+endfunction
+function! dein#load_dict(dict, ...) abort
   return dein#parse#_load_dict(a:dict, get(a:000, 0, {}))
-endfunction"}}}
-function! dein#get_log() abort "{{{
+endfunction
+function! dein#get_log() abort
   return join(dein#install#_get_log(), "\n")
-endfunction"}}}
-function! dein#get_updates_log() abort "{{{
+endfunction
+function! dein#get_updates_log() abort
   return join(dein#install#_get_updates_log(), "\n")
-endfunction"}}}
-function! dein#each(command, ...) abort "{{{
+endfunction
+function! dein#each(command, ...) abort
   return dein#install#_each(a:command, (a:0 ? a:1 : []))
-endfunction"}}}
-function! dein#build(...) abort "{{{
+endfunction
+function! dein#build(...) abort
   return dein#install#_build(a:0 ? a:1 : [])
-endfunction"}}}
-function! dein#plugins2toml(plugins) abort "{{{
+endfunction
+function! dein#plugins2toml(plugins) abort
   return dein#parse#_plugins2toml(a:plugins)
-endfunction"}}}
-function! dein#disable(names) abort "{{{
+endfunction
+function! dein#disable(names) abort
   return dein#util#_disable(a:names)
-endfunction"}}}
-function! dein#config(arg, ...) abort "{{{
+endfunction
+function! dein#config(arg, ...) abort
   return type(a:arg) != type([]) ?
         \ dein#util#_config(a:arg, get(a:000, 0, {})) :
         \ map(copy(a:arg), 'dein#util#_config(v:val, a:1)')
-endfunction"}}}
-function! dein#set_hook(name, hook_name, hook) abort "{{{
+endfunction
+function! dein#set_hook(name, hook_name, hook) abort
   return dein#util#_set_hook(a:name, a:hook_name, a:hook)
-endfunction"}}}
-function! dein#save_state() abort "{{{
+endfunction
+function! dein#save_state() abort
   return dein#util#_save_state(has('vim_starting'))
-endfunction"}}}
-function! dein#clear_state() abort "{{{
+endfunction
+function! dein#clear_state() abort
   return dein#util#_clear_state()
-endfunction"}}}
-
-" vim: foldmethod=marker
+endfunction

@@ -5,7 +5,7 @@
 " License: MIT license
 "=============================================================================
 
-" Global options definition. "{{{
+" Global options definition.
 call dein#util#_set_default(
       \ 'g:dein#types#git#command_path', 'git')
 call dein#util#_set_default(
@@ -14,11 +14,11 @@ call dein#util#_set_default(
       \ 'g:dein#types#git#clone_depth', 0)
 call dein#util#_set_default(
       \ 'g:dein#types#git#pull_command', 'pull --ff --ff-only')
-"}}}
 
-function! dein#types#git#define() abort "{{{
+
+function! dein#types#git#define() abort
   return s:type
-endfunction"}}}
+endfunction
 
 let s:type = {
       \ 'name': 'git',
@@ -26,7 +26,7 @@ let s:type = {
       \ 'executable': executable(g:dein#types#git#command_path),
       \ }
 
-function! s:type.init(repo, options) abort "{{{
+function! s:type.init(repo, options) abort
   if !self.executable
     return {}
   endif
@@ -50,8 +50,8 @@ function! s:type.init(repo, options) abort "{{{
 
   return { 'type': 'git',
         \  'path': dein#util#_get_base_path().'/repos/'.directory }
-endfunction"}}}
-function! s:type.get_uri(repo, options) abort "{{{
+endfunction
+function! s:type.get_uri(repo, options) abort
   if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
     return a:repo
   endif
@@ -104,9 +104,9 @@ function! s:type.get_uri(repo, options) abort "{{{
   endif
 
   return uri
-endfunction"}}}
+endfunction
 
-function! s:type.get_sync_command(plugin) abort "{{{
+function! s:type.get_sync_command(plugin) abort
   let git = self.command
 
   if !isdirectory(a:plugin.path)
@@ -129,30 +129,30 @@ function! s:type.get_sync_command(plugin) abort "{{{
   endif
 
   return git . ' ' . cmd
-endfunction"}}}
+endfunction
 
-function! s:type.get_revision_number_command(plugin) abort "{{{
+function! s:type.get_revision_number_command(plugin) abort
   if !self.executable
     return ''
   endif
 
   return self.command .' rev-parse HEAD'
-endfunction"}}}
-function! s:type.get_revision_pretty_command(plugin) abort "{{{
+endfunction
+function! s:type.get_revision_pretty_command(plugin) abort
   if !self.executable
     return ''
   endif
 
   return self.command . ' log -1 --pretty=format:"%h [%cr] %s"'
-endfunction"}}}
-function! s:type.get_commit_date_command(plugin) abort "{{{
+endfunction
+function! s:type.get_commit_date_command(plugin) abort
   if !self.executable
     return ''
   endif
 
   return self.command . ' log -1 --pretty=format:"%ct"'
-endfunction"}}}
-function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
+endfunction
+function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   if !self.executable || a:new_rev == '' || a:old_rev == ''
     return ''
   endif
@@ -165,8 +165,8 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort "{{{
   return printf(self.command .
         \ ' log %s%s..%s --graph --pretty=format:"%%h [%%cr] %%s"',
         \ a:old_rev, (is_not_ancestor ? '' : '^'), a:new_rev)
-endfunction"}}}
-function! s:type.get_revision_lock_command(plugin) abort "{{{
+endfunction
+function! s:type.get_revision_lock_command(plugin) abort
   if !self.executable
     return ''
   endif
@@ -186,15 +186,15 @@ function! s:type.get_revision_lock_command(plugin) abort "{{{
   endif
 
   return self.command . ' checkout ' . rev
-endfunction"}}}
-function! s:type.get_rollback_command(plugin, rev) abort "{{{
+endfunction
+function! s:type.get_rollback_command(plugin, rev) abort
   if !self.executable
     return ''
   endif
 
   return self.command . ' reset --hard ' . a:rev
-endfunction"}}}
-function! s:type.get_revision_remote_command(plugin) abort "{{{
+endfunction
+function! s:type.get_revision_remote_command(plugin) abort
   if !self.executable
     return ''
   endif
@@ -205,16 +205,16 @@ function! s:type.get_revision_remote_command(plugin) abort "{{{
   endif
 
   return self.command .' ls-remote origin ' . rev
-endfunction"}}}
-function! s:type.get_fetch_remote_command(plugin) abort "{{{
+endfunction
+function! s:type.get_fetch_remote_command(plugin) abort
   if !self.executable
     return ''
   endif
 
   return self.command .' fetch origin '
-endfunction"}}}
+endfunction
 
-function! s:is_git_dir(path) abort "{{{
+function! s:is_git_dir(path) abort
   if isdirectory(a:path)
     let git_dir = a:path
   elseif filereadable(a:path)
@@ -268,11 +268,11 @@ function! s:is_git_dir(path) abort "{{{
   " accept a directory that git itself won't, but I think we can safely ignore
   " those edge cases.
   return 1
-endfunction "}}}
+endfunction
 
 let s:is_windows = dein#util#_is_windows()
 
-function! s:join_paths(path1, path2) abort "{{{
+function! s:join_paths(path1, path2) abort
   " Joins two paths together, handling the case where the second path
   " is an absolute path.
   if s:is_absolute(a:path2)
@@ -288,16 +288,14 @@ function! s:join_paths(path1, path2) abort "{{{
     " diasble behavior like that, but I don't know how Vim deals with that.
     return a:path1 . '/' . a:path2
   endif
-endfunction "}}}
+endfunction
 
 if s:is_windows
-  function! s:is_absolute(path) abort "{{{
+  function! s:is_absolute(path) abort
     return a:path =~ '^[\\/]\|^\a:'
-  endfunction "}}}
+  endfunction
 else
-  function! s:is_absolute(path) abort "{{{
+  function! s:is_absolute(path) abort
     return a:path =~ '^/'
-  endfunction "}}}
+  endfunction
 endif
-
-" vim: foldmethod=marker

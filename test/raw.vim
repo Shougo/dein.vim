@@ -6,15 +6,15 @@ let s:type = dein#types#raw#define()
 let s:path = tempname()
 let s:base = s:path . '/repos/'
 
-function! s:suite.protocol() abort "{{{
+function! s:suite.protocol() abort
   " Protocol errors
   call s:assert.equals(s:type.init(
         \ 'http://raw.githubusercontent.com/Shougo/'
         \ . 'shougo-s-github/master/vim/colors/candy.vim', {}),
         \ {})
-endfunction"}}}
+endfunction
 
-function! s:suite.init() abort "{{{
+function! s:suite.init() abort
   call dein#begin(s:path)
   call s:assert.equals(s:type.init(
         \ 'https://raw.githubusercontent.com/Shougo/'
@@ -24,6 +24,4 @@ function! s:suite.init() abort "{{{
         \   'path': s:base . 'raw.githubusercontent.com/Shougo/'
         \ . 'shougo-s-github/master/vim/colors' })
   call dein#end()
-endfunction"}}}
-
-" vim:foldmethod=marker:fen:
+endfunction

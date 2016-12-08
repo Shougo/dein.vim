@@ -3,16 +3,16 @@
 let s:suite = themis#suite('install')
 let s:assert = themis#helper('assert')
 
-function! s:suite.rm() abort "{{{
+function! s:suite.rm() abort
   let temp = tempname()
   call writefile([], temp)
 
   call dein#install#_rm(temp)
 
   call s:assert.equals(filereadable(temp), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.copy_directories() abort "{{{
+function! s:suite.copy_directories() abort
   let temp = tempname()
   let temp2 = tempname()
   let temp3 = tempname()
@@ -28,6 +28,4 @@ function! s:suite.copy_directories() abort "{{{
   call s:assert.true(isdirectory(temp2))
   call s:assert.true(filereadable(temp2.'/foo'))
   call s:assert.true(filereadable(temp2.'/bar'))
-endfunction"}}}
-
-" vim:foldmethod=marker:fen:
+endfunction

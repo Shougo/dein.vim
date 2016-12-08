@@ -3,19 +3,19 @@ let s:assert = themis#helper('assert')
 
 let s:path = tempname()
 
-function! s:suite.before_each() abort "{{{
+function! s:suite.before_each() abort
   call dein#_init()
-endfunction"}}}
+endfunction
 
-function! s:suite.block_normal() abort "{{{
+function! s:suite.block_normal() abort
   call s:assert.equals(dein#begin(s:path), 0)
   call s:assert.equals(dein#end(), 0)
 
   call s:assert.equals(dein#begin(s:path), 0)
   call s:assert.equals(dein#end(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.begin_invalid() abort "{{{
+function! s:suite.begin_invalid() abort
   call s:assert.equals(dein#begin(s:path), 0)
   call s:assert.equals(dein#begin(s:path), 1)
 
@@ -23,13 +23,13 @@ function! s:suite.begin_invalid() abort "{{{
   call s:assert.equals(dein#end(), 1)
 
   call s:assert.equals(dein#end(), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.end_invalid() abort "{{{
+function! s:suite.end_invalid() abort
   call s:assert.equals(dein#end(), 1)
-endfunction"}}}
+endfunction
 
-function! s:suite.add_normal() abort "{{{
+function! s:suite.add_normal() abort
   call s:assert.equals(dein#begin(s:path), 0)
 
   call dein#add('foo', {})
@@ -38,9 +38,9 @@ function! s:suite.add_normal() abort "{{{
   call s:assert.equals(g:dein#_plugins.bar.name, 'bar')
 
   call s:assert.equals(dein#end(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.add_ovewrite() abort "{{{
+function! s:suite.add_ovewrite() abort
   call s:assert.equals(dein#begin(s:path), 0)
 
   call dein#add('foo', {})
@@ -50,9 +50,9 @@ function! s:suite.add_ovewrite() abort "{{{
   call s:assert.equals(g:dein#_plugins.foo.sourced, 1)
 
   call s:assert.equals(dein#end(), 0)
-endfunction"}}}
+endfunction
 
-function! s:suite.get() abort "{{{
+function! s:suite.get() abort
   let plugins = { 'foo': {'name': 'bar'} }
 
   call dein#begin(s:path)
@@ -61,13 +61,11 @@ function! s:suite.get() abort "{{{
   call dein#add('foo')
   call s:assert.equals(dein#get('foo').name, 'foo')
   call dein#end()
-endfunction"}}}
+endfunction
 
-function! s:suite.expand() abort "{{{
+function! s:suite.expand() abort
   call s:assert.equals(dein#util#_expand('~'),
         \ dein#util#_substitute_path(fnamemodify('~', ':p')))
   call s:assert.equals(dein#util#_expand('$HOME'),
         \ dein#util#_substitute_path($HOME))
-endfunction"}}}
-
-" vim:foldmethod=marker:fen:
+endfunction

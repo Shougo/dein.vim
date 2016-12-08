@@ -9,7 +9,7 @@ function! s:suite.after_each() abort
   call delete(g:temp)
 endfunction
 
-function! s:suite.normal() abort "{{{
+function! s:suite.normal() abort
   call writefile([
         \ '# This is a TOML document.',
         \ '',
@@ -27,4 +27,4 @@ function! s:suite.normal() abort "{{{
         \ 'map': {'i': 'Plug', 'c': 'Plug'},
         \ 'owner': {'name': 'Tom Preston-Werner', 'dob': 1979}
         \ })
-endfunction"}}}
+endfunction

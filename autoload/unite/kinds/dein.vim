@@ -4,9 +4,9 @@
 " License: MIT license
 "=============================================================================
 
-function! unite#kinds#dein#define() abort "{{{
+function! unite#kinds#dein#define() abort
   return s:kind
-endfunction"}}}
+endfunction
 
 let s:kind = {
       \ 'name': 'dein',
@@ -15,12 +15,12 @@ let s:kind = {
       \ 'default_action': 'lcd',
       \}
 
-" Actions "{{{
+" Actions
 let s:kind.action_table.preview = {
       \ 'description': 'view the plugin documentation',
       \ 'is_quit': 0,
       \ }
-function! s:kind.action_table.preview.func(candidate) abort "{{{
+function! s:kind.action_table.preview.func(candidate) abort
   " Search help files.
   let readme = get(split(globpath(
         \ a:candidate.action__path, 'doc/*.?*', 1), '\n'), 0, '')
@@ -47,7 +47,4 @@ function! s:kind.action_table.preview.func(candidate) abort "{{{
     call unite#add_previewed_buffer_list(
           \ bufnr(unite#util#escape_file_searching(readme)))
   endif
-endfunction"}}}
-"}}}
-
-" vim: foldmethod=marker
+endfunction

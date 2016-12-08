@@ -7,15 +7,15 @@ let s:runtimepath_save = &runtimepath
 let s:path = fnamemodify('.cache', ':p') . '/'
 let s:filetype_save = &l:filetype
 
-function! s:suite.before_each() abort "{{{
+function! s:suite.before_each() abort
   call dein#_init()
   let &runtimepath = s:runtimepath_save
   let &l:filetype = s:filetype_save
   let g:temp = tempname()
   let g:dein#install_progress_type = 'echo'
-endfunction"}}}
+endfunction
 
-function! s:suite.state() abort "{{{
+function! s:suite.state() abort
   call delete(s:path.'/state_'.fnamemodify(v:progname, ':r').'.vim')
 
   call dein#begin(s:path)
@@ -39,13 +39,11 @@ function! s:suite.state() abort "{{{
 
   "call s:assert.equals(&runtimepath, runtimepath)
   "call s:assert.equals(dein#_plugins, plugins)
-endfunction"}}}
+endfunction
 
-function! s:suite.state_error() abort "{{{
+function! s:suite.state_error() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim')
   call s:assert.equals(dein#save_state(), 1)
-endfunction"}}}
-
-" vim:foldmethod=marker:fen:
+endfunction
