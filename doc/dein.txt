@@ -183,7 +183,8 @@ dein#update([{plugins}])
 		Install/Update the plugins.
 		{plugins} is the plugins name list.
 		If you omit it, dein will update all plugins.
-		Note: If you are using neovim, it runs asynchronously.
+		Note: If you are using neovim or Vim 8.0+, it runs
+		asynchronously.
 
 							*dein#reinstall()*
 dein#reinstall({plugins})
@@ -227,7 +228,8 @@ dein#check_update([{plugins}])
 		Check the plugins update.
 		{plugins} is the plugins name list to check.
 		If you omit it, dein will check all plugins update.
-		Note: If you are using neovim, it runs asynchronously.
+		Note: If you are using neovim or Vim 8.0+, it runs
+		asynchronously.
 
 						*dein#check_lazy_plugins()*
 dein#check_lazy_plugins()
