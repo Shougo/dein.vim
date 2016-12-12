@@ -50,7 +50,6 @@ function! dein#install#_update(plugins, update_type, async) abort
 
     call s:init_variables(context)
     call s:start()
-    call s:install_async(context)
 
     augroup dein-install
       autocmd!
