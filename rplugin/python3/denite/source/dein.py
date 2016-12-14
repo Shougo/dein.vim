@@ -42,7 +42,7 @@ def _build_candidate(plugin_context):
     return {
         'word': name,
         'abbr': name if not rev else '%s -- %s' % (name, rev),
-        'action_path': path,
+        'action__path': path,
     }
 
 
