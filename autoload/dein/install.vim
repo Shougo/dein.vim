@@ -337,6 +337,10 @@ function! s:generate_ftplugin() abort
     endfor
   endfor
 
+  if empty(ftplugin)
+    return
+  endif
+
   " Generate ftplugin.vim
   let base = get(split(globpath(&runtimepath, 'ftplugin.vim'), '\n'), 0, '')
   if base != ''
