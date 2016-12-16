@@ -55,6 +55,9 @@ function! dein#autoload#_source(...) abort
             \ && exists('#'.augroup.'#GUIEnter')
         execute 'doautocmd' augroup 'GUIEnter'
       endif
+      if exists('#'.augroup.'#BufRead')
+        execute 'doautocmd' augroup 'BufRead'
+      endif
     endif
   endfor
 
