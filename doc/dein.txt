@@ -1065,14 +1065,6 @@ A: Please check |:message| result.
 If you have found "Process timeout" error, you should increase
 |g:dein#install_process_timeout| value.
 
-Q: Fugitive doesn't work properly with on_cmd.
-https://github.com/Shougo/dein.vim/issues/155
-
-A: >
-	call dein#add('tpope/vim-fugitive', {
-	    \ 'on_cmd' : 'Gstatus', 'augroup': 'fugitive'
-	    \ })
-
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
