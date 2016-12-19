@@ -320,7 +320,7 @@ function! s:generate_dummy_mappings(plugin) abort
         \ map(copy(a:plugin.on_map),
         \  "type(v:val) == type([]) ?
         \     [split(v:val[0], '\\zs'), v:val[1:]] :
-        \     [['n', 'x', 'o'], [v:val]]")
+        \     [['n', 'x'], [v:val]]")
   for [modes, mappings] in items
     if mappings ==# ['<Plug>']
       " Use plugin name.

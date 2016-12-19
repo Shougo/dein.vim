@@ -679,7 +679,7 @@ on_map		(Dictionary) or (List) or (String)
 		{mapping} or [{mapping1}, {mapping2}, ...].
 		If it is the List, the items are {mapping} or [{mode},
 		{mapping1}, [{mapping2}, ...]].
-		If {mode} is omitted, "nxo" is used.
+		If {mode} is omitted, "nx" is used.
 		Note: You can use plugin prefix mappings.
 		For example, you can use "<Plug>(ref-" instead of
 		"<Plug>(ref-back)" and so on.
