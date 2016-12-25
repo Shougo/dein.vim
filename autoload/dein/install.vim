@@ -574,7 +574,7 @@ function! s:lock_revision(process, context) abort
     endif
 
     let result = dein#install#_system(cmd)
-    let status = dein#install#_get_last_status()
+    let status = v:shell_error
   finally
     call dein#install#_cd(cwd)
   endtry
@@ -628,17 +628,11 @@ endfunction
 function! dein#install#_system(command) abort
   let command = s:iconv(a:command, &encoding, 'char')
 
-  let output = s:has_vimproc() ? vimproc#system(command) : system(command)
+  let output = system(command)
 
   let output = s:iconv(output, 'char', &encoding)
 
   return substitute(output, '\n$', '', '')
-endfunction
-function! s:has_vimproc() abort
-  return dein#util#_has_vimproc() && dein#util#_is_windows()
-endfunction
-function! dein#install#_get_last_status() abort
-  return s:has_vimproc() ? vimproc#get_last_status() : v:shell_error
 endfunction
 function! dein#install#_rm(path) abort
   if !isdirectory(a:path) && !filereadable(a:path)
@@ -660,9 +654,8 @@ function! dein#install#_rm(path) abort
       let cmdline = substitute(cmdline, '/', '\\\\', 'g')
     endif
 
-    " Use system instead of vimproc#system()
     let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
-    let result = system(rm_command . cmdline)
+    let result = dein#install#_system(rm_command . cmdline)
     if v:shell_error
       call dein#util#_error(result)
     endif
@@ -691,7 +684,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
       endfor
       call writefile(lines, temp)
 
-      let result = system(temp)
+      let result = dein#install#_system(temp)
     finally
       call delete(temp)
       call delete(exclude)
@@ -711,11 +704,11 @@ function! dein#install#_copy_directories(srcs, dest) abort
       let cmdline = printf("rsync -a --exclude '/.git/' %s %s",
             \ join(srcs), shellescape(a:dest))
       let result = dein#install#_system(cmdline)
-      let status = dein#install#_get_last_status()
+      let status = v:shell_error
     else
       for src in srcs
         let cmdline = printf('cp -Ra %s* %s', src, shellescape(a:dest))
-        let result = system(cmdline)
+        let result = dein#install#_system(cmdline)
         let status = v:shell_error
         if status
           break
@@ -1014,15 +1007,9 @@ function! s:init_job(process, context, cmd) abort
       endif
     endtry
     let a:process.proc = s:channel2id(job_getchannel(a:process.job))
-  elseif dein#util#_has_vimproc()
-    let a:process.proc = vimproc#pgroup_open(a:cmd, 0, 2)
-
-    " Close handles.
-    call a:process.proc.stdin.close()
-    call a:process.proc.stderr.close()
   else
     let a:process.output = dein#install#_system(a:cmd)
-    let a:process.status = dein#install#_get_last_status()
+    let a:process.status = v:shell_error
   endif
 
   let a:process.start_time = localtime()
@@ -1030,8 +1017,6 @@ endfunction
 function! s:check_output(context, process) abort
   if a:context.async && has_key(a:process, 'proc')
     let [is_timeout, is_skip, status] = s:get_async_result(a:process)
-  elseif dein#util#_has_vimproc() && has_key(a:process, 'proc')
-    let [is_timeout, is_skip, status] = s:get_vimproc_result(a:process)
   else
     let [is_timeout, is_skip, status] = [0, 0, a:process.status]
   endif
@@ -1159,35 +1144,6 @@ function! s:get_async_result(process) abort
   endif
 
   return [is_timeout, is_skip, status]
-endfunction
-function! s:get_vimproc_result(process) abort
-  let output = s:iconv(a:process.proc.stdout.read(-1, 300),
-        \ 'char', &encoding)
-  if output != ''
-    let a:process.output .= output
-    let a:process.start_time = localtime()
-    call s:print_message(s:get_short_message(
-          \ a:process.plugin, a:process.number,
-          \ a:process.max_plugins, output))
-  endif
-
-  let is_timeout = (localtime() - a:process.start_time)
-        \             >= get(a:process.plugin, 'timeout',
-        \                    g:dein#install_process_timeout)
-
-  if !a:process.proc.stdout.eof && !is_timeout
-    return [is_timeout, 1, -1]
-  endif
-
-  if a:process.proc.stdout.eof
-    let is_timeout = 0
-  endif
-
-  call a:process.proc.stdout.close()
-
-  let status = a:process.proc.waitpid()[1]
-
-  return [is_timeout, 0, status]
 endfunction
 
 function! s:iconv(expr, from, to) abort

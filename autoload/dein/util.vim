@@ -161,19 +161,8 @@ function! dein#util#_uniq(list) abort
   return list
 endfunction
 
-function! dein#util#_has_vimproc() abort
-  if !exists('*vimproc#version')
-    try
-      call vimproc#version()
-    catch
-    endtry
-  endif
-
-  return exists('*vimproc#version')
-endfunction
 function! dein#util#_is_fish() abort
-  return (dein#install#_is_async() || !dein#util#_has_vimproc())
-        \ && fnamemodify(&shell, ':t:r') ==# 'fish'
+  return dein#install#_is_async() && fnamemodify(&shell, ':t:r') ==# 'fish'
 endfunction
 
 function! dein#util#_check_lazy_plugins() abort
