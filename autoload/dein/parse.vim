@@ -42,7 +42,7 @@ function! dein#parse#_init(repo, options) abort
   if !empty(a:options)
     let plugin.orig_opts = deepcopy(a:options)
   endif
-  return extend(plugin, a:options)
+  return extend(plugin, a:options, 'keep')
 endfunction
 function! dein#parse#_dict(plugin) abort
   let plugin = {
