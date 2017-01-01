@@ -370,6 +370,12 @@ function! dein#install#_is_async() abort
         \                && exists('*job_info'))
 endfunction
 
+function! dein#install#_has_job() abort
+  return (has('job') && has('channel')
+        \                && exists('*job_getchannel')
+        \                && exists('*job_info'))
+endfunction
+
 function! dein#install#_remote_plugins() abort
   if !has('nvim')
     return
@@ -574,7 +580,7 @@ function! s:lock_revision(process, context) abort
     endif
 
     let result = dein#install#_system(cmd)
-    let status = v:shell_error
+    let status = dein#install#_status()
   finally
     call dein#install#_cd(cwd)
   endtry
@@ -628,12 +634,100 @@ endfunction
 function! dein#install#_system(command) abort
   let command = s:iconv(a:command, &encoding, 'char')
 
-  let output = system(command)
+  let output = dein#install#_has_job() ?
+        \ s:job_system(command) : system(command)
 
   let output = s:iconv(output, 'char', &encoding)
 
   return substitute(output, '\n$', '', '')
 endfunction
+function! dein#install#_status() abort
+  return dein#install#_has_job() ? s:job_status : v:shell_error
+endfunction
+
+function! s:close_nvim(id, msg, event) abort
+  if !has_key(s:job_info, a:id)
+    let s:job_info[a:id] = {
+          \ 'candidates': [],
+          \ 'eof': 0,
+          \ 'status': -1,
+          \ }
+  endif
+
+  let job = s:job_info[a:id]
+  let job.eof = 1
+  let job.status = a:msg
+
+  call feedkeys("\<C-c>")
+endfunction
+function! s:close_vim(channel) abort
+  let id = s:channel2id(a:channel)
+  if !has_key(s:job_info, id)
+    let s:job_info[id] = {
+          \ 'candidates': [],
+          \ 'eof': 0,
+          \ 'status': -1,
+          \ }
+  endif
+
+  let job = s:job_info[id]
+  let job.eof = 1
+
+  call feedkeys("\<C-c>")
+endfunction
+function! s:job_system(command) abort
+  if has('nvim')
+    let id = jobstart(a:command, {
+          \ 'on_stdout': function('s:job_handler_neovim'),
+          \ 'on_stderr': function('s:job_handler_neovim'),
+          \ 'on_exit': function('s:close_nvim'),
+          \ })
+  else
+    try
+      " Note: In Windows, job_start() does not work in shellslash.
+      let shellslash = 0
+      if exists('+shellslash')
+        let shellslash = &shellslash
+        set noshellslash
+      endif
+      let channel = job_start(a:command, {
+            \   'out_cb': function('s:job_handler_vim'),
+            \   'err_cb': function('s:job_handler_vim'),
+            \   'close_cb': function('s:close_vim'),
+            \ })
+      let id = s:channel2id(channel)
+    finally
+      if exists('+shellslash')
+        let &shellslash = shellslash
+      endif
+    endtry
+  endif
+
+  while 1
+    let c = getchar()
+    if c ==# char2nr("\<C-c>")
+      break
+    endif
+  endwhile
+
+  if !has_key(s:job_info, id)
+    let s:job_info[id] = {
+          \ 'candidates': [],
+          \ 'eof': 0,
+          \ 'status': -1,
+          \ }
+  endif
+  let job = s:job_info[id]
+
+  if has('nvim')
+    let s:job_status = job.status
+  else
+    let s:job_status = job_info(channel).exitval
+  endif
+
+  return join(job.candidates, "\n")
+endfunction
+
 function! dein#install#_rm(path) abort
   if !isdirectory(a:path) && !filereadable(a:path)
     return
@@ -656,7 +750,7 @@ function! dein#install#_rm(path) abort
 
     let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
     let result = dein#install#_system(rm_command . cmdline)
-    if v:shell_error
+    if dein#install#_status()
       call dein#util#_error(result)
     endif
   endif
@@ -689,7 +783,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
       call delete(temp)
       call delete(exclude)
     endtry
-    let status = v:shell_error
+    let status = dein#install#_status()
     if status
       call dein#util#_error('copy command failed.')
       call dein#util#_error(s:iconv(result, 'char', &encoding))
@@ -704,12 +798,12 @@ function! dein#install#_copy_directories(srcs, dest) abort
       let cmdline = printf("rsync -a --exclude '/.git/' %s %s",
             \ join(srcs), shellescape(a:dest))
       let result = dein#install#_system(cmdline)
-      let status = v:shell_error
+      let status = dein#install#_status()
     else
       for src in srcs
         let cmdline = printf('cp -Ra %s* %s', src, shellescape(a:dest))
         let result = dein#install#_system(cmdline)
-        let status = v:shell_error
+        let status = dein#install#_status()
         if status
           break
         endif
@@ -866,12 +960,9 @@ function! s:job_handler(id, msg, event) abort
 
   let job = s:job_info[a:id]
 
-  if (has('nvim') && a:event ==# 'exit')
+  if a:event ==# 'exit'
     let job.eof = 1
     let job.status = a:msg
-    if !empty(s:global_context)
-      call s:install_async(s:global_context)
-    endif
     return
   endif
 
@@ -1009,7 +1100,7 @@ function! s:init_job(process, context, cmd) abort
     let a:process.proc = s:channel2id(job_getchannel(a:process.job))
   else
     let a:process.output = dein#install#_system(a:cmd)
-    let a:process.status = v:shell_error
+    let a:process.status = dein#install#_status()
   endif
 
   let a:process.start_time = localtime()
