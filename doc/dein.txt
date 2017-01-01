@@ -140,7 +140,8 @@ dein#direct_install({repo}[, {options}])
 dein#load_toml({filename}, [{options}])
 		Load TOML plugin configuration from {filename}.  See
 		|dein-options| for keys to set in {options}.
-		Note: TOML parser is slow.
+		Note: TOML parser is slow.  You should use it with
+		|dein#load_state()| and |dein#save_state()|.
 
 		For toml file formats: |dein-toml|
 
