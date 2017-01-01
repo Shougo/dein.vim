@@ -755,6 +755,11 @@ function! s:install_async(context) abort
   if empty(a:context.processes)
         \ && a:context.number == a:context.max_plugins
     call s:done(a:context)
+  elseif a:context.number < len(a:context.plugins)
+    let plugin = a:context.plugins[a:context.number]
+    call s:print_progress_message(
+          \ s:get_progress_message(plugin,
+          \   a:context.number, a:context.max_plugins))
   endif
 
   return len(a:context.errored_plugins)
@@ -765,9 +770,12 @@ function! s:check_loop(context) abort
 
     let plugin = a:context.plugins[a:context.number]
     call s:sync(plugin, a:context)
-    call s:print_progress_message(
-          \ s:get_progress_message(plugin,
-          \   a:context.number, a:context.max_plugins))
+
+    if !a:context.async
+      call s:print_progress_message(
+            \ s:get_progress_message(plugin,
+            \   a:context.number, a:context.max_plugins))
+    endif
   endwhile
 
   for process in a:context.processes
@@ -892,7 +900,7 @@ function! s:sync(plugin, context) abort
 
   if isdirectory(a:plugin.path) && get(a:plugin, 'frozen', 0)
     " Skip frozen plugin
-    call s:print_progress_message(s:get_plugin_message(
+    call s:updates_log(s:get_plugin_message(
           \ a:plugin, num, max, 'is frozen.'))
     return
   endif
@@ -903,7 +911,7 @@ function! s:sync(plugin, context) abort
 
   if cmd == ''
     " Skip
-    call s:print_progress_message(
+    call s:updates_log(
           \ s:get_plugin_message(a:plugin, num, max, message))
     return
   endif
@@ -919,7 +927,9 @@ function! s:sync(plugin, context) abort
     return
   endif
 
-  call s:print_progress_message(message)
+  if !a:context.async
+    call s:print_progress_message(message)
+  endif
 
   let process = s:init_process(a:plugin, a:context, cmd)
   if !empty(process)
@@ -1251,8 +1261,10 @@ function! s:channel2id(channel) abort
   return matchstr(a:channel, '\d\+')
 endfunction
 function! s:updates_log(msg) abort
-  let s:updates_log += a:msg
-  call s:log(a:msg)
+  let msg = dein#util#_convert2list(a:msg)
+
+  let s:updates_log += msg
+  call s:log(msg)
 endfunction
 function! s:log(msg) abort
   let s:log += a:msg
