@@ -1,6 +1,6 @@
 language: viml
 
-sudo: required
+sudo: false
 dist: trusty
 
 os:
