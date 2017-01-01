@@ -70,7 +70,7 @@ function! dein#autoload#_source(...) abort
 
   if is_reset || filetype_before !=# filetype_after
     " Recall FileType autocmd
-    let &l:filetype = &l:filetype
+    filetype detect
   endif
 
   if !has('vim_starting')
