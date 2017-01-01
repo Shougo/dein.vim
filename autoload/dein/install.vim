@@ -371,6 +371,7 @@ function! dein#install#_is_async() abort
 endfunction
 
 function! dein#install#_has_job() abort
+  " return has('nvim') || (has('job') && has('channel')
   return (has('job') && has('channel')
         \                && exists('*job_getchannel')
         \                && exists('*job_info'))
@@ -633,12 +634,9 @@ function! dein#install#_cd(path) abort
 endfunction
 function! dein#install#_system(command) abort
   let command = s:iconv(a:command, &encoding, 'char')
-
   let output = dein#install#_has_job() ?
-        \ s:job_system(command) : system(command)
-
-  let output = s:iconv(output, 'char', &encoding)
-
+        \ s:job_system(a:command) :
+        \ s:iconv(system(command), 'char', &encoding)
   return substitute(output, '\n$', '', '')
 endfunction
 function! dein#install#_status() abort
@@ -676,6 +674,8 @@ function! s:close_vim(channel) abort
   call feedkeys("\<C-c>")
 endfunction
 function! s:job_system(command) abort
+  let channel = 0
+
   if has('nvim')
     let id = jobstart(a:command, {
           \ 'on_stdout': function('s:job_handler_neovim'),
@@ -1241,8 +1241,13 @@ function! s:iconv(expr, from, to) abort
   if a:from == '' || a:to == '' || a:from ==? a:to
     return a:expr
   endif
-  let result = iconv(a:expr, a:from, a:to)
-  return result != '' ? result : a:expr
+
+  if type(a:expr) == type([])
+    return map(copy(a:expr), 'iconv(v:val, a:from, a:to)')
+  else
+    let result = iconv(a:expr, a:from, a:to)
+    return result != '' ? result : a:expr
+  endif
 endfunction
 function! s:print_progress_message(msg) abort
   let msg = dein#util#_convert2list(a:msg)
