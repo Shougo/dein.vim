@@ -31,13 +31,16 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
     endif
     set runtimepath+={path to dein.vim directory}
 
-    call dein#begin({path to plugin base path directory})
+    if dein#load_state({path to plugin base path directory})
+      call dein#begin({path to plugin base path directory})
 
-    call dein#add({path to dein.vim directory})
-    call dein#add('Shougo/neocomplete.vim')
-    ...
+      call dein#add({path to dein.vim directory})
+      call dein#add('Shougo/neocomplete.vim')
+      ...
 
-    call dein#end()
+      call dein#end()
+      call dein#save_state()
+    endif
 
     filetype plugin indent on
     syntax enable
