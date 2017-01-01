@@ -138,20 +138,6 @@ function! s:type.get_revision_number_command(plugin) abort
 
   return self.command .' rev-parse HEAD'
 endfunction
-function! s:type.get_revision_pretty_command(plugin) abort
-  if !self.executable
-    return ''
-  endif
-
-  return self.command . ' log -1 --pretty=format:"%h [%cr] %s"'
-endfunction
-function! s:type.get_commit_date_command(plugin) abort
-  if !self.executable
-    return ''
-  endif
-
-  return self.command . ' log -1 --pretty=format:"%ct"'
-endfunction
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   if !self.executable || a:new_rev == '' || a:old_rev == ''
     return ''

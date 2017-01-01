@@ -86,9 +86,7 @@ function! s:get_commit_status(plugin) abort
   endif
 
   let type = dein#types#git#define()
-  let cmd = has_key(type, 'get_revision_pretty_command') ?
-        \ type.get_revision_pretty_command(a:plugin) :
-        \ type.get_revision_number_command(a:plugin)
+  let cmd = type.get_revision_number_command(a:plugin)
   if cmd == ''
     return ''
   endif
