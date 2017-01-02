@@ -270,8 +270,11 @@ function! s:copy_files(plugins, directory) abort
   let directory = (a:directory == '' ? '' : '/' . a:directory)
   let srcs = filter(map(copy(a:plugins), "v:val.rtp . directory"),
         \ 'isdirectory(v:val)')
-  call dein#install#_copy_directories(srcs,
-        \ dein#util#_get_runtime_path() . directory)
+  let stride = 50
+  for start in range(0, len(srcs), stride)
+    call dein#install#_copy_directories(srcs[start : start + stride-1],
+          \ dein#util#_get_runtime_path() . directory)
+  endfor
 endfunction
 function! s:merge_files(plugins, directory) abort
   let files = []
@@ -371,8 +374,7 @@ function! dein#install#_is_async() abort
 endfunction
 
 function! dein#install#_has_job() abort
-  " return has('nvim') || (has('job') && has('channel')
-  return (has('job') && has('channel')
+  return has('nvim') || (has('job') && has('channel')
         \                && exists('*job_getchannel')
         \                && exists('*job_info'))
 endfunction
@@ -643,97 +645,36 @@ endfunction
 function! dein#install#_system(command) abort
   let command = s:iconv(a:command, &encoding, 'char')
   let output = dein#install#_has_job() ?
-        \ s:job_system(a:command) :
-        \ s:iconv(system(command), 'char', &encoding)
+        \ s:job_system.system(a:command) :
+        \ system(command)
+  let output = s:iconv(output, 'char', &encoding)
   return substitute(output, '\n$', '', '')
 endfunction
 function! dein#install#_status() abort
-  return dein#install#_has_job() ? s:job_status : v:shell_error
+  return dein#install#_has_job() ? s:job_system.status : v:shell_error
 endfunction
 
-function! s:close_nvim(id, msg, event) abort
-  if !has_key(s:job_info, a:id)
-    let s:job_info[a:id] = {
-          \ 'candidates': [],
-          \ 'eof': 0,
-          \ 'status': -1,
-          \ }
+let s:job_system = {}
+
+function! s:job_system.on_out(id, msg, event) abort
+  let lines = a:msg
+  if !empty(lines) && lines[0] != "\n" && !empty(s:job_system.candidates)
+    " Join to the previous line
+    let s:job_system.candidates[-1] .= lines[0]
+    call remove(lines, 0)
   endif
 
-  let job = s:job_info[a:id]
-  let job.eof = 1
-  let job.status = a:msg
-
-  call feedkeys("\<C-c>")
+  let s:job_system.candidates += lines
 endfunction
-function! s:close_vim(channel) abort
-  let id = s:channel2id(a:channel)
-  if !has_key(s:job_info, id)
-    let s:job_info[id] = {
-          \ 'candidates': [],
-          \ 'eof': 0,
-          \ 'status': -1,
-          \ }
-  endif
+function! s:job_system.system(command) abort
+  let s:job_system.status = -1
+  let s:job_system.candidates = []
 
-  let job = s:job_info[id]
-  let job.eof = 1
+  let job = dein#job#start(a:command, {'on_stdout': self.on_out})
 
-  call feedkeys("\<C-c>")
-endfunction
-function! s:job_system(command) abort
-  let channel = 0
+  let s:job_system.status = job.wait()
 
-  if has('nvim')
-    let id = jobstart(a:command, {
-          \ 'on_stdout': function('s:job_handler_neovim'),
-          \ 'on_stderr': function('s:job_handler_neovim'),
-          \ 'on_exit': function('s:close_nvim'),
-          \ })
-  else
-    try
-      " Note: In Windows, job_start() does not work in shellslash.
-      let shellslash = 0
-      if exists('+shellslash')
-        let shellslash = &shellslash
-        set noshellslash
-      endif
-      let channel = job_start(a:command, {
-            \   'out_cb': function('s:job_handler_vim'),
-            \   'err_cb': function('s:job_handler_vim'),
-            \   'close_cb': function('s:close_vim'),
-            \ })
-      let id = s:channel2id(channel)
-    finally
-      if exists('+shellslash')
-        let &shellslash = shellslash
-      endif
-    endtry
-  endif
-
-  while 1
-    let c = getchar()
-    if c ==# char2nr("\<C-c>")
-      break
-    endif
-  endwhile
-
-  if !has_key(s:job_info, id)
-    let s:job_info[id] = {
-          \ 'candidates': [],
-          \ 'eof': 0,
-          \ 'status': -1,
-          \ }
-  endif
-  let job = s:job_info[id]
-
-  if has('nvim')
-    let s:job_status = job.status
-  else
-    let s:job_status = job_info(channel).exitval
-  endif
-
-  return join(job.candidates, "\n")
+  return join(self.candidates, "\n")
 endfunction
 
 function! dein#install#_rm(path) abort
