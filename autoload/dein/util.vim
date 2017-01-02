@@ -250,10 +250,20 @@ function! dein#util#_load_merged_plugins() abort
   endif
   sandbox return [merged[0]] + eval(merged[1])
 endfunction
-function! dein#util#_save_merged_plugins(merged_plugins) abort
+function! dein#util#_save_merged_plugins(plugins) abort
   call writefile([g:dein#_cache_version,
-        \ string(sort(a:merged_plugins))],
+        \ string(sort(a:plugins))],
         \ dein#util#_get_cache_path() . '/merged')
+endfunction
+function! dein#util#_load_remote_plugins() abort
+  let path = dein#util#_get_cache_path() . '/remote'
+  if !filereadable(path)
+    return []
+  endif
+  return readfile(path)
+endfunction
+function! dein#util#_save_remote_plugins(paths) abort
+  call writefile(a:paths, dein#util#_get_cache_path() . '/remote')
 endfunction
 
 function! dein#util#_save_state(is_starting) abort
