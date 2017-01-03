@@ -736,12 +736,13 @@ function! dein#install#_copy_directories(srcs, dest) abort
       endfor
       call writefile(lines, temp)
 
-      let result = dein#install#_system(temp)
+      " Note: "xcopy" is slow in Vim8 job.
+      let result = system(temp)
     finally
       call delete(temp)
       call delete(exclude)
     endtry
-    let status = dein#install#_status()
+    let status = v:shell_error
     if status
       call dein#util#_error('copy command failed.')
       call dein#util#_error(s:iconv(result, 'char', &encoding))
