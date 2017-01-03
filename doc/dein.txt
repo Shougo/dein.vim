@@ -34,7 +34,7 @@ Concepts are:
 
 * Simple
 
-* No commands, Functions only
+* No commands, Functions only to simplify the implementation
 
 * Easy to test and maintain
 

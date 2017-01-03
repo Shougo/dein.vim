@@ -58,7 +58,7 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 * Simple
 
-* No commands, Functions only
+* No commands, Functions only to simplify the implementation
 
 * Easy to test and maintain
 
