@@ -24,7 +24,7 @@ function! dein#autoload#_source(...) abort
 
   let sourced = []
   for plugin in filter(plugins,
-        \ "!empty(v:val) && !v:val.sourced && v:val.rtp != ''")
+        \ "!empty(v:val) && !v:val.sourced && v:val.rtp !=# ''")
     if s:source_plugin(rtps, index, plugin, sourced)
       return 1
     endif
@@ -164,7 +164,7 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
 
   let range = (a:line1 == a:line2) ? '' :
         \ (a:line1 == line("'<") && a:line2 == line("'>")) ?
-        \ "'<,'>" : a:line1.",".a:line2
+        \ "'<,'>" : a:line1.','.a:line2
 
   try
     execute range.a:command.a:bang a:args
@@ -198,7 +198,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
           \ ':<C-U>\zs.*\ze<CR>')
   else
     let mapping = a:mapping
-    while mapping =~ '<[[:alnum:]_-]\+>'
+    while mapping =~# '<[[:alnum:]_-]\+>'
       let mapping = substitute(mapping, '\c<Leader>',
             \ get(g:, 'mapleader', '\'), 'g')
       let mapping = substitute(mapping, '\c<LocalLeader>',
@@ -296,7 +296,7 @@ function! s:reset_ftplugin() abort
 endfunction
 function! s:get_input() abort
   let input = ''
-  let termstr = "<M-_>"
+  let termstr = '<M-_>'
 
   call feedkeys(termstr, 'n')
 
@@ -319,7 +319,7 @@ function! s:get_input() abort
 endfunction
 
 function! s:is_reset_ftplugin(plugins) abort
-  if &filetype == ''
+  if &filetype ==# ''
     return 0
   endif
 
@@ -331,7 +331,7 @@ function! s:is_reset_ftplugin(plugins) abort
         \ "filereadable(printf('%s/%s/%s.vim',
         \    plugin.rtp, v:val, &filetype))"))
         \ || isdirectory(ftplugin) || isdirectory(after)
-        \ || glob(ftplugin. '_*.vim') != '' || glob(after . '_*.vim') != ''
+        \ || glob(ftplugin. '_*.vim') !=# '' || glob(after . '_*.vim') !=# ''
       return 1
     endif
   endfor
@@ -339,7 +339,7 @@ function! s:is_reset_ftplugin(plugins) abort
 endfunction
 function! s:mapargrec(map, mode) abort
   let arg = maparg(a:map, a:mode)
-  while maparg(arg, a:mode) != ''
+  while maparg(arg, a:mode) !=# ''
     let arg = maparg(arg, a:mode)
   endwhile
   return arg

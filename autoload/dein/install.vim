@@ -217,7 +217,7 @@ function! dein#install#_recache_runtimepath() abort
   call s:log([strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)')])
 endfunction
 function! s:clear_runtimepath() abort
-  if dein#util#_get_cache_path() == ''
+  if dein#util#_get_cache_path() ==# ''
     call dein#util#_error('Invalid base path.')
     return
   endif
@@ -246,7 +246,7 @@ function! s:clear_runtimepath() abort
   endfor
 endfunction
 function! s:helptags() abort
-  if g:dein#_runtime_path == '' || dein#util#_is_sudo()
+  if g:dein#_runtime_path ==# '' || dein#util#_is_sudo()
     return ''
   endif
 
@@ -267,8 +267,8 @@ function! s:helptags() abort
   endtry
 endfunction
 function! s:copy_files(plugins, directory) abort
-  let directory = (a:directory == '' ? '' : '/' . a:directory)
-  let srcs = filter(map(copy(a:plugins), "v:val.rtp . directory"),
+  let directory = (a:directory ==# '' ? '' : '/' . a:directory)
+  let srcs = filter(map(copy(a:plugins), 'v:val.rtp . directory'),
         \ 'isdirectory(v:val)')
   let stride = 50
   for start in range(0, len(srcs), stride)
@@ -298,7 +298,7 @@ function! s:save_rollback() abort
   let revisions = {}
   for plugin in filter(values(dein#get()), 's:check_rollback(v:val)')
     let rev = s:get_revision_number(plugin)
-    if rev != ''
+    if rev !=# ''
       let revisions[plugin.name] = rev
     endif
   endfor
@@ -318,7 +318,7 @@ endfunction
 function! s:check_rollback(plugin) abort
   return !has_key(a:plugin, 'local')
         \ && !get(a:plugin, 'frozen', 0)
-        \ && get(a:plugin, 'rev', '') == ''
+        \ && get(a:plugin, 'rev', '') ==# ''
 endfunction
 function! s:generate_ftplugin() abort
   " Create after/ftplugin
@@ -330,14 +330,14 @@ function! s:generate_ftplugin() abort
   " Merge g:dein#_ftplugin
   let ftplugin = {}
   for [key, string] in items(g:dein#_ftplugin)
-    for ft in (key == '_' ? ['_'] : split(key, '_'))
+    for ft in (key ==# '_' ? ['_'] : split(key, '_'))
       if !has_key(ftplugin, ft)
-        let ftplugin[ft] = (ft == '_') ? [] : [
+        let ftplugin[ft] = (ft ==# '_') ? [] : [
               \ "if exists('b:undo_ftplugin')",
               \ "  let b:undo_ftplugin .= '|'",
-              \ "else",
+              \ 'else',
               \ "  let b:undo_ftplugin = ''",
-              \ "endif",
+              \ 'endif',
               \ ]
       endif
       let ftplugin[ft] += split(string, '\n')
@@ -350,7 +350,7 @@ function! s:generate_ftplugin() abort
 
   " Generate ftplugin.vim
   let base = get(split(globpath(&runtimepath, 'ftplugin.vim'), '\n'), 0, '')
-  if base != ''
+  if base !=# ''
     call writefile(readfile(base) + [
           \ 'autocmd filetypeplugin FileType * call s:AfterFTPlugin()',
           \ 'function! s:AfterFTPlugin()',
@@ -473,7 +473,7 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
     let cmd = type.get_sync_command(a:plugin)
   endif
 
-  if cmd == ''
+  if cmd ==# ''
     return ['', '']
   endif
 
@@ -490,7 +490,7 @@ function! s:get_revision_number(plugin) abort
   endif
 
   let cmd = type.get_revision_number_command(a:plugin)
-  if cmd == ''
+  if cmd ==# ''
     return ''
   endif
 
@@ -501,11 +501,11 @@ function! s:get_revision_number(plugin) abort
     let rev = dein#install#_system(cmd)
 
     " If rev contains spaces, it is error message
-    if rev =~ '\s'
+    if rev =~# '\s'
       call s:error(a:plugin.name)
       call s:error('Error revision number: ' . rev)
       return ''
-    elseif rev == ''
+    elseif rev ==# ''
       call s:error(a:plugin.name)
       call s:error('Empty revision number: ' . rev)
       return ''
@@ -524,7 +524,7 @@ function! s:get_revision_remote(plugin) abort
   endif
 
   let cmd = type.get_revision_remote_command(a:plugin)
-  if cmd == ''
+  if cmd ==# ''
     return ''
   endif
 
@@ -535,7 +535,7 @@ function! s:get_revision_remote(plugin) abort
     let rev = matchstr(dein#install#_system(cmd), '^\S\+')
 
     " If rev contains spaces, it is error message
-    return (rev !~ '\s') ? rev : ''
+    return (rev !~# '\s') ? rev : ''
   finally
     call dein#install#_cd(cwd)
   endtry
@@ -549,9 +549,9 @@ function! s:get_updated_log_message(plugin, new_rev, old_rev) abort
 
     let log_command = has_key(type, 'get_log_command') ?
           \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
-    let log = (log_command != '' ?
+    let log = (log_command !=# '' ?
           \ dein#install#_system(log_command) : '')
-    return log != '' ? log :
+    return log !=# '' ? log :
           \            (a:old_rev  == a:new_rev) ? ''
           \            : printf('%s -> %s', a:old_rev, a:new_rev)
   finally
@@ -576,7 +576,7 @@ function! s:lock_revision(process, context) abort
 
     let cmd = type.get_revision_lock_command(plugin)
 
-    if cmd == '' || plugin.new_rev ==# get(plugin, 'rev', '')
+    if cmd ==# '' || plugin.new_rev ==# get(plugin, 'rev', '')
       " Skipped.
       return 0
     elseif cmd =~# '^E: '
@@ -586,7 +586,7 @@ function! s:lock_revision(process, context) abort
       return -1
     endif
 
-    if get(plugin, 'rev', '') != ''
+    if get(plugin, 'rev', '') !=# ''
       call s:print_message(s:get_plugin_message(plugin, num, max, 'Locked'))
     endif
 
@@ -614,8 +614,8 @@ function! s:get_updated_message(context, plugins) abort
         \                              v:val.commit_count,
         \                              (v:val.commit_count == 1 ? '' : 's')))
         \    . ((a:context.update_type !=# 'check_update'
-        \        && v:val.old_rev != ''
-        \        && v:val.uri =~ '^\\h\\w*://github.com/') ? \"\\n\"
+        \        && v:val.old_rev !=# ''
+        \        && v:val.uri =~# '^\\h\\w*://github.com/') ? \"\\n\"
         \      . printf('    %s/compare/%s...%s',
         \        substitute(substitute(v:val.uri, '\\.git$', '', ''),
         \          '^\\h\\w*:', 'https:', ''),
@@ -658,7 +658,7 @@ let s:job_system = {}
 
 function! s:job_system.on_out(id, msg, event) abort
   let lines = a:msg
-  if !empty(lines) && lines[0] != "\n" && !empty(s:job_system.candidates)
+  if !empty(lines) && lines[0] !=# "\n" && !empty(s:job_system.candidates)
     " Join to the previous line
     let s:job_system.candidates[-1] .= lines[0]
     call remove(lines, 0)
@@ -741,7 +741,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
     endif
   else
     let srcs = map(filter(copy(a:srcs),
-          \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . "/")')
+          \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . ''/'')')
     let is_rsync = executable('rsync')
     if is_rsync
       let cmdline = printf("rsync -a --exclude '/.git/' %s %s",
@@ -920,7 +920,7 @@ function! s:job_handler(id, msg, event) abort
         \ split(iconv(a:msg, 'char', &encoding), "\n")
 
   let candidates = job.candidates
-  if !empty(lines) && lines[0] != "\n" && !empty(job.candidates)
+  if !empty(lines) && lines[0] !=# "\n" && !empty(job.candidates)
     " Join to the previous line
     let candidates[-1] .= lines[0]
     call remove(lines, 0)
@@ -946,7 +946,7 @@ function! s:sync(plugin, context) abort
         \   a:plugin, a:context.update_type,
         \   a:context.number, a:context.max_plugins)
 
-  if cmd == ''
+  if cmd ==# ''
     " Skip
     call s:updates_log(
           \ s:get_plugin_message(a:plugin, num, max, message))
@@ -1070,7 +1070,7 @@ function! s:check_output(context, process) abort
   let plugin = a:process.plugin
 
   if isdirectory(plugin.path)
-        \ && get(plugin, 'rev', '') != ''
+        \ && get(plugin, 'rev', '') !=# ''
         \ && !get(plugin, 'local', 0)
     " Restore revision.
     call s:lock_revision(a:process, a:context)
@@ -1096,7 +1096,7 @@ function! s:check_output(context, process) abort
     call add(a:context.errored_plugins,
           \ plugin)
   elseif a:process.rev ==# new_rev
-        \ || (a:context.update_type ==# 'check_update' && new_rev == '')
+        \ || (a:context.update_type ==# 'check_update' && new_rev ==# '')
     if a:context.update_type !=# 'check_update'
       call s:print_message(s:get_plugin_message(
             \ plugin, num, max, 'Same revision'))
@@ -1110,7 +1110,7 @@ function! s:check_output(context, process) abort
             \   plugin, new_rev, a:process.rev), '\n')
       let plugin.commit_count = len(log_messages)
       call s:print_message(map(log_messages,
-            \   "s:get_short_message(plugin, num, max, v:val)"))
+            \   's:get_short_message(plugin, num, max, v:val)'))
     else
       let plugin.commit_count = 0
     endif
@@ -1154,7 +1154,7 @@ function! s:get_async_result(process) abort
 
   let output = join((job.eof ?
         \ job.candidates : job.candidates[: -2]), "\n")
-  if output != ''
+  if output !=# ''
     let a:process.output .= output
     let a:process.start_time = localtime()
     call s:print_message(s:get_short_message(
@@ -1187,7 +1187,7 @@ function! s:get_async_result(process) abort
 endfunction
 
 function! s:iconv(expr, from, to) abort
-  if a:from == '' || a:to == '' || a:from ==? a:to
+  if a:from ==# '' || a:to ==# '' || a:from ==? a:to
     return a:expr
   endif
 
@@ -1195,7 +1195,7 @@ function! s:iconv(expr, from, to) abort
     return map(copy(a:expr), 'iconv(v:val, a:from, a:to)')
   else
     let result = iconv(a:expr, a:from, a:to)
-    return result != '' ? result : a:expr
+    return result !=# '' ? result : a:expr
   endif
 endfunction
 function! s:print_progress_message(msg) abort
@@ -1277,7 +1277,7 @@ function! s:log(msg) abort
 endfunction
 function! s:append_log_file(msg) abort
   let logfile = g:dein#install_log_filename
-  if logfile == ''
+  if logfile ==# ''
     return
   endif
 
@@ -1296,7 +1296,7 @@ endfunction
 
 
 function! s:echo(expr, mode) abort
-  let msg = map(filter(dein#util#_convert2list(a:expr), "v:val != ''"),
+  let msg = map(filter(dein#util#_convert2list(a:expr), "v:val !=# ''"),
         \ "'[dein] ' .  v:val")
   if empty(msg)
     return

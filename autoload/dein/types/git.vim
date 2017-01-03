@@ -40,7 +40,7 @@ function! s:type.init(repo, options) abort
   endif
 
   let uri = self.get_uri(a:repo, a:options)
-  if uri == ''
+  if uri ==# ''
     return {}
   endif
 
@@ -56,7 +56,7 @@ function! s:type.get_uri(repo, options) abort
     return a:repo
   endif
 
-  if a:repo =~ '^git@'
+  if a:repo =~# '^git@'
     " Parse "git@host:name" pattern
     let protocol = 'ssh'
     let host = matchstr(a:repo[4:], '[^:]*')
@@ -68,11 +68,11 @@ function! s:type.get_uri(repo, options) abort
     let host = substitute(matchstr(rest, '^://\zs[^/]*\ze/'),
           \ ':.*$', '', '')
   endif
-  if host == ''
+  if host ==# ''
     let host = 'github.com'
   endif
 
-  if protocol == ''
+  if protocol ==# ''
         \ || a:repo =~# '\<\%(gh\|github\|bb\|bitbucket\):\S\+'
         \ || has_key(a:options, 'type__protocol')
     let protocol = get(a:options, 'type__protocol',
@@ -86,7 +86,7 @@ function! s:type.get_uri(repo, options) abort
     return ''
   endif
 
-  if a:repo !~ '/'
+  if a:repo !~# '/'
     " www.vim.org Vim scripts.
     let uri  = (protocol ==# 'ssh') ?
           \ 'git@github.com:vim-scripts/' :
@@ -115,8 +115,8 @@ function! s:type.get_sync_command(plugin) abort
 
     let depth = get(a:plugin, 'type__depth',
           \ g:dein#types#git#clone_depth)
-    if depth > 0 && get(a:plugin, 'rev', '') == ''
-          \ && self.get_uri(a:plugin.repo, a:plugin) !~ '^git@'
+    if depth > 0 && get(a:plugin, 'rev', '') ==# ''
+          \ && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
       let cmd .= ' --depth=' . depth
     endif
 
@@ -139,7 +139,7 @@ function! s:type.get_revision_number_command(plugin) abort
   return self.command .' rev-parse HEAD'
 endfunction
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort
-  if !self.executable || a:new_rev == '' || a:old_rev == ''
+  if !self.executable || a:new_rev ==# '' || a:old_rev ==# ''
     return ''
   endif
 
@@ -164,7 +164,7 @@ function! s:type.get_revision_lock_command(plugin) abort
           \ . ' tag --list ' . escape(rev, '*')
           \ . '--sort -version:refname'), "\n"), 0, '')
   endif
-  if rev == ''
+  if rev ==# ''
     " Fix detach HEAD.
     " Use symbolic-ref feature (git 1.8.7 or above required)
     let rev = dein#install#_system(self.command
@@ -186,7 +186,7 @@ function! s:type.get_revision_remote_command(plugin) abort
   endif
 
   let rev = get(a:plugin, 'rev', '')
-  if rev == ''
+  if rev ==# ''
     let rev = 'HEAD'
   endif
 
@@ -213,7 +213,7 @@ function! s:is_git_dir(path) abort
       return 0
     endif
     let path = fnamemodify(a:path, ':h')
-    if fnamemodify(a:path, ':t') == ''
+    if fnamemodify(a:path, ':t') ==# ''
       " if there's no tail, the path probably ends in a directory separator
       let path = fnamemodify(path, ':h')
     endif
@@ -246,7 +246,7 @@ function! s:is_git_dir(path) abort
   " Note: it may also be a symlink, which can point to a path that doesn't
   " necessarily exist yet.
   let head = s:join_paths(git_dir, 'HEAD')
-  if !filereadable(head) && getftype(head) != 'link'
+  if !filereadable(head) && getftype(head) !=# 'link'
     return 0
   endif
 
@@ -278,10 +278,10 @@ endfunction
 
 if s:is_windows
   function! s:is_absolute(path) abort
-    return a:path =~ '^[\\/]\|^\a:'
+    return a:path =~# '^[\\/]\|^\a:'
   endfunction
 else
   function! s:is_absolute(path) abort
-    return a:path =~ '^/'
+    return a:path =~# '^/'
   endfunction
 endif

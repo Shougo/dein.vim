@@ -31,7 +31,7 @@ function! dein#util#_is_cygwin() abort
 endfunction
 
 function! dein#util#_is_sudo() abort
-  return $SUDO_USER != '' && $USER !=# $SUDO_USER
+  return $SUDO_USER !=# '' && $USER !=# $SUDO_USER
       \ && $HOME !=# expand('~'.$USER)
       \ && $HOME ==# expand('~'.$SUDO_USER)
 endfunction
@@ -40,7 +40,7 @@ function! dein#util#_get_base_path() abort
   return g:dein#_base_path
 endfunction
 function! dein#util#_get_runtime_path() abort
-  if g:dein#_runtime_path != ''
+  if g:dein#_runtime_path !=# ''
     return g:dein#_runtime_path
   endif
 
@@ -51,7 +51,7 @@ function! dein#util#_get_runtime_path() abort
   return g:dein#_runtime_path
 endfunction
 function! dein#util#_get_cache_path() abort
-  if g:dein#_cache_path != ''
+  if g:dein#_cache_path !=# ''
     return g:dein#_cache_path
   endif
 
@@ -68,7 +68,7 @@ function! dein#util#_get_vimrcs(vimrcs) abort
         \ dein#util#_convert2list(a:vimrcs) : [dein#util#_get_myvimrc()]
 endfunction
 function! dein#util#_get_myvimrc() abort
-  return $MYVIMRC != '' ? $MYVIMRC :
+  return $MYVIMRC !=# '' ? $MYVIMRC :
         \ matchstr(split(dein#util#_redir('scriptnames'), '\n')[0],
         \  '^\s*\d\+:\s\zs.*')
 endfunction
@@ -88,7 +88,7 @@ function! dein#util#_notify(msg) abort
   call dein#util#_set_default(
         \ 'g:dein#notification_time', 2)
 
-  if !g:dein#enable_notification || a:msg == ''
+  if !g:dein#enable_notification || a:msg ==# ''
     return
   endif
 
@@ -99,14 +99,14 @@ function! dein#util#_notify(msg) abort
   if executable('notify-send')
     let cmd = printf('notify-send --expire-time=%d',
           \ g:dein#notification_time * 1000)
-    if icon != ''
+    if icon !=# ''
       let cmd .= ' --icon=' . string(icon)
     endif
     let cmd .= ' ' . string(title) . ' ' . string(a:msg)
   elseif dein#util#_is_windows() && executable('Snarl_CMD')
     let cmd = printf('Snarl_CMD snShowMessage %d "%s" "%s"',
           \ g:dein#notification_time, title, a:msg)
-    if icon != ''
+    if icon !=# ''
       let cmd .= ' "' . icon . '"'
     endif
   elseif dein#util#_is_mac()
@@ -125,7 +125,7 @@ function! dein#util#_notify(msg) abort
     if executable('terminal-notifier')
       let cmd .= 'terminal-notifier -title '
             \ . string(title) . ' -message ' . string(a:msg)
-      if icon != ''
+      if icon !=# ''
         let cmd .= ' -appIcon ' . string(icon)
       endif
     else
@@ -134,13 +134,13 @@ function! dein#util#_notify(msg) abort
     endif
   endif
 
-  if cmd != ''
+  if cmd !=# ''
     call dein#install#_system(cmd)
   endif
 endfunction
 
 function! dein#util#_chomp(str) abort
-  return a:str != '' && a:str[-1:] == '/' ? a:str[: -2] : a:str
+  return a:str !=# '' && a:str[-1:] ==# '/' ? a:str[: -2] : a:str
 endfunction
 
 function! dein#util#_uniq(list) abort
@@ -149,10 +149,10 @@ function! dein#util#_uniq(list) abort
   let seen = {}
   while i < len(list)
     let key = list[i]
-    if key != '' && has_key(seen, key)
+    if key !=# '' && has_key(seen, key)
       call remove(list, i)
     else
-      if key != ''
+      if key !=# ''
         let seen[key] = 1
       endif
       let i += 1
@@ -168,7 +168,7 @@ endfunction
 function! dein#util#_check_lazy_plugins() abort
   return map(filter(dein#util#_get_lazy_plugins(),
         \   "isdirectory(v:val.rtp)
-        \    && get(v:val, 'hook_source', '') == ''
+        \    && get(v:val, 'hook_source', '') ==# ''
         \    && !isdirectory(v:val.rtp . '/plugin')
         \    && !isdirectory(v:val.rtp . '/after/plugin')"),
         \   'v:val.name')
@@ -200,7 +200,7 @@ function! dein#util#_get_type(name) abort
 endfunction
 
 function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
-  if dein#util#_get_cache_path() == '' || !a:is_starting
+  if dein#util#_get_cache_path() ==# '' || !a:is_starting
     " Ignore
     return 1
   endif
@@ -272,7 +272,7 @@ function! dein#util#_save_state(is_starting) abort
     return 1
   endif
 
-  if dein#util#_get_cache_path() == '' || !a:is_starting
+  if dein#util#_get_cache_path() ==# '' || !a:is_starting
     " Ignore
     return 1
   endif
@@ -286,8 +286,8 @@ function! dein#util#_save_state(is_starting) abort
   " Version check
 
   let lines = [
-        \ "if g:dein#_cache_version != " . g:dein#_cache_version .
-        \      " | throw 'Cache loading error' | endif",
+        \ 'if g:dein#_cache_version != ' . g:dein#_cache_version .
+        \      ' | throw ''Cache loading error'' | endif',
         \ 'let [plugins, ftplugin] = dein#load_cache_raw('.
         \      string(g:dein#_vimrcs) .')',
         \ "if empty(plugins) | throw 'Cache loading error' | endif",
@@ -299,10 +299,10 @@ function! dein#util#_save_state(is_starting) abort
         \ 'let &runtimepath = ' . string(&runtimepath),
         \ ]
 
-  if g:dein#_off1 != ''
+  if g:dein#_off1 !=# ''
     call add(lines, g:dein#_off1)
   endif
-  if g:dein#_off2 != ''
+  if g:dein#_off2 !=# ''
     call add(lines, g:dein#_off2)
   endif
 
@@ -354,14 +354,14 @@ function! dein#util#_begin(path, vimrcs) abort
     return 1
   endif
 
-  if a:path == '' || g:dein#_block_level != 0
+  if a:path ==# '' || g:dein#_block_level != 0
     call dein#util#_error('Invalid begin/end block usage.')
     return 1
   endif
 
   let g:dein#_block_level += 1
   let g:dein#_base_path = dein#util#_expand(a:path)
-  if g:dein#_base_path[-1:] == '/'
+  if g:dein#_base_path[-1:] ==# '/'
     let g:dein#_base_path = g:dein#_base_path[: -2]
   endif
   call dein#util#_get_runtime_path()
@@ -414,7 +414,7 @@ function! dein#util#_end() abort
 
   let depends = []
   for plugin in filter(values(g:dein#_plugins),
-        \ "!v:val.lazy && !v:val.sourced && v:val.rtp != ''")
+        \ "!v:val.lazy && !v:val.sourced && v:val.rtp !=# ''")
     " Load dependencies
     if has_key(plugin, 'depends')
       let depends += plugin.depends
@@ -444,7 +444,7 @@ function! dein#util#_end() abort
     call dein#source(depends)
   endif
 
-  if g:dein#_hook_add != ''
+  if g:dein#_hook_add !=# ''
     call dein#util#_execute_hook({}, g:dein#_hook_add)
   endif
 
@@ -483,8 +483,8 @@ function! dein#util#_call_hook(hook_name, ...) abort
   let prefix = '#User#dein#'.a:hook_name.'#'
   let hook = 'hook_' . a:hook_name
   let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
-        \ "v:val.sourced && (exists(prefix . v:val.name)
-        \  || has_key(v:val, hook)) && isdirectory(v:val.path)")
+        \ 'v:val.sourced && (exists(prefix . v:val.name)
+        \  || has_key(v:val, hook)) && isdirectory(v:val.path)')
 
   for plugin in dein#util#_tsort(plugins)
     let autocmd = 'dein#' . a:hook_name . '#' . plugin.name
@@ -505,7 +505,7 @@ function! dein#util#_execute_hook(plugin, hook) abort
     if type(a:hook) == type('')
       let dummy = '_dein_dummy_' .
             \ substitute(reltimestr(reltime()), '\W', '_', 'g')
-      execute "function! ".dummy."() abort\n"
+      execute 'function! '.dummy."() abort\n"
             \ . a:hook . "\nendfunction"
       call {dummy}()
       execute 'delfunction' dummy
@@ -554,7 +554,7 @@ function! dein#util#_split_rtp(runtimepath) abort
   endif
 
   let split = split(a:runtimepath, '\\\@<!\%(\\\\\)*\zs,')
-  return map(split,'substitute(v:val, ''\\\([\\,]\)'', "\\1", "g")')
+  return map(split,'substitute(v:val, ''\\\([\\,]\)'', ''\1'', ''g'')')
 endfunction
 function! dein#util#_join_rtp(list, runtimepath, rtp) abort
   return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
@@ -562,15 +562,15 @@ function! dein#util#_join_rtp(list, runtimepath, rtp) abort
 endfunction
 
 function! dein#util#_expand(path) abort
-  let path = (a:path =~ '^\~') ? fnamemodify(a:path, ':p') :
-        \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
+  let path = (a:path =~# '^\~') ? fnamemodify(a:path, ':p') :
+        \ (a:path =~# '^\$\h\w*') ? substitute(a:path,
         \               '^\$\h\w*', '\=eval(submatch(0))', '') :
         \ a:path
-  return (s:is_windows && path =~ '\\') ?
+  return (s:is_windows && path =~# '\\') ?
         \ dein#util#_substitute_path(path) : path
 endfunction
 function! dein#util#_substitute_path(path) abort
-  return (s:is_windows && a:path =~ '\\') ? tr(a:path, '\', '/') : a:path
+  return (s:is_windows && a:path =~# '\\') ? tr(a:path, '\', '/') : a:path
 endfunction
 function! dein#util#_globlist(path) abort
   return split(glob(a:path), '\n')
@@ -579,7 +579,7 @@ endfunction
 function! dein#util#_convert2list(expr) abort
   return type(a:expr) ==# type([]) ? copy(a:expr) :
         \ type(a:expr) ==# type('') ?
-        \   (a:expr == '' ? [] : split(a:expr, '\r\?\n', 1))
+        \   (a:expr ==# '' ? [] : split(a:expr, '\r\?\n', 1))
         \ : [a:expr]
 endfunction
 function! dein#util#_split(expr) abort
@@ -643,7 +643,7 @@ function! dein#util#_download(uri, outpath) abort
           \ executable('wget') ?
           \   'wget -q -O' : ''
   endif
-  if g:dein#download_command != ''
+  if g:dein#download_command !=# ''
     return printf('%s "%s" "%s"',
           \ g:dein#download_command, a:outpath, a:uri)
   elseif dein#util#_is_windows()
@@ -676,7 +676,7 @@ function! s:msg2list(expr) abort
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction
 function! s:skipempty(string) abort
-  return filter(split(a:string, '\n'), "v:val != ''")
+  return filter(split(a:string, '\n'), "v:val !=# ''")
 endfunction
 
 function! s:escape(path) abort

@@ -25,11 +25,11 @@ function! s:kind.action_table.preview.func(candidate) abort
   let readme = get(split(globpath(
         \ a:candidate.action__path, 'doc/*.?*', 1), '\n'), 0, '')
 
-  if readme == ''
+  if readme ==# ''
     " Search README files.
     let readme = get(split(globpath(
           \ a:candidate.action__path, 'README*', 1), '\n'), 0, '')
-    if readme == ''
+    if readme ==# ''
       return
     endif
   endif

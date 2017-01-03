@@ -26,7 +26,7 @@ function! s:source.source__converter(candidates, context) abort
     let candidate.source__uri = has_key(type, 'get_uri') ?
           \ type.get_uri(candidate.action__plugin.repo,
           \              candidate.action__plugin) : ''
-    if candidate.source__uri =~
+    if candidate.source__uri =~#
           \ '^\%(https\?\|git\)://github.com/'
       let candidate.action__uri = candidate.source__uri
       let candidate.action__uri =
@@ -71,7 +71,7 @@ function! s:source.gather_candidates(args, context) abort
 
     if a:context.source__bang
       let status = s:get_commit_status(candidate.action__plugin)
-      if status != ''
+      if status !=# ''
         let candidate.abbr .= "\n   " . status
       endif
     endif
@@ -87,7 +87,7 @@ function! s:get_commit_status(plugin) abort
 
   let type = dein#types#git#define()
   let cmd = type.get_revision_number_command(a:plugin)
-  if cmd == ''
+  if cmd ==# ''
     return ''
   endif
 
