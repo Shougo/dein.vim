@@ -133,14 +133,14 @@ endfunction
 
 function! s:type.get_revision_number_command(plugin) abort
   if !self.executable
-    return ''
+    return []
   endif
 
-  return self.command .' rev-parse HEAD'
+  return [self.command, 'rev-parse', 'HEAD']
 endfunction
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   if !self.executable || a:new_rev ==# '' || a:old_rev ==# ''
-    return ''
+    return []
   endif
 
   " Note: If the a:old_rev is not the ancestor of two branchs. Then do not use
@@ -154,35 +154,37 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort
 endfunction
 function! s:type.get_revision_lock_command(plugin) abort
   if !self.executable
-    return ''
+    return []
   endif
 
   let rev = get(a:plugin, 'rev', '')
   if rev =~# '*'
     " Use the released tag (git 1.9.2 or above required)
-    let rev = get(split(dein#install#_system(self.command
-          \ . ' tag --list ' . escape(rev, '*')
-          \ . '--sort -version:refname'), "\n"), 0, '')
+    let rev = get(split(dein#install#_system(
+          \ [self.command, 'tag', '--list',
+          \  escape(rev, '*'), '--sort', '-version:refname'),
+          \ "\n"), 0, '')
   endif
   if rev ==# ''
     " Fix detach HEAD.
     " Use symbolic-ref feature (git 1.8.7 or above required)
-    let rev = dein#install#_system(self.command
-          \ . ' symbolic-ref --short HEAD ')
+    let rev = dein#install#_system([
+          \ self.command, 'symbolic-ref', '--short', 'HEAD'
+          \ ])
   endif
 
-  return self.command . ' checkout ' . rev
+  return [self.command, 'checkout', rev]
 endfunction
 function! s:type.get_rollback_command(plugin, rev) abort
   if !self.executable
-    return ''
+    return []
   endif
 
-  return self.command . ' reset --hard ' . a:rev
+  return [self.command, 'reset', '--hard', a:rev]
 endfunction
 function! s:type.get_revision_remote_command(plugin) abort
   if !self.executable
-    return ''
+    return []
   endif
 
   let rev = get(a:plugin, 'rev', '')
@@ -190,14 +192,14 @@ function! s:type.get_revision_remote_command(plugin) abort
     let rev = 'HEAD'
   endif
 
-  return self.command .' ls-remote origin ' . rev
+  return [self.command, 'ls-remote', 'origin', rev]
 endfunction
 function! s:type.get_fetch_remote_command(plugin) abort
   if !self.executable
-    return ''
+    return []
   endif
 
-  return self.command .' fetch origin '
+  return [self.command, 'fetch', 'origin']
 endfunction
 
 function! s:is_git_dir(path) abort

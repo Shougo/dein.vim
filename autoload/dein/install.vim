@@ -465,15 +465,16 @@ endfunction
 function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   let type = dein#util#_get_type(a:plugin.type)
 
-  let cmd = ''
   if a:update_type ==# 'check_update'
         \ && has_key(type, 'get_fetch_remote_command')
     let cmd = type.get_fetch_remote_command(a:plugin)
   elseif has_key(type, 'get_sync_command')
     let cmd = type.get_sync_command(a:plugin)
+  else
+    return ['', '']
   endif
 
-  if cmd ==# ''
+  if empty(cmd)
     return ['', '']
   endif
 
@@ -490,7 +491,7 @@ function! s:get_revision_number(plugin) abort
   endif
 
   let cmd = type.get_revision_number_command(a:plugin)
-  if cmd ==# ''
+  if empty(cmd)
     return ''
   endif
 
@@ -524,7 +525,7 @@ function! s:get_revision_remote(plugin) abort
   endif
 
   let cmd = type.get_revision_remote_command(a:plugin)
-  if cmd ==# ''
+  if empty(cmd)
     return ''
   endif
 
@@ -576,10 +577,10 @@ function! s:lock_revision(process, context) abort
 
     let cmd = type.get_revision_lock_command(plugin)
 
-    if cmd ==# '' || plugin.new_rev ==# get(plugin, 'rev', '')
+    if empty(cmd) || plugin.new_rev ==# get(plugin, 'rev', '')
       " Skipped.
       return 0
-    elseif cmd =~# '^E: '
+    elseif type(cmd) == type('') && cmd =~# '^E: '
       " Errored.
       call s:error(plugin.path)
       call s:error(cmd[3:])
@@ -643,9 +644,17 @@ function! dein#install#_cd(path) abort
   endif
 endfunction
 function! dein#install#_system(command) abort
-  let command = s:iconv(a:command, &encoding, 'char')
+  if !dein#install#_has_job() && !has('nvim') && type(a:command) == type([])
+    " system() does not support List arguments in Vim.
+    let command = join(map(copy(a:command), '"" . v:val . ""'))
+  else
+    let command = a:command
+  endif
+
+  let command = s:iconv(command, &encoding, 'char')
+
   let output = dein#install#_has_job() ?
-        \ s:job_system.system(a:command) :
+        \ s:job_system.system(command) :
         \ system(command)
   let output = s:iconv(output, 'char', &encoding)
   return substitute(output, '\n$', '', '')
@@ -946,14 +955,14 @@ function! s:sync(plugin, context) abort
         \   a:plugin, a:context.update_type,
         \   a:context.number, a:context.max_plugins)
 
-  if cmd ==# ''
+  if empty(cmd)
     " Skip
     call s:updates_log(
           \ s:get_plugin_message(a:plugin, num, max, message))
     return
   endif
 
-  if cmd =~# '^E: '
+  if type(cmd) == type('') && cmd =~# '^E: '
     " Errored.
 
     call s:print_progress_message(s:get_plugin_message(
