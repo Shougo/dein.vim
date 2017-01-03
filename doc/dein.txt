@@ -307,7 +307,11 @@ dein#is_sourced({plugin-name})
 
 							*dein#get_log()*
 dein#get_log()
-		Print all previous install logs.
+		Get all previous install logs.
+
+							*dein#get_progress()*
+dein#get_progress()
+		Get current update progress message.
 
 						*dein#get_updates_log()*
 dein#get_updates_log()

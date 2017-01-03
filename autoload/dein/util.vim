@@ -79,8 +79,6 @@ function! dein#util#_error(msg) abort
   endfor
 endfunction
 function! dein#util#_notify(msg) abort
-  call dein#util#_error(a:msg)
-
   call dein#util#_set_default(
         \ 'g:dein#enable_notification', 0)
   call dein#util#_set_default(
@@ -89,6 +87,7 @@ function! dein#util#_notify(msg) abort
         \ 'g:dein#notification_time', 2)
 
   if !g:dein#enable_notification || a:msg ==# ''
+    call dein#util#_error(a:msg)
     return
   endif
 

@@ -9,6 +9,7 @@ let s:global_context = {}
 let s:job_info = {}
 let s:log = []
 let s:updates_log = []
+let s:progress = ''
 
 " Global options definition.
 let g:dein#install_max_processes =
@@ -450,6 +451,9 @@ endfunction
 function! dein#install#_get_context() abort
   return s:global_context
 endfunction
+function! dein#install#_get_progress() abort
+  return s:progress
+endfunction
 
 function! s:get_progress_message(plugin, number, max) abort
   return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
@@ -835,7 +839,7 @@ function! s:check_loop(context) abort
   call filter(a:context.processes, '!v:val.eof')
 endfunction
 function! s:restore_view(context) abort
-  if a:context.pcommanorogress_type ==# 'tabline'
+  if a:context.progress_type ==# 'tabline'
     let &g:showtabline = a:context.showtabline
     let &g:tabline = a:context.tabline
   elseif a:context.progress_type ==# 'title'
@@ -1194,6 +1198,8 @@ function! s:print_progress_message(msg) abort
   endif
 
   call s:log(msg)
+
+  let s:progress = join(msg, "\n")
 endfunction
 function! s:print_message(msg) abort
   let msg = dein#util#_convert2list(a:msg)
@@ -1236,6 +1242,7 @@ function! s:notify(msg) abort
   call dein#util#_notify(a:msg)
 
   call s:updates_log(msg)
+  let s:progress = join(msg, "\n")
 endfunction
 function! s:channel2id(channel) abort
   return matchstr(a:channel, '\d\+')
