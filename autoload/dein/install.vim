@@ -602,7 +602,7 @@ function! s:lock_revision(process, context) abort
     endif
 
     if get(plugin, 'rev', '') !=# ''
-      call s:print_message(s:get_plugin_message(plugin, num, max, 'Locked'))
+      call s:log(s:get_plugin_message(plugin, num, max, 'Locked'))
     endif
 
     let result = dein#install#_system(cmd)
@@ -873,7 +873,8 @@ function! s:init_context(plugins, update_type, async) abort
   let context.max_plugins = len(context.plugins)
   let context.progress_type = has('vim_starting') ?
         \ 'echo' : g:dein#install_progress_type
-  let context.message_type = g:dein#install_message_type
+  let context.message_type = has('vim_starting') ?
+        \ 'echo' : g:dein#install_message_type
   let context.laststatus = &g:laststatus
   let context.showtabline = &g:showtabline
   let context.tabline = &g:tabline
@@ -1097,18 +1098,17 @@ function! s:check_output(context, process) abort
   elseif a:process.rev ==# new_rev
         \ || (a:context.update_type ==# 'check_update' && new_rev ==# '')
     if a:context.update_type !=# 'check_update'
-      call s:print_message(s:get_plugin_message(
+      call s:log(s:get_plugin_message(
             \ plugin, num, max, 'Same revision'))
     endif
   else
-    call s:print_message(s:get_plugin_message(
-          \ plugin, num, max, 'Updated'))
+    call s:log(s:get_plugin_message(plugin, num, max, 'Updated'))
 
     if a:context.update_type !=# 'check_update'
       let log_messages = split(s:get_updated_log_message(
             \   plugin, new_rev, a:process.rev), '\n')
       let plugin.commit_count = len(log_messages)
-      call s:print_message(map(log_messages,
+      call s:log(map(log_messages,
             \   's:get_short_message(plugin, num, max, v:val)'))
     else
       let plugin.commit_count = 0
@@ -1160,7 +1160,7 @@ function! s:get_async_result(process) abort
   if output !=# ''
     let a:process.output .= output
     let a:process.start_time = localtime()
-    call s:print_message(s:get_short_message(
+    call s:log(s:get_short_message(
           \ a:process.plugin, a:process.number,
           \ a:process.max_plugins, output))
   endif
@@ -1217,18 +1217,6 @@ function! s:print_progress_message(msg) abort
 
   let s:progress = join(msg, "\n")
 endfunction
-function! s:print_message(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
-  if empty(msg)
-    return
-  endif
-
-  if s:global_context.message_type ==# 'echo'
-    call s:echo(msg, 'echo')
-  endif
-
-  call s:log(msg)
-endfunction
 function! s:error(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   if empty(msg)
@@ -1272,8 +1260,9 @@ function! s:updates_log(msg) abort
   call s:log(msg)
 endfunction
 function! s:log(msg) abort
-  let s:log += a:msg
-  call s:append_log_file(a:msg)
+  let msg = dein#util#_convert2list(a:msg)
+  let s:log += msg
+  call s:append_log_file(msg)
 endfunction
 function! s:append_log_file(msg) abort
   let logfile = g:dein#install_log_filename
