@@ -120,7 +120,7 @@ function! dein#install#_direct_install(repo, options) abort
     return
   endif
 
-  call dein#install(plugin.name)
+  call dein#install#_update(plugin.name, 'install', 0)
   call dein#source(plugin.name)
 
   " Add to direct_install.vim
