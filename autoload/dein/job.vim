@@ -147,6 +147,7 @@ else
       else
         return -3
       endif
+      sleep 10ms
     endwhile
     return -1
   endfunction
