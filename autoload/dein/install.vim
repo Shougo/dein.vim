@@ -729,7 +729,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
       let lines = ['@echo off']
       for src in a:srcs
         " Note: In xcopy command, must use "\" instead of "/".
-        call add(lines, printf('xcopy /EXCLUDE:%s %s /E /H /I /R /Y',
+        call add(lines, printf('xcopy /EXCLUDE:%s %s /E /H /I /R /Y /Q',
               \   substitute(exclude, '/', '\\', 'g'),
               \   substitute(printf(' "%s/"* "%s"', src, a:dest),
               \              '/', '\\', 'g')))
@@ -737,12 +737,12 @@ function! dein#install#_copy_directories(srcs, dest) abort
       call writefile(lines, temp)
 
       " Note: "xcopy" is slow in Vim8 job.
-      let result = system(temp)
+      let result = dein#install#_system(temp)
     finally
       call delete(temp)
       call delete(exclude)
     endtry
-    let status = v:shell_error
+    let status = dein#install#_status()
     if status
       call dein#util#_error('copy command failed.')
       call dein#util#_error(s:iconv(result, 'char', &encoding))
