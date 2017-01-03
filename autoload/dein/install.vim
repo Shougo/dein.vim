@@ -439,7 +439,7 @@ function! dein#install#_build(plugins) abort
     call s:print_progress_message('Building: ' . plugin.name)
     call dein#install#_each(plugin.build, plugin)
   endfor
-  return dein#install#_status()
+  return v:shell_error
 endfunction
 
 function! dein#install#_get_log() abort
