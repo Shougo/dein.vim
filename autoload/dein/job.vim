@@ -9,7 +9,7 @@ if has('nvim')
       let job_options._on_exit = options.on_exit
     endif
     " Start job and return a job instance
-    let args = type(a:args) == type({}) ?
+    let args = type(a:args) == type([]) ?
           \ a:args : [&shell, &shellcmdflag, a:args]
     let jobid = jobstart(args, job_options)
     let job = extend(copy(s:job), {
@@ -80,7 +80,7 @@ else
         let shellslash = &shellslash
         set noshellslash
       endif
-      let args = type(a:args) == type(v:t_list) ?
+      let args = type(a:args) == v:t_list ?
             \ a:args : [&shell, &shellcmdflag, a:args]
       let job._job = job_start(args, job_options)
     finally
@@ -130,6 +130,7 @@ else
   function! s:job.wait(...) abort
     let timeout = get(a:000, 0, v:null)
     let start_time = reltime()
+    let cnt = 0
     while timeout is v:null || start_time + timeout > reltime()
       let status = self.status()
       if status ==# 'run'
@@ -147,7 +148,10 @@ else
       else
         return -3
       endif
-      sleep 10ms
+      let cnt += 1
+      if cnt > 10
+        sleep 5ms
+      endif
     endwhile
     return -1
   endfunction
