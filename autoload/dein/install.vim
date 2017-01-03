@@ -645,7 +645,7 @@ endfunction
 function! dein#install#_system(command) abort
   if !dein#install#_has_job() && !has('nvim') && type(a:command) == type([])
     " system() does not support List arguments in Vim.
-    let command = join(map(copy(a:command), '"" . v:val . ""'))
+    let command = join(map(copy(a:command), '''"'' . v:val . ''"'''))
   else
     let command = a:command
   endif
