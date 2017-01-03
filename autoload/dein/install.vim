@@ -868,6 +868,7 @@ function! s:init_context(plugins, update_type, async) abort
   return context
 endfunction
 function! s:init_variables(context) abort
+  let s:progress = ''
   let s:global_context = a:context
   let s:log = []
   let s:updates_log = []
@@ -888,6 +889,7 @@ function! s:done(context) abort
 
   " Disable installation handler
   let s:global_context = {}
+  let s:progress = ''
   augroup dein-install
     autocmd!
   augroup END
