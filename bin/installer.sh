@@ -51,7 +51,7 @@ echo "Please add the following settings for dein to the top of your vimrc (Vim) 
     echo "set runtimepath+=$INSTALL_DIR"
     echo ""
     echo "\" Required:"
-    echo "call dein#load_state('$PLUGIN_DIR')"
+    echo "if dein#load_state('$PLUGIN_DIR')"
     echo "  call dein#begin('$PLUGIN_DIR')"
     echo ""
     echo "  \" Let dein manage dein"
