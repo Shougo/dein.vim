@@ -216,6 +216,8 @@ function! dein#install#_recache_runtimepath() abort
   call dein#clear_state()
 
   call s:log([strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)')])
+
+  call dein#call_hook('done_update')
 endfunction
 function! s:clear_runtimepath() abort
   if dein#util#_get_cache_path() ==# ''

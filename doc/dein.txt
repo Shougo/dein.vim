@@ -814,8 +814,12 @@ hook_post_source (String) or (Function)
 	autocmd VimEnter * call dein#call_hook('post_source')
 <
 					*dein-options-hook_post_update*
-		hook_post_update (String) or (Function)
-		It is executed after plugins are updated.
+hook_post_update (String) or (Function)
+		It is executed after the plugins are updated.
+
+					*dein-options-hook_done_update*
+hook_done_update (String) or (Function)
+		It is executed after all plugins are updated.
 
 ------------------------------------------------------------------------------
 TOML							*dein-toml*
