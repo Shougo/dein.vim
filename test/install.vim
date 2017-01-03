@@ -1,4 +1,4 @@
-" set verbose=1
+set verbose=1
 
 let s:suite = themis#suite('install')
 let s:assert = themis#helper('assert')
