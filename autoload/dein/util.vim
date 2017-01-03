@@ -41,6 +41,9 @@ function! dein#util#_get_base_path() abort
 endfunction
 function! dein#util#_get_runtime_path() abort
   if g:dein#_runtime_path != ''
+    if !isdirectory(g:dein#_runtime_path)
+      call mkdir(g:dein#_runtime_path, 'p')
+    endif
     return g:dein#_runtime_path
   endif
 
