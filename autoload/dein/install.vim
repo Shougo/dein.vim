@@ -548,10 +548,10 @@ function! s:get_updated_log_message(plugin, new_rev, old_rev) abort
 
     call dein#install#_cd(a:plugin.path)
 
-    let log_command = has_key(type, 'get_log_command') ?
+    let cmd = has_key(type, 'get_log_command') ?
           \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
-    let log = (log_command !=# '' ?
-          \ dein#install#_system(log_command) : '')
+    let log = (empty(cmd) ?
+          \ dein#install#_system(cmd) : '')
     return log !=# '' ? log :
           \            (a:old_rev  == a:new_rev) ? ''
           \            : printf('%s -> %s', a:old_rev, a:new_rev)
