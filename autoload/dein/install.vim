@@ -14,7 +14,7 @@ let s:updates_log = []
 let g:dein#install_max_processes =
       \ get(g:, 'dein#install_max_processes', 8)
 let g:dein#install_progress_type =
-      \ get(g:, 'dein#install_progress_type', 'statusline')
+      \ get(g:, 'dein#install_progress_type', 'echo')
 let g:dein#install_message_type =
       \ get(g:, 'dein#install_message_type', 'echo')
 let g:dein#install_process_timeout =
@@ -835,10 +835,7 @@ function! s:check_loop(context) abort
   call filter(a:context.processes, '!v:val.eof')
 endfunction
 function! s:restore_view(context) abort
-  if a:context.progress_type ==# 'statusline'
-    let &l:statusline = a:context.statusline
-    let &g:laststatus = a:context.laststatus
-  elseif a:context.progress_type ==# 'tabline'
+  if a:context.pcommanorogress_type ==# 'tabline'
     let &g:showtabline = a:context.showtabline
     let &g:tabline = a:context.tabline
   elseif a:context.progress_type ==# 'title'
@@ -858,13 +855,8 @@ function! s:init_context(plugins, update_type, async) abort
   let context.max_plugins =
         \ len(context.plugins)
   let context.progress_type = g:dein#install_progress_type
-  if (context.progress_type ==# 'statusline' && a:async)
-        \ || has('vim_starting')
-    let context.progress_type = 'echo'
-  endif
   let context.message_type = g:dein#install_message_type
   let context.laststatus = &g:laststatus
-  let context.statusline = &l:statusline
   let context.showtabline = &g:showtabline
   let context.tabline = &g:tabline
   let context.title = &g:title
@@ -1191,11 +1183,7 @@ function! s:print_progress_message(msg) abort
     return
   endif
 
-  if s:global_context.progress_type ==# 'statusline'
-    set laststatus=2
-    let &l:statusline = join(msg, "\n")
-    redrawstatus
-  elseif s:global_context.progress_type ==# 'tabline'
+  if s:global_context.progress_type ==# 'tabline'
     set showtabline=2
     let &g:tabline = join(msg, "\n")
   elseif s:global_context.progress_type ==# 'title'

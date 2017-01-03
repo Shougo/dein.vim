@@ -451,15 +451,12 @@ g:dein#install_progress_type
 			Disabled.
 		"echo":
 			Displayed in the echo area.
-		"statusline":
-			Displayed in the 'statusline'.  It is disabled in the
-			asynchronous installer.
 		"tabline":
 			Displayed in the 'tabline'.
 		"title":
 			Displayed in the 'titlestring'.
 
-		Defaults: "statusline"
+		Defaults: "echo"
 
 						*g:dein#install_message_type*
 g:dein#install_message_type
