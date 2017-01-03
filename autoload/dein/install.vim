@@ -154,8 +154,8 @@ function! dein#install#_rollback(date, plugins) abort
 
   for plugin in plugins
     let type = dein#util#_get_type(plugin.type)
-    let cmd = type.get_rollback_command(dein#util#_get_type(plugin.type),
-          \ revisions[plugin.name])
+    let cmd = type.get_rollback_command(
+          \ dein#util#_get_type(plugin.type), revisions[plugin.name])
     call dein#install#_each(cmd, plugin)
   endfor
 
@@ -419,7 +419,7 @@ function! dein#install#_each(cmd, plugins) abort
     for plugin in plugins
       call dein#install#_cd(plugin.path)
 
-      execute '!' . a:cmd
+      execute '!' . s:args2string(a:cmd)
       if !v:shell_error
         redraw
       endif
@@ -438,7 +438,7 @@ function! dein#install#_build(plugins) abort
     call s:print_progress_message('Building: ' . plugin.name)
     call dein#install#_each(plugin.build, plugin)
   endfor
-  return v:shell_error
+  return dein#install#_status()
 endfunction
 
 function! dein#install#_get_log() abort
@@ -645,7 +645,7 @@ endfunction
 function! dein#install#_system(command) abort
   if !dein#install#_has_job() && !has('nvim') && type(a:command) == type([])
     " system() does not support List arguments in Vim.
-    let command = join(map(copy(a:command), '''"'' . v:val . ''"'''))
+    let command = s:args2string(a:command)
   else
     let command = a:command
   endif
@@ -1111,7 +1111,6 @@ function! s:check_output(context, process) abort
 
     let cwd = getcwd()
     try
-      call dein#install#_cd(plugin.path)
       call dein#call_hook('post_update', plugin)
     finally
       call dein#install#_cd(cwd)
@@ -1378,4 +1377,8 @@ endfunction
 function! s:on_hold() abort
   call s:install_async(s:global_context)
   call feedkeys("g\<ESC>", 'n')
+endfunction
+function! s:args2string(args) abort
+  return type(a:args) == type('') ? a:args :
+        \ join(map(copy(a:args), '''"'' . v:val . ''"'''))
 endfunction
