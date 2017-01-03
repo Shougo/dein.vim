@@ -550,8 +550,7 @@ function! s:get_updated_log_message(plugin, new_rev, old_rev) abort
 
     let cmd = has_key(type, 'get_log_command') ?
           \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
-    let log = (empty(cmd) ?
-          \ dein#install#_system(cmd) : '')
+    let log = empty(cmd) ? '' : dein#install#_system(cmd)
     return log !=# '' ? log :
           \            (a:old_rev  == a:new_rev) ? ''
           \            : printf('%s -> %s', a:old_rev, a:new_rev)
