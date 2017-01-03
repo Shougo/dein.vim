@@ -204,7 +204,7 @@ function! dein#install#_recache_runtimepath() abort
     silent! runtime! plugin/**/*.vim
   endif
 
-  call dein#remote_plugins()
+  silent call dein#remote_plugins()
 
   call dein#call_hook('post_source')
 

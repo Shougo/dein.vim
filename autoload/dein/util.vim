@@ -435,7 +435,7 @@ function! dein#util#_end() abort
           \ sort(map(filter(values(g:dein#_plugins),
           \      'v:val.merged'), 'v:val.repo'))
           \ !=# dein#util#_load_merged_plugins()
-      silent call dein#recache_runtimepath()
+      call dein#recache_runtimepath()
     endif
   endif
 
