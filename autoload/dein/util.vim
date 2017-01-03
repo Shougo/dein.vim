@@ -432,8 +432,7 @@ function! dein#util#_end() abort
 
   if dein#util#_check_vimrcs()
     if [string(g:dein#_cache_version)] +
-          \ sort(map(filter(values(g:dein#_plugins),
-          \      'v:val.merged'), 'v:val.repo'))
+          \ sort(map(values(g:dein#_plugins), 'v:val.repo'))
           \ !=# dein#util#_load_merged_plugins()
       call dein#recache_runtimepath()
     endif

@@ -218,7 +218,7 @@ function! dein#install#_recache_runtimepath() abort
   call dein#call_hook('post_source')
 
   call dein#util#_save_merged_plugins(
-        \ sort(map(copy(merged_plugins), 'v:val.repo')))
+        \ sort(map(values(g:dein#_plugins), 'v:val.repo')))
 
   call s:save_rollback()
 
