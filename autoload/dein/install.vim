@@ -1109,7 +1109,14 @@ function! s:check_output(context, process) abort
     let plugin.uri = has_key(type, 'get_uri') ?
           \ type.get_uri(plugin.repo, plugin) : ''
 
-    call dein#call_hook('post_update', plugin)
+    let cwd = getcwd()
+    try
+      call dein#install#_cd(plugin.path)
+      call dein#call_hook('post_update', plugin)
+    finally
+      call dein#install#_cd(cwd)
+    endtry
+
     if dein#install#_build([plugin.name])
           \ && confirm('Build failed. Uninstall "'
           \   .plugin.name.'" now?', "yes\nNo", 2) == 1
