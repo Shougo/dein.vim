@@ -663,7 +663,6 @@ function! dein#install#_status() abort
 endfunction
 
 let s:job_system = {}
-
 function! s:job_system.on_out(id, msg, event) abort
   let lines = a:msg
   if !empty(lines) && lines[0] !=# "\n" && !empty(s:job_system.candidates)
@@ -680,7 +679,8 @@ function! s:job_system.system(command) abort
 
   let job = dein#job#start(a:command, {'on_stdout': self.on_out})
 
-  let s:job_system.status = job.wait()
+  call job.wait()
+  let s:job_system.status = job.status()
 
   return join(self.candidates, "\n")
 endfunction
@@ -901,43 +901,6 @@ function! s:done(context) abort
   endif
 endfunction
 
-function! s:job_handler_neovim(job_id, data, event) abort
-  call s:job_handler(a:job_id, a:data, a:event)
-endfunction
-function! s:job_handler_vim(channel, msg) abort
-  call s:job_handler(s:channel2id(a:channel), a:msg, '')
-endfunction
-function! s:job_handler(id, msg, event) abort
-  if !has_key(s:job_info, a:id)
-    let s:job_info[a:id] = {
-          \ 'candidates': [],
-          \ 'eof': 0,
-          \ 'status': -1,
-          \ }
-  endif
-
-  let job = s:job_info[a:id]
-
-  if a:event ==# 'exit'
-    let job.eof = 1
-    let job.status = a:msg
-    return
-  endif
-
-  let lines = has('nvim') ?
-        \ map(a:msg, "iconv(v:val, 'char', &encoding)") :
-        \ split(iconv(a:msg, 'char', &encoding), "\n")
-
-  let candidates = job.candidates
-  if !empty(lines) && lines[0] !=# "\n" && !empty(job.candidates)
-    " Join to the previous line
-    let candidates[-1] .= lines[0]
-    call remove(lines, 0)
-  endif
-
-  let candidates += lines
-endfunction
-
 function! s:sync(plugin, context) abort
   let a:context.number += 1
 
@@ -1032,30 +995,21 @@ function! s:init_process(plugin, context, cmd) abort
   return process
 endfunction
 function! s:init_job(process, context, cmd) abort
-  if has('nvim') && a:context.async
-    " Use neovim async jobs
-    let a:process.proc = jobstart([&shell, &shellcmdflag, a:cmd], {
-          \ 'on_stdout': function('s:job_handler_neovim'),
-          \ 'on_stderr': function('s:job_handler_neovim'),
-          \ 'on_exit': function('s:job_handler_neovim'),
-          \ })
-  elseif has('job') && a:context.async
-    try
-      " Note: In Windows, job_start() does not work in shellslash.
-      let shellslash = 0
-      if exists('+shellslash')
-        let shellslash = &shellslash
-        set noshellslash
-      endif
-      let a:process.job = job_start([&shell, &shellcmdflag, a:cmd], {
-            \   'callback': function('s:job_handler_vim'),
+  if a:context.async
+    if has('nvim')
+      " Use neovim async jobs
+      let a:process.job = dein#job#start(a:cmd, {
+            \ 'on_stdout': function('s:job_handler_neovim'),
+            \ 'on_stderr': function('s:job_handler_neovim'),
             \ })
-    finally
-      if exists('+shellslash')
-        let &shellslash = shellslash
-      endif
-    endtry
-    let a:process.proc = s:channel2id(job_getchannel(a:process.job))
+      let a:process.id = a:process.job._id
+    else
+      let a:process.job = dein#job#start(a:cmd, {
+            \   'on_stdout': function('s:job_handler_vim'),
+            \   'on_stderr': function('s:job_handler_vim'),
+            \ })
+      let a:process.id = s:channel2id(job_getchannel(a:process.job._job))
+    endif
   else
     let a:process.output = dein#install#_system(a:cmd)
     let a:process.status = dein#install#_status()
@@ -1063,8 +1017,32 @@ function! s:init_job(process, context, cmd) abort
 
   let a:process.start_time = localtime()
 endfunction
+function! s:job_handler_neovim(job_id, data, event) abort
+  call s:job_handler(a:job_id, a:data, a:event)
+endfunction
+function! s:job_handler_vim(channel, msg, event) abort
+  call s:job_handler(s:channel2id(a:channel), a:msg, '')
+endfunction
+function! s:job_handler(id, msg, event) abort
+  if !has_key(s:job_info, a:id)
+    let s:job_info[a:id] = {
+          \ 'candidates': [],
+          \ 'eof': 0,
+          \ }
+  endif
+
+  let candidates = s:job_info[a:id].candidates
+  let lines = a:msg
+  if !empty(lines) && lines[0] !=# "\n" && !empty(candidates)
+    " Join to the previous line
+    let candidates[-1] .= lines[0]
+    call remove(lines, 0)
+  endif
+
+  let candidates += lines
+endfunction
 function! s:check_output(context, process) abort
-  if a:context.async && has_key(a:process, 'proc')
+  if a:context.async
     let [is_timeout, is_skip, status] = s:get_async_result(a:process)
   else
     let [is_timeout, is_skip, status] = [0, 0, a:process.status]
@@ -1146,19 +1124,17 @@ function! s:check_output(context, process) abort
   let a:process.eof = 1
 endfunction
 function! s:get_async_result(process) abort
-  if !has_key(s:job_info, a:process.proc)
+  if !has_key(s:job_info, a:process.id)
     return [0, 1, -1]
   endif
 
-  let job = s:job_info[a:process.proc]
+  let job = s:job_info[a:process.id]
 
-  if !has('nvim')
-    " Check job status
-    let status = job_status(a:process.job)
-    if status !=# 'run'
-      let job.status = job_info(a:process.job).exitval
-      let job.eof = 1
-    endif
+  " Check job status
+  let status = 0
+  if a:process.job.wait(5) != -1
+    let job.eof = 1
+    let status = a:process.job.status()
   endif
 
   let output = join((job.eof ?
@@ -1179,16 +1155,12 @@ function! s:get_async_result(process) abort
   if job.eof
     let is_timeout = 0
     let is_skip = 0
-    let status = job.status
   else
     let is_skip = 1
-    let status = -1
   endif
 
   if is_timeout
-    silent! call call(
-          \ (has('nvim') ? 'jobstop' : 'job_stop'),
-          \ (has('nvim') ? a:process.proc : a:process.job))
+    call a:process.job.stop()
     let status = -1
   endif
 

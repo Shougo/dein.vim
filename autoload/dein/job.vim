@@ -129,9 +129,9 @@ else
 
   function! s:job.wait(...) abort
     let timeout = get(a:000, 0, v:null)
-    let start_time = reltime()
+    let start_time = reltimefloat(reltime())
     let cnt = 0
-    while timeout is v:null || start_time + timeout > reltime()
+    while timeout is v:null || start_time + timeout > reltimefloat(reltime())
       let status = self.status()
       if status ==# 'run'
         let stdout = ch_read(self._job)
