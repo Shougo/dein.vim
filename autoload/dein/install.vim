@@ -1239,7 +1239,9 @@ function! s:notify(msg) abort
     return
   endif
 
-  call dein#util#_notify(a:msg)
+  if s:global_context.message_type ==# 'echo'
+    call dein#util#_notify(a:msg)
+  endif
 
   call s:updates_log(msg)
   let s:progress = join(msg, "\n")
