@@ -38,54 +38,63 @@ function! dein#install#_update(plugins, update_type, async) abort
           \ ' or all of the plugins are already installed.')
     return
   endif
+  if a:async && !empty(s:global_context) &&
+        \ confirm('The installation has not finished. Cancel now?',
+        \         "yes\nNo", 2) != 1
+    return
+  endif
 
   " Set context.
   let context = s:init_context(plugins, a:update_type, a:async)
 
-  if a:async
-    if !empty(s:global_context) &&
-          \ confirm('The installation has not finished. Cancel now?',
-          \         "yes\nNo", 2) != 1
-      return
-    endif
+  call s:init_variables(context)
+  call s:start()
 
-    call s:init_variables(context)
-    call s:start()
+  if !a:async || has('vim_starting')
+    return s:update_loop(context)
+  endif
 
-    augroup dein-install
-      autocmd!
-    augroup END
-    if !has('timers') ||
-          \ (!has('nvim') && context.progress_type ==# 'title')
-      autocmd dein-install CursorHold * call s:on_hold()
-    else
-      if exists('s:timer')
-        call timer_stop(s:timer)
-        unlet s:timer
-      endif
-
-      function! s:timer_handler(timer) abort
-        call s:install_async(s:global_context)
-      endfunction
-      let s:timer = timer_start(&updatetime,
-            \ function('s:timer_handler'), {'repeat': -1})
-      autocmd dein-install VimLeavePre *
-            \ call timer_stop(s:timer)
-    endif
+  augroup dein-install
+    autocmd!
+  augroup END
+  if !has('timers') ||
+        \ (!has('nvim') && context.progress_type ==# 'title')
+    autocmd dein-install CursorHold *
+          \ call s:install_async(s:global_context) |
+          \ call feedkeys("g\<ESC>", 'n')
   else
-    call s:init_variables(context)
-    call s:start()
-    try
-      let errored = s:install_blocking(context)
-    catch
-      call s:error(v:exception)
-      call s:error(v:throwpoint)
-      return 1
-    endtry
+    if exists('s:timer')
+      call timer_stop(s:timer)
+      unlet s:timer
+    endif
 
-    return errored
+    function! s:timer_handler(timer) abort
+      call s:install_async(s:global_context)
+    endfunction
+    let s:timer = timer_start(&updatetime,
+          \ function('s:timer_handler'), {'repeat': -1})
   endif
 endfunction
+function! s:update_loop(context) abort
+  let errored = 0
+  try
+    if has('vim_starting')
+      while !empty(s:global_context)
+        let errored = s:install_async(s:global_context)
+        sleep 50ms
+      endwhile
+    else
+      let errored = s:install_blocking(a:context)
+    endif
+  catch
+    call s:error(v:exception)
+    call s:error(v:throwpoint)
+    return 1
+  endtry
+
+  return errored
+endfunction
+
 function! dein#install#_reinstall(plugins) abort
   let plugins = dein#util#_get_plugins(a:plugins)
 
@@ -368,7 +377,7 @@ function! s:generate_ftplugin() abort
 endfunction
 
 function! dein#install#_is_async() abort
-  if has('vim_starting') || g:dein#install_max_processes <= 1
+  if g:dein#install_max_processes <= 1
     return 0
   endif
   return has('nvim') || (has('job') && has('channel')
@@ -810,11 +819,13 @@ function! s:install_async(context) abort
   if empty(a:context.processes)
         \ && a:context.number == a:context.max_plugins
     call s:done(a:context)
-  elseif a:context.number < len(a:context.plugins)
+  elseif a:context.number != a:context.prev_number
+        \ && a:context.number < len(a:context.plugins)
     let plugin = a:context.plugins[a:context.number]
     call s:print_progress_message(
           \ s:get_progress_message(plugin,
           \   a:context.number, a:context.max_plugins))
+    let a:context.prev_number = a:context.number
   endif
 
   return len(a:context.errored_plugins)
@@ -857,10 +868,11 @@ function! s:init_context(plugins, update_type, async) abort
   let context.errored_plugins = []
   let context.processes = []
   let context.number = 0
+  let context.prev_number = -1
   let context.plugins = a:plugins
-  let context.max_plugins =
-        \ len(context.plugins)
-  let context.progress_type = g:dein#install_progress_type
+  let context.max_plugins = len(context.plugins)
+  let context.progress_type = has('vim_starting') ?
+        \ 'echo' : g:dein#install_progress_type
   let context.message_type = g:dein#install_message_type
   let context.laststatus = &g:laststatus
   let context.showtabline = &g:showtabline
@@ -1375,10 +1387,6 @@ function! s:strwidthpart_reverse(str, width) abort
   return ret
 endfunction
 
-function! s:on_hold() abort
-  call s:install_async(s:global_context)
-  call feedkeys("g\<ESC>", 'n')
-endfunction
 function! s:args2string(args) abort
   return type(a:args) == type('') ? a:args :
         \ join(map(copy(a:args), '''"'' . v:val . ''"'''))
