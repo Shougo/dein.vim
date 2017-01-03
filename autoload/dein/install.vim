@@ -753,7 +753,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
           \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . ''/'')')
     let is_rsync = executable('rsync')
     if is_rsync
-      let cmdline = printf("rsync -a --exclude '/.git/' %s %s",
+      let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
             \ join(srcs), shellescape(a:dest))
       let result = dein#install#_system(cmdline)
       let status = dein#install#_status()
