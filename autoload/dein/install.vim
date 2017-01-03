@@ -482,7 +482,7 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
     return ['', '']
   endif
 
-  let message = s:get_plugin_message(a:plugin, a:number, a:max, cmd)
+  let message = s:get_plugin_message(a:plugin, a:number, a:max, string(cmd))
 
   return [cmd, message]
 endfunction
