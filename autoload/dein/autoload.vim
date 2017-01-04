@@ -24,7 +24,7 @@ function! dein#autoload#_source(...) abort
 
   let sourced = []
   for plugin in filter(plugins,
-        \ "!empty(v:val) && !v:val.sourced && v:val.rtp != ''")
+        \ "!empty(v:val) && !v:val.sourced && v:val.rtp !=# ''")
     if s:source_plugin(rtps, index, plugin, sourced)
       return 1
     endif
@@ -164,7 +164,7 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
 
   let range = (a:line1 == a:line2) ? '' :
         \ (a:line1 == line("'<") && a:line2 == line("'>")) ?
-        \ "'<,'>" : a:line1.",".a:line2
+        \ "'<,'>" : a:line1.','.a:line2
 
   try
     execute range.a:command.a:bang a:args
@@ -198,7 +198,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
           \ ':<C-U>\zs.*\ze<CR>')
   else
     let mapping = a:mapping
-    while mapping =~ '<[[:alnum:]_-]\+>'
+    while mapping =~# '<[[:alnum:]_-]\+>'
       let mapping = substitute(mapping, '\c<Leader>',
             \ get(g:, 'mapleader', '\'), 'g')
       let mapping = substitute(mapping, '\c<LocalLeader>',
@@ -232,15 +232,24 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
 endfunction
 
 function! s:source_plugin(rtps, index, plugin, sourced) abort
-  if a:plugin.sourced
+  if a:plugin.sourced || index(a:sourced, a:plugin) >= 0
     return
   endif
-  let a:plugin.sourced = 1
+
+  call add(a:sourced, a:plugin)
 
   " Load dependencies
   for name in get(a:plugin, 'depends', [])
     if !has_key(g:dein#_plugins, name)
-      call dein#util#_error(printf('Plugin name "%s" is not found.', name))
+      call dein#util#_error(printf(
+            \ 'Plugin name "%s" is not found.', name))
+      return 1
+    endif
+
+    if !a:plugin.lazy && g:dein#_plugins[name].lazy
+      call dein#util#_error(printf(
+            \ 'Not lazy plugin "%s" depends lazy "%s" plugin.',
+            \ a:plugin.name, name))
       return 1
     endif
 
@@ -248,6 +257,8 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
       return 1
     endif
   endfor
+
+  let a:plugin.sourced = 1
 
   for on_source in filter(dein#util#_get_lazy_plugins(),
         \ "index(get(v:val, 'on_source', []), a:plugin.name) >= 0")
@@ -276,15 +287,13 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
       call add(a:rtps, a:plugin.rtp.'/after')
     endif
   endif
-
-  call add(a:sourced, a:plugin)
 endfunction
 function! s:reset_ftplugin() abort
-  let filetype_state = dein#util#_redir('filetype')
-
   if exists('b:did_indent') || exists('b:did_ftplugin')
     filetype plugin indent off
   endif
+
+  let filetype_state = dein#util#_redir('filetype')
 
   if filetype_state =~# 'plugin:ON'
     silent! filetype plugin on
@@ -296,7 +305,7 @@ function! s:reset_ftplugin() abort
 endfunction
 function! s:get_input() abort
   let input = ''
-  let termstr = "<M-_>"
+  let termstr = '<M-_>'
 
   call feedkeys(termstr, 'n')
 
@@ -319,7 +328,8 @@ function! s:get_input() abort
 endfunction
 
 function! s:is_reset_ftplugin(plugins) abort
-  if &filetype == ''
+  if &filetype ==# '' ||
+        \ (!exists('b:did_indent') && !exists('b:did_ftplugin'))
     return 0
   endif
 
@@ -331,7 +341,7 @@ function! s:is_reset_ftplugin(plugins) abort
         \ "filereadable(printf('%s/%s/%s.vim',
         \    plugin.rtp, v:val, &filetype))"))
         \ || isdirectory(ftplugin) || isdirectory(after)
-        \ || glob(ftplugin. '_*.vim') != '' || glob(after . '_*.vim') != ''
+        \ || glob(ftplugin. '_*.vim') !=# '' || glob(after . '_*.vim') !=# ''
       return 1
     endif
   endfor
@@ -339,7 +349,7 @@ function! s:is_reset_ftplugin(plugins) abort
 endfunction
 function! s:mapargrec(map, mode) abort
   let arg = maparg(a:map, a:mode)
-  while maparg(arg, a:mode) != ''
+  while maparg(arg, a:mode) !=# ''
     let arg = maparg(arg, a:mode)
   endwhile
   return arg

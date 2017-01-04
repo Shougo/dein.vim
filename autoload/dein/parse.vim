@@ -74,11 +74,11 @@ function! dein#parse#_dict(plugin) abort
   let plugin.path = dein#util#_chomp(plugin.path)
 
   " Check relative path
-  if (!has_key(a:plugin, 'rtp') || a:plugin.rtp != '')
-        \ && plugin.rtp !~ '^\%([~/]\|\a\+:\)'
+  if (!has_key(a:plugin, 'rtp') || a:plugin.rtp !=# '')
+        \ && plugin.rtp !~# '^\%([~/]\|\a\+:\)'
     let plugin.rtp = plugin.path.'/'.plugin.rtp
   endif
-  if plugin.rtp[0:] == '~'
+  if plugin.rtp[0:] ==# '~'
     let plugin.rtp = dein#util#_expand(plugin.rtp)
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
@@ -93,9 +93,7 @@ function! dein#parse#_dict(plugin) abort
   endif
 
   " Deprecated check.
-  for key in filter([
-        \ 'directory', 'base',
-        \ ], "has_key(plugin, v:val)")
+  for key in filter(['directory', 'base'], 'has_key(plugin, v:val)')
     call dein#util#_error('plugin name = ' . plugin.name)
     call dein#util#_error(string(key) . ' is deprecated.')
   endfor
@@ -212,11 +210,11 @@ function! dein#parse#_plugins2toml(plugins) abort
           \ 'repo = ' . string(plugin.repo)]
 
     for key in filter(sort(keys(default)),
-          \ "!has_key(skip_default, v:val)
+          \ '!has_key(skip_default, v:val)
           \      && has_key(plugin, v:val)
-          \      && plugin[v:val] !=# default[v:val]")
+          \      && plugin[v:val] !=# default[v:val]')
       let val = plugin[key]
-      if key =~ '^hook_'
+      if key =~# '^hook_'
         call add(toml, key . " = '''")
         let toml += split(val, '\n')
         call add(toml, "'''")
@@ -242,7 +240,7 @@ function! dein#parse#_local(localdir, options, includes) abort
   let directories = []
   for glob in a:includes
     let directories += map(filter(dein#util#_globlist(base . glob),
-          \ "isdirectory(v:val)"), "
+          \ 'isdirectory(v:val)'), "
           \ substitute(dein#util#_substitute_path(
           \   fnamemodify(v:val, ':p')), '/$', '', '')")
   endfor
@@ -265,10 +263,10 @@ function! s:parse_lazy(plugin) abort
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
         \ 'on_source', 'on_event',
-        \ ], "has_key(a:plugin, v:val)
+        \ ], 'has_key(a:plugin, v:val)
         \     && type(a:plugin[v:val]) != type([])
         \     && type(a:plugin[v:val]) != type({})
-        \")
+        \')
     let a:plugin[key] = [a:plugin[key]]
   endfor
 
@@ -334,14 +332,14 @@ function! s:generate_dummy_mappings(plugin) abort
 
     for mapping in mappings
       " Define dummy mappings.
-      let prefix = printf("dein#autoload#_on_map(%s, %s,",
+      let prefix = printf('dein#autoload#_on_map(%s, %s,',
             \ string(substitute(mapping, '<', '<lt>', 'g')),
             \ string(a:plugin.name))
       for mode in modes
         let raw_map = mode.'noremap <unique><silent> '.mapping
             \ . (mode ==# 'c' ? " \<C-r>=" :
             \    mode ==# 'i' ? " \<C-o>:call " : " :\<C-u>call ") . prefix
-            \ . string(mode) . ")<CR>"
+            \ . string(mode) . ')<CR>'
         call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
         silent! execute raw_map
       endfor

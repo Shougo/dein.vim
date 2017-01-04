@@ -307,7 +307,11 @@ dein#is_sourced({plugin-name})
 
 							*dein#get_log()*
 dein#get_log()
-		Print all previous install logs.
+		Get all previous install logs.
+
+							*dein#get_progress()*
+dein#get_progress()
+		Get current update progress message.
 
 						*dein#get_updates_log()*
 dein#get_updates_log()
@@ -451,15 +455,12 @@ g:dein#install_progress_type
 			Disabled.
 		"echo":
 			Displayed in the echo area.
-		"statusline":
-			Displayed in the 'statusline'.  It is disabled in the
-			asynchronous installer.
 		"tabline":
 			Displayed in the 'tabline'.
 		"title":
 			Displayed in the 'titlestring'.
 
-		Defaults: "statusline"
+		Defaults: "echo"
 
 						*g:dein#install_message_type*
 g:dein#install_message_type
@@ -572,7 +573,6 @@ if		(Number) or (String)
 timeout		(Number)
 		The time of timeout seconds when updating/installing plugins.
 		If omit it, |g:dein#install_process_timeout| will be used.
-		Note: This feature is available if you installed |vimproc|.
 
 							*dein-options-frozen*
 frozen		(Number)
@@ -587,8 +587,8 @@ merged		(Number)
 							*dein-options-build*
 build		(String)
 		Specify the build script.
-		This command is executed by |system()| or |vimproc#system()|
-		in the plugin runtimepath.
+		This command is executed by |system()| in the plugin
+		runtimepath.
 		Note: In previous versions of dein, build could also be of type
 		dictionary, but that is now deprecated.
 		Please use |dein-options-hook_post_update| instead.
@@ -814,8 +814,12 @@ hook_post_source (String) or (Function)
 	autocmd VimEnter * call dein#call_hook('post_source')
 <
 					*dein-options-hook_post_update*
-		hook_post_update (String) or (Function)
-		It is executed after plugins are updated.
+hook_post_update (String) or (Function)
+		It is executed after the plugins are updated.
+
+					*dein-options-hook_done_update*
+hook_done_update (String) or (Function)
+		It is executed after all plugins are updated.
 
 ------------------------------------------------------------------------------
 TOML							*dein-toml*
