@@ -232,15 +232,24 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
 endfunction
 
 function! s:source_plugin(rtps, index, plugin, sourced) abort
-  if a:plugin.sourced
+  if a:plugin.sourced || index(a:sourced, a:plugin) >= 0
     return
   endif
-  let a:plugin.sourced = 1
+
+  call add(a:sourced, a:plugin)
 
   " Load dependencies
   for name in get(a:plugin, 'depends', [])
     if !has_key(g:dein#_plugins, name)
-      call dein#util#_error(printf('Plugin name "%s" is not found.', name))
+      call dein#util#_error(printf(
+            \ 'Plugin name "%s" is not found.', name))
+      return 1
+    endif
+
+    if !a:plugin.lazy && g:dein#_plugins[name].lazy
+      call dein#util#_error(printf(
+            \ 'Not lazy plugin "%s" depends lazy "%s" plugin.',
+            \ a:plugin.name, name))
       return 1
     endif
 
@@ -248,6 +257,8 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
       return 1
     endif
   endfor
+
+  let a:plugin.sourced = 1
 
   for on_source in filter(dein#util#_get_lazy_plugins(),
         \ "index(get(v:val, 'on_source', []), a:plugin.name) >= 0")
@@ -276,8 +287,6 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
       call add(a:rtps, a:plugin.rtp.'/after')
     endif
   endif
-
-  call add(a:sourced, a:plugin)
 endfunction
 function! s:reset_ftplugin() abort
   if exists('b:did_indent') || exists('b:did_ftplugin')

@@ -530,13 +530,25 @@ function! s:suite.depends_error_lazy() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neocomplete.vim',
-        \ { 'depends': 'vimfiler.vim', 'lazy': 1 })
+        \ { 'depends': 'vimfiler.vim' })
 
   call s:assert.equals(s:dein_install(), 0)
 
   call s:assert.equals(dein#end(), 0)
 
-  call s:assert.equals(dein#source(['neocomplete.vim']), 1)
+  call s:assert.equals(dein#source(['neocomplete.vim']), 0)
+
+  call dein#begin(s:path)
+
+  call dein#add('Shougo/vimfiler.vim', { 'lazy': 1 })
+  call dein#add('Shougo/neocomplete.vim',
+        \ { 'depends': 'vimfiler.vim' })
+
+  call s:assert.equals(s:dein_install(), 0)
+
+  call s:assert.equals(dein#end(), 0)
+
+  call s:assert.equals(dein#source(['neocomplete.vim']), 0)
 endfunction
 
 function! s:suite.hooks() abort
