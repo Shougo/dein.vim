@@ -1,8 +1,5 @@
 " Based on: https://github.com/lambdalisue/gina.vim/blob/master/autoload/vital/__gina__/System/Job.vim
 
-let s:t_list = type([])
-let s:t_string = type('')
-
 if has('nvim')
   function! dein#job#start(args, ...) abort
     " Build options for jobstart
@@ -49,8 +46,8 @@ if has('nvim')
   endfunction
 
   function! s:job.wait(...) abort
-    let timeout = get(a:000, 0, -1)
-    if timeout < 0
+    let timeout = get(a:000, 0, v:null)
+    if timeout is v:null
       return jobwait([self._id])[0]
     else
       return jobwait([self._id], timeout)[0]
@@ -83,7 +80,7 @@ else
         let shellslash = &shellslash
         set noshellslash
       endif
-      let args = type(a:args) == s:t_list ?
+      let args = type(a:args) == v:t_list ?
             \ a:args : [&shell, &shellcmdflag, a:args]
       let job._job = job_start(args, job_options)
     finally
@@ -97,7 +94,7 @@ else
 
   function! s:_job_callback(event, options, channel, ...) abort
     let raw = get(a:000, 0, '')
-    let msg = type(raw) == s:t_string ? split(raw, '\n', 1) : raw
+    let msg = type(raw) == v:t_string ? split(raw, '\n', 1) : raw
     call call(
           \ a:options['on_' . a:event],
           \ [a:channel, msg, a:event],
@@ -131,10 +128,10 @@ else
   endfunction
 
   function! s:job.wait(...) abort
-    let timeout = get(a:000, 0, -1)
+    let timeout = get(a:000, 0, v:null)
     let start_time = reltimefloat(reltime())
     let cnt = 0
-    while timeout < 0 || start_time + timeout > reltimefloat(reltime())
+    while timeout is v:null || start_time + timeout > reltimefloat(reltime())
       let status = self.status()
       if status ==# 'run'
         let stdout = ch_read(self._job)
