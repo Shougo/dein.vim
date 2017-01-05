@@ -377,18 +377,11 @@ function! s:generate_ftplugin() abort
 endfunction
 
 function! dein#install#_is_async() abort
-  if g:dein#install_max_processes <= 1
-    return 0
-  endif
-  return has('nvim') || (has('job') && has('channel')
-        \                && exists('*job_getchannel')
-        \                && exists('*job_info'))
+  return g:dein#install_max_processes > 1 ? dein#install#_has_job() : 0
 endfunction
 
 function! dein#install#_has_job() abort
-  return has('nvim') || (has('job') && has('channel')
-        \                && exists('*job_getchannel')
-        \                && exists('*job_info'))
+  return has('nvim') || (v:version >= 800 && has('job') && has('channel'))
 endfunction
 
 function! dein#install#_remote_plugins() abort

@@ -176,8 +176,8 @@ dein#install([{plugins}])
 		Install the plugins.
 		{plugins} is the plugins name list.
 		If you omit it, dein will install all plugins.
-		Note: If you are using neovim or |+job|, it runs
-		asynchronously.
+		Note: If you are using neovim or Vim 8.0+ enabled |+job|, it
+		runs asynchronously.
 
 							*dein#update()*
 dein#update([{plugins}])
