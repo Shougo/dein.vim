@@ -450,6 +450,8 @@ g:dein#install_process_timeout
 					*g:dein#install_progress_type*
 g:dein#install_progress_type
 		The output type of the progress bar in the installer.
+		Note: If you want to display the progress in the 'statusline',
+		you should use |dein#get_progress()| .
 
 		"none":
 			Disabled.
@@ -459,6 +461,7 @@ g:dein#install_progress_type
 			Displayed in the 'tabline'.
 		"title":
 			Displayed in the 'titlestring'.
+			Note: It is neovim only support
 
 		Defaults: "echo"
 

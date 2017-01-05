@@ -57,23 +57,17 @@ function! dein#install#_update(plugins, update_type, async) abort
   augroup dein-install
     autocmd!
   augroup END
-  if !has('timers') ||
-        \ (!has('nvim') && context.progress_type ==# 'title')
-    autocmd dein-install CursorHold *
-          \ call s:install_async(s:global_context) |
-          \ call feedkeys("g\<ESC>", 'n')
-  else
-    if exists('s:timer')
-      call timer_stop(s:timer)
-      unlet s:timer
-    endif
 
-    function! s:timer_handler(timer) abort
-      call s:install_async(s:global_context)
-    endfunction
-    let s:timer = timer_start(&updatetime,
-          \ function('s:timer_handler'), {'repeat': -1})
+  if exists('s:timer')
+    call timer_stop(s:timer)
+    unlet s:timer
   endif
+
+  function! s:timer_handler(timer) abort
+    call s:install_async(s:global_context)
+  endfunction
+  let s:timer = timer_start(1000,
+        \ function('s:timer_handler'), {'repeat': -1})
 endfunction
 function! s:update_loop(context) abort
   let errored = 0
@@ -377,9 +371,9 @@ function! s:generate_ftplugin() abort
 endfunction
 
 function! dein#install#_is_async() abort
-  return g:dein#install_max_processes > 1 ? dein#install#_has_job() : 0
+  return (has('timers') && g:dein#install_max_processes > 1) ?
+        \ dein#install#_has_job() : 0
 endfunction
-
 function! dein#install#_has_job() abort
   return has('nvim') || (v:version >= 800 && has('job') && has('channel'))
 endfunction
@@ -866,6 +860,9 @@ function! s:init_context(plugins, update_type, async) abort
   let context.max_plugins = len(context.plugins)
   let context.progress_type = has('vim_starting') ?
         \ 'echo' : g:dein#install_progress_type
+  if !has('nvim') && context.progress_type ==# 'title'
+    let context.progress_type = 'echo'
+  endif
   let context.message_type = has('vim_starting') ?
         \ 'echo' : g:dein#install_message_type
   let context.laststatus = &g:laststatus
