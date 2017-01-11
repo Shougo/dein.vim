@@ -640,9 +640,18 @@ endfunction
 
 " Helper functions
 function! dein#install#_cd(path) abort
-  if isdirectory(a:path)
-    execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
+  if !isdirectory(a:path)
+    return
   endif
+
+  try
+    execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
+  catch
+    call s:error('Error cd to: ' . a:path)
+    call s:error('fnameescape(a:path): ' . fnameescape(a:path))
+    call s:error(v:exception)
+    call s:error(v:throwpoint)
+  endtry
 endfunction
 function! dein#install#_system(command) abort
   if !dein#install#_has_job() && !has('nvim') && type(a:command) == type([])
