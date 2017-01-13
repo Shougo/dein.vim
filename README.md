@@ -51,6 +51,30 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
     :call dein#install()
     ```
 
+## Installing Plugins
+Append these instructions to the end of your `~/.vimrc` file. 
+
+1. Open `~/.vimrc`
+
+2. Add vim plugins without dependencies to your `~/.vimrc` file.
+   ```vim
+   call dein#add('mileszs/ack.vim')
+   ```
+
+3. Add vim plugins with dependencies this line to your `~/.vimrc file. Repeat for as many plugins as you want to install.
+   ```vim 
+   call dein#add('mattn/gist-vim', {'depends': 'mattn/webapi-vim'})```
+
+4. Reload Vim
+   ```bash
+   :so ~/.vimrc
+   ```
+
+5. Install plugins on Vim
+   ```bash
+   :call dein#install()
+   ```
+
 ## Concept
 
 * Faster than NeoBundle
