@@ -63,7 +63,8 @@ Append these instructions to the end of your `~/.vimrc` file.
 
 3. Add vim plugins with dependencies this line to your `~/.vimrc file. Repeat for as many plugins as you want to install.
    ```vim 
-   call dein#add('mattn/gist-vim', {'depends': 'mattn/webapi-vim'})```
+   call dein#add('mattn/gist-vim', {'depends': 'mattn/webapi-vim'})
+   ```
 
 4. Reload Vim
    ```bash
