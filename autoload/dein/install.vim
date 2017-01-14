@@ -497,26 +497,19 @@ function! s:get_revision_number(plugin) abort
     return ''
   endif
 
-  let cwd = getcwd()
-  try
-    call dein#install#_cd(a:plugin.path)
+  let rev = s:system_cd(cmd, a:plugin.path)
 
-    let rev = dein#install#_system(cmd)
-
-    " If rev contains spaces, it is error message
-    if rev =~# '\s'
-      call s:error(a:plugin.name)
-      call s:error('Error revision number: ' . rev)
-      return ''
-    elseif rev ==# ''
-      call s:error(a:plugin.name)
-      call s:error('Empty revision number: ' . rev)
-      return ''
-    endif
-    return rev
-  finally
-    call dein#install#_cd(cwd)
-  endtry
+  " If rev contains spaces, it is error message
+  if rev =~# '\s'
+    call s:error(a:plugin.name)
+    call s:error('Error revision number: ' . rev)
+    return ''
+  elseif rev ==# ''
+    call s:error(a:plugin.name)
+    call s:error('Empty revision number: ' . rev)
+    return ''
+  endif
+  return rev
 endfunction
 function! s:get_revision_remote(plugin) abort
   let type = dein#util#_get_type(a:plugin.type)
@@ -531,34 +524,19 @@ function! s:get_revision_remote(plugin) abort
     return ''
   endif
 
-  let cwd = getcwd()
-  try
-    call dein#install#_cd(a:plugin.path)
-
-    let rev = matchstr(dein#install#_system(cmd), '^\S\+')
-
-    " If rev contains spaces, it is error message
-    return (rev !~# '\s') ? rev : ''
-  finally
-    call dein#install#_cd(cwd)
-  endtry
+  let rev = s:system_cd(cmd, a:plugin.path)
+  " If rev contains spaces, it is error message
+  return (rev !~# '\s') ? rev : ''
 endfunction
 function! s:get_updated_log_message(plugin, new_rev, old_rev) abort
-  let cwd = getcwd()
-  try
-    let type = dein#util#_get_type(a:plugin.type)
+  let type = dein#util#_get_type(a:plugin.type)
 
-    call dein#install#_cd(a:plugin.path)
-
-    let cmd = has_key(type, 'get_log_command') ?
-          \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
-    let log = empty(cmd) ? '' : dein#install#_system(cmd)
-    return log !=# '' ? log :
-          \            (a:old_rev  == a:new_rev) ? ''
-          \            : printf('%s -> %s', a:old_rev, a:new_rev)
-  finally
-    call dein#install#_cd(cwd)
-  endtry
+  let cmd = has_key(type, 'get_log_command') ?
+        \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
+  let log = empty(cmd) ? '' : s:system_cd(cmd, a:plugin.path)
+  return log !=# '' ? log :
+        \            (a:old_rev  == a:new_rev) ? ''
+        \            : printf('%s -> %s', a:old_rev, a:new_rev)
 endfunction
 function! s:lock_revision(process, context) abort
   let num = a:process.number
@@ -572,31 +550,24 @@ function! s:lock_revision(process, context) abort
     return 0
   endif
 
-  let cwd = getcwd()
-  try
-    call dein#install#_cd(plugin.path)
+  let cmd = type.get_revision_lock_command(plugin)
 
-    let cmd = type.get_revision_lock_command(plugin)
+  if empty(cmd) || plugin.new_rev ==# get(plugin, 'rev', '')
+    " Skipped.
+    return 0
+  elseif type(cmd) == type('') && cmd =~# '^E: '
+    " Errored.
+    call s:error(plugin.path)
+    call s:error(cmd[3:])
+    return -1
+  endif
 
-    if empty(cmd) || plugin.new_rev ==# get(plugin, 'rev', '')
-      " Skipped.
-      return 0
-    elseif type(cmd) == type('') && cmd =~# '^E: '
-      " Errored.
-      call s:error(plugin.path)
-      call s:error(cmd[3:])
-      return -1
-    endif
+  if get(plugin, 'rev', '') !=# ''
+    call s:log(s:get_plugin_message(plugin, num, max, 'Locked'))
+  endif
 
-    if get(plugin, 'rev', '') !=# ''
-      call s:log(s:get_plugin_message(plugin, num, max, 'Locked'))
-    endif
-
-    let result = dein#install#_system(cmd)
-    let status = dein#install#_status()
-  finally
-    call dein#install#_cd(cwd)
-  endtry
+  let result = s:system_cd(cmd, plugin.path)
+  let status = dein#install#_status()
 
   if status
     call s:error(plugin.path)
@@ -671,6 +642,16 @@ function! dein#install#_system(command) abort
 endfunction
 function! dein#install#_status() abort
   return dein#install#_has_job() ? s:job_system.status : v:shell_error
+endfunction
+function! s:system_cd(command, path) abort
+  let cwd = getcwd()
+  try
+    call dein#install#_cd(a:path)
+    return dein#install#_system(a:command)
+  finally
+    call dein#install#_cd(cwd)
+  endtry
+  return ''
 endfunction
 
 let s:job_system = {}
@@ -961,7 +942,6 @@ function! s:init_process(plugin, context, cmd) abort
   let process = {}
 
   let cwd = getcwd()
-  let cmd = s:iconv(a:cmd, &encoding, 'char')
   let lang_save = $LANG
   let prompt_save = $GIT_TERMINAL_PROMPT
   try
@@ -997,7 +977,7 @@ function! s:init_process(plugin, context, cmd) abort
       endtry
     endif
 
-    call s:init_job(process, a:context, cmd)
+    call s:init_job(process, a:context, a:cmd)
   finally
     let $LANG = lang_save
     let $GIT_TERMINAL_PROMPT = prompt_save
@@ -1008,15 +988,16 @@ function! s:init_process(plugin, context, cmd) abort
 endfunction
 function! s:init_job(process, context, cmd) abort
   if a:context.async
+    let cmd = s:iconv(a:cmd, &encoding, 'char')
     if has('nvim')
       " Use neovim async jobs
-      let a:process.job = dein#job#start(a:cmd, {
+      let a:process.job = dein#job#start(cmd, {
             \ 'on_stdout': function('s:job_handler_neovim'),
             \ 'on_stderr': function('s:job_handler_neovim'),
             \ })
       let a:process.id = a:process.job._id
     else
-      let a:process.job = dein#job#start(a:cmd, {
+      let a:process.job = dein#job#start(cmd, {
             \   'on_stdout': function('s:job_handler_vim'),
             \   'on_stderr': function('s:job_handler_vim'),
             \ })
