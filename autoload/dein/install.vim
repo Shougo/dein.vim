@@ -961,6 +961,7 @@ function! s:init_process(plugin, context, cmd) abort
           \ 'output': '',
           \ 'status': -1,
           \ 'eof': 0,
+          \ 'installed': isdirectory(a:plugin.path),
           \ }
 
     if isdirectory(a:plugin.path)
@@ -1061,11 +1062,15 @@ function! s:check_output(context, process) abort
         \ s:get_revision_number(plugin)
 
   if is_timeout || status
-    let message = s:get_plugin_message(plugin, num, max, 'Error')
-    call s:print_progress_message(message)
+    call s:log(s:get_plugin_message(plugin, num, max, 'Error'))
     call s:error(plugin.path)
-    if !isdirectory(plugin.path)
-      call s:error('Maybe wrong username or repository.')
+    if !plugin.installed
+      if !isdirectory(plugin.path)
+        call s:error('Maybe wrong username or repository.')
+      elseif isdirectory(plugin.path)
+        call s:error('Remove the installed directory:' . plugin.path)
+        call dein#install#_rm(plugin.path)
+      endif
     endif
 
     call s:error((is_timeout ?
@@ -1109,10 +1114,9 @@ function! s:check_output(context, process) abort
     endtry
 
     if dein#install#_build([plugin.name])
-          \ && confirm('Build failed. Uninstall "'
-          \   .plugin.name.'" now?', "yes\nNo", 2) == 1
+      call s:log(s:get_plugin_message(plugin, num, max, 'Build failed'))
+      call s:error(plugin.path)
       " Remove.
-      call dein#install#_rm(plugin.path)
       call add(a:context.errored_plugins, plugin)
     else
       call add(a:context.synced_plugins, plugin)
