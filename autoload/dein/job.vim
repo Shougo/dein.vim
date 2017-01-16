@@ -155,6 +155,7 @@ else
           call s:_job_callback('stderr', self, self._job, stderr)
         endif
       elseif status ==# 'dead'
+        sleep 1ms
         let info = job_info(self._job)
         return info.exitval
       else
@@ -162,7 +163,7 @@ else
       endif
       let cnt += 1
       if cnt > 10
-        sleep 5ms
+        sleep 1ms
       endif
     endwhile
     return -1
