@@ -375,7 +375,7 @@ function! dein#install#_is_async() abort
         \ dein#install#_has_job() : 0
 endfunction
 function! dein#install#_has_job() abort
-  return has('nvim') || (v:version >= 800 && has('job') && has('channel'))
+  return has('nvim') || (has('patch-8.0.0027') && has('job'))
 endfunction
 
 function! dein#install#_remote_plugins() abort
