@@ -672,7 +672,7 @@ function! s:job_system.system(command) abort
   let job = dein#job#start(a:command, {'on_stdout': self.on_out})
 
   call job.wait()
-  let s:job_system.status = job.status()
+  let s:job_system.status = job.exitval()
 
   return join(self.candidates, "\n")
 endfunction
@@ -1136,7 +1136,7 @@ function! s:get_async_result(process) abort
   let status = 0
   if a:process.job.wait(5) != -1
     let job.eof = 1
-    let status = a:process.job.status()
+    let status = a:process.job.exitval()
   endif
 
   let output = join((job.eof ?

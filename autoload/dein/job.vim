@@ -40,6 +40,7 @@ if has('nvim')
   function! s:options.on_exit(jobid, msg, event) abort
     " Update job status
     let self._job._status = 'dead'
+    let self._job._exitval = a:msg
     " Call user specified callback if exists
     if has_key(self, '_on_exit')
       call call(self._on_exit, [a:jobid, a:msg, a:event], self)
@@ -47,10 +48,14 @@ if has('nvim')
   endfunction
 
 
-  let s:job = { '_status': 'fail' }
+  let s:job = { '_status': 'fail', '_exitval': -1 }
 
   function! s:job.status() abort
     return self._status
+  endfunction
+
+  function! s:job.exitval() abort
+    return self._exitval
   endfunction
 
   function! s:job.send(data) abort
@@ -124,10 +129,14 @@ else
 
 
   " Instance -------------------------------------------------------------------
-  let s:job = {}
+  let s:job = { '_exitval': -1 }
 
   function! s:job.status() abort
     return job_status(self._job)
+  endfunction
+
+  function! s:job.exitval() abort
+    return self._exitval
   endfunction
 
   function! s:job.send(data) abort
@@ -157,6 +166,7 @@ else
       elseif status ==# 'dead'
         sleep 1ms
         let info = job_info(self._job)
+        let self._exitval = info.exitval
         return info.exitval
       else
         return -3
