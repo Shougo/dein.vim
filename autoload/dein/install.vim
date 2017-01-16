@@ -1064,7 +1064,7 @@ function! s:check_output(context, process) abort
   if is_timeout || status
     call s:log(s:get_plugin_message(plugin, num, max, 'Error'))
     call s:error(plugin.path)
-    if !plugin.installed
+    if !a:process.installed
       if !isdirectory(plugin.path)
         call s:error('Maybe wrong username or repository.')
       elseif isdirectory(plugin.path)
