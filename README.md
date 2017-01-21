@@ -13,6 +13,13 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 ## Quick start
 
+Note: You must define the installation directory before to use dein.  It
+depends on your usage.
+For example, "~/.vim/bundles" or "~/.cache/dein" or "~/.local/share/dein".
+dein.vim has not define the default installation directory.
+You must not set the installation directory under "~/.vim/plugin" or
+"~/.config/nvim/plugin".
+
 #### If you are using Unix/Linux or Mac OS X.
 
 1. Run below script.
@@ -64,6 +71,14 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 * No Vundle/NeoBundle compatibility
 
 * neovim/Vim8 asynchronous API installation support
+
+* Local plugin support
+
+* Non github plugins support
+
+* Go like clone directory name ex:"github.com/{user}/{repository}"
+
+* Merge the plugins directories automatically to avoid long 'runtimepath'
 
 ## Future works (not implemented yet)
 

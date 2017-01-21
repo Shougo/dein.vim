@@ -42,6 +42,14 @@ Concepts are:
 
 * neovim/Vim8 asynchronous API installation support
 
+* Local plugin support
+
+* Non github plugins support
+
+* Go like clone directory name ex:"github.com/{user}/{repository}"
+
+* Merge the plugins directories automatically to avoid long 'runtimepath'
+
 
 ==============================================================================
 USAGE							*dein-usage*
@@ -53,6 +61,7 @@ Run this command to update your plugins:
 >
 	:call dein#update()
 <
+Note: The plugins are not updated automatically.
 
 ==============================================================================
 INSTALL							*dein-install*
@@ -62,6 +71,13 @@ Requirements:
 * "git" command in $PATH (if you want to install github or vim.org plugins)
 
 First of all, git clone the repository.
+
+Note: You must define the installation directory before to use dein.  It
+depends on your usage.
+For example, "~/.vim/bundles" or "~/.cache/dein" or "~/.local/share/dein".
+dein.vim has not define the default installation directory.
+You must not set the installation directory under "~/.vim/plugin" or
+"~/.config/nvim/plugin".
 
 Note: You need to have git installed.
 >
@@ -1094,6 +1110,11 @@ Q: I have got prompted for my github username and I have to kill the editor...
 
 A: You have specified wrong/removed repository name.  You should check the
 repository.
+
+Q: Why dein.vim merges the plugins directories automatically?
+
+A: To avoid long 'runtimepath'.  If 'runtimepath' is long, Vim/neovim loading
+performance will be bad.
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
