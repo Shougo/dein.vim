@@ -386,13 +386,6 @@ function! dein#install#_remote_plugins() abort
   " Load not loaded neovim remote plugins
   let remote_plugins = filter(values(dein#get()),
         \ "isdirectory(v:val.rtp . '/rplugin')")
-  let remote_paths = sort(map(copy(remote_plugins), 'v:val.path'))
-
-  if remote_paths ==# dein#util#_load_remote_plugins()
-    return
-  endif
-
-  call dein#util#_save_remote_plugins(remote_paths)
 
   call dein#autoload#_source(remote_plugins)
 

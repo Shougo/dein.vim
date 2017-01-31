@@ -256,16 +256,6 @@ function! dein#util#_save_merged_plugins(plugins) abort
         \ string(sort(a:plugins))],
         \ dein#util#_get_cache_path() . '/merged')
 endfunction
-function! dein#util#_load_remote_plugins() abort
-  let path = dein#util#_get_cache_path() . '/remote'
-  if !filereadable(path)
-    return []
-  endif
-  return readfile(path)
-endfunction
-function! dein#util#_save_remote_plugins(paths) abort
-  call writefile(a:paths, dein#util#_get_cache_path() . '/remote')
-endfunction
 
 function! dein#util#_save_state(is_starting) abort
   if g:dein#_block_level != 0
