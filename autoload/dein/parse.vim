@@ -368,9 +368,11 @@ function! s:check_type(repo, options) abort
       break
     endif
   endfor
+
   if empty(plugin)
     let plugin.type = 'none'
     let plugin.local = 1
+    let plugin.path = isdirectory(a:repo) ? a:repo : ''
   endif
 
   return plugin

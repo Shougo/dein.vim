@@ -34,7 +34,7 @@ function! s:type.init(repo, options) abort
   if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
     " Local repository.
     return { 'type': 'git', 'local': 1 }
-  elseif isdirectory(a:repo) || a:repo =~#
+  elseif a:repo =~#
         \ '//\%(raw\|gist\)\.githubusercontent\.com/\|/archive/[^/]\+\.zip$'
     return {}
   endif
@@ -52,8 +52,8 @@ function! s:type.init(repo, options) abort
         \  'path': dein#util#_get_base_path().'/repos/'.directory }
 endfunction
 function! s:type.get_uri(repo, options) abort
-  if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
-    return a:repo
+  if a:repo =~# '^/\|^\a:[/\\]'
+    return s:is_git_dir(a:repo.'/.git') ? a:repo : ''
   endif
 
   if a:repo =~# '^git@'
