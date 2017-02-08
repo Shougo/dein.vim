@@ -24,6 +24,11 @@ let g:dein#install_log_filename =
       \ get(g:, 'dein#install_log_filename', '')
 
 function! dein#install#_update(plugins, update_type, async) abort
+  if dein#util#_is_sudo()
+    call s:error('update/install is disabled in sudo session.')
+    return
+  endif
+
   let plugins = dein#util#_get_plugins(a:plugins)
 
   if a:update_type ==# 'install'
@@ -169,7 +174,7 @@ endfunction
 
 function! dein#install#_recache_runtimepath() abort
   if dein#util#_is_sudo()
-    call s:error('"sudo vim" is detected. This feature is disabled.')
+    call s:error('recache_runtimepath() is disabled in sudo session.')
     return
   endif
 
