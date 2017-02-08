@@ -1094,6 +1094,13 @@ A: Please check |:message| result.
 If you have found "Process timeout" error, you should increase
 |g:dein#install_process_timeout| value.
 
+Q: YouCompleteMe does not work.  I have built YouCompleteMe manually.
+
+A: dein.vim has merge feature.  It copys the plugins into the merge directory.
+So dein.vim does not know the manually built binary.  It does not be copied.
+You should disable the merge feature manually. >
+	call dein#add('Valloric/YouCompleteMe', {'merged': 0})
+
 Q: I have got "Invalid range error" when plugin updating.
 
 A: It is Vim/neovim |delete()| implementation bug.
