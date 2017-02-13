@@ -107,28 +107,33 @@ function! s:type.get_uri(repo, options) abort
 endfunction
 
 function! s:type.get_sync_command(plugin) abort
-  let git = self.command
-
   if !isdirectory(a:plugin.path)
-    let cmd = 'clone'
-    let cmd .= ' --recursive'
+    let commands = []
+
+    call add(commands, self.command)
+    call add(commands, 'clone')
+    call add(commands, '--recursive')
 
     let depth = get(a:plugin, 'type__depth',
           \ g:dein#types#git#clone_depth)
     if depth > 0 && get(a:plugin, 'rev', '') ==# ''
           \ && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
-      let cmd .= ' --depth=' . depth
+      call add(commands, '--depth' . depth)
     endif
 
-    let cmd .= printf(' %s "%s"',
-          \ self.get_uri(a:plugin.repo, a:plugin), a:plugin.path)
+    call add(commands, self.get_uri(a:plugin.repo, a:plugin))
+    call add(commands, a:plugin.path)
+
+    return commands
   else
+    let git = self.command
+
     let cmd = g:dein#types#git#pull_command
     let and = dein#util#_is_fish() ? '; and ' : ' && '
     let cmd .= and . git . ' submodule update --init --recursive'
-  endif
 
-  return git . ' ' . cmd
+    return git . ' ' . cmd
+  endif
 endfunction
 
 function! s:type.get_revision_number_command(plugin) abort
