@@ -118,7 +118,7 @@ function! s:type.get_sync_command(plugin) abort
           \ g:dein#types#git#clone_depth)
     if depth > 0 && get(a:plugin, 'rev', '') ==# ''
           \ && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
-      call add(commands, '--depth' . depth)
+      call add(commands, '--depth=' . depth)
     endif
 
     call add(commands, self.get_uri(a:plugin.repo, a:plugin))
