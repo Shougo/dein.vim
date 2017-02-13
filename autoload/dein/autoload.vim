@@ -328,8 +328,7 @@ function! s:get_input() abort
 endfunction
 
 function! s:is_reset_ftplugin(plugins) abort
-  if &filetype ==# '' ||
-        \ (!exists('b:did_indent') && !exists('b:did_ftplugin'))
+  if &filetype ==# ''
     return 0
   endif
 
