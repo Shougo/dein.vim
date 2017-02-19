@@ -75,7 +75,7 @@ First of all, git clone the repository.
 Note: You must define the installation directory before to use dein.  It
 depends on your usage.
 For example, "~/.vim/bundles" or "~/.cache/dein" or "~/.local/share/dein".
-dein.vim has not define the default installation directory.
+dein.vim does not define the default installation directory.
 You must not set the installation directory under "~/.vim/plugin" or
 "~/.config/nvim/plugin".
 
@@ -236,7 +236,7 @@ dein#rollback({date}[, {plugins}])
 							*dein#check_install()*
 dein#check_install([{plugins}])
 		Check the plugins installation.
-		If the plugins are not installed, it will return non zero.
+		If the plugins are not installed, it will return non-zero.
 		{plugins} is the plugins name list to check.
 		If you omit it, dein will check all plugins installation.
 		Note: You can disable the message by |:silent|.
@@ -273,7 +273,7 @@ dein#source([{plugins}])
 							*dein#get()*
 dein#get([{plugin-name}])
 		Get the plugin options dictionary for {plugin-name}.
-		If you omit {plugin-name}, dein will returns the plugins
+		If you omit {plugin-name}, dein will return the plugins
 		dictionary.  The key is the plugin name.  The value is the
 		plugin dictionary.
 
@@ -746,7 +746,7 @@ on_event	(String) or (List)
 
 							*dein-options-on_if*
 on_if		(String)
-		If it is evaluated and it is non zero, dein will call
+		If it is evaluated and it is non-zero, dein will call
 		|dein#source()|.
 		The default evaluate timings are "BufRead", "BufNewFile",
 		"VimEnter" and "FileType".
@@ -763,7 +763,7 @@ type__depth		(Number)
 		If omitted, |g:dein#types#git#clone_depth| is used.
 		If it is than 0, dein clones the repository by shallow
 		clone. Shallow clone feature saves your repository clone time.
-		But it have problems in some repository.
+		But it has problems in some repository.
 
 		See below issues:
 		https://github.com/Shougo/neobundle.vim/issues/81
