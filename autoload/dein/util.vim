@@ -383,8 +383,8 @@ function! dein#util#_begin(path, vimrcs) abort
     return 1
   endif
   let &runtimepath = dein#util#_join_rtp(
-        \ add(insert(rtps, g:dein#_runtime_path, idx - 1),
-        \     g:dein#_runtime_path.'/after'),
+        \ insert(insert(rtps, g:dein#_runtime_path, idx - 1),
+        \     g:dein#_runtime_path.'/after', -1),
         \ &runtimepath, g:dein#_runtime_path)
 endfunction
 function! dein#util#_end() abort
@@ -414,7 +414,7 @@ function! dein#util#_end() abort
     if !plugin.merged
       call insert(rtps, plugin.rtp, index)
       if isdirectory(plugin.rtp.'/after')
-        call add(rtps, plugin.rtp.'/after')
+        call insert(rtps, plugin.rtp.'/after', -1)
       endif
     endif
 
