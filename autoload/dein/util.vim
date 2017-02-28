@@ -26,9 +26,6 @@ function! dein#util#_is_mac() abort
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
 endfunction
-function! dein#util#_is_cygwin() abort
-  return has('win32unix')
-endfunction
 
 function! dein#util#_is_sudo() abort
   return $SUDO_USER !=# '' && $USER !=# $SUDO_USER
@@ -68,9 +65,10 @@ function! dein#util#_get_vimrcs(vimrcs) abort
         \ dein#util#_convert2list(a:vimrcs) : [dein#util#_get_myvimrc()]
 endfunction
 function! dein#util#_get_myvimrc() abort
-  return $MYVIMRC !=# '' ? $MYVIMRC :
+  let vimrc = $MYVIMRC !=# '' ? $MYVIMRC :
         \ matchstr(split(dein#util#_redir('scriptnames'), '\n')[0],
         \  '^\s*\d\+:\s\zs.*')
+  return dein#util#_substitute_path(vimrc)
 endfunction
 
 function! dein#util#_error(msg) abort
@@ -560,7 +558,8 @@ function! dein#util#_expand(path) abort
         \ dein#util#_substitute_path(path) : path
 endfunction
 function! dein#util#_substitute_path(path) abort
-  return (s:is_windows && a:path =~# '\\') ? tr(a:path, '\', '/') : a:path
+  return ((s:is_windows || has('win32unix')) && a:path =~# '\\') ?
+        \ tr(a:path, '\', '/') : a:path
 endfunction
 function! dein#util#_globlist(path) abort
   return split(glob(a:path), '\n')
