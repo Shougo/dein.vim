@@ -564,6 +564,10 @@ normalized_name	(String)
 		unite.vim         unite
 		vim-quickrun      quickrun
 <
+							*dein-options-path*
+path		(String)
+		Specify the plugin downloaded path.
+
 							*dein-options-rev*
 rev		(String)
 		Specify a revision number or branch/tag name.
