@@ -614,7 +614,7 @@ function! dein#install#_cd(path) abort
   endif
 
   try
-    execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
+    noautocmd execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
   catch
     call s:error('Error cd to: ' . a:path)
     call s:error('Current directory: ' . getcwd())
