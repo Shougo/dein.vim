@@ -380,9 +380,9 @@ function! dein#util#_begin(path, vimrcs) abort
     call dein#util#_error('Invalid runtimepath.')
     return 1
   endif
-  let &runtimepath = dein#util#_join_rtp(
-        \ insert(insert(rtps, g:dein#_runtime_path, idx - 1),
-        \     g:dein#_runtime_path.'/after', -1),
+  call insert(rtps, g:dein#_runtime_path, idx - 1)
+  call dein#util#_add_after(rtps, g:dein#_runtime_path.'/after')
+  let &runtimepath = dein#util#_join_rtp(rtps,
         \ &runtimepath, g:dein#_runtime_path)
 endfunction
 function! dein#util#_end() abort
@@ -412,7 +412,7 @@ function! dein#util#_end() abort
     if !plugin.merged
       call insert(rtps, plugin.rtp, index)
       if isdirectory(plugin.rtp.'/after')
-        call insert(rtps, plugin.rtp.'/after', -1)
+        call dein#util#_add_after(rtps, plugin.rtp.'/after')
       endif
     endif
 
@@ -547,6 +547,11 @@ endfunction
 function! dein#util#_join_rtp(list, runtimepath, rtp) abort
   return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
         \ join(a:list, ',') : join(map(copy(a:list), 's:escape(v:val)'), ',')
+endfunction
+
+function! dein#util#_add_after(rtps, path) abort
+  let idx = index(a:rtps, $VIMRUNTIME)
+  call insert(a:rtps, a:path, (idx <= 0 ? -1 : idx + 1))
 endfunction
 
 function! dein#util#_expand(path) abort

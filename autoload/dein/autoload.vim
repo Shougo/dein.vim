@@ -284,7 +284,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   if !a:plugin.merged || get(a:plugin, 'local', 0)
     call insert(a:rtps, a:plugin.rtp, a:index)
     if isdirectory(a:plugin.rtp.'/after')
-      call insert(a:rtps, a:plugin.rtp.'/after', -1)
+      call dein#util#_add_after(a:rtps, a:plugin.rtp.'/after')
     endif
   endif
 endfunction
