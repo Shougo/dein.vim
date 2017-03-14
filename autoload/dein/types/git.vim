@@ -93,7 +93,8 @@ function! s:type.get_uri(repo, options) abort
           \ protocol . '://github.com/vim-scripts/'
     let uri .= name
   else
-    let uri = (protocol ==# 'ssh') ?
+    let uri = (protocol ==# 'ssh' &&
+          \    (host ==# 'github.com' || host ==# 'bitbucket.com')) ?
           \ 'git@' . host . ':' . name :
           \ protocol . '://' . host . '/' . name
   endif
