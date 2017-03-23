@@ -102,7 +102,7 @@ function! dein#install#_reinstall(plugins) abort
     if plugin.type ==# 'none'
           \ || get(plugin, 'local', 0)
           \ || (plugin.sourced &&
-          \     index(['dein', 'vimproc'], plugin.normalized_name) >= 0)
+          \     index(['dein'], plugin.normalized_name) >= 0)
       call dein#util#_error(
             \ printf('|%s| Cannot reinstall the plugin!', plugin.name))
       continue
