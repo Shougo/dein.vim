@@ -666,6 +666,17 @@ function! s:tsort_impl(target, mark, sorted) abort
   call add(a:sorted, a:target)
 endfunction
 
+function! dein#util#_check_install(plugins) abort
+  let plugins = filter(empty(a:plugins) ? values(dein#get()) :
+        \ filter(map(dein#util#_convert2list(a:plugins),
+        \ 'dein#get(v:val)'), '!empty(v:val)'),
+        \     '!isdirectory(v:val.path)')
+  if empty(plugins) | return 0 | endif
+  call dein#util#_notify('Not installed plugins: ' .
+        \ string(map(plugins, 'v:val.name')))
+  return 1
+endfunction
+
 function! s:msg2list(expr) abort
   return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
 endfunction

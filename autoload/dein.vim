@@ -107,13 +107,7 @@ function! dein#source(...) abort
   return call('dein#autoload#_source', a:000)
 endfunction
 function! dein#check_install(...) abort
-  let plugins = filter(empty(a:000) ? values(dein#get()) :
-        \ filter(map(copy(a:1), 'dein#get(v:val)'), '!empty(v:val)'),
-        \     '!isdirectory(v:val.path)')
-  if empty(plugins) | return 0 | endif
-  call dein#util#_notify('Not installed plugins: ' .
-        \ string(map(plugins, 'v:val.name')))
-  return 1
+  return dein#util#_check_install(get(a:000, 0, []))
 endfunction
 function! dein#check_clean() abort
   return dein#util#_check_clean()
