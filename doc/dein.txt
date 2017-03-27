@@ -1127,6 +1127,12 @@ Q: Why dein.vim merges the plugins directories automatically?
 A: To avoid long 'runtimepath'.  If 'runtimepath' is long, Vim/neovim loading
 performance will be bad.
 
+Q: I want to update from shell.
+
+A: >
+	$ vim -c "try | call dein#update() | finally | qall! | endtry" \
+	-N -u $VIMRC -U NONE -i NONE -V1 -e -s
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
