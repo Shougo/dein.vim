@@ -473,7 +473,7 @@ function! dein#util#_call_hook(hook_name, ...) abort
         \ 'v:val.sourced && has_key(v:val, hook) && isdirectory(v:val.path)')
 
   for plugin in filter(dein#util#_tsort(plugins),
-        \ "has_key(v:val, hook)")
+        \ 'has_key(v:val, hook)')
     call dein#util#_execute_hook(plugin, plugin[hook])
   endfor
 endfunction
