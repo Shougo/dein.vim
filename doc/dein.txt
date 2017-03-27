@@ -991,28 +991,6 @@ Q: I want to disable plugins.
 
 A: Please use |dein-options-if|.
 
-Q: Defined autocmd does not work in source/post_source hooks. >
-
-	function! s:on_source() abort
-	  " Does not work!
-	  autocmd ColorScheme * echo 'hello'
-	  " Fire autocmd
-	  colorscheme evening
-	endfunction
-	execute 'autocmd MyAutoCmd User' 'dein#source#'.g:dein#name
-	      \ 'call s:on_source()'
-
-A: You must set nested in the autocmd.  |autocmd-nested| >
-
-	function! s:on_source() abort
-	  " Does work!
-	  autocmd ColorScheme * echo 'hello'
-	  " Fire autocmd
-	  colorscheme evening
-	endfunction
-	execute 'autocmd MyAutoCmd User' 'dein#source#'.g:dein#name
-	      \ 'nested call s:on_source()'
-
 Q: Cannot load colorscheme when reloading .vimrc.
 
 A: You must write |:colorscheme| lines after |dein#end()|.
