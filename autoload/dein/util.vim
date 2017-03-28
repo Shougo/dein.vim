@@ -687,7 +687,7 @@ function! s:_compare(a, b) abort
 endfunction
 
 function! s:execute(expr) abort
-  if exists('*execute')
+  if exists('*execute') && has('nvim')
     return execute(split(a:expr, '\n'))
   endif
 
