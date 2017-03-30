@@ -687,7 +687,7 @@ function! s:_compare(a, b) abort
 endfunction
 
 function! s:execute(expr) abort
-  if exists('*execute') && has('nvim')
+  if has('nvim') && s:neovim_version() >= 0.2.0
     return execute(split(a:expr, '\n'))
   endif
 
@@ -697,4 +697,8 @@ function! s:execute(expr) abort
         \ . a:expr . "\nendfunction"
   call {dummy}()
   execute 'delfunction' dummy
+endfunction
+
+function! s:neovim_version() abort
+  return str2float(matchstr(execute('version'), 'NVIM v\zs\d\.\d\.\d'))
 endfunction
