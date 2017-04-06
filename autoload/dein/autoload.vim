@@ -289,11 +289,11 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   endif
 endfunction
 function! s:reset_ftplugin() abort
+  let filetype_state = dein#util#_redir('filetype')
+
   if exists('b:did_indent') || exists('b:did_ftplugin')
     filetype plugin indent off
   endif
-
-  let filetype_state = dein#util#_redir('filetype')
 
   if filetype_state =~# 'plugin:ON'
     silent! filetype plugin on
