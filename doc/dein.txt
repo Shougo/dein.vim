@@ -786,6 +786,7 @@ HOOKS							*dein-hooks*
 
 		Note: You can use |g:dein#plugin| in the hooks.
 		Note: The loading order is not guaranteed in non lazy plugins.
+		Note: The string is executed as Ex commands.
 
 						*dein-options-hook_add*
 hook_add	(String) or (Function)
