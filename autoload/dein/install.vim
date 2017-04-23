@@ -680,26 +680,28 @@ function! dein#install#_rm(path) abort
     return
   endif
 
-  if has('patch-7.4.1120')
-    try
-      call delete(a:path, 'rf')
-    catch
-      call s:error('Error deleting directory: ' . a:path)
-      call s:error(v:exception)
-      call s:error(v:throwpoint)
-    endtry
-  else
-    let cmdline = ' "' . a:path . '"'
-    if dein#util#_is_windows()
-      " Note: In rm command, must use "\" instead of "/".
-      let cmdline = substitute(cmdline, '/', '\\\\', 'g')
-    endif
+  " Note: delete rf is broken
+  " if has('patch-7.4.1120')
+  "   try
+  "     call delete(a:path, 'rf')
+  "   catch
+  "     call s:error('Error deleting directory: ' . a:path)
+  "     call s:error(v:exception)
+  "     call s:error(v:throwpoint)
+  "   endtry
+  "   return
+  " endif
 
-    let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
-    let result = dein#install#_system(rm_command . cmdline)
-    if dein#install#_status()
-      call dein#util#_error(result)
-    endif
+  let cmdline = ' "' . a:path . '"'
+  if dein#util#_is_windows()
+    " Note: In rm command, must use "\" instead of "/".
+    let cmdline = substitute(cmdline, '/', '\\\\', 'g')
+  endif
+
+  let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
+  let result = dein#install#_system(rm_command . cmdline)
+  if dein#install#_status()
+    call dein#util#_error(result)
   endif
 endfunction
 function! dein#install#_copy_directories(srcs, dest) abort
