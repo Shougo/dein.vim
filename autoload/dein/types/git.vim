@@ -87,11 +87,10 @@ function! s:type.get_uri(repo, options) abort
   endif
 
   if a:repo !~# '/'
-    " www.vim.org Vim scripts.
-    let uri  = (protocol ==# 'ssh') ?
-          \ 'git@github.com:vim-scripts/' :
-          \ protocol . '://github.com/vim-scripts/'
-    let uri .= name
+    call dein#util#_error(
+          \ printf('vim-scripts.org is deprecated.'
+          \ . ' You can use "vim-scripts/%s" instead.', a:repo))
+    return ''
   else
     let uri = (protocol ==# 'ssh' &&
           \    (host ==# 'github.com' || host ==# 'bitbucket.com')) ?

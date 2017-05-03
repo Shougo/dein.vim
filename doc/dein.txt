@@ -135,9 +135,6 @@ dein#add({repo}[, {options}])
 		{repo} is the repository URI or local repository directory
 		path.  If {repo} starts with github user name (ex:
 		"Shougo/dein.vim"), dein will install github plugins.
-		If {repo} is plugin name only (ex: "taglist.vim"), dein will
-		install the plugin in vim.org repository (vim-scripts.org:
-		https://github.com/vim-scripts).
 		See |dein-options| for what to set in {options}.
 		Note: You must call it in |dein#begin()| block.
 

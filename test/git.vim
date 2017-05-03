@@ -20,7 +20,7 @@ function! s:suite.protocol() abort
         \ 'https://github.com/vim/vim/archive/master.zip', {}),
         \ {})
 
-  call s:assert.not_equals(s:type.init(
+  call s:assert.equals(s:type.init(
         \ 'test.zip', {}),
         \ {})
   call dein#end()
@@ -50,11 +50,7 @@ function! s:suite.init() abort
         \ 'https://github.com:80/Shougo/dein.vim', {}),
         \ 'https://github.com/Shougo/dein.vim.git')
 
-  call s:assert.equals(s:type.init('L9', {}),
-        \ { 'type': 'git',
-        \   'path': s:base.'github.com/vim-scripts/L9' })
-  call s:assert.equals(s:type.get_uri('L9', {}),
-        \ 'https://github.com/vim-scripts/L9.git')
+  call s:assert.equals(s:type.init('L9', {}), {})
 
   call s:assert.equals(s:type.init(
         \ 'https://bitbucket.org/mortonfox/twitvim.git', {}),
