@@ -327,8 +327,9 @@ function! dein#util#_save_state(is_starting) abort
         \ .'/state_'.fnamemodify(v:progname, ':r').'.vim')
 endfunction
 function! dein#util#_clear_state() abort
-  for cache in dein#util#_globlist(g:dein#_base_path.'/state_*.vim')
-        \ + dein#util#_globlist(g:dein#_base_path.'/cache_*')
+  let base = get(g:, 'dein#cache_directory', g:dein#_base_path)
+  for cache in dein#util#_globlist(base.'/state_*.vim')
+        \ + dein#util#_globlist(base.'/cache_*')
     call delete(cache)
   endfor
 endfunction
