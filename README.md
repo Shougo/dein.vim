@@ -22,6 +22,8 @@ You must not set the installation directory under "\~/.vim/plugin" or
 
 #### If you are using Unix/Linux or Mac OS X.
 
+Note: {directory} is just placeholder.
+
 1. Run below script.
 
      ```
