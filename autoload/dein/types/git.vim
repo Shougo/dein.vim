@@ -93,7 +93,8 @@ function! s:type.get_uri(repo, options) abort
     return ''
   else
     let uri = (protocol ==# 'ssh' &&
-          \    (host ==# 'github.com' || host ==# 'bitbucket.com')) ?
+          \    (host ==# 'github.com' || host ==# 'bitbucket.com' ||
+          \     host ==# 'bitbucket.org')) ?
           \ 'git@' . host . ':' . name :
           \ protocol . '://' . host . '/' . name
   endif
