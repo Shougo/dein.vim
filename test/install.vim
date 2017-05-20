@@ -128,6 +128,7 @@ function! s:suite.check_install() abort
   call s:assert.false(dein#check_install())
   call s:assert.false(dein#check_install(['vimshell.vim']))
   call s:assert.false(dein#check_install(['neocomplete.vim']))
+  call s:assert.true(dein#check_install(['__unknown']))
 
   call dein#end()
 endfunction
