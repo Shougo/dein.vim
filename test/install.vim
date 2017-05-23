@@ -126,8 +126,7 @@ function! s:suite.check_install() abort
   call s:assert.equals(s:dein_install(), 0)
 
   call s:assert.false(dein#check_install())
-  call s:assert.false(dein#check_install(['vimshell.vim']))
-  call s:assert.false(dein#check_install(['neocomplete.vim']))
+  call s:assert.equals(dein#check_install(['hoge']), -1)
 
   call dein#end()
 endfunction
