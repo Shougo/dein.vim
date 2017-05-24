@@ -398,7 +398,7 @@ function! dein#install#_remote_plugins() abort
         \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
 
   if exists(':UpdateRemotePlugins')
-    UpdateRemotePlugins
+    silent UpdateRemotePlugins
   endif
 endfunction
 
