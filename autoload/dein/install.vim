@@ -81,6 +81,7 @@ function! s:update_loop(context) abort
       while !empty(s:global_context)
         let errored = s:install_async(s:global_context)
         sleep 50ms
+        redraw
       endwhile
     else
       let errored = s:install_blocking(a:context)
@@ -1249,7 +1250,7 @@ function! s:log(msg) abort
   call s:append_log_file(msg)
 endfunction
 function! s:append_log_file(msg) abort
-  let logfile = g:dein#install_log_filename
+  let logfile = dein#util#_expand(g:dein#install_log_filename)
   if logfile ==# ''
     return
   endif
@@ -1272,12 +1273,6 @@ function! s:echo(expr, mode) abort
   let msg = map(filter(dein#util#_convert2list(a:expr), "v:val !=# ''"),
         \ "'[dein] ' .  v:val")
   if empty(msg)
-    return
-  endif
-
-  if has('vim_starting')
-    let m = join(msg, "\n")
-    call s:echo_mode(m, a:mode)
     return
   endif
 
