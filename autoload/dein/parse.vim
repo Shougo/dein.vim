@@ -115,6 +115,7 @@ function! dein#parse#_dict(plugin) abort
 
   if !has_key(a:plugin, 'merged')
     let plugin.merged = !plugin.lazy
+          \ && plugin.normalized_name !=# 'dein'
           \ && !has_key(plugin, 'local')
           \ && !has_key(plugin, 'build')
           \ && !has_key(a:plugin, 'if')
