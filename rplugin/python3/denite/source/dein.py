@@ -20,6 +20,7 @@ class Source(Base):
 
         self.name = 'dein'
         self.kind = 'directory'
+        self.default_action = 'cd'
 
     def gather_candidates(self, context):
         return [
