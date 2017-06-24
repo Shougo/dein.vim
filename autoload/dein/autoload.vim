@@ -40,9 +40,7 @@ function! dein#autoload#_source(...) abort
     for directory in filter(['plugin', 'after/plugin'],
           \ "isdirectory(plugin.rtp.'/'.v:val)")
       for file in dein#util#_globlist(plugin.rtp.'/'.directory.'/**/*.vim')
-        " Note: "silent!" is required to ignore E122, E174 and E227.
-        "       "unsilent" then displays any messages while sourcing.
-        execute 'silent! unsilent source' fnameescape(file)
+        execute 'source' fnameescape(file)
       endfor
     endfor
 
