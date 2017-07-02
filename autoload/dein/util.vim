@@ -381,6 +381,12 @@ function! dein#util#_begin(path, vimrcs) abort
     call dein#util#_error('Invalid runtimepath.')
     return 1
   endif
+  if fnamemodify(a:path, ':t') ==# 'plugin'
+        \ && index(rtps, fnamemodify(a:path, ':h')) >= 0
+    call dein#util#_error('You must not set the installation directory'
+          \ .' under "&runtimepath/plugin"')
+    return 1
+  endif
   call insert(rtps, g:dein#_runtime_path, idx - 1)
   call dein#util#_add_after(rtps, g:dein#_runtime_path.'/after')
   let &runtimepath = dein#util#_join_rtp(rtps,

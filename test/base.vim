@@ -1,3 +1,5 @@
+" set verbose=1
+
 let s:suite = themis#suite('base')
 let s:assert = themis#helper('assert')
 
@@ -23,6 +25,8 @@ function! s:suite.begin_invalid() abort
   call s:assert.equals(dein#end(), 1)
 
   call s:assert.equals(dein#end(), 1)
+
+  call s:assert.equals(dein#begin(getcwd() . '/plugin'), 1)
 endfunction
 
 function! s:suite.end_invalid() abort
