@@ -235,8 +235,12 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
 endfunction
 function! dein#util#_check_vimrcs() abort
   let time = getftime(dein#util#_get_runtime_path())
-  return !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
+  let ret = !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
         \ 'time < v:val'))
+  if ret
+    call dein#clear_state()
+  endif
+  return ret
 endfunction
 function! dein#util#_load_merged_plugins() abort
   let path = dein#util#_get_cache_path() . '/merged'
