@@ -1,7 +1,7 @@
 dein.vim
 ========
 
-https://travis-ci.org/Shougo/dein.vim.svg?branch=master
+[![Build Status](https://travis-ci.org/Shougo/dein.vim.svg?branch=master)](https://travis-ci.org/Shougo/dein.vim)
 
 ## About
 
