@@ -239,6 +239,12 @@ function! dein#util#_check_vimrcs() abort
         \ 'time < v:val'))
   if ret
     call dein#clear_state()
+
+    if [string(g:dein#_cache_version)] +
+          \ sort(map(values(g:dein#_plugins), 'v:val.repo'))
+          \ !=# dein#util#_load_merged_plugins()
+      call dein#recache_runtimepath()
+    endif
   endif
   return ret
 endfunction
@@ -431,13 +437,7 @@ function! dein#util#_end() abort
   endfor
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
-  if dein#util#_check_vimrcs()
-    if [string(g:dein#_cache_version)] +
-          \ sort(map(values(g:dein#_plugins), 'v:val.repo'))
-          \ !=# dein#util#_load_merged_plugins()
-      call dein#recache_runtimepath()
-    endif
-  endif
+  call dein#util#_check_vimrcs()
 
   if !empty(depends)
     call dein#source(depends)
