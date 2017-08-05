@@ -1291,6 +1291,9 @@ function! s:echo(expr, mode) abort
 
       let m = join(msg[i : i+height-1], "\n")
       call s:echo_mode(m, a:mode)
+      if has('vim_starting')
+        echo ''
+      endif
     endfor
   finally
     let &more = more_save
