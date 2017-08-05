@@ -413,13 +413,13 @@ function! dein#install#_each(cmd, plugins) abort
   call s:init_variables(context)
 
   let cwd = getcwd()
+  let error = 0
   try
     for plugin in plugins
       call dein#install#_cd(plugin.path)
 
-      execute '!' . s:args2string(a:cmd)
-      if !v:shell_error
-        redraw
+      if dein#install#_execute(a:cmd)
+        error = 1
       endif
     endfor
   catch
@@ -429,14 +429,19 @@ function! dein#install#_each(cmd, plugins) abort
     let s:global_context = global_context_save
     call dein#install#_cd(cwd)
   endtry
+
+  return error
 endfunction
 function! dein#install#_build(plugins) abort
+  let error = 0
   for plugin in filter(dein#util#_get_plugins(a:plugins),
         \ "isdirectory(v:val.path) && has_key(v:val, 'build')")
     call s:print_progress_message('Building: ' . plugin.name)
-    call dein#install#_each(plugin.build, plugin)
+    if dein#install#_each(plugin.build, plugin)
+      let error = 1
+    endif
   endfor
-  return v:shell_error
+  return error
 endfunction
 
 function! dein#install#_get_log() abort
@@ -674,6 +679,44 @@ function! s:job_system.system(command) abort
   let s:job_system.status = job.exitval()
 
   return join(self.candidates, "\n")
+endfunction
+
+function! dein#install#_execute(command) abort
+  let error = 0
+  if dein#install#_has_job()
+    let error = s:job_execute.execute(a:command)
+  else
+    execute '!' . s:args2string(a:command)
+    if !v:shell_error
+      redraw
+    endif
+    let error = v:shell_error
+  endif
+
+  return error
+endfunction
+let s:job_execute = {}
+function! s:job_execute.on_out(id, msg, event) abort
+  let lines = a:msg
+  if !empty(lines) && lines[0] !=# "\n" && !empty(s:job_execute.candidates)
+    " Join to the previous line
+    echon lines[0]
+    call remove(lines, 0)
+  endif
+
+  for line in lines
+    echo line
+  endfor
+  let s:job_execute.candidates += lines
+endfunction
+function! s:job_execute.execute(command) abort
+  let self.candidates = []
+
+  let job = dein#job#start(s:iconv(a:command, &encoding, 'char'),
+        \ {'on_stdout': self.on_out})
+
+  call job.wait()
+  return job.exitval()
 endfunction
 
 function! dein#install#_rm(path) abort
