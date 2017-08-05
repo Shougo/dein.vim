@@ -419,7 +419,7 @@ function! dein#install#_each(cmd, plugins) abort
       call dein#install#_cd(plugin.path)
 
       if dein#install#_execute(a:cmd)
-        error = 1
+        let error = 1
       endif
     endfor
   catch
