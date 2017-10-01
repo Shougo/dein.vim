@@ -176,8 +176,7 @@ function! dein#util#_check_clean() abort
   let plugins_directories = map(values(dein#get()), 'v:val.path')
   return filter(split(globpath(dein#util#_get_base_path(),
         \ 'repos/*/*/*'), "\n"), "isdirectory(v:val)
-        \   && index(plugins_directories, v:val) < 0
-        \   && empty(dein#get(fnamemodify(v:val, ':t')))")
+        \   && index(plugins_directories, v:val) < 0")
 endfunction
 
 function! dein#util#_writefile(path, list) abort
