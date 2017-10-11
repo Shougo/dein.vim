@@ -25,9 +25,7 @@ function! dein#autoload#_source(...) abort
   let sourced = []
   for plugin in filter(plugins,
         \ "!empty(v:val) && !v:val.sourced && v:val.rtp !=# ''")
-    if s:source_plugin(rtps, index, plugin, sourced)
-      return 1
-    endif
+    call s:source_plugin(rtps, index, plugin, sourced)
   endfor
 
   let filetype_before = dein#util#_redir('autocmd FileType')
@@ -241,28 +239,24 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
     if !has_key(g:dein#_plugins, name)
       call dein#util#_error(printf(
             \ 'Plugin name "%s" is not found.', name))
-      return 1
+      continue
     endif
 
     if !a:plugin.lazy && g:dein#_plugins[name].lazy
       call dein#util#_error(printf(
             \ 'Not lazy plugin "%s" depends lazy "%s" plugin.',
             \ a:plugin.name, name))
-      return 1
+      continue
     endif
 
-    if s:source_plugin(a:rtps, a:index, g:dein#_plugins[name], a:sourced)
-      return 1
-    endif
+    call s:source_plugin(a:rtps, a:index, g:dein#_plugins[name], a:sourced)
   endfor
 
   let a:plugin.sourced = 1
 
   for on_source in filter(dein#util#_get_lazy_plugins(),
         \ "index(get(v:val, 'on_source', []), a:plugin.name) >= 0")
-    if s:source_plugin(a:rtps, a:index, on_source, a:sourced)
-      return 1
-    endif
+    call s:source_plugin(a:rtps, a:index, on_source, a:sourced)
   endfor
 
   if has_key(a:plugin, 'dummy_commands')
