@@ -37,12 +37,6 @@ function! dein#install#_update(plugins, update_type, async) abort
     let plugins = filter(plugins, 'isdirectory(v:val.path)')
   endif
 
-  if empty(plugins)
-    call s:error('Target plugins are not found.')
-    call s:error('You may have used the wrong plugin name,'.
-          \ ' or all of the plugins are already installed.')
-    return
-  endif
   if a:async && !empty(s:global_context) &&
         \ confirm('The installation has not finished. Cancel now?',
         \         "yes\nNo", 2) != 1
@@ -53,6 +47,14 @@ function! dein#install#_update(plugins, update_type, async) abort
   let context = s:init_context(plugins, a:update_type, a:async)
 
   call s:init_variables(context)
+
+  if empty(plugins)
+    call s:notify('Target plugins are not found.')
+    call s:notify('You may have used the wrong plugin name,'.
+          \ ' or all of the plugins are already installed.')
+    return
+  endif
+
   call s:start()
 
   if !a:async || has('vim_starting')
@@ -892,12 +894,14 @@ function! s:init_context(plugins, update_type, async) abort
   let context.prev_number = -1
   let context.plugins = a:plugins
   let context.max_plugins = len(context.plugins)
-  let context.progress_type = has('vim_starting') ?
+  let context.progress_type = (has('vim_starting')
+        \ && g:dein#install_progress_type !=# 'none') ?
         \ 'echo' : g:dein#install_progress_type
   if !has('nvim') && context.progress_type ==# 'title'
     let context.progress_type = 'echo'
   endif
-  let context.message_type = has('vim_starting') ?
+  let context.message_type = (has('vim_starting')
+        \ && g:dein#install_message_type !=# 'none') ?
         \ 'echo' : g:dein#install_message_type
   let context.laststatus = &g:laststatus
   let context.showtabline = &g:showtabline
