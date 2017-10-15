@@ -959,7 +959,6 @@ EXAMPLES						*dein-examples*
 	filetype plugin indent on
 	syntax enable
 <
-
 ==============================================================================
 FAQ							*dein-faq*
 
@@ -1016,10 +1015,11 @@ Q: How to remove the disabled plugins?
 
 A: You can remove them like below.
 Note: You need Vim 7.4.1107+ or latest version of neovim.
+Note: You must call |dein#recache_runtimepath()| after the remove.
 >
 	call map(dein#check_clean(), "delete(v:val, 'rf')")
+	call dein#recache_runtimepath()
 <
-
 Q: How to use the script functions for hooks feature?
 
 A: You can use them like this.
