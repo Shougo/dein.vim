@@ -396,7 +396,7 @@ function! dein#util#_begin(path, vimrcs) abort
           \ .' under "&runtimepath/plugin"')
     return 1
   endif
-  call insert(rtps, g:dein#_runtime_path, idx - 1)
+  call insert(rtps, g:dein#_runtime_path, idx)
   call dein#util#_add_after(rtps, g:dein#_runtime_path.'/after')
   let &runtimepath = dein#util#_join_rtp(rtps,
         \ &runtimepath, g:dein#_runtime_path)
