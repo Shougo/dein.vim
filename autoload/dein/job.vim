@@ -119,14 +119,20 @@ else
           \)
   endfunction
 
+  function! s:_safe_read(job, ...) abort
+    let options = get(a:000, 0, {})
+    let status = ch_status(a:job, options)
+    return (status ==# 'open' || status ==# 'buffered') ?
+          \ ch_read(a:job, options) : ''
+  endfunction
+
   function! s:_read_stdout(job) abort
-    return split(ch_read(a:job), '\n', 1)
+    return split(s:_safe_read(a:job), '\n', 1)
   endfunction
 
   function! s:_read_stderr(job) abort
-    return split(ch_read(a:job, {'part': 'err'}), '\n', 1)
+    return split(s:_safe_read(a:job, {'part': 'err'}), '\n', 1)
   endfunction
-
 
   " Instance -------------------------------------------------------------------
   let s:job = { '_exitval': -1 }
@@ -155,8 +161,8 @@ else
     while timeout is v:null || start_time + timeout > reltimefloat(reltime())
       let status = self.status()
       if status ==# 'run'
-        let stdout = ch_read(self._job)
-        let stderr = ch_read(self._job, {'part': 'err'})
+        let stdout = s:_safe_read(self._job)
+        let stderr = s:_safe_read(self._job, {'part': 'err'})
         if has_key(self, 'on_stdout') && !empty(stdout)
           call s:_job_callback('stdout', self, self._job, stdout)
         endif
