@@ -1083,6 +1083,9 @@ So dein.vim does not know the manually built binary.  It does not be copied.
 You should disable the merge feature manually. >
 	call dein#add('Valloric/YouCompleteMe', {'merged': 0})
 
+or >
+	call dein#add('Valloric/YouCompleteMe', {'build': './install.py'})
+
 Q: I have got "Invalid range error" when plugin updating.
 
 A: It is Vim/neovim |delete()| implementation bug.
