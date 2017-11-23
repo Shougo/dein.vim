@@ -48,7 +48,11 @@ Note: {directory} is just placeholder.
       call dein#begin({path to plugin base path directory})
 
       call dein#add({path to dein.vim directory})
-      call dein#add('Shougo/neocomplete.vim')
+      call dein#add('Shougo/deoplete.nvim')
+      if !has('nvim')
+        call dein#add('roxma/nvim-yarp')
+        call dein#add('roxma/vim-hug-neovim-rpc')
+      endif
       ...
 
       call dein#end()

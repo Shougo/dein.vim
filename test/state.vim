@@ -23,7 +23,7 @@ function! s:suite.state() abort
   function! Test() abort
   endfunction
 
-  call dein#add('Shougo/neocomplete.vim',
+  call dein#add('Shougo/deoplete.nvim',
         \ {'hook_source': function('Test')})
   call s:assert.equals(dein#end(), 0)
 
@@ -44,6 +44,6 @@ endfunction
 function! s:suite.state_error() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/neocomplete.vim')
+  call dein#add('Shougo/deoplete.nvim')
   call s:assert.equals(dein#save_state(), 1)
 endfunction

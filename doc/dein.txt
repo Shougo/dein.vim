@@ -146,8 +146,8 @@ dein#direct_install({repo}[, {options}])
 		Note: The direct installed plugins configuration is saved in
 		|dein#get_direct_plugins_path()|.  You can load or edit it. >
 
-		" Try neocomplete without the configuration.
-		call dein#direct_install('Shougo/neocomplete.vim')
+		" Try deoplete without the configuration.
+		call dein#direct_install('Shougo/deoplete.nvim')
 <
 							*dein#load_toml()*
 dein#load_toml({filename}, [{options}])
@@ -166,8 +166,8 @@ dein#load_dict({dict}, [{options}])
 		set in {options}. >
 
 		call dein#load_dict({
-		\ 'Shougo/unite.vim': {},
-		\ 'Shougo/neocomplete.vim': {'name': 'neocomplete'}
+		\ 'Shougo/denite.nvim': {},
+		\ 'Shougo/deoplete.nvim': {'name': 'deoplete'}
 		\ })
 <
 							*dein#local()*
@@ -368,8 +368,8 @@ dein#config({options})
 		Note: You must call it within |dein#begin()| / ||dein#end()|
 		block.
 >
-	call dein#add('Shougo/neocomplete.vim')
-	call dein#config('neocomplete.vim', {
+	call dein#add('Shougo/deoplete.nvim')
+	call dein#config('deoplete.nvim', {
 	\ 'lazy' : 1, 'on_i' : 1,
 	\ })
 <
@@ -560,7 +560,8 @@ normalized_name	(String)
 		Normalized name example:
 		name            : normalized name
 >
-		unite.vim         unite
+		denite.nvim       denite
+		dein.vim          dein
 		vim-quickrun      quickrun
 <
 							*dein-options-path*
@@ -576,7 +577,7 @@ rev		(String)
 
 		Example:
 >
-		call dein#add('Shougo/vimshell', { 'rev': '3787e5' })
+		call dein#add('Shougo/deol.nvim', { 'rev': 'a1b5108fd5' })
 <
 							*dein-options-depends*
 depends		(List or String)
@@ -709,10 +710,8 @@ on_map		(Dictionary) or (List) or (String)
 		For example, you can use "<Plug>(ref-" instead of
 		"<Plug>(ref-back)" and so on.
 		For example: >
-		call dein#add('Shougo/vimshell.vim',
+		call dein#add('Shougo/deol.nvim',
 		\ { 'on_map': {'n': '<Plug>'} })
-		call dein#add('Shougo/vimfiler.vim',
-		\ { 'on_map': [['n', '<Plug>']], 'depends': 'unite.vim' })
 <
 		Note: You can use "<Plug>" keyword as {mapping}. If
 		{mapping} is "<Plug>", "<Plug>(normalized_name" is
@@ -949,7 +948,11 @@ EXAMPLES						*dein-examples*
 	  call dein#begin({path to plugin base path directory})
 
 	  call dein#add({path to dein.vim directory})
-	  call dein#add('Shougo/neocomplete.vim')
+	  call dein#add('Shougo/deoplete.nvim')
+	  if !has('nvim')
+	    call dein#add('roxma/nvim-yarp')
+	    call dein#add('roxma/vim-hug-neovim-rpc')
+	  endif
 	  ...
 
 	  call dein#end()
@@ -1038,13 +1041,13 @@ The SID will be changed in the next run.
 	endfun
 	function! s:test()
 	endfunction
-	call dein#add('Shougo/neocomplete.vim',
+	call dein#add('Shougo/deoplete.nvim',
 	\ {'hook_source': 'call ' . s:SID() . 'test()'})
 <
 Or you can execute the autocmd manually.
 >
-	autocmd User dein#source#neocomplete.vim call s:test()
-	call dein#add('Shougo/neocomplete.vim', {
+	autocmd User dein#source#deoplete.nvim call s:test()
+	call dein#add('Shougo/deoplete.nvim', {
 	\ 'hook_source':
 	\  'execute "doautocmd <nomodeline> User" "dein#source#".
 	\   g:dein#plugin.name'
