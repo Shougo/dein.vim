@@ -341,7 +341,7 @@ endfunction
 function! s:suite.lazy_on_func() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deol.nvim', { 'lazy': 1 })
+  call dein#add('Shougo/neosnippet.vim', { 'lazy': 1 })
   call dein#add('Shougo/deoplete.nvim',
         \ { 'on_func': 'deoplete#initialize' })
 
@@ -350,7 +350,7 @@ function! s:suite.lazy_on_func() abort
   call dein#end()
 
   let plugin = dein#get('deoplete.nvim')
-  let plugin2 = dein#get('deol.nvim')
+  let plugin2 = dein#get('neosnippet.vim')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
@@ -368,7 +368,7 @@ function! s:suite.lazy_on_func() abort
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin2.rtp')), 0)
 
-  call deol#edit()
+  call neosnippet#expandable()
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
