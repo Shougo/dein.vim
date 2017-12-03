@@ -236,28 +236,11 @@ function! s:clear_runtimepath() abort
     return
   endif
 
-  let parent = printf('%s/temp/%d', dein#util#_get_cache_path(), getpid())
-  let dest = parent . '/' . strftime('%Y%m%d%H%M%S')
-  if !isdirectory(parent)
-    call mkdir(parent, 'p')
-  endif
-  silent! let err = rename(dein#util#_get_runtime_path(), dest)
-  if get(l:, 'err', -1)
-    call dein#util#_error('Rename failed.')
-    call dein#util#_error('src=' . dein#util#_get_runtime_path())
-    call dein#util#_error('dest=' . dest)
-    return
-  endif
+  " Remove runtime path
+  call dein#install#_rm(dein#util#_get_runtime_path())
 
   " Create runtime path
   call mkdir(dein#util#_get_runtime_path(), 'p')
-
-  " Remove previous runtime path
-  for path in filter(dein#util#_globlist(
-        \ dein#util#_get_cache_path().'/temp/*'),
-        \   "fnamemodify(v:val, ':t') !=# getpid()")
-    call dein#install#_rm(path)
-  endfor
 endfunction
 function! s:helptags() abort
   if g:dein#_runtime_path ==# '' || dein#util#_is_sudo()
