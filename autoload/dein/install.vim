@@ -236,11 +236,15 @@ function! s:clear_runtimepath() abort
     return
   endif
 
-  " Remove runtime path
-  call dein#install#_rm(dein#util#_get_runtime_path())
+  let runtimepath = dein#util#_get_runtime_path()
 
-  " Create runtime path
-  call mkdir(dein#util#_get_runtime_path(), 'p')
+  " Remove runtime path
+  call dein#install#_rm(runtimepath)
+
+  if !isdirectory(runtimepath)
+    " Create runtime path
+    call mkdir(runtimepath, 'p')
+  endif
 endfunction
 function! s:helptags() abort
   if g:dein#_runtime_path ==# '' || dein#util#_is_sudo()
@@ -658,7 +662,8 @@ function! s:job_system.system(command) abort
   let s:job_system.status = -1
   let s:job_system.candidates = []
 
-  let job = dein#job#start(a:command, {'on_stdout': self.on_out})
+  let job = dein#job#start(a:command,
+        \ {'on_stdout': self.on_out, 'on_stderr': self.on_out})
 
   call job.wait()
   let s:job_system.status = job.exitval()
@@ -728,9 +733,14 @@ function! dein#install#_rm(path) abort
   endif
 
   let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
-  let result = dein#install#_system(rm_command . cmdline)
+  let cmdline = rm_command . cmdline
+  let result = dein#install#_system(cmdline)
   if dein#install#_status()
     call dein#util#_error(result)
+  endif
+  if getftype(a:path) != ''
+    call dein#util#_error(printf('"%s" cannot be removed.', a:path))
+    call dein#util#_error(printf('cmdline is "%s".', cmdline))
   endif
 endfunction
 function! dein#install#_copy_directories(srcs, dest) abort
