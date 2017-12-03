@@ -123,6 +123,10 @@ function! s:source_events(event, plugins) abort
     call feedkeys(v:char)
     let v:char = ''
   else
+    if a:event ==# 'BufNew'
+      " For BufReadCmd plugins
+      doautocmd <nomodeline> BufReadCmd
+    endif
     execute 'doautocmd <nomodeline>' a:event
   endif
 endfunction
