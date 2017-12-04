@@ -1176,9 +1176,13 @@ function! s:get_async_result(process) abort
 
   " Check job status
   let status = 0
-  if a:process.job.wait(5) != -1
+  let wait = a:process.job.wait(5)
+  if wait != -1
     let job.eof = 1
     let status = a:process.job.exitval()
+    if status == -1
+      let status = wait
+    endif
   endif
 
   let output = join((job.eof ?
