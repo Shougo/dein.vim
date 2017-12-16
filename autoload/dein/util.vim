@@ -409,6 +409,11 @@ function! dein#util#_end() abort
 
   let g:dein#_block_level -= 1
 
+  if !has('vim_starting')
+    call dein#source(filter(values(g:dein#_plugins),
+        \ "!v:val.lazy && !v:val.sourced && v:val.rtp !=# ''"))
+  endif
+
   " Add runtimepath
   let rtps = dein#util#_split_rtp(&runtimepath)
   let index = index(rtps, g:dein#_runtime_path)
@@ -418,6 +423,8 @@ function! dein#util#_end() abort
   endif
 
   let depends = []
+  let sourced = has('vim_starting') &&
+        \ (!exists('&loadplugins') || &loadplugins)
   for plugin in filter(values(g:dein#_plugins),
         \ "!v:val.lazy && !v:val.sourced && v:val.rtp !=# ''")
     " Load dependencies
@@ -432,7 +439,7 @@ function! dein#util#_end() abort
       endif
     endif
 
-    let plugin.sourced = 1
+    let plugin.sourced = sourced
   endfor
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 

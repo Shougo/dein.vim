@@ -59,8 +59,8 @@ function! dein#_json2vim(expr) abort
         \ json_decode(a:expr) : eval(a:expr)
 endfunction
 function! dein#load_state(path, ...) abort
-  if !(a:0 > 0 ? a:1 : has('vim_starting')) | return 1 | endif
-
+  if !(a:0 > 0 ? a:1 : has('vim_starting') &&
+        \ (!exists('&loadplugins') || &loadplugins)) | return 1 | endif
   call dein#_init()
   let g:dein#_base_path = expand(a:path)
 
