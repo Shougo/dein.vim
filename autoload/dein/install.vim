@@ -1067,14 +1067,13 @@ function! s:job_handler(id, msg, event) abort
   endif
 
   let candidates = s:job_info[a:id].candidates
-  let lines = a:msg
-  if !empty(lines) && lines[0] !=# "\n" && !empty(candidates)
-    " Join to the previous line
-    let candidates[-1] .= lines[0]
-    call remove(lines, 0)
+  if empty(candidates)
+    call add(candidates, a:msg[0])
+  else
+    let candidates[-1] .= a:msg[0]
   endif
 
-  let candidates += lines
+  let candidates += a:msg[1:]
 endfunction
 function! s:check_output(context, process) abort
   if a:context.async
