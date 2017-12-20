@@ -1124,6 +1124,11 @@ A: >
 	$ vim -c "try | call dein#update() | finally | qall! | endtry" \
 	-N -u $VIMRC -U NONE -i NONE -V1 -e -s
 
+Q: I want to change the environment variable when build.
+A: >
+	call dein#add('nixprime/cpsm',
+	\ {'build': 'sh -c "PY3=ON ./install.sh"'})
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
