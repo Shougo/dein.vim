@@ -372,9 +372,6 @@ endfunction
 function! dein#install#_has_job() abort
   return has('nvim') || (has('patch-8.0.0027') && has('job'))
 endfunction
-function! dein#install#_has_sync_job() abort
-  return dein#install#_has_job() && (has('nvim') || !dein#util#_is_windows())
-endfunction
 
 function! dein#install#_remote_plugins() abort
   if !has('nvim')
@@ -621,7 +618,7 @@ function! dein#install#_cd(path) abort
   endtry
 endfunction
 function! dein#install#_system(command) abort
-  if !dein#install#_has_sync_job() && !has('nvim')
+  if !dein#install#_has_job() && !has('nvim')
         \ && type(a:command) == type([])
     " system() does not support List arguments in Vim.
     let command = s:args2string(a:command)
@@ -631,14 +628,14 @@ function! dein#install#_system(command) abort
 
   let command = s:iconv(command, &encoding, 'char')
 
-  let output = dein#install#_has_sync_job() ?
+  let output = dein#install#_has_job() ?
         \ s:job_system.system(command) :
         \ system(command)
   let output = s:iconv(output, 'char', &encoding)
   return substitute(output, '\n$', '', '')
 endfunction
 function! dein#install#_status() abort
-  return dein#install#_has_sync_job() ?
+  return dein#install#_has_job() ?
         \ s:job_system.status : v:shell_error
 endfunction
 function! s:system_cd(command, path) abort
@@ -678,7 +675,7 @@ endfunction
 
 function! dein#install#_execute(command) abort
   let error = 0
-  if dein#install#_has_sync_job()
+  if dein#install#_has_job()
     let error = s:job_execute.execute(a:command)
   else
     execute '!' . s:args2string(a:command)
@@ -743,8 +740,8 @@ function! dein#install#_rm(path) abort
 
   let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
   let cmdline = rm_command . cmdline
-  let result = dein#install#_system(cmdline)
-  if dein#install#_status()
+  let result = system(cmdline)
+  if v:shell_error
     call dein#util#_error(result)
   endif
 
