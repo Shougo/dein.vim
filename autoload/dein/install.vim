@@ -372,6 +372,9 @@ endfunction
 function! dein#install#_has_job() abort
   return has('nvim') || (has('patch-8.0.0027') && has('job'))
 endfunction
+function! dein#install#_has_sync_job() abort
+  return dein#install#_has_job() && (has('nvim') || !dein#util#_is_windows())
+endfunction
 
 function! dein#install#_remote_plugins() abort
   if !has('nvim')
@@ -627,14 +630,14 @@ function! dein#install#_system(command) abort
 
   let command = s:iconv(command, &encoding, 'char')
 
-  let output = dein#install#_has_job() ?
+  let output = dein#install#_has_sync_job() ?
         \ s:job_system.system(command) :
         \ system(command)
   let output = s:iconv(output, 'char', &encoding)
   return substitute(output, '\n$', '', '')
 endfunction
 function! dein#install#_status() abort
-  return dein#install#_has_job() ?
+  return dein#install#_has_sync_job() ?
         \ s:job_system.status : v:shell_error
 endfunction
 function! s:system_cd(command, path) abort
@@ -674,7 +677,7 @@ endfunction
 
 function! dein#install#_execute(command) abort
   let error = 0
-  if dein#install#_has_job()
+  if dein#install#_has_sync_job()
     let error = s:job_execute.execute(a:command)
   else
     execute '!' . s:args2string(a:command)
@@ -727,15 +730,15 @@ function! dein#install#_rm(path) abort
   "   return
   " endif
 
-  let path = a:path
+  let cmdline = ' "' . a:path . '"'
   if dein#util#_is_windows()
     " Note: In rm command, must use "\" instead of "/".
-    let path = substitute(a:path, '/', '\\\\', 'g')
+    let cmdline = substitute(cmdline, '/', '\\\\', 'g')
   endif
 
-  let commands = (dein#util#_is_windows() ?
-        \ ['rmdir', '/S',  '/Q'] : ['rm', '-rf']) + [path]
-  let result = dein#install#_system(commands)
+  let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
+  let cmdline = rm_command . cmdline
+  let result = dein#install#_system(cmdline)
   if dein#install#_status()
     call dein#util#_error(result)
   endif
