@@ -621,7 +621,8 @@ function! dein#install#_cd(path) abort
   endtry
 endfunction
 function! dein#install#_system(command) abort
-  if !dein#install#_has_job() && !has('nvim') && type(a:command) == type([])
+  if !dein#install#_has_sync_job() && !has('nvim')
+        \ && type(a:command) == type([])
     " system() does not support List arguments in Vim.
     let command = s:args2string(a:command)
   else
@@ -718,6 +719,8 @@ function! dein#install#_rm(path) abort
     return
   endif
 
+  " Todo: use :python3 instead.
+
   " Note: delete rf is broken
   " if has('patch-7.4.1120')
   "   try
@@ -730,6 +733,8 @@ function! dein#install#_rm(path) abort
   "   return
   " endif
 
+  " Note: In Windows, ['rmdir', '/S', '/Q'] does not work.
+  " After Vim 8.0.928, double quote escape does not work in job.  Too bad.
   let cmdline = ' "' . a:path . '"'
   if dein#util#_is_windows()
     " Note: In rm command, must use "\" instead of "/".
@@ -742,6 +747,8 @@ function! dein#install#_rm(path) abort
   if dein#install#_status()
     call dein#util#_error(result)
   endif
+
+  " Error check.
   if getftype(a:path) != ''
     call dein#util#_error(printf('"%s" cannot be removed.', a:path))
     call dein#util#_error(printf('cmdline is "%s".', cmdline))
