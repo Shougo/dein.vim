@@ -321,6 +321,7 @@ function! s:check_rollback(plugin) abort
         \ && !get(a:plugin, 'frozen', 0)
         \ && get(a:plugin, 'rev', '') ==# ''
 endfunction
+
 function! dein#install#_get_default_ftplugin() abort
   return [
         \ 'if exists("g:did_load_ftplugin")',
