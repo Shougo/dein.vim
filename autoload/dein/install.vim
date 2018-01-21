@@ -321,6 +321,39 @@ function! s:check_rollback(plugin) abort
         \ && !get(a:plugin, 'frozen', 0)
         \ && get(a:plugin, 'rev', '') ==# ''
 endfunction
+function! dein#install#_get_default_ftplugin() abort
+  return [
+        \ 'if exists("g:did_load_ftplugin")',
+        \ '  finish',
+        \ 'endif',
+        \ 'let g:did_load_ftplugin = 1',
+        \ '',
+        \ 'augroup filetypeplugin',
+        \ '  autocmd FileType * call s:ftplugin()',
+        \ 'augroup END',
+        \ '',
+        \ 'function! s:ftplugin()',
+        \ '  if exists("b:undo_ftplugin")',
+        \ '    silent! execute b:undo_ftplugin',
+        \ '    unlet! b:undo_ftplugin b:did_ftplugin',
+        \ '  endif',
+        \ '',
+        \ '  let filetype = expand("<amatch>")',
+        \ '  if filetype !=# ""',
+        \ '    if &cpoptions =~# "S" && exists("b:did_ftplugin")',
+        \ '      unlet b:did_ftplugin',
+        \ '    endif',
+        \ '    for ft in split(filetype, ''\.'')',
+        \ '      execute "runtime! ftplugin/" . ft . ".vim"',
+        \ '      execute "runtime! ftplugin/" . ft . "_*.vim"',
+        \ '      execute "runtime! ftplugin/" . ft . "/*.vim"',
+        \ '    endfor',
+        \ '  endif',
+        \ '  call s:after_ftplugin()',
+        \ 'endfunction',
+        \ '',
+        \]
+endfunction
 function! s:generate_ftplugin() abort
   " Create after/ftplugin
   let after = dein#util#_get_runtime_path() . '/after/ftplugin'
@@ -345,19 +378,11 @@ function! s:generate_ftplugin() abort
     endfor
   endfor
 
-  if empty(ftplugin)
-    return
-  endif
-
   " Generate ftplugin.vim
-  let base = get(split(globpath(&runtimepath, 'ftplugin.vim'), '\n'), 0, '')
-  if base !=# ''
-    call writefile(readfile(base) + [
-          \ 'autocmd filetypeplugin FileType * call s:AfterFTPlugin()',
-          \ 'function! s:AfterFTPlugin()',
-          \ ] + get(ftplugin, '_', []) + ['endfunction'],
-          \ dein#util#_get_runtime_path() . '/ftplugin.vim')
-  endif
+  call writefile(dein#install#_get_default_ftplugin() + [
+        \ 'function! s:after_ftplugin()',
+        \ ] + get(ftplugin, '_', []) + ['endfunction'],
+        \ dein#util#_get_runtime_path() . '/ftplugin.vim')
 
   " Generate after/ftplugin
   for [filetype, list] in items(ftplugin)

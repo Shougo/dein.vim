@@ -772,13 +772,11 @@ function! s:suite.ftplugin() abort
 
   call dein#recache_runtimepath()
 
-  let ftplugin = readfile(dein#util#_get_runtime_path() . '/ftplugin.vim')
-  let after = readfile($VIMRUNTIME  . '/ftplugin.vim') + [
-        \ 'autocmd filetypeplugin FileType * call s:AfterFTPlugin()',
-        \ 'function! s:AfterFTPlugin()',
-        \ ] + split(get(g:dein#_ftplugin, '_', ''), '\n')
-        \ + ['endfunction']
-  call s:assert.equals(ftplugin, after)
+  call s:assert.equals(
+        \ readfile(dein#util#_get_runtime_path() . '/ftplugin.vim'),
+        \ dein#install#_get_default_ftplugin() + [
+        \ 'function! s:after_ftplugin()',
+        \ ] + split(get(g:dein#_ftplugin, '_', []), '\n') + ['endfunction'])
 
   let python = readfile(dein#util#_get_runtime_path()
         \ . '/after/ftplugin/python.vim')
