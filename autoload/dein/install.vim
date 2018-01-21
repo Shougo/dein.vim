@@ -23,6 +23,8 @@ let g:dein#install_process_timeout =
 let g:dein#install_log_filename =
       \ get(g:, 'dein#install_log_filename', '')
 
+let s:Job = vital#dein#import('System.Job')
+
 function! dein#install#_update(plugins, update_type, async) abort
   if dein#util#_is_sudo()
     call s:error('update/install is disabled in sudo session.')
@@ -680,25 +682,23 @@ function! s:system_cd(command, path) abort
 endfunction
 
 let s:job_system = {}
-function! s:job_system.on_out(id, msg, event) abort
-  let lines = a:msg
-  if !empty(lines) && lines[0] !=# "\n" && !empty(s:job_system.candidates)
-    " Join to the previous line
-    let s:job_system.candidates[-1] .= lines[0]
-    call remove(lines, 0)
+function! s:job_system.on_out(data) abort
+  let candidates = s:job_system.candidates
+  if empty(candidates)
+    call add(candidates, a:data[0])
+  else
+    let candidates[-1] .= a:data[0]
   endif
-
-  let s:job_system.candidates += lines
+  let candidates += a:data[1:]
 endfunction
 function! s:job_system.system(command) abort
   let s:job_system.status = -1
   let s:job_system.candidates = []
 
-  let job = dein#job#start(a:command,
+  let job = s:Job.start(a:command,
         \ {'on_stdout': self.on_out, 'on_stderr': self.on_out})
 
-  call job.wait()
-  let s:job_system.status = job.exitval()
+  let s:job_system.status = job.wait()
 
   return join(self.candidates, "\n")
 endfunction
@@ -718,27 +718,26 @@ function! dein#install#_execute(command) abort
   return error
 endfunction
 let s:job_execute = {}
-function! s:job_execute.on_out(id, msg, event) abort
-  let lines = a:msg
-  if !empty(lines) && lines[0] !=# "\n" && !empty(s:job_execute.candidates)
-    " Join to the previous line
-    echon lines[0]
-    call remove(lines, 0)
-  endif
-
-  for line in lines
+function! s:job_execute.on_out(data) abort
+  for line in a:data
     echo line
   endfor
-  let s:job_execute.candidates += lines
+
+  let candidates = s:job_execute.candidates
+  if empty(candidates)
+    call add(candidates, a:data[0])
+  else
+    let candidates[-1] .= a:data[0]
+  endif
+  let candidates += a:data[1:]
 endfunction
 function! s:job_execute.execute(command) abort
   let self.candidates = []
 
-  let job = dein#job#start(s:iconv(a:command, &encoding, 'char'),
+  let job = s:Job.start(s:iconv(a:command, &encoding, 'char'),
         \ {'on_stdout': self.on_out})
 
-  call job.wait()
-  return job.exitval()
+  return job.wait()
 endfunction
 
 function! dein#install#_rm(path) abort
