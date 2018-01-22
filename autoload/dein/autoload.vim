@@ -157,7 +157,7 @@ endfunction
 function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
   call dein#source(a:name)
 
-  if !exists(':' . a:command)
+  if exists(':' . a:command) != 2
     call dein#util#_error(printf('command %s is not found.', a:command))
     return
   endif
@@ -215,7 +215,7 @@ endfunction
 
 function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
   let command = matchstr(a:cmdline, '\h\w*')
-  if exists(':'.command)
+  if exists(':'.command) == 2
     " Remove the dummy command.
     silent! execute 'delcommand' command
   endif
@@ -223,7 +223,7 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
   " Load plugins
   call dein#autoload#_on_pre_cmd(tolower(command))
 
-  if exists(':'.command)
+  if exists(':'.command) == 2
     " Print the candidates
     call feedkeys("\<C-d>", 'n')
   endif
