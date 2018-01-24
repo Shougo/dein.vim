@@ -45,6 +45,7 @@ class Source(Base):
         rows = len(context['__source_log'])
         candidates = list(map(make_candidates, logs[rows:]))
         context['__source_log'] = logs
+        self.vim.call('dein#install#_polling')
         return candidates
 
     def highlight(self):
