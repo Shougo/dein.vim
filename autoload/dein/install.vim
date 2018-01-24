@@ -714,7 +714,7 @@ function! s:job_execute.execute(command) abort
         \ s:iconv(a:command, &encoding, 'char'),
         \ {'on_stdout': self.on_out})
 
-  return job.wait()
+  return job.wait(g:dein#install_process_timeout * 1000)
 endfunction
 
 function! dein#install#_rm(path) abort
@@ -1051,10 +1051,7 @@ function! s:init_job(process, context, cmd) abort
     return
   endif
 
-  let a:process.async = {
-        \ 'candidates': [],
-        \ 'eof': 0,
-        \ }
+  let a:process.async = {'eof': 0}
   function! a:process.async.job_handler(data) abort
     if !has_key(self, 'candidates')
       let self.candidates = []
@@ -1107,21 +1104,11 @@ function! s:init_job(process, context, cmd) abort
   endfunction
 
   let cmd = s:iconv(a:cmd, &encoding, 'char')
-  if has('nvim')
-    " Use neovim async jobs
-    let a:process.job = s:get_job().start(cmd, {
-          \   'on_stdout': a:process.async.job_handler,
-          \   'on_stderr': a:process.async.job_handler,
-          \ })
-    let a:process.id = a:process.job.__job
-  else
-    let a:process.job = s:get_job().start(cmd, {
-          \   'on_stdout': a:process.async.job_handler,
-          \   'on_stderr': a:process.async.job_handler,
-          \ })
-    let a:process.id = s:channel2id(job_getchannel(a:process.job.__job))
-  endif
-
+  let a:process.job = s:get_job().start(cmd, {
+        \   'on_stdout': a:process.async.job_handler,
+        \   'on_stderr': a:process.async.job_handler,
+        \ })
+  let a:process.id = a:process.job.id()
   let a:process.job.candidates = []
 endfunction
 function! s:check_output(context, process) abort
@@ -1283,9 +1270,6 @@ function! s:notify(msg) abort
 
   call s:updates_log(msg)
   let s:progress = join(msg, "\n")
-endfunction
-function! s:channel2id(channel) abort
-  return matchstr(a:channel, '\d\+')
 endfunction
 function! s:updates_log(msg) abort
   let msg = dein#util#_convert2list(a:msg)

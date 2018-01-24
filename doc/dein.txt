@@ -1,6 +1,6 @@
 *dein.txt*	Dark powered Vim/Neovim plugin manager
 
-Version: 1.0
+Version: 1.5
 Author:  Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
