@@ -917,8 +917,8 @@ dein
 		Note:
 		If argument is bang(!), print plugins status.
 
-						*dein-unite-source-dein-log*
-dein/log
+						*dein-unite-source-dein_log*
+dein_log
 		Print previous dein install logs.
 		And you can jump the diff URI in github.
 
