@@ -936,6 +936,16 @@ Here let me explain about a source for |denite| provided in dein.
 dein
 		Nominates dein plugins as candidates.
 
+						*dein-denite-source-dein-log*
+dein/log
+		Print previous dein install logs.
+		And you can jump the diff URI in github.
+
+		If argument 1 is "!", the updated logs are displayed.
+
+		Source arguments:
+		1. "!"
+
 ==============================================================================
 EXAMPLES						*dein-examples*
 >

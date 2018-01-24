@@ -398,6 +398,10 @@ function! dein#install#_has_job() abort
   return has('nvim') || (has('patch-8.0.0027') && has('job'))
 endfunction
 
+function! dein#install#_polling() abort
+  return s:install_async(s:global_context)
+endfunction
+
 function! dein#install#_remote_plugins() abort
   if !has('nvim')
     return
