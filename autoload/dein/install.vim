@@ -71,7 +71,7 @@ function! dein#install#_update(plugins, update_type, async) abort
   endif
 
   function! s:timer_handler(timer) abort
-    call s:install_async(s:global_context)
+    call dein#install#_polling()
   endfunction
   let s:timer = timer_start(1000,
         \ function('s:timer_handler'), {'repeat': -1})
@@ -80,8 +80,8 @@ function! s:update_loop(context) abort
   let errored = 0
   try
     if has('vim_starting')
-      while !empty(s:global_context)
-        let errored = s:install_async(s:global_context)
+      while !empty(a:context)
+        let errored = s:install_async(a:context)
         sleep 50ms
         redraw
       endwhile
@@ -1265,17 +1265,19 @@ function! s:iconv(expr, from, to) abort
 endfunction
 function! s:print_progress_message(msg) abort
   let msg = dein#util#_convert2list(a:msg)
-  if empty(msg) || empty(s:global_context)
+  let context = s:global_context
+  if empty(msg) || empty(context)
     return
   endif
 
-  if s:global_context.progress_type ==# 'tabline'
+  let progress_type = context.progress_type
+  if progress_type ==# 'tabline'
     set showtabline=2
     let &g:tabline = join(msg, "\n")
-  elseif s:global_context.progress_type ==# 'title'
+  elseif progress_type ==# 'title'
     set title
     let &g:titlestring = join(msg, "\n")
-  elseif s:global_context.progress_type ==# 'echo'
+  elseif progress_type ==# 'echo'
     call s:echo(msg, 'echo')
   endif
 
@@ -1305,11 +1307,12 @@ function! s:nonskip_error(msg) abort
 endfunction
 function! s:notify(msg) abort
   let msg = dein#util#_convert2list(a:msg)
-  if empty(msg)
+  let context = s:global_context
+  if empty(msg) || empty(context)
     return
   endif
 
-  if s:global_context.message_type ==# 'echo'
+  if context.message_type ==# 'echo'
     call dein#util#_notify(a:msg)
   endif
 
