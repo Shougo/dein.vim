@@ -36,7 +36,9 @@ function! s:start(args, options) abort
   if has_key(job, 'on_exit')
     let job_options.exit_cb = function('s:_exit_cb', [job])
   endif
-  let job.__job = job_start(a:args, job_options)
+  let args = type(a:args) == v:t_list ?
+        \ a:args : [&shell, &shellcmdflag, a:args]
+  let job.__job = job_start(args, job_options)
   let job.__closed = v:false
   let job.args = a:args
   return job
