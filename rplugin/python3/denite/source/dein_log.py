@@ -5,7 +5,7 @@
 # ============================================================================
 
 import re
-from denite.source.base import Base
+from .base import Base
 
 HEADER_RE = re.compile(r'^\s*[a-zA-Z_]\w*://')
 SPACE_RE = re.compile(r'^\s+')
