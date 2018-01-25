@@ -707,11 +707,11 @@ function! s:job_execute.on_out(data) abort
   endif
   let candidates += a:data[1:]
 endfunction
-function! s:job_execute.execute(command) abort
+function! s:job_execute.execute(cmd) abort
   let self.candidates = []
 
   let job = s:get_job().start(
-        \ s:iconv(a:command, &encoding, 'char'),
+        \ s:convert_args(a:cmd),
         \ {'on_stdout': self.on_out})
 
   return job.wait(g:dein#install_process_timeout * 1000)
@@ -923,6 +923,13 @@ function! s:init_variables(context) abort
   let s:log = []
   let s:updates_log = []
 endfunction
+function! s:convert_args(args) abort
+  let args = s:iconv(a:args, &encoding, 'char')
+  if type(args) != v:t_list
+    let args = split(&shell) + split(&shellcmdflag) + [args]
+  endif
+  return args
+endfunction
 function! s:start() abort
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction
@@ -1103,8 +1110,8 @@ function! s:init_job(process, context, cmd) abort
     return [is_timeout, is_skip, status]
   endfunction
 
-  let cmd = s:iconv(a:cmd, &encoding, 'char')
-  let a:process.job = s:get_job().start(cmd, {
+  let a:process.job = s:get_job().start(
+        \ s:convert_args(a:cmd), {
         \   'on_stdout': a:process.async.job_handler,
         \   'on_stderr': a:process.async.job_handler,
         \ })
