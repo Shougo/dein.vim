@@ -1,6 +1,6 @@
 " set verbose=1
 
-let s:suite = themis#suite('install')
+let s:suite = themis#suite('install_base')
 let s:assert = themis#helper('assert')
 
 function! s:suite.rm() abort
@@ -22,6 +22,8 @@ function! s:suite.copy_directories() abort
   call mkdir(temp3)
   call writefile([], temp.'/foo')
   call writefile([], temp3.'/bar')
+  call s:assert.true(filereadable(temp.'/foo'))
+  call s:assert.true(filereadable(temp3.'/bar'))
 
   call dein#install#_copy_directories([temp, temp3], temp2)
 
