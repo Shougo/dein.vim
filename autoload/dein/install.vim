@@ -1073,11 +1073,16 @@ function! s:init_job(process, context, cmd) abort
     let candidates += a:data[1:]
   endfunction
 
+  function! a:process.async.on_exit(exitval) abort
+    let self.exitval = a:exitval
+  endfunction
+
   function! a:process.async.get(process) abort
     " Check job status
-    let status = a:process.job.wait(5)
-    if status != -1
+    let status = -1
+    if has_key(a:process.job, 'exitval')
       let self.eof = 1
+      let status = a:process.job.exitval
     endif
 
     let candidates = get(a:process.job, 'candidates', [])
@@ -1114,6 +1119,7 @@ function! s:init_job(process, context, cmd) abort
         \ s:convert_args(a:cmd), {
         \   'on_stdout': a:process.async.job_handler,
         \   'on_stderr': a:process.async.job_handler,
+        \   'on_exit': a:process.async.on_exit,
         \ })
   let a:process.id = a:process.job.id()
   let a:process.job.candidates = []
