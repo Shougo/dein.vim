@@ -86,7 +86,7 @@ function! s:update_loop(context) abort
   let errored = 0
   try
     if has('vim_starting')
-      while !empty(a:context)
+      while !empty(s:global_context)
         let errored = s:install_async(a:context)
         sleep 50ms
         redraw
@@ -402,7 +402,8 @@ function! dein#install#_is_async() abort
         \ dein#install#_has_job() : 0
 endfunction
 function! dein#install#_has_job() abort
-  return has('nvim') || (has('patch-8.0.0027') && has('job'))
+  return (has('nvim') && exists('v:t_list'))
+        \ || (has('patch-8.0.0027') && has('job'))
 endfunction
 
 function! dein#install#_polling() abort
