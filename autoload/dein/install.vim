@@ -610,7 +610,7 @@ function! s:get_updated_message(context, plugins) abort
   endif
 
   return "Updated plugins:\n".
-        \ join(map(a:plugins,
+        \ join(map(copy(a:plugins),
         \ "'  ' . v:val.name . (v:val.commit_count == 0 ? ''
         \                     : printf('(%d change%s)',
         \                              v:val.commit_count,
