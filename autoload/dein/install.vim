@@ -655,6 +655,10 @@ function! dein#install#_cd(path) abort
   endtry
 endfunction
 function! dein#install#_system(command) abort
+  " Todo: use job API instead for Vim8/neovim only
+  " let job = s:Job.start()
+  " let exitval = job.wait()
+
   if !has('nvim') && type(a:command) == type([])
     " system() does not support List arguments in Vim.
     let command = s:args2string(a:command)
@@ -1407,5 +1411,22 @@ endfunction
 
 function! s:args2string(args) abort
   return type(a:args) == type('') ? a:args :
-        \ join(map(copy(a:args), '''"'' . v:val . ''"'''))
+        \ dein#util#_is_windows() ?
+        \   dein#install#_args2string_windows(a:args) :
+        \   dein#install#_args2string_unix(a:args)
+endfunction
+
+function! dein#install#_args2string_windows(args) abort
+  if empty(a:args)
+    return ''
+  endif
+  let str = (a:args[0] =~# ' ') ? '"' . a:args[0] . '"' : a:args[0]
+  if len(a:args) > 1
+    let str .= ' '
+    let str .= join(map(copy(a:args[1:]), '''"'' . v:val . ''"'''))
+  endif
+  return str
+endfunction
+function! dein#install#_args2string_unix(args) abort
+  return join(map(copy(a:args), 'string(v:val)'))
 endfunction
