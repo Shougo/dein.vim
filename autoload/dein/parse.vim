@@ -140,7 +140,7 @@ endfunction
 function! dein#parse#_load_toml(filename, default) abort
   try
     let toml = dein#toml#parse_file(dein#util#_expand(a:filename))
-  catch /vital: Text.TOML:/
+  catch /Text.TOML:/
     call dein#util#_error('Invalid toml format: ' . a:filename)
     call dein#util#_error(v:exception)
     return 1

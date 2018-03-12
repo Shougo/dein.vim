@@ -14,7 +14,7 @@ endfunction
 
 function! dein#toml#parse_file(filename) abort
   if !filereadable(a:filename)
-    throw printf("vital: Text.TOML: No such file `%s'.", a:filename)
+    throw printf("Text.TOML: No such file `%s'.", a:filename)
   endif
 
   let text = join(readfile(a:filename), "\n")
@@ -74,7 +74,7 @@ function! s:_error(input) abort
     let offset += 1
   endwhile
 
-  throw printf("vital: Text.TOML: Illegal toml format at L%d:`%s':%d.",
+  throw printf("Text.TOML: Illegal toml format at L%d:`%s':%d.",
       \ len(split(a:input.text[: a:input.p], "\n", 1)),
       \ join(buf, ''), a:input.p)
 endfunction
