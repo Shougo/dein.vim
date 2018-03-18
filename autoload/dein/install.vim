@@ -315,7 +315,7 @@ function! s:save_rollback() abort
 endfunction
 function! s:get_rollback_directory() abort
   let parent = printf('%s/rollbacks/%s',
-        \ dein#util#_get_cache_path(), fnamemodify(v:progname, ':r'))
+        \ dein#util#_get_cache_path(), g:dein#_progname)
   if !isdirectory(parent)
     call mkdir(parent, 'p')
   endif

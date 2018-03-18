@@ -16,7 +16,7 @@ function! s:suite.before_each() abort
 endfunction
 
 function! s:suite.state() abort
-  call delete(s:path.'/state_'.fnamemodify(v:progname, ':r').'.vim')
+  call delete(s:path.'/state_'.g:dein#_progname.'.vim')
 
   call dein#begin(s:path)
 

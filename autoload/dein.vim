@@ -22,6 +22,7 @@ function! dein#_init() abort
   let g:dein#_is_sudo = $SUDO_USER !=# '' && $USER !=# $SUDO_USER
         \ && $HOME !=# expand('~'.$USER)
         \ && $HOME ==# expand('~'.$SUDO_USER)
+  let g:dein#_progname = fnamemodify(v:progname, ':r')
 
   augroup dein
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
@@ -41,7 +42,7 @@ endfunction
 function! dein#load_cache_raw(vimrcs) abort
   let g:dein#_vimrcs = a:vimrcs
   let cache = get(g:, 'dein#cache_directory', g:dein#_base_path)
-        \ .'/cache_'.fnamemodify(v:progname, ':r')
+        \ .'/cache_' . g:dein#_progname
   let time = getftime(cache)
   if !empty(filter(map(copy(g:dein#_vimrcs),
         \ 'getftime(expand(v:val))'), 'time < v:val'))
@@ -68,7 +69,7 @@ function! dein#load_state(path, ...) abort
   let g:dein#_base_path = expand(a:path)
 
   let state = get(g:, 'dein#cache_directory', g:dein#_base_path)
-        \ .'/state_' .fnamemodify(v:progname, ':r').'.vim'
+        \ . '/state_' . g:dein#_progname . '.vim'
   if !filereadable(state) | return 1 | endif
   try
     execute 'source' fnameescape(state)
