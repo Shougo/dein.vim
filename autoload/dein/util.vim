@@ -232,13 +232,14 @@ function! dein#util#_check_vimrcs() abort
         \ 'time < v:val'))
   if ret
     call dein#clear_state()
-
-    if [string(g:dein#_cache_version)] +
-          \ sort(map(values(g:dein#_plugins), 'v:val.repo'))
-          \ !=# dein#util#_load_merged_plugins()
-      call dein#recache_runtimepath()
-    endif
   endif
+
+  if [string(g:dein#_cache_version)] +
+        \ sort(map(values(g:dein#_plugins), 'v:val.repo'))
+        \ !=# dein#util#_load_merged_plugins()
+    call dein#recache_runtimepath()
+  endif
+
   return ret
 endfunction
 function! dein#util#_load_merged_plugins() abort
