@@ -23,6 +23,7 @@ function! dein#_init() abort
         \ && $HOME !=# expand('~'.$USER)
         \ && $HOME ==# expand('~'.$SUDO_USER)
   let g:dein#_progname = fnamemodify(v:progname, ':r')
+  let g:dein#_init_runtimepath = &runtimepath
 
   augroup dein
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))

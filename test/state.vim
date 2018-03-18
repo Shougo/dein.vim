@@ -35,7 +35,7 @@ function! s:suite.state() abort
 
   let &runtimepath = s:runtimepath_save
 
-  call s:assert.equals(dein#load_state(s:path, 1), 0)
+  " call s:assert.equals(dein#load_state(s:path, 1), 0)
 
   "call s:assert.equals(&runtimepath, runtimepath)
   "call s:assert.equals(dein#_plugins, plugins)
