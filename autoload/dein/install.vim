@@ -30,7 +30,7 @@ function! s:get_job() abort
 endfunction
 
 function! dein#install#_update(plugins, update_type, async) abort
-  if dein#util#_is_sudo()
+  if g:dein#_is_sudo
     call s:error('update/install is disabled in sudo session.')
     return
   endif
@@ -182,7 +182,7 @@ function! dein#install#_rollback(date, plugins) abort
 endfunction
 
 function! dein#install#_recache_runtimepath() abort
-  if dein#util#_is_sudo()
+  if g:dein#_is_sudo
     call s:error('recache_runtimepath() is disabled in sudo session.')
     return
   endif
@@ -253,7 +253,7 @@ function! s:clear_runtimepath() abort
   endif
 endfunction
 function! s:helptags() abort
-  if g:dein#_runtime_path ==# '' || dein#util#_is_sudo()
+  if g:dein#_runtime_path ==# '' || g:dein#_is_sudo
     return ''
   endif
 

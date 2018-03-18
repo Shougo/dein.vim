@@ -19,6 +19,9 @@ function! dein#_init() abort
   let g:dein#_vimrcs = []
   let g:dein#_block_level = 0
   let g:dein#_event_plugins = {}
+  let g:dein#_is_sudo = $SUDO_USER !=# '' && $USER !=# $SUDO_USER
+        \ && $HOME !=# expand('~'.$USER)
+        \ && $HOME ==# expand('~'.$SUDO_USER)
 
   augroup dein
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))

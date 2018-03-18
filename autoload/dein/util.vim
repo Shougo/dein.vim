@@ -27,12 +27,6 @@ function! dein#util#_is_mac() abort
       \   (!isdirectory('/proc') && executable('sw_vers')))
 endfunction
 
-function! dein#util#_is_sudo() abort
-  return $SUDO_USER !=# '' && $USER !=# $SUDO_USER
-      \ && $HOME !=# expand('~'.$USER)
-      \ && $HOME ==# expand('~'.$SUDO_USER)
-endfunction
-
 function! dein#util#_get_base_path() abort
   return g:dein#_base_path
 endfunction
@@ -180,7 +174,7 @@ function! dein#util#_check_clean() abort
 endfunction
 
 function! dein#util#_writefile(path, list) abort
-  if dein#util#_is_sudo() || !filewritable(dein#util#_get_cache_path())
+  if g:dein#_is_sudo || !filewritable(dein#util#_get_cache_path())
     return 1
   endif
 
