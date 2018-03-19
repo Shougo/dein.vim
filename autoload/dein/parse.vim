@@ -20,7 +20,7 @@ function! dein#parse#_add(repo, options) abort
     return {}
   endif
 
-  if plugin.lazy
+  if plugin.lazy && plugin.rtp !=# ''
     call s:parse_lazy(plugin)
   endif
 
@@ -76,6 +76,7 @@ function! dein#parse#_dict(plugin) abort
 
   " Check relative path
   if (!has_key(a:plugin, 'rtp') || a:plugin.rtp !=# '')
+        \ && (!g:dein#_is_sudo || get(a:plugin, 'trusted', 0))
         \ && plugin.rtp !~# '^\%([~/]\|\a\+:\)'
     let plugin.rtp = plugin.path.'/'.plugin.rtp
   endif

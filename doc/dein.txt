@@ -671,6 +671,11 @@ lazy		(Number)
 		and just increases the overhead.  You can get the no meaning
 		lazy plugins by |dein#check_lazy_plugins()|.
 
+							*dein-options-trusted*
+trusted        (Number)
+		If set to non-zero, dein will load the plugin in "sudo" mode.
+		If you don't set it, dein won't load it.
+
 							*dein-options-on_ft*
 on_ft		(List) or (String)
 		If it is matched to 'filetype', dein will call

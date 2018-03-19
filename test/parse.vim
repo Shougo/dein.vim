@@ -173,3 +173,16 @@ function! s:suite.plugins2toml() abort
         \ "",
         \ ])
 endfunction
+
+function! s:suite.trusted() abort
+  let sudo = g:dein#_is_sudo
+  let g:dein#_is_sudo = 1
+
+  let parsed_plugin = dein#parse#_add('Shougo/denite.nvim', {})
+  call s:assert.equals(parsed_plugin.rtp, '')
+
+  let parsed_plugin = dein#parse#_add('Shougo/denite.nvim', {'trusted': 1})
+  call s:assert.not_equals(parsed_plugin.rtp, '')
+
+  let g:dein#_is_sudo = sudo
+endfunction
