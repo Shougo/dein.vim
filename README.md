@@ -27,9 +27,9 @@ You must not set the installation directory under "\~/.vim/plugin" or
 
 #### If you are using Unix/Linux or Mac OS X.
 
-Note: {directory} is just placeholder.
 
-1. Run below script.
+
+1. Run the script below: 
 
      ```
      $ curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
@@ -75,17 +75,17 @@ Note: {directory} is just placeholder.
 
 * Simple
 
-* No commands, Functions only to simplify the implementation
+* No commands, functions only to simplify the implementation
 
 * Easy to test and maintain
 
 * No Vundle/NeoBundle compatibility
 
-* neovim/Vim8 asynchronous API installation support
+* Neovim/Vim8 asynchronous API installation support
 
 * Local plugin support
 
-* Non github plugins support
+* Non-Github plugins support
 
 * Go like clone directory name ex:"github.com/{user}/{repository}"
 
