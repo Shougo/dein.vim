@@ -159,7 +159,7 @@ function! dein#install#_rollback(date, plugins) abort
     return
   endif
 
-  let revisions = dein#_json2vim(readfile(rollbacks[0])[0])
+  let revisions = json_decode(readfile(rollbacks[0])[0])
 
   call filter(plugins, "has_key(revisions, v:val.name)
         \ && has_key(dein#util#_get_type(v:val.type),
@@ -311,7 +311,7 @@ function! s:save_rollback() abort
   endfor
 
   let dest = s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S')
-  call writefile([dein#_vim2json(revisions)], dest)
+  call writefile([json_encode(revisions)], dest)
 endfunction
 function! s:get_rollback_directory() abort
   let parent = printf('%s/rollbacks/%s',

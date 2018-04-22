@@ -226,7 +226,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
   endif
 
   call writefile([string(a:vimrcs),
-        \         dein#_vim2json(plugins), dein#_vim2json(g:dein#_ftplugin)],
+        \         json_encode(plugins), json_encode(g:dein#_ftplugin)],
         \ get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/cache_' . g:dein#_progname)
 endfunction

@@ -53,15 +53,7 @@ function! dein#load_cache_raw(vimrcs) abort
   if len(list) != 3 || string(g:dein#_vimrcs) !=# list[0]
     return [{}, {}]
   endif
-  return [dein#_json2vim(list[1]), dein#_json2vim(list[2])]
-endfunction
-function! dein#_vim2json(expr) abort
-  return  (has('nvim') || has('patch-7.4.1498')) ?
-        \ json_encode(a:expr) : string(a:expr)
-endfunction
-function! dein#_json2vim(expr) abort
-  sandbox return (has('nvim') || has('patch-7.4.1498')) ?
-        \ json_decode(a:expr) : eval(a:expr)
+  return [json_decode(list[1]), json_decode(list[2])]
 endfunction
 function! dein#load_state(path, ...) abort
   if !(a:0 > 0 ? a:1 : has('vim_starting') &&
