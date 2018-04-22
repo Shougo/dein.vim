@@ -398,12 +398,7 @@ function! s:generate_ftplugin() abort
 endfunction
 
 function! dein#install#_is_async() abort
-  return (has('timers') && g:dein#install_max_processes > 1) ?
-        \ dein#install#_has_job() : 0
-endfunction
-function! dein#install#_has_job() abort
-  return (has('nvim') && exists('v:t_list'))
-        \ || (has('patch-8.0.0027') && has('job'))
+  return g:dein#install_max_processes > 1
 endfunction
 
 function! dein#install#_polling() abort
@@ -685,18 +680,7 @@ function! s:system_cd(command, path) abort
 endfunction
 
 function! dein#install#_execute(command) abort
-  let error = 0
-  if dein#install#_has_job()
-    let error = s:job_execute.execute(a:command)
-  else
-    execute '!' . s:args2string(a:command)
-    if !v:shell_error
-      redraw
-    endif
-    let error = v:shell_error
-  endif
-
-  return error
+  return s:job_execute.execute(a:command)
 endfunction
 let s:job_execute = {}
 function! s:job_execute.on_out(data) abort

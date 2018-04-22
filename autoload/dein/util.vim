@@ -155,6 +155,10 @@ endfunction
 function! dein#util#_is_fish() abort
   return dein#install#_is_async() && fnamemodify(&shell, ':t:r') ==# 'fish'
 endfunction
+function! dein#util#_has_job() abort
+  return (has('nvim') && exists('v:t_list'))
+        \ || (has('patch-8.0.0027') && has('job'))
+endfunction
 
 function! dein#util#_check_lazy_plugins() abort
   return map(filter(dein#util#_get_lazy_plugins(),
@@ -344,7 +348,7 @@ function! dein#util#_begin(path, vimrcs) abort
     call dein#_init()
   endif
 
-  if v:version < 704
+  if !dein#util#_has_job()
     call dein#util#_error('Does not work in the Vim (' . v:version . ').')
     return 1
   endif
