@@ -286,6 +286,7 @@ dein#load_state({base-path})
 		all configuration.
 		Note: It overwrites your 'runtimepath' completely, you must
 		not call it after change 'runtimepath' dynamically.
+		Note: The block is skipped if dein's state is loaded.
 
 		It returns 1, if the cache script is old or invalid or not
 		found.
