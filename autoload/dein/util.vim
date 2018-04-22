@@ -714,7 +714,7 @@ function! s:_compare(a, b) abort
 endfunction
 
 function! s:execute(expr) abort
-  if has('nvim') && s:neovim_version() >= 0.2.0
+  if has('nvim')
     return execute(split(a:expr, '\n'))
   endif
 
