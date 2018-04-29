@@ -762,69 +762,106 @@ function! dein#install#_rm(path) abort
     call dein#util#_error(printf('cmdline is "%s".', cmdline))
   endif
 endfunction
+
 function! dein#install#_copy_directories(srcs, dest) abort
   if empty(a:srcs)
     return 0
   endif
 
-  let status = 0
+  let l:status = 0
   if dein#util#_is_windows()
-    let temp = tempname() . '.bat'
-    let exclude = tempname()
-    try
-      call writefile(['.git', '.svn'], exclude)
+    if executable('rsync')
+      let l:srcs = map(filter(copy(a:srcs),
+            \ 'len(s:list_directory(v:val))'),
+            \ 'printf(''"%s/"'', substitute(v:val, ''^\(.\):'', ''/cygdrive/\L\1'', ''''))')
+      let l:cmdline = printf('rsync -rlt -q --exclude "/.git/" %s "%s"',
+                           \ join(l:srcs), substitute(a:dest, '^\(.\):', '/cygdrive/\L\1', ''))
+      let l:result = dein#install#_system(l:cmdline)
+      let l:status = dein#install#_status()
+      if l:status
+        call dein#util#_error('copy command failed.')
+        call dein#util#_error(l:result)
+        call dein#util#_error('cmdline: ' . l:cmdline)
+      endif
+    else  " Breaking the else allows the error report to be shared for xcopy and robocopy
+      let l:temp = tempname() . '.bat'
+      let l:exclude = tempname()
 
-      " Create temporary batch file
-      let lines = ['@echo off']
-      for src in a:srcs
-        " Note: In xcopy command, must use "\" instead of "/".
-        call add(lines, printf('xcopy /EXCLUDE:%s %s /E /H /I /R /Y /Q',
-              \   substitute(exclude, '/', '\\', 'g'),
-              \   substitute(printf(' "%s/"* "%s"', src, a:dest),
-              \              '/', '\\', 'g')))
-      endfor
-      call writefile(lines, temp)
+      if executable('robocopy')
+        try
+          let l:lines = ['@echo off']
+          for l:src in a:srcs
+            " call add(l:lines, printf('robocopy %s /E /XD ".git" > NUL',
+            call add(l:lines, printf('robocopy %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"',
+                  \                   substitute(printf('"%s" "%s"', l:src, a:dest),
+                  \                                     '/', '\\', 'g')))
+          endfor
+          call writefile(l:lines, l:temp)
+          let l:result = dein#install#_system(l:temp)
+        finally
+          call delete(l:temp)
+        endtry
 
-      " Note: "xcopy" is slow in Vim8 job.
-      let result = dein#install#_system(temp)
-    finally
-      call delete(temp)
-      call delete(exclude)
-    endtry
-    let status = dein#install#_status()
-    if status
-      call dein#util#_error('copy command failed.')
-      call dein#util#_error(s:iconv(result, 'char', &encoding))
-      call dein#util#_error('cmdline: ' . temp)
-      call dein#util#_error('tempfile: ' . string(lines))
+        " For some baffling reason robocopy almost always returns between 1 and 3 upon success
+        let l:status = dein#install#_status()
+        let l:status = (l:status > 3) ? l:status : 0
+      else
+        try
+          call writefile(['.git', '.svn'], l:exclude)
+          " Create temporary batch file
+          let l:lines = ['@echo off']
+          for l:src in a:srcs
+            " Note: In xcopy command, must use "\" instead of "/".
+            call add(l:lines, printf('xcopy /EXCLUDE:%s %s /E /H /I /R /Y /Q',
+                  \          substitute(l:exclude, '/', '\\', 'g'),
+                  \          substitute(printf(' "%s/"* "%s"', l:src, a:dest),
+                  \                            '/', '\\', 'g')))
+          endfor
+          call writefile(l:lines, l:temp)
+          " Note: "xcopy" is slow in Vim8 job.
+          let l:result = dein#install#_system(l:temp)
+        finally
+          call system('cp ' . l:temp . ' ' . expand('~/'))
+          call delete(l:temp)
+        endtry
+        let l:status = dein#install#_status()
+      endif
+
+      if l:status
+        call dein#util#_error('copy command failed.')
+        call dein#util#_error(s:iconv(l:result, 'char', &encoding))
+        call dein#util#_error('cmdline: ' . l:temp)
+        call dein#util#_error('tempfile: ' . string(l:lines))
+      endif
     endif
-  else
-    let srcs = map(filter(copy(a:srcs),
+
+  else " Not Windows
+    let l:srcs = map(filter(copy(a:srcs),
           \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . ''/'')')
-    let is_rsync = executable('rsync')
-    if is_rsync
-      let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
-            \ join(srcs), shellescape(a:dest))
-      let result = dein#install#_system(cmdline)
-      let status = dein#install#_status()
+    let l:is_rsync = executable('rsync')
+    if l:is_rsync
+      let l:cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
+            \ join(l:srcs), shellescape(a:dest))
+      let l:result = dein#install#_system(l:cmdline)
+      let l:status = dein#install#_status()
     else
-      for src in srcs
-        let cmdline = printf('cp -Ra %s* %s', src, shellescape(a:dest))
-        let result = dein#install#_system(cmdline)
-        let status = dein#install#_status()
-        if status
+      for l:src in l:srcs
+        let l:cmdline = printf('cp -Ra %s* %s', l:src, shellescape(a:dest))
+        let l:result = dein#install#_system(l:cmdline)
+        let l:status = dein#install#_status()
+        if l:status
           break
         endif
       endfor
     endif
-    if status
+    if l:status
       call dein#util#_error('copy command failed.')
-      call dein#util#_error(result)
-      call dein#util#_error('cmdline: ' . cmdline)
+      call dein#util#_error(l:result)
+      call dein#util#_error('cmdline: ' . l:cmdline)
     endif
   endif
 
-  return status
+  return l:status
 endfunction
 
 function! s:install_blocking(context) abort
