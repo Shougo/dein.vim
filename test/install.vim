@@ -227,19 +227,6 @@ function! s:suite.lazy_on_i() abort
 
   call s:assert.equals(g:dein#_event_plugins,
         \ {'InsertEnter': ['deoplete.nvim']})
-
-  let plugin = dein#get('deoplete.nvim')
-
-  call s:assert.equals(
-        \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
-
-  silent! doautocmd InsertEnter
-
-  call s:assert.equals(plugin.sourced, 1)
-  call s:assert.equals(
-        \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
 endfunction
 
 function! s:suite.lazy_on_ft() abort
