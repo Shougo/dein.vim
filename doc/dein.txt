@@ -70,6 +70,8 @@ Requirements:
 * Vim 8.0 or above or NeoVim.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
 
+Note: If you use Vim 7.4, please use dein.vim ver.1.5 instead.
+
 First of all, git clone the repository.
 
 Note: You must define the installation directory before to use dein.  It

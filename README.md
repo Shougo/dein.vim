@@ -21,6 +21,8 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 - "xcopy" command in $PATH (Windows)
 - "git" command in $PATH (if you want to install github or vim.org plugins)
 
+Note: If you use Vim 7.4, please use dein.vim ver.1.5 instead.
+
 ## Quick start
 
 **Note**: You must define the installation directory before to use dein.  It
