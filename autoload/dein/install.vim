@@ -757,9 +757,10 @@ function! dein#install#_copy_directories(srcs, dest) abort
     if executable('rsync')
       let srcs = map(filter(copy(a:srcs),
             \ 'len(s:list_directory(v:val))'),
-            \ 'printf(''"%s/"'', substitute(v:val, ''^\(.\):'', ''/cygdrive/\L\1'', ''''))')
+            \ 'printf(''"%s/"'',
+            \  substitute(v:val, ''^\(.\):'', ''/cygdrive/\L\1'', ''''))')
       let cmdline = printf('rsync -rlt -q --exclude "/.git/" %s "%s"',
-                           \ join(srcs), substitute(a:dest, '^\(.\):', '/cygdrive/\L\1', ''))
+            \ join(srcs), substitute(a:dest, '^\(.\):', '/cygdrive/\L\1', ''))
       let result = dein#install#_system(cmdline)
       let status = dein#install#_status()
       if status
@@ -767,49 +768,33 @@ function! dein#install#_copy_directories(srcs, dest) abort
         call dein#util#_error(result)
         call dein#util#_error('cmdline: ' . cmdline)
       endif
-    else  " Breaking the else allows the error report to be shared for xcopy and robocopy
+    else
+      if !executable('robocopy')
+        call dein#util#_error('robocopy command is needed.')
+        return 1
+      endif
+
       let temp = tempname() . '.bat'
       let exclude = tempname()
 
-      if executable('robocopy')
-        try
-          let lines = ['@echo off']
-          for src in a:srcs
-            " call add(lines, printf('robocopy %s /E /XD ".git" > NUL',
-            call add(lines, printf('robocopy %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"',
-                  \                   substitute(printf('"%s" "%s"', src, a:dest),
-                  \                                     '/', '\\', 'g')))
-          endfor
-          call writefile(lines, temp)
-          let result = dein#install#_system(temp)
-        finally
-          call delete(temp)
-        endtry
+      try
+        let lines = ['@echo off']
+        let format ='robocopy %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"'
+        for src in a:srcs
+          call add(lines, printf(format,
+                \                substitute(printf('"%s" "%s"', src, a:dest),
+                \                           '/', '\\', 'g')))
+        endfor
+        call writefile(lines, temp)
+        let result = dein#install#_system(temp)
+      finally
+        call delete(temp)
+      endtry
 
-        " For some baffling reason robocopy almost always returns between 1 and 3 upon success
-        let status = dein#install#_status()
-        let status = (status > 3) ? status : 0
-      else
-        try
-          call writefile(['.git', '.svn'], exclude)
-          " Create temporary batch file
-          let lines = ['@echo off']
-          for src in a:srcs
-            " Note: In xcopy command, must use "\" instead of "/".
-            call add(lines, printf('xcopy /EXCLUDE:%s %s /E /H /I /R /Y /Q',
-                  \          substitute(exclude, '/', '\\', 'g'),
-                  \          substitute(printf(' "%s/"* "%s"', src, a:dest),
-                  \                            '/', '\\', 'g')))
-          endfor
-          call writefile(lines, temp)
-          " Note: "xcopy" is slow in Vim8 job.
-          let result = dein#install#_system(temp)
-        finally
-          call system('cp ' . temp . ' ' . expand('~/'))
-          call delete(temp)
-        endtry
-        let status = dein#install#_status()
-      endif
+      " For some baffling reason robocopy almost always returns between 1 and 3
+      " upon success
+      let status = dein#install#_status()
+      let status = (status > 3) ? status : 0
 
       if status
         call dein#util#_error('copy command failed.')
@@ -818,7 +803,6 @@ function! dein#install#_copy_directories(srcs, dest) abort
         call dein#util#_error('tempfile: ' . string(lines))
       endif
     endif
-
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
           \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . ''/'')')
