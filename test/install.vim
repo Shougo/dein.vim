@@ -17,6 +17,8 @@ let s:filetype_save = &l:filetype
 let s:this_script = fnamemodify(expand('<sfile>'), ':p')
 
 function! s:dein_install() abort
+  call dein#util#_save_merged_plugins(
+        \ sort(map(values(g:dein#_plugins), 'v:val.repo')))
   return dein#install#_update([], 'install', 0)
 endfunction
 
