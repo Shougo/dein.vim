@@ -754,54 +754,38 @@ function! dein#install#_copy_directories(srcs, dest) abort
 
   let status = 0
   if dein#util#_is_windows()
-    if executable('rsync')
-      let srcs = map(filter(copy(a:srcs),
-            \ 'len(s:list_directory(v:val))'),
-            \ 'printf(''"%s/"'',
-            \  substitute(v:val, ''^\(.\):'', ''/cygdrive/\L\1'', ''''))')
-      let cmdline = printf('rsync -rlt -q --exclude "/.git/" %s "%s"',
-            \ join(srcs), substitute(a:dest, '^\(.\):', '/cygdrive/\L\1', ''))
-      let result = dein#install#_system(cmdline)
-      let status = dein#install#_status()
-      if status
-        call dein#util#_error('copy command failed.')
-        call dein#util#_error(result)
-        call dein#util#_error('cmdline: ' . cmdline)
-      endif
-    else
-      if !executable('robocopy')
-        call dein#util#_error('robocopy command is needed.')
-        return 1
-      endif
+    if !executable('robocopy')
+      call dein#util#_error('robocopy command is needed.')
+      return 1
+    endif
 
-      let temp = tempname() . '.bat'
-      let exclude = tempname()
+    let temp = tempname() . '.bat'
+    let exclude = tempname()
 
-      try
-        let lines = ['@echo off']
-        let format ='robocopy %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"'
-        for src in a:srcs
-          call add(lines, printf(format,
-                \                substitute(printf('"%s" "%s"', src, a:dest),
-                \                           '/', '\\', 'g')))
-        endfor
-        call writefile(lines, temp)
-        let result = dein#install#_system(temp)
-      finally
-        call delete(temp)
-      endtry
+    try
+      let lines = ['@echo off']
+      let format ='robocopy %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"'
+      for src in a:srcs
+        call add(lines, printf(format,
+              \                substitute(printf('"%s" "%s"', src, a:dest),
+              \                           '/', '\\', 'g')))
+      endfor
+      call writefile(lines, temp)
+      let result = dein#install#_system(temp)
+    finally
+      call delete(temp)
+    endtry
 
-      " For some baffling reason robocopy almost always returns between 1 and 3
-      " upon success
-      let status = dein#install#_status()
-      let status = (status > 3) ? status : 0
+    " For some baffling reason robocopy almost always returns between 1 and 3
+    " upon success
+    let status = dein#install#_status()
+    let status = (status > 3) ? status : 0
 
-      if status
-        call dein#util#_error('copy command failed.')
-        call dein#util#_error(s:iconv(result, 'char', &encoding))
-        call dein#util#_error('cmdline: ' . temp)
-        call dein#util#_error('tempfile: ' . string(lines))
-      endif
+    if status
+      call dein#util#_error('copy command failed.')
+      call dein#util#_error(s:iconv(result, 'char', &encoding))
+      call dein#util#_error('cmdline: ' . temp)
+      call dein#util#_error('tempfile: ' . string(lines))
     endif
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
