@@ -99,6 +99,9 @@ Now configure your bundles. (Refer to |dein-examples|)
 
 Call |dein#update()| function to install your plugins.
 >
+If you need vim-plug like install UI, you can use dein-ui.vim.
+https://github.com/wsdjeg/dein-ui.vim
+
 
 ==============================================================================
 INTERFACE						*dein-interface*

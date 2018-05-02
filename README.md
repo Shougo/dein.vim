@@ -23,6 +23,9 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 Note: If you use Vim 7.4, please use dein.vim ver.1.5 instead.
 
+If you need vim-plug like install UI, you can use dein-ui.vim.
+https://github.com/wsdjeg/dein-ui.vim
+
 ## Quick start
 
 **Note**: You must define the installation directory before to use dein.  It
