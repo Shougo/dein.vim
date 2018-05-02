@@ -7,10 +7,6 @@ let s:path = fnamemodify('.cache', ':p')
 if s:path !~ '/$'
   let s:path .= '/'
 endif
-let s:path2 = fnamemodify('.cache2', ':p')
-if s:path2 !~ '/$'
-  let s:path2 .= '/'
-endif
 let s:runtimepath_save = &runtimepath
 let s:filetype_save = &l:filetype
 
@@ -99,12 +95,9 @@ endfunction
 function! s:suite.update() abort
   let g:dein#install_progress_type = 'echo'
 
-  call dein#begin(s:path2)
+  call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim', {'frozen': 1})
-
-  " Travis Git does not support the feature.
-  " call dein#add('Shougo/neobundle.vim', {'rev': '*'})
 
   call s:assert.equals(s:dein_update(), 0)
 
@@ -112,15 +105,11 @@ function! s:suite.update() abort
   let plugin2 = dein#get('neobundle.vim')
 
   call s:assert.equals(plugin.rtp,
-        \ s:path2.'repos/github.com/Shougo/neopairs.vim')
+        \ s:path.'repos/github.com/Shougo/neopairs.vim')
 
   call s:assert.true(isdirectory(plugin.rtp))
 
   call dein#end()
-
-  " Latest neobundle release is 3.2
-  " call s:assert.equals(s:get_revision(plugin2),
-  "       \ '47576978549f16ef21784a6d15e6a5ae38ddb800')
 endfunction
 
 function! s:suite.check_install() abort
@@ -626,7 +615,7 @@ function! s:suite.local() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim', {'frozen': 1})
-  call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1})
+  call dein#local(s:path.'repos/github.com/Shougo/', {'timeout': 1})
 
   call s:assert.equals(dein#get('neopairs.vim').sourced, 0)
   call s:assert.equals(dein#get('neopairs.vim').timeout, 1)
@@ -636,16 +625,15 @@ function! s:suite.local() abort
   let plugin2 = dein#get('neopairs.vim')
 
   call s:assert.equals(plugin2.rtp,
-        \ s:path2.'repos/github.com/Shougo/neopairs.vim')
+        \ s:path.'repos/github.com/Shougo/neopairs.vim')
 endfunction
 
 function! s:suite.clean() abort
-  call dein#begin(s:path2)
+  call dein#begin(s:path)
 
   call s:assert.equals(dein#end(), 0)
 
-  call s:assert.equals(dein#check_clean(),
-        \ [s:path2.'repos/github.com/Shougo/neopairs.vim'])
+  call s:assert.true(!empty(dein#check_clean()))
 endfunction
 
 function! s:suite.local_nongit() abort
