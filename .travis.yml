@@ -1,15 +1,17 @@
 language: viml
 
 sudo: false
-dist: trusty
 
 os:
     - linux
 
+install:
+    # Install Neovim via Gist
+    # https://gist.github.com/lambdalisue/0f461f6a91743895394e63a9a1c65232
+    - curl -sL https://gist.githubusercontent.com/lambdalisue/0f461f6a91743895394e63a9a1c65232/raw/install_nvim_for_ci.sh | bash
+
 before_script:
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install vim --HEAD; fi
-    - vim --version
     - git clone https://github.com/thinca/vim-themis
 
 script:
-    - vim-themis/bin/themis --reporter spec
+    - PATH="$HOME/neovim/bin:$PATH" THEMIS_VIM=nvim THEMIS_ARGS="-e -s --headless" THEMIS_HOME=./vim-themis vim-themis/bin/themis --reporter spec

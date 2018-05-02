@@ -155,6 +155,10 @@ endfunction
 function! dein#util#_is_fish() abort
   return dein#install#_is_async() && fnamemodify(&shell, ':t:r') ==# 'fish'
 endfunction
+function! dein#util#_has_job() abort
+  return (has('nvim') && exists('v:t_list'))
+        \ || (has('patch-8.0.0027') && has('job'))
+endfunction
 
 function! dein#util#_check_lazy_plugins() abort
   return map(filter(dein#util#_get_lazy_plugins(),
@@ -212,7 +216,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
           \ 'hook_add', 'hook_source',
           \ 'hook_post_source', 'hook_post_update',
           \ ], "has_key(plugin, v:val)
-          \     && type(plugin[v:val]) == type(function('tr'))")
+          \     && type(plugin[v:val]) == v:t_func")
       call remove(plugin, hook)
     endfor
   endfor
@@ -222,7 +226,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
   endif
 
   call writefile([string(a:vimrcs),
-        \         dein#_vim2json(plugins), dein#_vim2json(g:dein#_ftplugin)],
+        \         json_encode(plugins), json_encode(g:dein#_ftplugin)],
         \ get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/cache_' . g:dein#_progname)
 endfunction
@@ -315,7 +319,7 @@ function! dein#util#_save_state(is_starting) abort
     let lines += s:skipempty(g:dein#_hook_add)
   endif
   for plugin in dein#util#_tsort(values(dein#get()))
-    if has_key(plugin, 'hook_add') && type(plugin.hook_add) == type('')
+    if has_key(plugin, 'hook_add') && type(plugin.hook_add) == v:t_string
       let lines += s:skipempty(plugin.hook_add)
     endif
   endfor
@@ -344,7 +348,7 @@ function! dein#util#_begin(path, vimrcs) abort
     call dein#_init()
   endif
 
-  if v:version < 704
+  if !dein#util#_has_job()
     call dein#util#_error('Does not work in the Vim (' . v:version . ').')
     return 1
   endif
@@ -463,9 +467,9 @@ function! dein#util#_end() abort
   endif
 endfunction
 function! dein#util#_config(arg, dict) abort
-  let name = type(a:arg) == type({}) ?
+  let name = type(a:arg) == v:t_dict ?
         \   g:dein#name : a:arg
-  let dict = type(a:arg) == type({}) ?
+  let dict = type(a:arg) == v:t_dict ?
         \   a:arg : a:dict
   if !has_key(g:dein#_plugins, name)
         \ || g:dein#_plugins[name].sourced
@@ -496,7 +500,7 @@ function! dein#util#_execute_hook(plugin, hook) abort
   try
     let g:dein#plugin = a:plugin
 
-    if type(a:hook) == type('')
+    if type(a:hook) == v:t_string
       call s:execute(a:hook)
     else
       call call(a:hook, [])
@@ -515,7 +519,7 @@ function! dein#util#_set_hook(name, hook_name, hook) abort
   endif
   let plugin = g:dein#_plugins[a:name]
   let plugin[a:hook_name] =
-        \ type(a:hook) != type('') ? a:hook :
+        \ type(a:hook) != v:t_string ? a:hook :
         \   substitute(a:hook, '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
   if a:hook_name ==# 'hook_add'
     call dein#util#_execute_hook(plugin, plugin[a:hook_name])
@@ -572,13 +576,13 @@ function! dein#util#_globlist(path) abort
 endfunction
 
 function! dein#util#_convert2list(expr) abort
-  return type(a:expr) ==# type([]) ? copy(a:expr) :
-        \ type(a:expr) ==# type('') ?
+  return type(a:expr) ==# v:t_list ? copy(a:expr) :
+        \ type(a:expr) ==# v:t_string ?
         \   (a:expr ==# '' ? [] : split(a:expr, '\r\?\n', 1))
         \ : [a:expr]
 endfunction
 function! dein#util#_split(expr) abort
-  return type(a:expr) ==# type([]) ? copy(a:expr) :
+  return type(a:expr) ==# v:t_list ? copy(a:expr) :
         \ split(a:expr, '\r\?\n')
 endfunction
 
@@ -604,7 +608,7 @@ function! dein#util#_get_plugins(plugins) abort
   return empty(a:plugins) ?
         \ values(dein#get()) :
         \ filter(map(dein#util#_convert2list(a:plugins),
-        \   'type(v:val) == type({}) ? v:val : dein#get(v:val)'),
+        \   'type(v:val) == v:t_dict ? v:val : dein#get(v:val)'),
         \   '!empty(v:val)')
 endfunction
 
@@ -687,7 +691,7 @@ function! dein#util#_check_install(plugins) abort
 endfunction
 
 function! s:msg2list(expr) abort
-  return type(a:expr) ==# type([]) ? a:expr : split(a:expr, '\n')
+  return type(a:expr) ==# v:t_list ? a:expr : split(a:expr, '\n')
 endfunction
 function! s:skipempty(string) abort
   return filter(split(a:string, '\n'), "v:val !=# ''")
@@ -699,7 +703,7 @@ function! s:escape(path) abort
 endfunction
 
 function! s:sort(list, expr) abort
-  if type(a:expr) == type(function('function'))
+  if type(a:expr) == v:t_func
     return sort(a:list, a:expr)
   endif
   let s:expr = a:expr
@@ -710,7 +714,7 @@ function! s:_compare(a, b) abort
 endfunction
 
 function! s:execute(expr) abort
-  if has('nvim') && s:neovim_version() >= 0.2.0
+  if has('nvim')
     return execute(split(a:expr, '\n'))
   endif
 

@@ -7,16 +7,14 @@ let s:path = fnamemodify('.cache', ':p')
 if s:path !~ '/$'
   let s:path .= '/'
 endif
-let s:path2 = fnamemodify('.cache2', ':p')
-if s:path2 !~ '/$'
-  let s:path2 .= '/'
-endif
 let s:runtimepath_save = &runtimepath
 let s:filetype_save = &l:filetype
 
 let s:this_script = fnamemodify(expand('<sfile>'), ':p')
 
 function! s:dein_install() abort
+  call dein#util#_save_merged_plugins(
+        \ sort(map(values(g:dein#_plugins), 'v:val.repo')))
   return dein#install#_update([], 'install', 0)
 endfunction
 
@@ -44,6 +42,11 @@ function! s:suite.install() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/deoplete.nvim')
+  call dein#add('Shougo/deol.nvim')
+  call dein#add('Shougo/neosnippet.vim')
+  call dein#add('Shougo/neopairs.vim')
+  call dein#add('Shougo/vimfiler.vim')
+  call dein#add('Shougo/denite.nvim')
 
   call dein#end()
 
@@ -92,12 +95,9 @@ endfunction
 function! s:suite.update() abort
   let g:dein#install_progress_type = 'echo'
 
-  call dein#begin(s:path2)
+  call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim', {'frozen': 1})
-
-  " Travis Git does not support the feature.
-  " call dein#add('Shougo/neobundle.vim', {'rev': '*'})
 
   call s:assert.equals(s:dein_update(), 0)
 
@@ -105,15 +105,11 @@ function! s:suite.update() abort
   let plugin2 = dein#get('neobundle.vim')
 
   call s:assert.equals(plugin.rtp,
-        \ s:path2.'repos/github.com/Shougo/neopairs.vim')
+        \ s:path.'repos/github.com/Shougo/neopairs.vim')
 
   call s:assert.true(isdirectory(plugin.rtp))
 
   call dein#end()
-
-  " Latest neobundle release is 3.2
-  " call s:assert.equals(s:get_revision(plugin2),
-  "       \ '47576978549f16ef21784a6d15e6a5ae38ddb800')
 endfunction
 
 function! s:suite.check_install() abort
@@ -220,19 +216,6 @@ function! s:suite.lazy_on_i() abort
 
   call s:assert.equals(g:dein#_event_plugins,
         \ {'InsertEnter': ['deoplete.nvim']})
-
-  let plugin = dein#get('deoplete.nvim')
-
-  call s:assert.equals(
-        \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
-
-  doautocmd InsertEnter
-
-  call s:assert.equals(plugin.sourced, 1)
-  call s:assert.equals(
-        \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
 endfunction
 
 function! s:suite.lazy_on_ft() abort
@@ -267,13 +250,13 @@ endfunction
 function! s:suite.lazy_on_path() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deoplete.nvim', { 'on_path': '.*' })
+  call dein#add('Shougo/deol.nvim', { 'on_path': '.*' })
 
   call s:assert.equals(s:dein_install(), 0)
 
   call dein#end()
 
-  let plugin = dein#get('deoplete.nvim')
+  let plugin = dein#get('deol.nvim')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
@@ -291,14 +274,14 @@ function! s:suite.lazy_on_if() abort
   call dein#begin(s:path)
 
   let temp = tempname()
-  call dein#add('Shougo/neosnippet.vim',
+  call dein#add('Shougo/deol.nvim',
         \ { 'on_if': '&filetype ==# "foobar"' })
 
   call s:assert.equals(s:dein_install(), 0)
 
   call dein#end()
 
-  let plugin = dein#get('neosnippet.vim')
+  let plugin = dein#get('deol.nvim')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
@@ -317,8 +300,8 @@ function! s:suite.lazy_on_source() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim',
-        \ { 'on_source': ['deoplete.nvim'] })
-  call dein#add('Shougo/deoplete.nvim', { 'lazy': 1 })
+        \ { 'on_source': ['deol.nvim'] })
+  call dein#add('Shougo/deol.nvim', { 'lazy': 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -330,7 +313,7 @@ function! s:suite.lazy_on_source() abort
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin.rtp')), 0)
 
-  call dein#source('deoplete.nvim')
+  call dein#source('deol.nvim')
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
@@ -401,21 +384,21 @@ function! s:suite.lazy_on_map() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/deol.nvim', { 'on_map': {'n': '<Plug>'} })
-  call dein#add('thinca/vim-ref', { 'on_map': '<Plug>' })
+  call dein#add('Shougo/neosnippet.vim', { 'on_map': {'n': '<Plug>'} })
 
   call s:assert.equals(s:dein_install(), 0)
 
   call dein#end()
 
   let plugin1 = dein#get('deol.nvim')
-  let plugin2 = dein#get('vim-ref')
+  let plugin2 = dein#get('neosnippet.vim')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     'v:val ==# plugin1.rtp')), 0)
 
   call dein#autoload#_on_map('', 'deol.nvim', 'n')
-  call dein#autoload#_on_map('', 'vim-ref', 'n')
+  call dein#autoload#_on_map('', 'neosnippet.vim', 'n')
 
   call s:assert.equals(plugin1.sourced, 1)
   call s:assert.equals(plugin2.sourced, 1)
@@ -632,7 +615,7 @@ function! s:suite.local() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/neopairs.vim', {'frozen': 1})
-  call dein#local(s:path2.'repos/github.com/Shougo/', {'timeout': 1})
+  call dein#local(s:path.'repos/github.com/Shougo/', {'timeout': 1})
 
   call s:assert.equals(dein#get('neopairs.vim').sourced, 0)
   call s:assert.equals(dein#get('neopairs.vim').timeout, 1)
@@ -642,16 +625,15 @@ function! s:suite.local() abort
   let plugin2 = dein#get('neopairs.vim')
 
   call s:assert.equals(plugin2.rtp,
-        \ s:path2.'repos/github.com/Shougo/neopairs.vim')
+        \ s:path.'repos/github.com/Shougo/neopairs.vim')
 endfunction
 
 function! s:suite.clean() abort
-  call dein#begin(s:path2)
+  call dein#begin(s:path)
 
   call s:assert.equals(dein#end(), 0)
 
-  call s:assert.equals(dein#check_clean(),
-        \ [s:path2.'repos/github.com/Shougo/neopairs.vim'])
+  call s:assert.true(!empty(dein#check_clean()))
 endfunction
 
 function! s:suite.local_nongit() abort

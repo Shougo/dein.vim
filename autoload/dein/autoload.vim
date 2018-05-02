@@ -11,7 +11,7 @@ function! dein#autoload#_source(...) abort
     return
   endif
 
-  if type(plugins[0]) != type({})
+  if type(plugins[0]) != v:t_dict
     let plugins = map(dein#util#_convert2list(a:1),
         \       'get(g:dein#_plugins, v:val, {})')
   endif
@@ -305,10 +305,9 @@ function! s:get_input() abort
 
   call feedkeys(termstr, 'n')
 
-  let type_num = type(0)
   while 1
     let char = getchar()
-    let input .= (type(char) == type_num) ? nr2char(char) : char
+    let input .= (type(char) == v:t_number) ? nr2char(char) : char
 
     let idx = stridx(input, termstr)
     if idx >= 1

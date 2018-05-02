@@ -1,6 +1,6 @@
 *dein.txt*	Dark powered Vim/Neovim plugin manager
 
-Version: 1.5
+Version: 2.0
 Author:  Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
@@ -67,8 +67,10 @@ Note: The plugins are not updated automatically.
 INSTALL							*dein-install*
 
 Requirements:
-* Vim 7.4 or above or NeoVim.
+* Vim 8.0 or above or NeoVim.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
+
+Note: If you use Vim 7.4, please use dein.vim ver.1.5 instead.
 
 First of all, git clone the repository.
 
@@ -97,6 +99,9 @@ Now configure your bundles. (Refer to |dein-examples|)
 
 Call |dein#update()| function to install your plugins.
 >
+If you need vim-plug like install UI, you can use dein-ui.vim.
+https://github.com/wsdjeg/dein-ui.vim
+
 
 ==============================================================================
 INTERFACE						*dein-interface*
@@ -1040,7 +1045,6 @@ name file.  But you can avoid the problem by |dein-options-merged|.
 Q: How to remove the disabled plugins?
 
 A: You can remove them like below.
-Note: You need Vim 7.4.1107+ or latest version of neovim.
 Note: You must call |dein#recache_runtimepath()| after the remove.
 >
 	call map(dein#check_clean(), "delete(v:val, 'rf')")
