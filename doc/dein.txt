@@ -1148,6 +1148,17 @@ A: >
 	call dein#add('nixprime/cpsm',
 	\ {'build': 'sh -c "PY3=ON ./install.sh"'})
 
+
+Q: dein.vim does not load plugin in sudo session.
+https://github.com/SpaceVim/SpaceVim/issues/1660
+https://github.com/Shougo/dein.vim/issues/274
+
+A:
+It is intended behavior for security reason.
+In sudo session, installed plugin can do anything in root permission.
+It is very dangerous.
+But you can load trusted plugins using |dein-options-trusted|.
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
