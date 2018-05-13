@@ -481,7 +481,8 @@ g:dein#install_log_filename
                                                                  *g:dein#name*
 g:dein#name
 		Current plugin name.
-		You can use it in |dein#tap()| block.
+		You can only use it in |dein#tap()| block.
+		Note: The variable is deprecated.
 
 						*g:dein#notification_icon*
 g:dein#notification_icon
