@@ -368,8 +368,10 @@ dein#save_state()
 		call it after change 'runtimepath' dynamically.
 
 							*dein#set_hook()*
-dein#set_hook({plugin-name}, {hook-name}, {hook})
-		Set hook {hook} as {hook-name} in {plugin-name}.
+dein#set_hook({plugins}, {hook-name}, {hook})
+		{plugins} is the plugins name list.
+		If it is empty list, it means all plugins.
+		Set hook {hook} as {hook-name} in {plugins}.
 		It can be called after |dein#begin()| / |dein#end()| block.
 >
 	call dein#add('Shougo/neosnippet.vim', {'lazy': 1})

@@ -545,7 +545,8 @@ function! s:suite.hooks() abort
         \ 'hook_post_source': function('Foo'),
         \ })
   call dein#set_hook('neosnippet.vim', 'hook_source', function('Foo'))
-  call dein#set_hook('deoplete.nvim', 'hook_add', 'let g:foobar = 1')
+  call dein#set_hook(['deoplete.nvim'], 'hook_add', 'let g:foobar = 1')
+  call dein#set_hook([], 'hook_add', 'let g:baz = 3')
 
   call s:assert.equals(g:foobar, 1)
 
@@ -558,6 +559,7 @@ function! s:suite.hooks() abort
   call s:assert.equals(g:foobar, 2)
   call dein#call_hook('post_source')
   call s:assert.equals(g:bar, 3)
+  call s:assert.equals(g:baz, 3)
 endfunction
 
 function! s:suite.no_toml() abort
