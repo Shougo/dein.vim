@@ -373,11 +373,16 @@ dein#set_hook({plugins}, {hook-name}, {hook})
 		If it is empty list, it means all plugins.
 		Set hook {hook} as {hook-name} in {plugins}.
 		It can be called after |dein#begin()| / |dein#end()| block.
+		Note: If it is |Funcref|, it does not work in
+		|dein#load_state()| / |dein#save_state()| block.
 >
 	call dein#add('Shougo/neosnippet.vim', {'lazy': 1})
 	function! Foo() abort
 	endfunction
+	" Does not work for dein#load_state()/dein#save_state() block
 	call dein#set_hook('neosnippet.vim', 'hook_source', function('Foo'))
+	" Does work for dein#load_state()/dein#save_state() block
+	call dein#set_hook('neosnippet.vim', 'hook_source', 'echomsg "foo"')
 <
 							*dein#source()*
 dein#source([{plugins}])
