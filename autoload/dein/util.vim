@@ -327,9 +327,10 @@ function! dein#util#_save_state(is_starting) abort
   " Add events
   for [event, plugins] in filter(items(g:dein#_event_plugins),
         \ "exists('##' . v:val[0])")
-    call add(lines, printf('autocmd dein-events %s * call '
+    call add(lines, printf('autocmd dein-events %s call '
           \. 'dein#autoload#_on_event("%s", %s)',
-          \ event, event, string(plugins)))
+          \ (exists('##' . event) ? event . ' *' : 'User ' . event),
+          \ event, string(plugins)))
   endfor
 
   call writefile(lines, get(g:, 'dein#cache_directory', g:dein#_base_path)
@@ -455,9 +456,10 @@ function! dein#util#_end() abort
 
   for [event, plugins] in filter(items(g:dein#_event_plugins),
         \ "exists('##' . v:val[0])")
-    execute printf('autocmd dein-events %s * call '
+    execute printf('autocmd dein-events %s call '
           \. 'dein#autoload#_on_event("%s", %s)',
-          \ event, event, string(plugins))
+          \ (exists('##' . event) ? event . ' *' : 'User ' . event),
+          \ event, string(plugins))
   endfor
 
   if !has('vim_starting')

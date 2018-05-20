@@ -127,7 +127,11 @@ function! s:source_events(event, plugins) abort
       " For BufReadCmd plugins
       doautocmd <nomodeline> BufReadCmd
     endif
-    execute 'doautocmd <nomodeline>' a:event
+    if exists('#' . a:event)
+      execute 'doautocmd <nomodeline>' a:event
+    elseif exists('#User#' . a:event)
+      execute 'doautocmd <nomodeline> User' a:event
+    endif
   endif
 endfunction
 
