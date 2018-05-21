@@ -76,11 +76,8 @@ function! dein#install#_update(plugins, update_type, async) abort
     unlet s:timer
   endif
 
-  function! s:timer_handler(timer) abort
-    call dein#install#_polling()
-  endfunction
   let s:timer = timer_start(1000,
-        \ function('s:timer_handler'), {'repeat': -1})
+        \ {-> dein#install#_polling()}, {'repeat': -1})
 endfunction
 function! s:update_loop(context) abort
   let errored = 0
