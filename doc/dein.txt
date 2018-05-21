@@ -164,11 +164,11 @@ dein#check_lazy_plugins()
 
 							*dein#check_update()*
 dein#check_update([{plugins}])
-		Check the plugins update.
+		Check the plugins update asynchronously.
 		{plugins} is the plugins name list to check.
 		If you omit it, dein will check all plugins update.
-		Note: If you are using neovim or Vim 8.0+, it runs
-		asynchronously.
+		Note: It does not return value instead of
+		|dein#check_install()|.
 
 							*dein#check_clean()*
 dein#check_clean()
@@ -253,11 +253,9 @@ dein#get_updates_log()
 
 							*dein#install()*
 dein#install([{plugins}])
-		Install the plugins.
+		Install the plugins asynchronously.
 		{plugins} is the plugins name list.
 		If you omit it, dein will install all plugins.
-		Note: If you are using neovim or Vim 8.0+ enabled |+job|, it
-		runs asynchronously.
 
 							*dein#is_sourced()*
 dein#is_sourced({plugin-name})

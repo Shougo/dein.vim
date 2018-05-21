@@ -55,9 +55,12 @@ function! dein#install#_update(plugins, update_type, async) abort
   call s:init_variables(context)
 
   if empty(plugins)
-    call s:notify('Target plugins are not found.')
-    call s:notify('You may have used the wrong plugin name,'.
-          \ ' or all of the plugins are already installed.')
+    if a:update_type !=# 'check_update'
+      call s:notify('Target plugins are not found.')
+      call s:notify('You may have used the wrong plugin name,'.
+            \ ' or all of the plugins are already installed.')
+    endif
+    let s:global_context = {}
     return
   endif
 
