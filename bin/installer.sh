@@ -63,7 +63,7 @@ echo "Please add the following settings for dein to the top of your vimrc (Vim) 
     echo "  call dein#add('Shougo/neosnippet-snippets')"
     echo ""
     echo "  \" You can specify revision/branch/tag."
-    echo "  call dein#add('Shougo/deol.nvim', { 'rev': 'a1b5108fd' })"
+    echo "  call dein#add('Shougo/deol.nvim', { 'rev': '01203d4c9' })"
     echo ""
     echo "  \" Required:"
     echo "  call dein#end()"
