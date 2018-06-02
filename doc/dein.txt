@@ -803,7 +803,9 @@ HOOKS							*dein-hooks*
 
 						*dein-options-hook_add*
 hook_add	(String) or (Function)
-		It is executed after plugins are added.
+		It is executed after the line is parsed.
+		Note: You cannot call plugin function in "hook_add".
+		Because the plugin is not sourced when "hook_add".
 >
 		call dein#add('Shougo/vimfiler.vim', {
 		\ 'hook_add': 'nnoremap <silent>   [Space]v
@@ -840,6 +842,8 @@ hook_post_update (String) or (Function)
 						*dein-options-hook_source*
 hook_source	(String) or (Function)
 		It is executed before plugins are sourced.
+		Note: The "sourced" means after |dein#end()| or when
+		|VimEnter| or autoloaded.
 >
 		call dein#add('artur-shaik/vim-javacomplete2')
 		call dein#config('artur-shaik/vim-javacomplete2', {
