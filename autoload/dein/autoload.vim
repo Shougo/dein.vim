@@ -242,6 +242,8 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
 
   call add(a:sourced, a:plugin)
 
+  let index = a:index
+
   " Load dependencies
   for name in get(a:plugin, 'depends', [])
     if !has_key(g:dein#_plugins, name)
@@ -257,14 +259,18 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
       continue
     endif
 
-    call s:source_plugin(a:rtps, a:index, g:dein#_plugins[name], a:sourced)
+    if s:source_plugin(a:rtps, index, g:dein#_plugins[name], a:sourced)
+      let index += 1
+    endif
   endfor
 
   let a:plugin.sourced = 1
 
   for on_source in filter(dein#util#_get_lazy_plugins(),
         \ "index(get(v:val, 'on_source', []), a:plugin.name) >= 0")
-    call s:source_plugin(a:rtps, a:index, on_source, a:sourced)
+    if s:source_plugin(a:rtps, index, on_source, a:sourced)
+      let index += 1
+    endif
   endfor
 
   if has_key(a:plugin, 'dummy_commands')
@@ -282,7 +288,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   endif
 
   if !a:plugin.merged || get(a:plugin, 'local', 0)
-    call insert(a:rtps, a:plugin.rtp, a:index)
+    call insert(a:rtps, a:plugin.rtp, index)
     if isdirectory(a:plugin.rtp.'/after')
       call dein#util#_add_after(a:rtps, a:plugin.rtp.'/after')
     endif
