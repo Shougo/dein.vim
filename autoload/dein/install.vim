@@ -444,7 +444,7 @@ function! dein#install#_each(cmd, plugins) abort
       endif
     endfor
   catch
-    call s:nonskip_error(v:exception . ' ' . v:throwpoint)
+    call s:error(v:exception . ' ' . v:throwpoint)
     return 1
   finally
     let s:global_context = global_context_save
@@ -958,8 +958,7 @@ function! s:sync(plugin, context) abort
 
   if isdirectory(a:plugin.path) && get(a:plugin, 'frozen', 0)
     " Skip frozen plugin
-    call s:updates_log(s:get_plugin_message(
-          \ a:plugin, num, max, 'is frozen.'))
+    call s:log(s:get_plugin_message(a:plugin, num, max, 'is frozen.'))
     return
   endif
 
@@ -969,8 +968,7 @@ function! s:sync(plugin, context) abort
 
   if empty(cmd)
     " Skip
-    call s:updates_log(
-          \ s:get_plugin_message(a:plugin, num, max, message))
+    call s:log(s:get_plugin_message(a:plugin, num, max, message))
     return
   endif
 
@@ -1251,16 +1249,6 @@ function! s:error(msg) abort
   endif
 
   call s:echo(msg, 'error')
-
-  call s:updates_log(msg)
-endfunction
-function! s:nonskip_error(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
-  if empty(msg)
-    return
-  endif
-
-  call s:echo_mode(join(msg, "\n"), 'error')
 
   call s:updates_log(msg)
 endfunction
