@@ -28,12 +28,12 @@ https://github.com/wsdjeg/dein-ui.vim
 
 ## Quick start
 
-**Note**: You must define the installation directory before to use dein.  It
-depends on your usage.
+**Note**: You must define the installation directory before to use dein.  The
+directory that you will want to use depends on your usage.
 
 For example, `~/.vim/bundles` or `~/.cache/dein` or `~/.local/share/dein`.
-dein.vim has not define the default installation directory.
-You must **not** set the installation directory under `~/.vim/plugin` or
+dein.vim does not define a default installation directory.
+You must **not** set the installation directory as `~/.vim/plugin` or
 `~/.config/nvim/plugin`.
 
 ### Unix/Linux or Mac OS X
