@@ -28,12 +28,12 @@ https://github.com/wsdjeg/dein-ui.vim
 
 ## Quick start
 
-**Note**: You must define the installation directory before to use dein.  It
-depends on your usage.
+**Note**: You must define the installation directory before to use dein.  The
+directory that you will want to use depends on your usage.
 
 For example, `~/.vim/bundles` or `~/.cache/dein` or `~/.local/share/dein`.
-dein.vim has not define the default installation directory.
-You must **not** set the installation directory under `~/.vim/plugin` or
+dein.vim does not define a default installation directory.
+You must **not** set the installation directory as `~/.vim/plugin` or
 `~/.config/nvim/plugin`.
 
 ### Unix/Linux or Mac OS X
@@ -113,11 +113,11 @@ Some common options. For a more detailed list, run `:h dein-options`
 
 | Option   | Type                 | Description                                                                           |
 | -------- | -------------------- | ------------------------------------------------------------------------------------- |
-| `name`   | `string`             | A name for the plugin. If it is omitted, the tail of the repository name will be used |
+| `name`   | `string`             | The name for a plugin. If it is omitted, the tail of the repository name will be used |
 | `rev`    | `string`             | The revision number or branch/tag name for the repo                                   |
 | `build`  | `string`             | Command to run after the plugin is installed                                          |
 | `on_ft`  | `string` or `list`   | Load a plugin for the current filetype                                                |
 | `on_cmd` | `string` or `list`   | Load the plugin for these commands                                                    |
-| `rtp`    | `string`             | You can use it when the repository has the Vim plugin in a subdirectory               |
+| `rtp`    | `string`             | You can use this option when the repository has the Vim plugin in a subdirectory               |
 | `if`     | `string` or `number` | If it is String, dein will eval it.                                                   |
 | `merged` | `number`             | If set to 0, dein doesn't merge the plugin directory.                                 |
