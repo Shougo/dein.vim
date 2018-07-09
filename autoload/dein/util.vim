@@ -102,17 +102,6 @@ function! dein#util#_notify(msg) abort
     endif
   elseif dein#util#_is_mac()
     let cmd = ''
-    if exists('$TMUX')
-      if !executable('reattach-to-user-namespace')
-        call dein#util#_error(
-              \ 'Please install "reattach-to-user-namespace" command'
-              \ . 'to use notification in tmux.')
-        return
-      endif
-
-      " Use reattach-to-user-namespace in tmux
-      let cmd .= 'reattach-to-user-namespace '
-    endif
     if executable('terminal-notifier')
       let cmd .= 'terminal-notifier -title '
             \ . string(title) . ' -message ' . string(a:msg)
