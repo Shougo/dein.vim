@@ -392,7 +392,7 @@ function! s:generate_ftplugin() abort
         \ dein#util#_get_runtime_path() . '/ftplugin.vim')
 
   " Generate after/ftplugin
-  for [filetype, list] in items(ftplugin)
+  for [filetype, list] in filter(items(ftplugin), "v:val[0] !=# '_'")
     call writefile(list, printf('%s/%s.vim', after, filetype))
   endfor
 endfunction
