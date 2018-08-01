@@ -158,8 +158,10 @@ function! s:suite.plugins2toml() abort
   let parsed_plugin = dein#parse#_init('Shougo/denite.nvim', {})
   let parsed_plugin2 = dein#parse#_init('Shougo/deoplete.nvim',
         \ {'on_ft': ['vim'], 'hook_add': "hoge\npiyo"})
+  let parsed_plugin3 = dein#parse#_init('Shougo/deoppet.nvim',
+        \ {'on_map': {'n': ['a', 'b']}})
   call s:assert.equals(dein#plugins2toml(
-        \ [parsed_plugin, parsed_plugin2]), [
+        \ [parsed_plugin, parsed_plugin2, parsed_plugin3]), [
         \ "[[plugins]]",
         \ "repo = 'Shougo/denite.nvim'",
         \ "",
