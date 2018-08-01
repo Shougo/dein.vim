@@ -173,6 +173,10 @@ function! s:suite.plugins2toml() abort
         \ "'''",
         \ "on_ft = 'vim'",
         \ "",
+        \ "[[plugins]]",
+        \ "repo = 'Shougo/deoppet.nvim'",
+        \ "on_map = {'n': ['a', 'b']}",
+        \ "",
         \ ])
 endfunction
 

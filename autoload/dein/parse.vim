@@ -213,9 +213,9 @@ function! dein#parse#_plugins2toml(plugins) abort
           \ 'repo = ' . string(plugin.repo)]
 
     for key in filter(sort(keys(default)),
-          \ '!has_key(skip_default, v:val)
-          \      && has_key(plugin, v:val)
-          \      && plugin[v:val] !=# default[v:val]')
+          \ '!has_key(skip_default, v:val) && has_key(plugin, v:val)
+          \  && (type(plugin[v:val]) !=# type(default[v:val])
+          \      || plugin[v:val] !=# default[v:val])')
       let val = plugin[key]
       if key =~# '^hook_'
         call add(toml, key . " = '''")
