@@ -64,7 +64,7 @@ function! dein#autoload#_source(...) abort
     call s:reset_ftplugin()
   endif
 
-  if is_reset || filetype_before !=# filetype_after
+  if (is_reset || filetype_before !=# filetype_after) && &filetype !=# ''
     " Recall FileType autocmd
     let &filetype = &filetype
   endif
