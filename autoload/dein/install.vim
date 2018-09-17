@@ -10,9 +10,6 @@ let s:log = []
 let s:updates_log = []
 let s:progress = ''
 
-" Todo: workaround fix for Vim 8.1.0349
-let s:vim8_workaround = !has('nvim') && has('patch-8.1.0349')
-
 " Global options definition.
 let g:dein#install_max_processes =
       \ get(g:, 'dein#install_max_processes', 8)
@@ -69,7 +66,7 @@ function! dein#install#_update(plugins, update_type, async) abort
 
   call s:start()
 
-  if !a:async || has('vim_starting') || s:vim8_workaround
+  if !a:async || has('vim_starting')
     return s:update_loop(context)
   endif
 
@@ -88,7 +85,7 @@ endfunction
 function! s:update_loop(context) abort
   let errored = 0
   try
-    if has('vim_starting') || s:vim8_workaround
+    if has('vim_starting')
       while !empty(s:global_context)
         let errored = s:install_async(a:context)
         sleep 50ms
@@ -405,7 +402,17 @@ function! dein#install#_is_async() abort
 endfunction
 
 function! dein#install#_polling() abort
-  return s:install_async(s:global_context)
+  if exists('+guioptions')
+    " Note: guioptions-! does not work in async state
+    let save_guioptions = &guioptions
+    set guioptions-=!
+  endif
+
+  call s:install_async(s:global_context)
+
+  if exists('+guioptions')
+    let &guioptions = save_guioptions
+  endif
 endfunction
 
 function! dein#install#_remote_plugins() abort
