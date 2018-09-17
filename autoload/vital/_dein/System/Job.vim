@@ -36,18 +36,18 @@ endfunction
 " Note:
 " Vim does not raise E902 on Unix system even the prog is not found so use a
 " custom exception instead to make the method compatible.
+" Note:
+" Vim/Neovim treat String a bit differently so prohibit String as well
 function! s:_validate_args(args) abort
-  if type(a:args) != s:t_string && type(a:args) != s:t_list
-    throw 'vital: System.Job: Argument requires to be a String or List instance.'
+  if type(a:args) != s:t_list
+    throw 'vital: System.Job: Argument requires to be a List instance.'
   endif
-  if type(a:args) == s:t_list
-    if len(a:args) == 0
-      throw 'vital: System.Job: Argument vector must have at least one item.'
-    endif
-    let prog = a:args[0]
-    if !executable(prog)
-      throw printf('vital: System.Job: "%s" is not an executable', prog)
-    endif
+  if len(a:args) == 0
+    throw 'vital: System.Job: Argument vector must have at least one item.'
+  endif
+  let prog = a:args[0]
+  if !executable(prog)
+    throw printf('vital: System.Job: "%s" is not an executable', prog)
   endif
 endfunction
 

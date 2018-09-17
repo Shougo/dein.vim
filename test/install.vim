@@ -69,7 +69,6 @@ function! s:suite.tap() abort
 endfunction
 
 function! s:suite.reinstall() abort
-  let g:dein#install_progress_type = 'statusline'
   let g:dein#install_progress_type = 'none'
 
   call dein#begin(s:path)
