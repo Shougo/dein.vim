@@ -1169,6 +1169,13 @@ In sudo session, installed plugin can do anything in root permission.
 It is very dangerous.
 But you can load trusted plugins using |dein-options-trusted|.
 
+Q: I want to uninstall dein.vim.
+
+A: Please remove |dein#begin()|'s argument directory.
+For example, if you use below configuration: >
+	call dein#begin('~/.cache/dein')
+Please remove "~/.cache/dein" directory.
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
