@@ -1123,7 +1123,7 @@ function! s:init_job(process, context, cmd) abort
         \   'on_stderr': a:process.async.job_handler,
         \   'on_exit': a:process.async.on_exit,
         \ })
-  let a:process.id = a:process.job.id()
+  let a:process.id = a:process.job.pid()
   let a:process.job.candidates = []
 endfunction
 function! s:check_output(context, process) abort
