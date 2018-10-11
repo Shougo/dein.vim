@@ -1176,6 +1176,12 @@ For example, if you use below configuration: >
 	call dein#begin('~/.cache/dein')
 Please remove "~/.cache/dein" directory.
 
+Q: I want to update dein.vim from shell command line.
+
+A: Please execute the command line like this. >
+	vim -N -u ~/.vim/init.vim -c \
+	"try | call dein#update() | finally | qall! | endtry" -V1 -es
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
