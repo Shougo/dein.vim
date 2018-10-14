@@ -183,7 +183,6 @@ endfunction
 
 function! dein#install#_recache_runtimepath() abort
   if g:dein#_is_sudo
-    call s:error('recache_runtimepath() is disabled in sudo session.')
     return
   endif
 
