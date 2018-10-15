@@ -598,7 +598,8 @@ function! dein#util#_redir(cmd) abort
 endfunction
 
 function! dein#util#_get_lazy_plugins() abort
-  return filter(values(g:dein#_plugins), '!v:val.sourced')
+  return filter(values(g:dein#_plugins),
+        \ "!v:val.sourced && v:val.rtp !=# ''")
 endfunction
 
 function! dein#util#_get_plugins(plugins) abort
