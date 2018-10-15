@@ -488,8 +488,11 @@ function! dein#install#_get_progress() abort
 endfunction
 
 function! s:get_progress_message(plugin, number, max) abort
-  return printf('(%'.len(a:max).'d/%d) [%-20s] %s',
-        \ a:number, a:max, repeat('=', (a:number*20/a:max)), a:plugin.name)
+  return printf('(%'.len(a:max).'d/%'.len(a:max).'d) [%s%s] %s',
+        \ a:number, a:max,
+        \ repeat('+', (a:number*20/a:max)),
+        \ repeat('-', 20 - (a:number*20/a:max)),
+        \ a:plugin.name)
 endfunction
 function! s:get_plugin_message(plugin, number, max, message) abort
   return printf('(%'.len(a:max).'d/%d) |%-20s| %s',
