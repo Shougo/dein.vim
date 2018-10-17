@@ -26,6 +26,7 @@ function! dein#_init() abort
   let g:dein#_init_runtimepath = &runtimepath
 
   augroup dein
+    autocmd!
     autocmd FuncUndefined * call dein#autoload#_on_func(expand('<afile>'))
     autocmd BufRead *? call dein#autoload#_on_default_event('BufRead')
     autocmd BufNew,BufNewFile *? call dein#autoload#_on_default_event('BufNew')
@@ -56,10 +57,10 @@ function! dein#load_cache_raw(vimrcs) abort
   return [json_decode(list[1]), json_decode(list[2])]
 endfunction
 function! dein#load_state(path, ...) abort
-  if !(a:0 > 0 ? a:1 : has('vim_starting') &&
-        \ (!exists('&loadplugins') || &loadplugins || g:dein#_is_sudo))
-        \ | return 1 | endif
   call dein#_init()
+  let sourced = a:0 > 0 ? a:1 : has('vim_starting') &&
+        \  (!exists('&loadplugins') || &loadplugins)
+  if (g:dein#_is_sudo || !sourced) | return 1 | endif
   let g:dein#_base_path = expand(a:path)
 
   let state = get(g:, 'dein#cache_directory', g:dein#_base_path)

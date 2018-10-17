@@ -76,7 +76,6 @@ function! dein#parse#_dict(plugin) abort
 
   " Check relative path
   if (!has_key(a:plugin, 'rtp') || a:plugin.rtp !=# '')
-        \ && (!g:dein#_is_sudo || get(a:plugin, 'trusted', 0))
         \ && plugin.rtp !~# '^\%([~/]\|\a\+:\)'
     let plugin.rtp = plugin.path.'/'.plugin.rtp
   endif
@@ -84,6 +83,9 @@ function! dein#parse#_dict(plugin) abort
     let plugin.rtp = dein#util#_expand(plugin.rtp)
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
+  if g:dein#_is_sudo && !get(a:plugin, 'trusted', 0)
+    let plugin.rtp = ''
+  endif
 
   if has_key(plugin, 'script_type')
     " Add script_type.
