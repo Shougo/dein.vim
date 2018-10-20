@@ -232,8 +232,6 @@ function! dein#install#_recache_runtimepath() abort
   call dein#clear_state()
 
   call s:log([strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)')])
-
-  call dein#call_hook('done_update')
 endfunction
 function! s:clear_runtimepath() abort
   if dein#util#_get_cache_path() ==# ''
@@ -945,6 +943,9 @@ function! s:done(context) abort
   call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
   call s:notify(s:get_errored_message(a:context.errored_plugins))
 
+  call dein#call_hook('post_update', a:context.synced_plugins)
+  call dein#call_hook('done_update', a:context.synced_plugins)
+
   if a:context.update_type !=# 'check_update'
     call dein#install#_recache_runtimepath()
   endif
@@ -1198,14 +1199,6 @@ function! s:check_output(context, process) abort
     let type = dein#util#_get_type(plugin.type)
     let plugin.uri = has_key(type, 'get_uri') ?
           \ type.get_uri(plugin.repo, plugin) : ''
-
-    let cwd = getcwd()
-    try
-      call dein#install#_cd(plugin.path)
-      call dein#call_hook('post_update', plugin)
-    finally
-      call dein#install#_cd(cwd)
-    endtry
 
     if dein#install#_build([plugin.name])
       call s:log(s:get_plugin_message(plugin, num, max, 'Build failed'))
