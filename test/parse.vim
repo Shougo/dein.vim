@@ -66,7 +66,7 @@ function! s:suite.load_toml() abort
         \ '',
         \ '[[plugins]]',
         \ '# repository name is required.',
-        \ "repo = 'kana/vim-niceblock'",
+        \ "repo = 'Shougo/denite.nvim'",
         \ "on_map = '<Plug>'",
         \ '[[plugins]]',
         \ "repo = 'Shougo/neosnippet.vim'",

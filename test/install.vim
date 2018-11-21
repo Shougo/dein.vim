@@ -45,7 +45,7 @@ function! s:suite.install() abort
   call dein#add('Shougo/deol.nvim')
   call dein#add('Shougo/neosnippet.vim')
   call dein#add('Shougo/neopairs.vim')
-  call dein#add('Shougo/vimfiler.vim')
+  call dein#add('Shougo/defx.nvim')
   call dein#add('Shougo/denite.nvim')
 
   call dein#end()
@@ -433,16 +433,16 @@ endfunction
 function! s:suite.lazy_on_idle() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/vimfiler.vim', { 'on_idle': 1})
+  call dein#add('Shougo/defx.nvim', { 'on_idle': 1})
 
   call s:assert.equals(s:dein_install(), 0)
 
   call dein#end()
 
   call s:assert.equals(g:dein#_event_plugins,
-        \ {'CursorHold': ['vimfiler.vim'], 'FocusLost': ['vimfiler.vim']})
+        \ {'CursorHold': ['defx.nvim'], 'FocusLost': ['defx.nvim']})
 
-  let plugin = dein#get('vimfiler.vim')
+  let plugin = dein#get('defx.nvim')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
@@ -505,7 +505,7 @@ function! s:suite.depends_error_lazy() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/deoplete.nvim',
-        \ { 'depends': 'vimfiler.vim' })
+        \ { 'depends': 'defx.nvim' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -515,9 +515,9 @@ function! s:suite.depends_error_lazy() abort
 
   call dein#begin(s:path)
 
-  call dein#add('Shougo/vimfiler.vim', { 'lazy': 1 })
+  call dein#add('Shougo/defx.nvim', { 'lazy': 1 })
   call dein#add('Shougo/deoplete.nvim',
-        \ { 'depends': 'vimfiler.vim' })
+        \ { 'depends': 'defx.nvim' })
 
   call s:assert.equals(s:dein_install(), 0)
 

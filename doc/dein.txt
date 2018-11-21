@@ -703,7 +703,6 @@ on_path		(List) or (String)
 		files.  Otherwise, dein will call |dein#source()| if the
 		buffer name is matched to the string pattern.
 		Note: It is useful for explorer behavior plugins.
-		Ex: vimfiler, metarw, vim-gnupg ...
 
 						*dein-options-on_source*
 on_source	(List) or (String)
@@ -807,9 +806,9 @@ hook_add	(String) or (Function)
 		Note: You cannot call plugin function in "hook_add".
 		Because the plugin is not sourced when "hook_add".
 >
-		call dein#add('Shougo/vimfiler.vim', {
+		call dein#add('Shougo/defx.nvim', {
 		\ 'hook_add': 'nnoremap <silent>   [Space]v
-		\              :<C-u>VimFiler -invisible<CR>'
+		\              :<C-u>Defx<CR>'
 		\ })
 		call dein#add('kana/vim-niceblock', {
 		\ 'hook_add': join(['xmap I  <Plug>(niceblock-I)',
