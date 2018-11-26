@@ -72,7 +72,7 @@ function! dein#parse#_dict(plugin) abort
           \ plugin.repo : dein#util#_get_base_path().'/repos/'.plugin.name
   endif
 
-  let plugin.path = dein#util#_chomp(plugin.path)
+  let plugin.path = dein#util#_chomp(dein#util#_expand(plugin.path))
 
   " Check relative path
   if (!has_key(a:plugin, 'rtp') || a:plugin.rtp !=# '')
