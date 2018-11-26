@@ -27,4 +27,13 @@ function! s:suite.normal() abort
         \ 'map': {'i': 'Plug', 'c': 'Plug'},
         \ 'owner': {'name': 'Tom Preston-Werner', 'dob': 1979}
         \ })
+  call writefile([
+        \ '[[foo]]',
+        \ '[[foo]]',
+        \ '[foo.ftplugin]',
+        \ 'c = "let g:bar = 0"',
+        \ ], g:temp)
+  call s:assert.equals(dein#toml#parse_file(g:temp), {
+        \ 'foo': [{}, {'ftplugin': {'c': 'let g:bar = 0'}}]
+        \ })
 endfunction
