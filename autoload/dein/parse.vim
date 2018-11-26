@@ -28,6 +28,9 @@ function! dein#parse#_add(repo, options) abort
   if has_key(plugin, 'hook_add')
     call dein#util#_execute_hook(plugin, plugin.hook_add)
   endif
+  if has_key(plugin, 'ftplugin')
+    call s:merge_ftplugin(plugin.ftplugin)
+  endif
   return plugin
 endfunction
 function! dein#parse#_init(repo, options) abort
@@ -154,14 +157,13 @@ function! dein#parse#_load_toml(filename, default) abort
   endif
 
   " Parse.
-  let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
   if has_key(toml, 'hook_add')
+    let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
     let g:dein#_hook_add .= "\n" . substitute(
           \ toml.hook_add, pattern, '', 'g')
   endif
   if has_key(toml, 'ftplugin')
-    call extend(g:dein#_ftplugin, toml.ftplugin)
-    call map(g:dein#_ftplugin, "substitute(v:val, pattern, '', 'g')")
+    call s:merge_ftplugin(toml.ftplugin)
   endif
 
   if has_key(toml, 'plugins')
@@ -350,6 +352,17 @@ function! s:generate_dummy_mappings(plugin) abort
       endfor
     endfor
   endfor
+endfunction
+function! s:merge_ftplugin(ftplugin) abort
+  let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
+  for [ft, val] in items(a:ftplugin)
+    if !has_key(g:dein#_ftplugin, ft)
+      let g:dein#_ftplugin[ft] = val
+    else
+      let g:dein#_ftplugin[ft] .= "\n" . val
+    endif
+  endfor
+  call map(g:dein#_ftplugin, "substitute(v:val, pattern, '', 'g')")
 endfunction
 
 function! dein#parse#_get_types() abort

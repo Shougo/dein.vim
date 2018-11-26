@@ -576,6 +576,11 @@ frozen		(Number)
 		If set to 1, dein doesn't update it automatically. It is
 		useful for outdated plugins that can no longer be updated.
 
+							*dein-options-ftplugin*
+ftplugin	(Dictionary)
+		"_" key is executed after all ftplugin.
+		"{filetype}" key is executed {filetype} ftplugin.
+
 							*dein-options-if*
 if		(Number) or (String)
 		If set to zero, dein doesn't register the plugin, i.e. the
@@ -889,10 +894,9 @@ TOML							*dein-toml*
 		plugins		(Dictionary)
 		It is converted to |dein#add()|.
 		"repo" key is needed.
->
-		" Load toml from "~/.vim/plugins.toml".
-		call dein#load_toml("~/.vim/plugins.toml", {})
-<
+
+							*dein-toml-example*
+
 		TOML file sample is here:
 >
 		# TOML sample
@@ -903,15 +907,10 @@ TOML							*dein-toml*
 		_ = '''
 		  setl formatoptions-=ro | setl formatoptions+=mMBl
 		'''
-		python = '''
-		let b:undo_ftplugin .= 'setlocal foldmethod<'
-		setlocal foldmethod=indent
+		html = '''
+		setlocal includeexpr=substitute(v:fname,'^\\/','','')
+		setlocal path+=./;/
 		'''
-
-		[[plugins]]
-		# repository name is required.
-		repo = 'kana/vim-niceblock'
-		on_map = '<Plug>'
 
 		[[plugins]]
 		repo = 'Shougo/neosnippet.vim'
@@ -924,6 +923,11 @@ TOML							*dein-toml*
 		hook_add = '''
 		  nmap <silent>j <Plug>(accelerated_jk_gj)
 		  nmap <silent>k <Plug>(accelerated_jk_gk)
+		'''
+		[plugins.ftplugin]
+		python = '''
+		let b:undo_ftplugin .= 'setlocal foldmethod<'
+		setlocal foldmethod=indent
 		'''
 
 ==============================================================================
