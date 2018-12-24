@@ -219,7 +219,6 @@ function! dein#install#_recache_runtimepath() abort
     if exists('g:did_load_filetypes')
       filetype off | filetype on
     endif
-    call filter(g:, "stridx(v:key, 'loaded_') != 0")
     silent! runtime! plugin/**/*.vim
   endif
 
@@ -944,8 +943,10 @@ function! s:done(context) abort
   call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
   call s:notify(s:get_errored_message(a:context.errored_plugins))
 
-  call dein#call_hook('post_update', a:context.synced_plugins)
-  call dein#call_hook('done_update', a:context.synced_plugins)
+  if !empty(a:context.synced_plugins)
+    call dein#call_hook('post_update', a:context.synced_plugins)
+    call dein#call_hook('done_update', a:context.synced_plugins)
+  endif
 
   if a:context.update_type !=# 'check_update'
     call dein#install#_recache_runtimepath()
