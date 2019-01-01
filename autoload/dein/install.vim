@@ -419,7 +419,7 @@ function! dein#install#_remote_plugins() abort
 
   " Load not loaded neovim remote plugins
   let remote_plugins = filter(values(dein#get()),
-        \ "isdirectory(v:val.rtp . '/rplugin')")
+        \ "isdirectory(v:val.rtp . '/rplugin') && !v:val.sourced")
 
   call dein#autoload#_source(remote_plugins)
 
