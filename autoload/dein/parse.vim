@@ -24,6 +24,10 @@ function! dein#parse#_add(repo, options) abort
     call s:parse_lazy(plugin)
   endif
 
+  if has_key(g:dein#_plugins, plugin.name)
+        \ && g:dein#_plugins[plugin.name].sourced
+    let plugin.sourced = 1
+  endif
   let g:dein#_plugins[plugin.name] = plugin
   if has_key(plugin, 'hook_add')
     call dein#util#_execute_hook(plugin, plugin.hook_add)

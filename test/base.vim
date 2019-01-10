@@ -44,7 +44,7 @@ function! s:suite.add_normal() abort
   call s:assert.equals(dein#end(), 0)
 endfunction
 
-function! s:suite.add_ovewrite() abort
+function! s:suite.add_overwrite() abort
   call s:assert.equals(dein#begin(s:path), 0)
 
   call dein#add('foo', {})

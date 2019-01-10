@@ -57,7 +57,9 @@ function! dein#load_cache_raw(vimrcs) abort
   return [json_decode(list[1]), json_decode(list[2])]
 endfunction
 function! dein#load_state(path, ...) abort
-  call dein#_init()
+  if !exists('#dein')
+    call dein#_init()
+  endif
   let sourced = a:0 > 0 ? a:1 : has('vim_starting') &&
         \  (!exists('&loadplugins') || &loadplugins)
   if (g:dein#_is_sudo || !sourced) | return 1 | endif
