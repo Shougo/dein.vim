@@ -161,10 +161,10 @@ function! dein#util#_check_lazy_plugins() abort
 endfunction
 function! dein#util#_check_clean() abort
   let plugins_directories = map(values(dein#get()), 'v:val.path')
-  return filter(split(globpath(dein#util#_get_base_path(),
-        \ 'repos/*/*/*'), "\n"),
-        \ "isdirectory(v:val)
-        \  && fnamemodify(v:val, ':t') !=# 'dein.vim'
+  let path = dein#util#_substitute_path(
+        \ globpath(dein#util#_get_base_path(), 'repos/*/*/*'))
+  return filter(split(path, "\n"),
+        \ "isdirectory(v:val) && fnamemodify(v:val, ':t') !=# 'dein.vim'
         \  && index(plugins_directories, v:val) < 0")
 endfunction
 
