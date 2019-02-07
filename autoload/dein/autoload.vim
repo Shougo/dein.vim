@@ -116,7 +116,11 @@ function! s:source_events(event, plugins) abort
     return
   endif
 
+  let prev_autocmd = execute('autocmd ' . a:event)
+
   call dein#autoload#_source(a:plugins)
+
+  let new_autocmd = execute('autocmd ' . a:event)
 
   if a:event ==# 'InsertCharPre'
     " Queue this key again
@@ -127,7 +131,7 @@ function! s:source_events(event, plugins) abort
       " For BufReadCmd plugins
       doautocmd <nomodeline> BufReadCmd
     endif
-    if exists('#' . a:event)
+    if exists('#' . a:event) && prev_autocmd !=# new_autocmd
       execute 'doautocmd <nomodeline>' a:event
     elseif exists('#User#' . a:event)
       execute 'doautocmd <nomodeline> User' a:event
