@@ -180,7 +180,7 @@ function! s:type.get_revision_lock_command(plugin) abort
           \ ])
   endif
 
-  return [self.command, 'checkout', rev]
+  return [self.command, 'checkout', rev, '--']
 endfunction
 function! s:type.get_rollback_command(plugin, rev) abort
   if !self.executable
