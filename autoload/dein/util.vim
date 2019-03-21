@@ -56,7 +56,8 @@ function! dein#util#_get_cache_path() abort
 endfunction
 function! dein#util#_get_vimrcs(vimrcs) abort
   return !empty(a:vimrcs) ?
-        \ dein#util#_convert2list(a:vimrcs) : [dein#util#_get_myvimrc()]
+        \ map(dein#util#_convert2list(a:vimrcs), 'expand(v:val)') :
+        \ [dein#util#_get_myvimrc()]
 endfunction
 function! dein#util#_get_myvimrc() abort
   let vimrc = $MYVIMRC !=# '' ? $MYVIMRC :
