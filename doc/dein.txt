@@ -828,9 +828,7 @@ hook_add	(String) or (Function)
 <
 					*dein-options-hook_done_update*
 hook_done_update (String) or (Function)
-		It is executed after the plugins are updated.
-		Note: It is deprecated option.  You should use
-		|dein-options-hook_post_update| instead.
+		It is executed after the all plugins are updated.
 
 					*dein-options-hook_post_source*
 hook_post_source (String) or (Function)

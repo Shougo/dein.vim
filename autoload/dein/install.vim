@@ -948,7 +948,6 @@ function! s:done(context) abort
   endif
 
   if !empty(a:context.synced_plugins)
-    call dein#call_hook('post_update', a:context.synced_plugins)
     call dein#call_hook('done_update', a:context.synced_plugins)
   endif
 
@@ -1202,6 +1201,13 @@ function! s:check_output(context, process) abort
     let type = dein#util#_get_type(plugin.type)
     let plugin.uri = has_key(type, 'get_uri') ?
           \ type.get_uri(plugin.repo, plugin) : ''
+
+    let cwd = getcwd()
+    try
+      call dein#call_hook('post_update', plugin)
+    finally
+      call dein#install#_cd(cwd)
+    endtry
 
     if dein#install#_build([plugin.name])
       call s:log(s:get_plugin_message(plugin, num, max, 'Build failed'))
