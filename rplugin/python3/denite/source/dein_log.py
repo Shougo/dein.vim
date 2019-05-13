@@ -21,7 +21,7 @@ class Source(Base):
     def __init__(self, vim):
         super().__init__(vim)
 
-        self.name = 'dein_log'
+        self.name = 'dein/log'
 
     def on_init(self, context):
         context['__source_log'] = []
