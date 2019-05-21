@@ -534,6 +534,13 @@ g:dein#types#git#pull_command
 
 		Default: "pull --ff --ff-only"
 
+						*g:dein#auto_recache*
+g:dein#auto_recache
+		If you set it to 1, recache automatically if necessary when
+		saving the vimrc, toml file.
+
+		Default: 1
+
 
 ------------------------------------------------------------------------------
 OPTIONS							*dein-options*
