@@ -90,7 +90,7 @@ function! dein#parse#_dict(plugin) abort
     let plugin.rtp = dein#util#_expand(plugin.rtp)
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
-  if g:dein#_is_sudo && !get(a:plugin, 'trusted', 0)
+  if g:dein#_is_sudo && !get(plugin, 'trusted', 0)
     let plugin.rtp = ''
   endif
 
@@ -109,7 +109,7 @@ function! dein#parse#_dict(plugin) abort
     call dein#util#_error(string(key) . ' is deprecated.')
   endfor
 
-  if !has_key(a:plugin, 'lazy')
+  if !has_key(plugin, 'lazy')
     let plugin.lazy =
           \    has_key(plugin, 'on_i')
           \ || has_key(plugin, 'on_idle')
@@ -128,11 +128,11 @@ function! dein#parse#_dict(plugin) abort
           \ && plugin.normalized_name !=# 'dein'
           \ && !has_key(plugin, 'local')
           \ && !has_key(plugin, 'build')
-          \ && !has_key(a:plugin, 'if')
+          \ && !has_key(plugin, 'if')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
   endif
 
-  if has_key(a:plugin, 'if') && type(a:plugin.if) == v:t_string
+  if has_key(plugin, 'if') && type(plugin.if) == v:t_string
     let plugin.if = eval(a:plugin.if)
   endif
 
