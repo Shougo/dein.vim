@@ -80,6 +80,10 @@ function! dein#parse#_dict(plugin) abort
   endif
 
   let plugin.path = dein#util#_chomp(dein#util#_expand(plugin.path))
+  if get(plugin, 'rev', '') !=# ''
+    " Add revision path
+    let plugin.path .= '_' . plugin.rev
+  endif
 
   " Check relative path
   if (!has_key(a:plugin, 'rtp') || a:plugin.rtp !=# '')

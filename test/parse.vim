@@ -23,6 +23,10 @@ function! s:suite.parse_dict() abort
   let parsed_plugin = dein#parse#_dict(dein#parse#_init('', plugin))
   call s:assert.equals(parsed_plugin.merged, 0)
 
+  let plugin = {'name': 'baz', 'rev': 'foo'}
+  let parsed_plugin = dein#parse#_dict(dein#parse#_init('foo', plugin))
+  call s:assert.equals(parsed_plugin.path, '_foo')
+
   let $BAZDIR = '/baz'
   let repo = '$BAZDIR/foo'
   let plugin = {'repo': repo}
