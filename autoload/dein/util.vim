@@ -231,8 +231,8 @@ function! dein#util#_check_vimrcs() abort
   endif
 
   if get(g:, 'dein#auto_recache', 1)
-    if [string(g:dein#_cache_version)] +
-          \ sort(map(values(g:dein#_plugins), 'v:val.repo'))
+    if [string(g:dein#_merged_format)] +
+          \ sort(map(values(g:dein#_plugins), g:dein#_merged_format))
           \ !=# dein#util#_load_merged_plugins()
       call dein#recache_runtimepath()
     endif
@@ -252,7 +252,7 @@ function! dein#util#_load_merged_plugins() abort
   sandbox return [merged[0]] + eval(merged[1])
 endfunction
 function! dein#util#_save_merged_plugins(plugins) abort
-  call writefile([g:dein#_cache_version,
+  call writefile([g:dein#_merged_format,
         \ string(sort(a:plugins))],
         \ dein#util#_get_cache_path() . '/merged')
 endfunction
