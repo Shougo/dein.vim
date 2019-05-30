@@ -1,6 +1,6 @@
-language: viml
+dist: xenial
 
-sudo: false
+language: viml
 
 os:
     - linux
