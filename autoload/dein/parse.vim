@@ -82,7 +82,8 @@ function! dein#parse#_dict(plugin) abort
   let plugin.path = dein#util#_chomp(dein#util#_expand(plugin.path))
   if get(plugin, 'rev', '') !=# ''
     " Add revision path
-    let plugin.path .= '_' . plugin.rev
+    let plugin.path .= '_' . substitute(
+          \ plugin.rev, '[^[:alnum:].-]', '_', 'g')
   endif
 
   " Check relative path
