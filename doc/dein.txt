@@ -127,7 +127,7 @@ dein#begin({base-path}, [{vimrcs}])
 		For example, "Shougo/dein.vim" will be downloaded in
 		"{base-path}/repos/github.com/Shougo/dein.vim" directory.
 		{vimrcs} is a list of compared .vimrc and/or other
-		configuration files. The default is |$MYVIMRC|.
+		configuration(TOML) files. The default is |$MYVIMRC|.
 		The typical {base-path} is "~/.cache/dein" or
 		"~/.local/share/dein".
 
@@ -303,9 +303,21 @@ dein#load_toml({filename}, [{options}])
 		|dein-options| for keys to set in {options}.
 		Note: TOML parser is slow.  You should use it with
 		|dein#load_state()| and |dein#save_state()|.
+		Note: You need to specify toml files in |dein#begin()|
+		argument.
 
 		For toml file formats: |dein-toml|
+>
+	let s:toml = '~/test_vim/lazy.toml'
+	if dein#load_state('~/test_vim/.cache/dein', [$MYVIMRC, s:toml])
+	  call dein#begin('~/test_vim/.cache/dein')
 
+	  call dein#load_toml(s:toml, {'lazy': 1})
+
+	  call dein#end()
+	  call dein#save_state()
+	endif
+<
 							*dein#local()*
 dein#local({directory}, [{options}, [{names}]])
 		Add the subdirectories in {directory} to 'runtimepath', like
