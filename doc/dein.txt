@@ -550,8 +550,9 @@ g:dein#types#git#pull_command
 g:dein#auto_recache
 		If you set it to 1, recache automatically if necessary when
 		saving the vimrc, toml file.
+		Note: It reloads your $MYVIMRC.
 
-		Default: 1
+		Default: 0
 
 
 ------------------------------------------------------------------------------

@@ -230,8 +230,9 @@ function! dein#util#_check_vimrcs() abort
     call dein#clear_state()
   endif
 
-  if get(g:, 'dein#auto_recache', 1)
+  if get(g:, 'dein#auto_recache', 0)
     if dein#util#_get_merged_plugins() !=# dein#util#_load_merged_plugins()
+      source $MYVIMRC
       call dein#recache_runtimepath()
     endif
   endif
