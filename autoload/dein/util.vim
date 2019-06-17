@@ -226,13 +226,16 @@ function! dein#util#_check_vimrcs() abort
   let time = getftime(dein#util#_get_runtime_path())
   let ret = !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
         \ 'time < v:val'))
-  if ret
-    call dein#clear_state()
+  if !ret
+    return 0
   endif
 
+  call dein#clear_state()
+
   if get(g:, 'dein#auto_recache', 0)
+    source $MYVIMRC
     if dein#util#_get_merged_plugins() !=# dein#util#_load_merged_plugins()
-      source $MYVIMRC
+      call dein#util#_notify('auto recached')
       call dein#recache_runtimepath()
     endif
   endif
@@ -257,7 +260,11 @@ function! dein#util#_save_merged_plugins() abort
         \ dein#util#_get_cache_path() . '/merged')
 endfunction
 function! dein#util#_get_merged_plugins() abort
-  return [g:dein#_merged_format, string(len(g:dein#_ftplugin))] +
+  let ftplugin_len = 0
+  for ftplugin in values(g:dein#_ftplugin)
+    let ftplugin_len += len(ftplugin)
+  endfor
+  return [g:dein#_merged_format, string(ftplugin_len)] +
          \ sort(map(values(g:dein#_plugins), g:dein#_merged_format))
 endfunction
 
