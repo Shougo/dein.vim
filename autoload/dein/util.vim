@@ -231,9 +231,7 @@ function! dein#util#_check_vimrcs() abort
   endif
 
   if get(g:, 'dein#auto_recache', 1)
-    if [g:dein#_merged_format, len(g:dein#_ftplugin)] +
-         \ sort(map(values(g:dein#_plugins), g:dein#_merged_format))
-         \ !=# dein#util#_load_merged_plugins()
+    if s:get_merged_plugins() !=# dein#util#_load_merged_plugins()
       call dein#recache_runtimepath()
     endif
   endif
@@ -246,15 +244,20 @@ function! dein#util#_load_merged_plugins() abort
     return []
   endif
   let merged = readfile(path)
-  if len(merged) != 2
+  if len(merged) != g:dein#_merged_length
     return []
   endif
-  sandbox return [merged[0]] + eval(merged[1])
+  sandbox return merged[: g:dein#_merged_length - 2] + eval(merged[-1])
 endfunction
-function! dein#util#_save_merged_plugins(plugins) abort
-  call writefile([g:dein#_merged_format, len(g:dein#_ftplugin),
-        \ string(a:plugins)],
+function! dein#util#_save_merged_plugins() abort
+  let merged = s:get_merged_plugins()
+  call writefile(merged[: g:dein#_merged_length - 2] +
+        \ [string(merged[g:dein#_merged_length - 1 :])],
         \ dein#util#_get_cache_path() . '/merged')
+endfunction
+function! s:get_merged_plugins() abort
+  return [g:dein#_merged_format, string(len(g:dein#_ftplugin))] +
+         \ sort(map(values(g:dein#_plugins), g:dein#_merged_format))
 endfunction
 
 function! dein#util#_save_state(is_starting) abort

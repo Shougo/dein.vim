@@ -16,8 +16,7 @@ let s:this_script = fnamemodify(expand('<sfile>'), ':p')
 let s:merged_format = "{'repo': v:val.repo, 'rev': get(v:val, 'rev', '')}"
 
 function! s:dein_install() abort
-  call dein#util#_save_merged_plugins(
-        \ sort(map(values(g:dein#_plugins), s:merged_format)))
+  call dein#util#_save_merged_plugins()
   return dein#install#_update([], 'install', 0)
 endfunction
 
