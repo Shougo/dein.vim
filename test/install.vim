@@ -750,11 +750,13 @@ function! s:get_revision(plugin) abort
 endfunction
 
 function! s:suite.ftplugin() abort
+  call dein#begin(tempname())
+
   let g:dein#_ftplugin = {
         \ '_': 'echo 5555',
         \ 'python': 'setlocal foldmethod=indent',
         \ }
-  call dein#begin(tempname())
+
   call dein#add('Shougo/echodoc.vim')
   call dein#end()
 

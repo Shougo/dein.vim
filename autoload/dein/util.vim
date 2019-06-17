@@ -233,11 +233,6 @@ function! dein#util#_check_vimrcs() abort
   call dein#clear_state()
 
   if get(g:, 'dein#auto_recache', 0)
-    let g:dein#_plugins = {}
-    let g:dein#_event_plugins = {}
-    let g:dein#_ftplugin = {}
-    let g:dein#_hook_add = ''
-
     execute 'source' dein#util#_get_myvimrc()
 
     if dein#util#_get_merged_plugins() !=# dein#util#_load_merged_plugins()
@@ -359,6 +354,12 @@ function! dein#util#_begin(path, vimrcs) abort
   if !exists('#dein')
     call dein#_init()
   endif
+
+  " Reset variables
+  let g:dein#_plugins = {}
+  let g:dein#_event_plugins = {}
+  let g:dein#_ftplugin = {}
+  let g:dein#_hook_add = ''
 
   if !dein#util#_has_job()
     call dein#util#_error('Does not work in the Vim (' . v:version . ').')
