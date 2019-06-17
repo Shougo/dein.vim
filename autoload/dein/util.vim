@@ -233,7 +233,13 @@ function! dein#util#_check_vimrcs() abort
   call dein#clear_state()
 
   if get(g:, 'dein#auto_recache', 0)
+    let g:dein#_plugins = {}
+    let g:dein#_event_plugins = {}
+    let g:dein#_ftplugin = {}
+    let g:dein#_hook_add = ''
+
     execute 'source' dein#util#_get_myvimrc()
+
     if dein#util#_get_merged_plugins() !=# dein#util#_load_merged_plugins()
       call dein#util#_notify('auto recached')
       call dein#recache_runtimepath()
