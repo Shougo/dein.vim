@@ -230,7 +230,7 @@ function! dein#install#_recache_runtimepath() abort
 
   call dein#clear_state()
 
-  call s:log([strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)')])
+  call s:log(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction
 function! s:clear_runtimepath() abort
   if dein#util#_get_cache_path() ==# ''
@@ -412,7 +412,7 @@ function! dein#install#_polling() abort
 endfunction
 
 function! dein#install#_remote_plugins() abort
-  if !has('nvim')
+  if !has('nvim') || exists(':UpdateRemotePlugins') != 2
     return
   endif
 
@@ -422,12 +422,14 @@ function! dein#install#_remote_plugins() abort
 
   call dein#autoload#_source(remote_plugins)
 
+  call s:log('loaded remote plugins: ' .
+        \ string(map(copy(remote_plugins), 'v:val.name')))
+
   let &runtimepath = dein#util#_join_rtp(dein#util#_uniq(
         \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
 
-  if exists(':UpdateRemotePlugins') == 2
-    UpdateRemotePlugins
-  endif
+  let result = execute('UpdateRemotePlugins', '')
+  call s:log(result)
 endfunction
 
 function! dein#install#_each(cmd, plugins) abort
