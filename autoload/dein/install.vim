@@ -412,7 +412,13 @@ function! dein#install#_polling() abort
 endfunction
 
 function! dein#install#_remote_plugins() abort
-  if !has('nvim') || exists(':UpdateRemotePlugins') != 2
+  if !has('nvim')
+    return
+  endif
+
+  if has('vim_starting')
+    " Note: UpdateRemotePlugins is not defined in vim_starting
+    autocmd dein VimEnter * silent call dein#remote_plugins()
     return
   endif
 
