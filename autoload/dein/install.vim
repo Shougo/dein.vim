@@ -215,13 +215,6 @@ function! dein#install#_recache_runtimepath() abort
 
   silent call dein#remote_plugins()
 
-  if !has('vim_starting')
-    if exists('g:did_load_filetypes')
-      filetype off | filetype on
-    endif
-    silent! runtime! plugin/**/*.vim
-  endif
-
   call dein#call_hook('post_source')
 
   call dein#util#_save_merged_plugins()
@@ -960,6 +953,7 @@ function! s:done(context) abort
 
   if !empty(a:context.synced_plugins)
     call dein#call_hook('done_update', a:context.synced_plugins)
+    call dein#source(map(copy(a:context.synced_plugins), 'v:val.name'))
   endif
 
   call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
