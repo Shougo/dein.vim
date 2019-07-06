@@ -225,7 +225,8 @@ dein#each({command}[, {plugins}])
 dein#end()
 		End dein configuration block.
 		You must not use the plugins in |dein#begin()| block.
-		It executes |dein#recache_runtimepath()| automatically.
+		If you enable |g:dein#auto_recache|, it executes
+		|dein#recache_runtimepath()| automatically.
 		Note: 'runtimepath' is changed after |dein#end()|.
 
 							*dein#get()*
@@ -409,6 +410,14 @@ dein#tap({plugin-name})
 ------------------------------------------------------------------------------
 VARIABLES						*dein-variables*
 
+						*g:dein#auto_recache*
+g:dein#auto_recache
+		If you set it to 1, recache automatically if necessary when
+		saving the vimrc, toml file.
+		Note: It reloads your $MYVIMRC.
+
+		Default: 0
+
 						*g:dein#cache_directory*
 g:dein#cache_directory
 		The cache directory to use.
@@ -545,15 +554,6 @@ g:dein#types#git#pull_command
 		The git command used to pull updates.
 
 		Default: "pull --ff --ff-only"
-
-						*g:dein#auto_recache*
-g:dein#auto_recache
-		If you set it to 1, recache automatically if necessary when
-		saving the vimrc, toml file.
-		Note: It reloads your $MYVIMRC.
-
-		Default: 0
-
 
 ------------------------------------------------------------------------------
 OPTIONS							*dein-options*
