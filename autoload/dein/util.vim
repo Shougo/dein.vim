@@ -424,7 +424,7 @@ function! dein#util#_end() abort
 
   if !has('vim_starting')
     call dein#source(filter(values(g:dein#_plugins),
-        \ "!v:val.lazy && !v:val.sourced && v:val.rtp !=# ''"))
+       \ "!v:val.lazy && !v:val.sourced && v:val.rtp !=# ''"))
   endif
 
   " Add runtimepath
