@@ -1205,6 +1205,21 @@ A: Please execute the command line like this. >
 	vim -N -u ~/.vim/init.vim -c \
 	"try | call dein#update() | finally | qall! | endtry" -V1 -es
 
+Q: I want to set build conditions.
+
+A: Please use |dein-hooks-post_update|. >
+
+	[[plugins]]
+	repo = 'autozimu/LanguageClient-neovim'
+	hook_post_update = '''
+	if has('win32') || has('win64')
+	    call system(
+	    \ 'powershell -executionpolicy bypass -File install.ps1')
+	else
+	    call system('bash install.sh')
+	endif
+	'''
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 

@@ -1209,6 +1209,8 @@ function! s:check_output(context, process) abort
 
     let cwd = getcwd()
     try
+      call dein#install#_cd(plugin.path)
+
       call dein#call_hook('post_update', plugin)
     finally
       call dein#install#_cd(cwd)
