@@ -129,7 +129,7 @@ function! s:source_events(event, plugins) abort
   else
     if a:event ==# 'BufNew'
       " For BufReadCmd plugins
-      doautocmd <nomodeline> BufReadCmd
+      silent doautocmd <nomodeline> BufReadCmd
     endif
     if exists('#' . a:event) && prev_autocmd !=# new_autocmd
       execute 'doautocmd <nomodeline>' a:event
