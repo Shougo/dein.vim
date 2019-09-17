@@ -944,8 +944,10 @@ endfunction
 function! s:done(context) abort
   call s:restore_view(a:context)
 
-  call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
-  call s:notify(s:get_errored_message(a:context.errored_plugins))
+  if !has('vim_starting')
+    call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
+    call s:notify(s:get_errored_message(a:context.errored_plugins))
+  endif
 
   if a:context.update_type !=# 'check_update'
     call dein#install#_recache_runtimepath()
