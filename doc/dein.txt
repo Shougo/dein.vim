@@ -275,6 +275,11 @@ dein#load_dict({dict}, [{options}])
 		\ 'Shougo/deoplete.nvim': {'name': 'deoplete'}
 		\ })
 <
+							*dein#load_rollback()*
+dein#load_rollback({rollbackfile}[, {plugins}])
+		Rollback {plugins} from {rollbackfile}.
+		Note: It is the dangerous command.
+
 							*dein#load_state()*
 dein#load_state({base-path})
 		Load dein's state from the cache script,
@@ -369,6 +374,10 @@ dein#rollback({date}[, {plugins}])
 dein#recache_runtimepath()
 		Re-make the dein runtimepath cache and execute |:helptags|.
 		It is called automatically after the installation.
+
+							*dein#save_rollback()*
+dein#save_rollback({rollbackfile}[, {plugins}])
+		Save {plugins} rollback information to {rollbackfile}.
 
 							*dein#save_state()*
 dein#save_state()

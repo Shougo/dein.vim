@@ -199,7 +199,7 @@ function! dein#install#_recache_runtimepath() abort
   call dein#util#_save_merged_plugins()
 
   call dein#install#_save_rollback(
-        \ s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S'))
+        \ s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S'), [])
 
   call dein#clear_state()
 
@@ -270,16 +270,17 @@ endfunction
 function! s:list_directory(directory) abort
   return dein#util#_globlist(a:directory . '/*')
 endfunction
-function! dein#install#_save_rollback(rollbackfile) abort
+function! dein#install#_save_rollback(rollbackfile, plugins) abort
   let revisions = {}
-  for plugin in filter(values(dein#get()), 's:check_rollback(v:val)')
+  for plugin in filter(dein#util#_get_plugins(a:plugins),
+        \ 's:check_rollback(v:val)')
     let rev = s:get_revision_number(plugin)
     if rev !=# ''
       let revisions[plugin.name] = rev
     endif
   endfor
 
-  call writefile([json_encode(revisions)], a:rollbackfile)
+  call writefile([json_encode(revisions)], expand(a:rollbackfile))
 endfunction
 function! dein#install#_load_rollback(rollbackfile, plugins) abort
   let revisions = json_decode(readfile(a:rollbackfile)[0])
