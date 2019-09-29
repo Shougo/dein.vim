@@ -151,34 +151,13 @@ function! dein#install#_direct_install(repo, options) abort
   endif
 endfunction
 function! dein#install#_rollback(date, plugins) abort
-  let plugins = dein#util#_get_plugins(a:plugins)
-
   let glob = s:get_rollback_directory() . '/' . a:date . '*'
   let rollbacks = reverse(sort(dein#util#_globlist(glob)))
   if empty(rollbacks)
     return
   endif
 
-  let revisions = json_decode(readfile(rollbacks[0])[0])
-
-  call filter(plugins, "has_key(revisions, v:val.name)
-        \ && has_key(dein#util#_get_type(v:val.type),
-        \            'get_rollback_command')
-        \ && s:check_rollback(v:val)
-        \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
-  if empty(plugins)
-    return
-  endif
-
-  for plugin in plugins
-    let type = dein#util#_get_type(plugin.type)
-    let cmd = type.get_rollback_command(
-          \ dein#util#_get_type(plugin.type), revisions[plugin.name])
-    call dein#install#_each(cmd, plugin)
-  endfor
-
-  call dein#recache_runtimepath()
-  call s:error('Rollback to '.fnamemodify(rollbacks[0], ':t').' version.')
+  call dein#install#_load_rollback(rollbacks[0], a:plugins)
 endfunction
 
 function! dein#install#_recache_runtimepath() abort
@@ -219,7 +198,8 @@ function! dein#install#_recache_runtimepath() abort
 
   call dein#util#_save_merged_plugins()
 
-  call s:save_rollback()
+  call dein#install#_save_rollback(
+        \ s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S'))
 
   call dein#clear_state()
 
@@ -290,7 +270,7 @@ endfunction
 function! s:list_directory(directory) abort
   return dein#util#_globlist(a:directory . '/*')
 endfunction
-function! s:save_rollback() abort
+function! dein#install#_save_rollback(rollbackfile) abort
   let revisions = {}
   for plugin in filter(values(dein#get()), 's:check_rollback(v:val)')
     let rev = s:get_revision_number(plugin)
@@ -299,8 +279,30 @@ function! s:save_rollback() abort
     endif
   endfor
 
-  let dest = s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S')
-  call writefile([json_encode(revisions)], dest)
+  call writefile([json_encode(revisions)], a:rollbackfile)
+endfunction
+function! dein#install#_load_rollback(rollbackfile, plugins) abort
+  let revisions = json_decode(readfile(a:rollbackfile)[0])
+
+  let plugins = dein#util#_get_plugins(a:plugins)
+  call filter(plugins, "has_key(revisions, v:val.name)
+        \ && has_key(dein#util#_get_type(v:val.type),
+        \            'get_rollback_command')
+        \ && s:check_rollback(v:val)
+        \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
+  if empty(plugins)
+    return
+  endif
+
+  for plugin in plugins
+    let type = dein#util#_get_type(plugin.type)
+    let cmd = type.get_rollback_command(
+          \ dein#util#_get_type(plugin.type), revisions[plugin.name])
+    call dein#install#_each(cmd, plugin)
+  endfor
+
+  call dein#recache_runtimepath()
+  call s:error('Rollback to '.fnamemodify(a:rollbackfile, ':t').' version.')
 endfunction
 function! s:get_rollback_directory() abort
   let parent = printf('%s/rollbacks/%s',
