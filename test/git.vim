@@ -34,21 +34,21 @@ function! s:suite.init() abort
         \   'path': s:base.'github.com/Shougo/dein.vim' })
   call s:assert.equals(s:type.get_uri(
         \ 'https://github.com/Shougo/dein.vim', {}),
-        \ 'https://github.com/Shougo/dein.vim.git')
+        \ 'https://github.com/Shougo/dein.vim')
   call s:assert.equals(s:type.init(
         \ 'Shougo/dein.vim', {}),
         \ { 'type': 'git',
         \   'path': s:base.'github.com/Shougo/dein.vim' })
   call s:assert.equals(s:type.get_uri(
         \ 'Shougo/dein.vim', {}),
-        \ 'https://github.com/Shougo/dein.vim.git')
+        \ 'https://github.com/Shougo/dein.vim')
   call s:assert.equals(s:type.init(
         \ 'https://github.com:80/Shougo/dein.vim', {}),
         \ { 'type': 'git',
         \   'path': s:base.'github.com/Shougo/dein.vim' })
   call s:assert.equals(s:type.get_uri(
         \ 'https://github.com:80/Shougo/dein.vim', {}),
-        \ 'https://github.com/Shougo/dein.vim.git')
+        \ 'https://github.com/Shougo/dein.vim')
 
   call s:assert.equals(s:type.init('L9', {}), {})
 
@@ -65,11 +65,11 @@ function! s:suite.init() abort
         \   'path': s:base.'git.code.sf.net/p/atp-vim/code' })
   call s:assert.equals(s:type.get_uri(
         \ 'https://git.code.sf.net/p/atp-vim/code', {'type': 'git'}),
-        \ 'https://git.code.sf.net/p/atp-vim/code.git')
+        \ 'https://git.code.sf.net/p/atp-vim/code')
 
   call s:assert.equals(s:type.get_uri(
         \ 'git@bitbucket.com:vim/snippets', {}),
-        \ 'git@bitbucket.com:vim/snippets.git')
+        \ 'git@bitbucket.com:vim/snippets')
   call s:assert.equals(s:type.get_uri(
         \ 'ssh://git.company.com/gitroot/devtools/vim-company.git', {}),
         \ 'ssh://git.company.com/gitroot/devtools/vim-company.git')
@@ -80,7 +80,7 @@ function! s:suite.init() abort
         \ { 'type': 'git',
         \   'path': s:base.'github.com/Shougo/dein.vim' })
   call s:assert.equals(s:type.get_uri('Shougo/dein.vim', {}),
-        \ 'git@github.com:Shougo/dein.vim.git')
+        \ 'git@github.com:Shougo/dein.vim')
 
   let g:dein#types#git#default_protocol = 'https'
   call dein#end()

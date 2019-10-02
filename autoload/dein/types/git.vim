@@ -99,11 +99,6 @@ function! s:type.get_uri(repo, options) abort
           \ protocol . '://' . host . '/' . name
   endif
 
-  if uri !~# '\.git\s*$'
-    " Add .git suffix.
-    let uri .= '.git'
-  endif
-
   return uri
 endfunction
 
