@@ -145,6 +145,9 @@ endfunction
 function! dein#util#_is_fish() abort
   return dein#install#_is_async() && fnamemodify(&shell, ':t:r') ==# 'fish'
 endfunction
+function! dein#util#_is_powershell() abort
+  return dein#install#_is_async() && fnamemodify(&shell, ':t:r') =~? 'powershell\|pwsh'
+endfunction
 function! dein#util#_has_job() abort
   return (has('nvim') && exists('v:t_list'))
         \ || (has('patch-8.0.0027') && has('job'))

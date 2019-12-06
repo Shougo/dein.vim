@@ -125,8 +125,13 @@ function! s:type.get_sync_command(plugin) abort
     let git = self.command
 
     let cmd = g:dein#types#git#pull_command
-    let and = dein#util#_is_fish() ? '; and ' : ' && '
-    let cmd .= and . git . ' submodule update --init --recursive'
+    let submodule_cmd = git . ' submodule update --init --recursive'
+    if dein#util#_is_powershell()
+      let cmd .= '; if ($?) { ' . submodule_cmd . ' }'
+    else
+      let and = dein#util#_is_fish() ? '; and ' : ' && '
+      let cmd .= and . submodule_cmd
+    endif
 
     return git . ' ' . cmd
   endif
