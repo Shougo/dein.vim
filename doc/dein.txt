@@ -421,8 +421,8 @@ VARIABLES						*dein-variables*
 
 						*g:dein#auto_recache*
 g:dein#auto_recache
-		If you set it to 1, recache automatically if necessary when
-		saving the vimrc, toml file.
+		If you set it to 1, call |dein#recache_runtimepath()|
+		automatically if necessary when saving the vimrc, toml file.
 		Note: It reloads your $MYVIMRC.
 
 		Default: 0
@@ -1228,6 +1228,19 @@ A: Please use |dein-hooks-post_update|. >
 	    call system('bash install.sh')
 	endif
 	'''
+
+Q: Why I need to call |dein#recache_runtimepath()|| manually after removing
+plugins?
+https://github.com/Shougo/dein.vim/issues/357
+
+A: You can use |g:dein#auto_recache| option instead.
+Dein.vim has merge feature.  It copys the plugins into the merge directory.
+You can disable the feature by |dein-options-merged|.  It is like other plugin
+managers behavior.
+Why dein.vim has the feature?  It is for loading performance.
+Other plugin add 'runtimepath' to load external plugins.
+But if 'runtimepath' is very big, plugin loading is slower.  Because Vim needs
+to search all huge 'runtimepath' to load it.  Dein.vim has not the problem.
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
