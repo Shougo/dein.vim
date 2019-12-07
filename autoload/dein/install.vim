@@ -750,7 +750,7 @@ function! dein#install#_rm(path) abort
     let cmdline = substitute(cmdline, '/', '\\\\', 'g')
   endif
 
-  let rm_command = dein#util#_is_windows() ? 'rmdir /S /Q' : 'rm -rf'
+  let rm_command = dein#util#_is_windows() ? 'cmd /C rmdir /S /Q' : 'rm -rf'
   let cmdline = rm_command . cmdline
   let result = system(cmdline)
   if v:shell_error
@@ -781,7 +781,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
 
     try
       let lines = ['@echo off']
-      let format ='robocopy %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"'
+      let format ='robocopy.exe %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"'
       for src in a:srcs
         call add(lines, printf(format,
               \                substitute(printf('"%s" "%s"', src, a:dest),
