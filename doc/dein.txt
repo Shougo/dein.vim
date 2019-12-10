@@ -189,7 +189,7 @@ dein#config({options})
 		If {plugin-name} is already loaded or invalid, it will be
 		ignored.
 
-		Note: You must call it within |dein#begin()| / ||dein#end()|
+		Note: You must call it within |dein#begin()| / |dein#end()|
 		block.
 >
 	call dein#add('Shougo/deoplete.nvim')
@@ -1229,7 +1229,7 @@ A: Please use |dein-hooks-post_update|. >
 	endif
 	'''
 
-Q: Why I need to call |dein#recache_runtimepath()|| manually after removing
+Q: Why I need to call |dein#recache_runtimepath()| manually after removing
 plugins?
 https://github.com/Shougo/dein.vim/issues/357
 
@@ -1238,7 +1238,7 @@ Dein.vim has merge feature.  It copys the plugins into the merge directory.
 You can disable the feature by |dein-options-merged|.  It is like other plugin
 managers behavior.
 Why dein.vim has the feature?  It is for loading performance.
-Other plugin add 'runtimepath' to load external plugins.
+Other plugin manager adds 'runtimepath' to load external plugins.
 But if 'runtimepath' is very big, plugin loading is slower.  Because Vim needs
 to search all huge 'runtimepath' to load it.  Dein.vim has not the problem.
 
