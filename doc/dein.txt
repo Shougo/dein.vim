@@ -507,7 +507,7 @@ g:dein#install_message_type
 		"echo":
 			Displayed in the echo area.
 
-							*g:dein#log_filename*
+							*g:dein#install_log_filename*
 g:dein#install_log_filename
 		The log filename. Set it to "" to disable logging.
 
