@@ -507,7 +507,7 @@ g:dein#install_message_type
 		"echo":
 			Displayed in the echo area.
 
-							*g:dein#install_log_filename*
+						*g:dein#install_log_filename*
 g:dein#install_log_filename
 		The log filename. Set it to "" to disable logging.
 
@@ -578,7 +578,8 @@ build		(String)
 		Specify the build script.
 		This command is executed by |system()| in the plugin
 		runtimepath.
-		Note: In previous versions of dein, build could also be of type
+		Note: In previous versions of dein, build could also be of
+		type dictionary, but that is now deprecated.
 		dictionary, but that is now deprecated.
 		Please use |dein-options-hook_post_update| instead.
 
@@ -592,7 +593,6 @@ build		(String)
 		\ 'build':
 		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
 		\ })
-<
 							*dein-options-depends*
 depends		(List or String)
 		Specify a list of plugins a plugin depends on.
@@ -605,7 +605,7 @@ frozen		(Number)
 		If set to 1, dein doesn't update it automatically. It is
 		useful for outdated plugins that can no longer be updated.
 
-							*dein-options-ftplugin*
+						*dein-options-ftplugin*
 ftplugin	(Dictionary)
 		"_" key is executed after all ftplugin.
 		"{filetype}" key is executed {filetype} ftplugin.
@@ -1130,7 +1130,8 @@ https://github.com/haya14busa/dein-command.vim
 Q: Why the install script does not use "curl | bash" ?
 https://github.com/Shougo/neobundle.vim/pull/515
 
-A: https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/
+A:
+https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/
 
 Q: I want to use "git" or "http" protocol instead of "https".
 
@@ -1143,7 +1144,7 @@ A: https://glyph.twistedmatrix.com/2015/11/editor-malware.html
 Q: YouCompleteMe installation is failed.
 https://github.com/Shougo/dein.vim/issues/144
 
-A: Please check |:message| result.
+A: Please check |:messages| result.
 If you have found "Process timeout" error, you should increase
 |g:dein#install_process_timeout| value.
 
@@ -1216,7 +1217,7 @@ A: Please execute the command line like this. >
 
 Q: I want to set build conditions.
 
-A: Please use |dein-hooks-post_update|. >
+A: Please use |dein-options-hook_post_update|. >
 
 	[[plugins]]
 	repo = 'autozimu/LanguageClient-neovim'
