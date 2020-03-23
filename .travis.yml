@@ -1,6 +1,9 @@
 dist: xenial
 
-language: viml
+language: python
+
+python:
+  - 3.7
 
 install:
   - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
