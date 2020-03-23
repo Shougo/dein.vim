@@ -2,16 +2,9 @@ dist: xenial
 
 language: viml
 
-os:
-    - linux
-
 install:
-    # Install Neovim via Gist
-    # https://gist.github.com/lambdalisue/0f461f6a91743895394e63a9a1c65232
-    - curl -sL https://gist.githubusercontent.com/lambdalisue/0f461f6a91743895394e63a9a1c65232/raw/install_nvim_for_ci.sh | bash
-
-before_script:
-    - git clone https://github.com/thinca/vim-themis
+  - eval "$(curl -Ss https://raw.githubusercontent.com/neovim/bot-ci/master/scripts/travis-setup.sh) nightly-x64"
+  - make install
 
 script:
-    - PATH="$HOME/neovim/bin:$PATH" THEMIS_VIM=nvim THEMIS_ARGS="-e -s --headless" THEMIS_HOME=./vim-themis vim-themis/bin/themis --reporter spec
+  - make --keep-going test

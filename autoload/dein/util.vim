@@ -210,8 +210,8 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
     for hook in filter([
           \ 'hook_add', 'hook_source',
           \ 'hook_post_source', 'hook_post_update',
-          \ ], "has_key(plugin, v:val)
-          \     && type(plugin[v:val]) == v:t_func")
+          \ ], 'has_key(plugin, v:val)
+          \     && type(plugin[v:val]) == v:t_func')
       call remove(plugin, hook)
     endfor
   endfor

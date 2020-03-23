@@ -758,7 +758,7 @@ function! dein#install#_rm(path) abort
   endif
 
   " Error check.
-  if getftype(a:path) != ''
+  if getftype(a:path) !=# ''
     call dein#util#_error(printf('"%s" cannot be removed.', a:path))
     call dein#util#_error(printf('cmdline is "%s".', cmdline))
   endif

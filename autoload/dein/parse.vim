@@ -145,7 +145,7 @@ function! dein#parse#_dict(plugin) abort
   for hook in filter([
         \ 'hook_add', 'hook_source',
         \ 'hook_post_source', 'hook_post_update',
-        \ ], "has_key(plugin, v:val) && type(plugin[v:val]) == v:t_string")
+        \ ], 'has_key(plugin, v:val) && type(plugin[v:val]) == v:t_string')
     let plugin[hook] = substitute(plugin[hook],
           \ '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
   endfor
