@@ -44,16 +44,16 @@ function! dein#autoload#_source(...) abort
 
     if !has('vim_starting')
       let augroup = get(plugin, 'augroup', plugin.normalized_name)
-      if exists('#'.augroup.'#VimEnter')
-        silent execute 'doautocmd' augroup 'VimEnter'
-      endif
+      let events = ['VimEnter', 'BufRead', 'BufEnter',
+            \ 'BufWinEnter', 'WinEnter']
       if has('gui_running') && &term ==# 'builtin_gui'
-            \ && exists('#'.augroup.'#GUIEnter')
-        silent execute 'doautocmd' augroup 'GUIEnter'
+        call add(events, 'GUIEnter')
       endif
-      if exists('#'.augroup.'#BufRead')
-        silent execute 'doautocmd' augroup 'BufRead'
-      endif
+      for event in events
+        if exists('#'.augroup.'#'.event)
+          silent execute 'doautocmd' augroup event
+        endif
+      endfor
     endif
   endfor
 
