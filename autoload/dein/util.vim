@@ -734,8 +734,8 @@ function! s:_compare(a, b) abort
 endfunction
 
 function! s:execute(expr) abort
-  if has('nvim')
-    return execute(split(a:expr, '\n'))
+  if exists('*execute')
+    return execute(split(a:expr, '\n'), '')
   endif
 
   let dummy = '_dein_dummy_' .
