@@ -38,15 +38,24 @@ dein.vim does not define a default installation directory.
 You must **not** set the installation directory as `~/.vim/plugin` or
 `~/.config/nvim/plugin`.
 
-
-### Unix/Linux or Mac OS X
-
 1. Run below script.
+
+For Unix/Linux or Mac OS X
 
 ```sh
 curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
 # For example, we just use `~/.cache/dein` as installation directory
 sh ./installer.sh ~/.cache/dein
+```
+
+For Windows(PowerShell)
+
+```powershell
+Invoke-WebRequest https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.ps1 -OutFile installer.ps1
+# Allow to run third-party script
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+# For example, we just use `~/.cache/dein` as installation directory
+./installer.ps1 ~/.cache/dein
 ```
 
 2. Edit your .vimrc like this.
