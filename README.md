@@ -124,6 +124,6 @@ Some common options. For a more detailed list, run `:h dein-options`
 | `build`  | `string`             | Command to run after the plugin is installed                                          |
 | `on_ft`  | `string` or `list`   | Load a plugin for the current filetype                                                |
 | `on_cmd` | `string` or `list`   | Load the plugin for these commands                                                    |
-| `rtp`    | `string`             | You can use this option when the repository has the Vim plugin in a subdirectory               |
+| `rtp`    | `string`             | You can use this option when the repository has the Vim plugin in a subdirectory      |
 | `if`     | `string` or `number` | If it is String, dein will eval it.                                                   |
 | `merged` | `number`             | If set to 0, dein doesn't merge the plugin directory.                                 |
