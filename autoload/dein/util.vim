@@ -359,10 +359,12 @@ function! dein#util#_begin(path, vimrcs) abort
   endif
 
   " Reset variables
-  let g:dein#_plugins = {}
-  let g:dein#_event_plugins = {}
-  let g:dein#_ftplugin = {}
-  let g:dein#_hook_add = ''
+  if has('vim_starting')
+    let g:dein#_plugins = {}
+    let g:dein#_event_plugins = {}
+    let g:dein#_ftplugin = {}
+    let g:dein#_hook_add = ''
+  endif
 
   if !dein#util#_has_job()
     call dein#util#_error('Does not work in the Vim (' . v:version . ').')
@@ -384,17 +386,17 @@ function! dein#util#_begin(path, vimrcs) abort
   let g:dein#_vimrcs = dein#util#_get_vimrcs(a:vimrcs)
   let g:dein#_hook_add = ''
 
-  " Filetype off
-  if exists('g:did_load_filetypes') || has('nvim')
-    let g:dein#_off1 = 'filetype off'
-    execute g:dein#_off1
-  endif
-  if exists('b:did_indent') || exists('b:did_ftplugin')
-    let g:dein#_off2 = 'filetype plugin indent off'
-    execute g:dein#_off2
-  endif
-
-  if !has('vim_starting')
+  if has('vim_starting')
+    " Filetype off
+    if exists('g:did_load_filetypes') || has('nvim')
+      let g:dein#_off1 = 'filetype off'
+      execute g:dein#_off1
+    endif
+    if exists('b:did_indent') || exists('b:did_ftplugin')
+      let g:dein#_off2 = 'filetype plugin indent off'
+      execute g:dein#_off2
+    endif
+  else
     execute 'set rtp-='.fnameescape(g:dein#_runtime_path)
     execute 'set rtp-='.fnameescape(g:dein#_runtime_path.'/after')
   endif
