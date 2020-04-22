@@ -362,9 +362,9 @@ function! dein#util#_begin(path, vimrcs) abort
   if has('vim_starting')
     let g:dein#_plugins = {}
     let g:dein#_event_plugins = {}
-    let g:dein#_ftplugin = {}
-    let g:dein#_hook_add = ''
   endif
+  let g:dein#_ftplugin = {}
+  let g:dein#_hook_add = ''
 
   if !dein#util#_has_job()
     call dein#util#_error('Does not work in the Vim (' . v:version . ').')
