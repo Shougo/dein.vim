@@ -4,7 +4,7 @@ param(
 $DEIN_VIM_REPO = "https://github.com/Shougo/dein.vim"
 
 # Convert the installation directory to absolute path and create plugin directory
-$PluginDir = (New-Item -Directory -Force $PluginDir).FullName
+$PluginDir = (New-Item -Type Directory -Force $PluginDir).FullName
 
 $INSTALL_DIR = Join-Path $PluginDir "repos/github.com/Shougo/dein.vim"
 Write-Output "Install to `"$INSTALL_DIR`"..."
