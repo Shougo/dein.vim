@@ -1,42 +1,12 @@
+param(
+    [Parameter(Mandatory=$true)][String]$PluginDir
+)
 $DEIN_VIM_REPO = "https://github.com/Shougo/dein.vim"
 
-# Check if a cmdlet exists
-# https://devblogs.microsoft.com/scripting/use-a-powershell-function-to-see-if-a-command-exists/
-Function Test-CommandExists {
-    Param ($command)
-
-    $oldPreference = $ErrorActionPreference
-    $ErrorActionPreference = ‘stop’
-
-    try {
-        if (Get-Command $command) {
-            RETURN $true
-        }
-    }
-    Catch {
-        Write-Host “$command does not exist”
-        RETURN $false
-    }
-    Finally {
-        $ErrorActionPreference = $oldPreference
-    }
-}
-
-if ($args.Count -ne 1) {
-    Write-Output "You must specify the installation directory!"
-    exit 1
-}
-
 # Convert the installation directory to absolute path and create plugin directory
-$PLUGIN_DIR = $args[0]
-if (Test-Path $PLUGIN_DIR) {
-    $PLUGIN_DIR = Convert-Path $PLUGIN_DIR
-}
-else {
-    $PLUGIN_DIR = New-Item $PLUGIN_DIR -ItemType Directory
-}
+$PluginDir = (New-Item -Directory -Force $PluginDir).FullName
 
-$INSTALL_DIR = Join-Path $PLUGIN_DIR "repos/github.com/Shougo/dein.vim"
+$INSTALL_DIR = Join-Path $PluginDir "repos/github.com/Shougo/dein.vim"
 Write-Output "Install to `"$INSTALL_DIR`"..."
 if (Test-Path $INSTALL_DIR) {
     Write-Output "`"$INSTALL_DIR`" already exists!"
@@ -45,21 +15,17 @@ if (Test-Path $INSTALL_DIR) {
 Write-Output ""
 
 # check git command
-if (!(Test-CommandExists git)) {
-    Write-Output 'Please install git or update your path to include the git executable!'
-    exit 1
+if (!(Get-Command git -ErrorAction SilentlyContinue -OutVariable $_)) {
+    throw 'Please install git or update your path to include the git executable!'
 }
 Write-Output ""
 
 # make plugin dir and fetch dein
-if (!(Test-Path $INSTALL_DIR)) {
-    Write-Output "Begin fetching dein..."
-    New-Item $INSTALL_DIR -ItemType Directory | Out-Null
-    git clone $DEIN_VIM_REPO $INSTALL_DIR
-    Write-Output "Done."
-    Write-Output ""
-}
-
+New-Item -Type Directory -Force $INSTALL_DIR
+Write-Output "Begin fetching dein..."
+git clone $DEIN_VIM_REPO $INSTALL_DIR
+Write-Output "Done.`n"
+    
 Write-Output "Please add the following settings for dein to the top of your vimrc (Vim) or init.vim (NeoVim) file:"
 
 Write-Output ""
