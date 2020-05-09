@@ -20,7 +20,6 @@ if (!(Get-Command git -ErrorAction SilentlyContinue -OutVariable $_)) {
 Write-Output ""
 
 # make plugin dir and fetch dein
-New-Item -Type Directory -Force $InstallDir | Out-Null
 Write-Output "Begin fetching dein..."
 git clone $DeinVimRepo $InstallDir
 Write-Output "Done.`n"
