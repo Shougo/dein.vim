@@ -1,18 +1,17 @@
 param(
     [Parameter(Mandatory=$true)][String]$PluginDir
 )
-$DEIN_VIM_REPO = "https://github.com/Shougo/dein.vim"
+
+$DeinVimRepo = "https://github.com/Shougo/dein.vim"
 
 # Convert the installation directory to absolute path and create plugin directory
 $PluginDir = (New-Item -Type Directory -Force $PluginDir).FullName
 
-$INSTALL_DIR = Join-Path $PluginDir "repos/github.com/Shougo/dein.vim"
-Write-Output "Install to `"$INSTALL_DIR`"..."
-if (Test-Path $INSTALL_DIR) {
-    Write-Output "`"$INSTALL_DIR`" already exists!"
+$InstallDir = Join-Path $PluginDir "repos/github.com/Shougo/dein.vim"
+Write-Output "Install to `"$InstallDir`"..."
+if (Test-Path $InstallDir) {
+    Write-Output "`"$InstallDir`" already exists!"
 }
-
-Write-Output ""
 
 # check git command
 if (!(Get-Command git -ErrorAction SilentlyContinue -OutVariable $_)) {
@@ -21,12 +20,12 @@ if (!(Get-Command git -ErrorAction SilentlyContinue -OutVariable $_)) {
 Write-Output ""
 
 # make plugin dir and fetch dein
-New-Item -Type Directory -Force $INSTALL_DIR
+New-Item -Type Directory -Force $InstallDir | Out-Null
 Write-Output "Begin fetching dein..."
-git clone $DEIN_VIM_REPO $INSTALL_DIR
+git clone $DeinVimRepo $InstallDir
 Write-Output "Done.`n"
-    
-Write-Output "Please add the following settings for dein to the top of your vimrc (Vim) or init.vim (NeoVim) file:"
+
+Write-Host -ForegroundColor Yellow "Please add the following settings for dein to the top of your vimrc (Vim) or init.vim (NeoVim) file:"
 
 Write-Output ""
 Write-Output ""
@@ -36,15 +35,15 @@ Write-Output "  set nocompatible               `" Be iMproved"
 Write-Output "endif"
 Write-Output ""
 Write-Output "`" Required:"
-Write-Output "set runtimepath+=$INSTALL_DIR"
+Write-Output "set runtimepath+=$InstallDir"
 Write-Output ""
 Write-Output "`" Required:"
-Write-Output "if dein#load_state('$PLUGIN_DIR')"
-Write-Output "  call dein#begin('$PLUGIN_DIR')"
+Write-Output "if dein#load_state('$PluginDir')"
+Write-Output "  call dein#begin('$PluginDir')"
 Write-Output ""
 Write-Output "  `" Let dein manage dein"
 Write-Output "  `" Required:"
-Write-Output "  call dein#add('$INSTALL_DIR')"
+Write-Output "  call dein#add('$InstallDir')"
 Write-Output ""
 Write-Output "  `" Add or remove your plugins here like this:"
 Write-Output "  `"call dein#add('Shougo/neosnippet.vim')"
