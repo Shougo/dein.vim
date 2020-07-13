@@ -134,6 +134,7 @@ function! dein#parse#_dict(plugin) abort
           \ && !has_key(plugin, 'local')
           \ && !has_key(plugin, 'build')
           \ && !has_key(plugin, 'if')
+          \ && !has_key(plugin, 'hook_post_update')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
   endif
 
