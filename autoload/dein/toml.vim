@@ -212,7 +212,7 @@ endfunction
 "
 function! s:_boolean(input) abort
   let s = s:_consume(a:input, '\%(true\|false\)')
-  return (s ==# 'true') ? 1 : 0
+  return (s ==# 'true') ? v:true : v:false
 endfunction
 
 "
