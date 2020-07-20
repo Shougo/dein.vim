@@ -196,7 +196,7 @@ dein#config({options})
 >
 	call dein#add('Shougo/deoplete.nvim')
 	call dein#config('deoplete.nvim', {
-	\ 'lazy' : 1, 'on_i' : 1,
+	\ 'lazy' : 1, 'on_event' : 'InsertEnter',
 	\ })
 <
 						*dein#direct_install()*
@@ -317,7 +317,7 @@ dein#load_toml({filename}, [{options}])
 		For toml file formats: |dein-toml|
 >
 	let s:toml = '~/test_vim/lazy.toml'
-	if dein#load_state('~/test_vim/.cache/dein', [$MYVIMRC, s:toml])
+	if dein#load_state('~/test_vim/.cache/dein')
 	  call dein#begin('~/test_vim/.cache/dein')
 
 	  call dein#load_toml(s:toml, {'lazy': 1})
@@ -943,7 +943,7 @@ TOML							*dein-toml*
 
 		[[plugins]]
 		repo = 'Shougo/neosnippet.vim'
-		on_i = 1
+		on_event = 'InsertEnter'
 		on_ft = 'snippet'
 
 		[[plugins]]
