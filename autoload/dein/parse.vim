@@ -13,28 +13,26 @@ let s:git = dein#types#git#define()
 
 function! dein#parse#_add(repo, options) abort
   let plugin = dein#parse#_dict(dein#parse#_init(a:repo, a:options))
-  if (has_key(g:dein#_plugins, plugin.name)
-        \ && g:dein#_plugins[plugin.name].sourced)
+  if get(get(g:dein#_plugins, plugin.name, {}), 'sourced', 0)
         \ || !get(plugin, 'if', 1)
     " Skip already loaded or not enabled plugin.
     return {}
   endif
 
-  if plugin.lazy && plugin.rtp !=# ''
-    call s:parse_lazy(plugin)
+  if plugin.rtp !=# ''
+    if plugin.lazy
+      call s:parse_lazy(plugin)
+    endif
+    if has_key(plugin, 'hook_add')
+      call dein#util#_execute_hook(plugin, plugin.hook_add)
+    endif
+    if has_key(plugin, 'ftplugin')
+      call s:merge_ftplugin(plugin.ftplugin)
+    endif
   endif
 
-  if has_key(g:dein#_plugins, plugin.name)
-        \ && g:dein#_plugins[plugin.name].sourced
-    let plugin.sourced = 1
-  endif
   let g:dein#_plugins[plugin.name] = plugin
-  if has_key(plugin, 'hook_add')
-    call dein#util#_execute_hook(plugin, plugin.hook_add)
-  endif
-  if has_key(plugin, 'ftplugin')
-    call s:merge_ftplugin(plugin.ftplugin)
-  endif
+
   return plugin
 endfunction
 function! dein#parse#_init(repo, options) abort
