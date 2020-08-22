@@ -792,10 +792,9 @@ function! dein#install#_copy_directories(srcs, dest) abort
       call delete(temp)
     endtry
 
-    " For some baffling reason robocopy almost always returns between 1 and 3
-    " upon success
+    " Robocopy returns between 0 and 7 upon success
     let status = dein#install#_status()
-    let status = (status > 3) ? status : 0
+    let status = (status > 7) ? status : 0
 
     if status
       call dein#util#_error('copy command failed.')
