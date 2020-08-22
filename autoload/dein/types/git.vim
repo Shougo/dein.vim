@@ -302,36 +302,31 @@ endif
 
 " From minpac plugin manager
 " https://github.com/k-takata/minpac
-function! s:isroot(dir) abort
-  if a:dir =~# '^/' || (has('win32') && a:dir =~? '^\%(\\\|[A-Z]:\)')
-    return v:true
-  endif
-  return v:false
+function! s:isabsolute(dir) abort
+  return a:dir =~# '^/' || (has('win32') && a:dir =~? '^\%(\\\|[A-Z]:\)')
 endfunction
+
 function! s:get_gitdir(dir) abort
   let gitdir = a:dir . '/.git'
   if isdirectory(gitdir)
     return gitdir
-  elseif filereadable(gitdir)
-    try
-      let line = readfile(gitdir)[0]
-    catch
-      return ''
-    endtry
+  endif
+  try
+    let line = readfile(gitdir)[0]
     if line =~# '^gitdir: '
-      let dir = line[8:]
-      if s:isroot(dir)
-        let gitdir = dir
-      else
-        let gitdir = a:dir . '/' . dir
+      let gitdir = line[8:]
+      if !s:isabsolute(gitdir)
+        let gitdir = a:dir . '/' . gitdir
       endif
       if isdirectory(gitdir)
         return gitdir
       endif
     endif
-  endif
+  catch
+  endtry
   return ''
 endfunction
+
 function! s:get_revision(dir) abort
   let gitdir = s:get_gitdir(a:dir)
   if gitdir ==# ''
@@ -342,24 +337,19 @@ function! s:get_revision(dir) abort
     if line =~# '^ref: '
       let ref = line[5:]
       if filereadable(gitdir . '/' . ref)
-        let rev = readfile(gitdir . '/' . ref)[0]
-      else
-        let rev = v:null
-        for line in readfile(gitdir . '/packed-refs')
-          if line =~# ' ' . ref
-            let rev = substitute(line, '^\([0-9a-f]*\) ', '\1', '')
-            break
-          endif
-        endfor
+        return readfile(gitdir . '/' . ref)[0]
       endif
-    else
-      let rev = line
+      for line in readfile(gitdir . '/packed-refs')
+        if line =~# ' ' . ref
+          return substitute(line, '^\([0-9a-f]*\) ', '\1', '')
+        endif
+      endfor
     endif
-    return rev
   catch
-    return v:null
   endtry
+  return v:null
 endfunction
+
 function! s:get_branch(dir) abort
   let gitdir = s:get_gitdir(a:dir)
   if gitdir ==# ''
