@@ -526,12 +526,11 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   return [cmd, message]
 endfunction
 function! s:get_revision_number(plugin) abort
-  let type = dein#util#_get_type(a:plugin.type)
-
   if !isdirectory(a:plugin.path)
-        \ || !has_key(type, 'get_revision_number_command')
     return ''
   endif
+
+  let type = dein#util#_get_type(a:plugin.type)
 
   if has_key(type, 'get_revision_number')
     return type.get_revision_number(a:plugin)

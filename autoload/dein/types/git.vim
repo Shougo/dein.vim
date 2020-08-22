@@ -138,7 +138,7 @@ function! s:type.get_sync_command(plugin) abort
 endfunction
 
 function! s:type.get_revision_number(plugin) abort
-  let rev = s:get_revision(plugin.path)
+  let rev = s:get_revision(a:plugin.path)
   if rev is v:null
     return ''
   endif
