@@ -533,6 +533,14 @@ function! s:get_revision_number(plugin) abort
     return ''
   endif
 
+  if has_key(type, 'get_revision_number')
+    return type.get_revision_number(a:plugin)
+  endif
+
+  if !has_key(type, 'get_revision_number_command')
+    return ''
+  endif
+
   let cmd = type.get_revision_number_command(a:plugin)
   if empty(cmd)
     return ''

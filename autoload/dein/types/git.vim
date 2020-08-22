@@ -137,12 +137,13 @@ function! s:type.get_sync_command(plugin) abort
   endif
 endfunction
 
-function! s:type.get_revision_number_command(plugin) abort
-  if !self.executable
-    return []
+function! s:type.get_revision_number(plugin) abort
+  let rev = s:get_revision(plugin.path)
+  if rev is v:null
+    return ''
   endif
 
-  return [self.command, 'rev-parse', 'HEAD']
+  return rev
 endfunction
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   if !self.executable || a:new_rev ==# '' || a:old_rev ==# ''
@@ -178,8 +179,8 @@ function! s:type.get_revision_lock_command(plugin) abort
     let rev = dein#install#_system([
           \ self.command, 'symbolic-ref', '--short', 'HEAD'
           \ ])
-    if rev =~# 'fatal: '
-      " Fix "fatal: ref HEAD is not a symbolic ref" error
+    if rev =~# 'fata '
+      " Fix "fata ref HEAD is not a symbolic ref" error
       let rev = 'master'
     endif
   endif
@@ -298,3 +299,79 @@ else
     return a:path =~# '^/'
   endfunction
 endif
+
+" From minpac plugin manager
+" https://github.com/k-takata/minpac
+function! s:isroot(dir) abort
+  if a:dir =~# '^/' || (has('win32') && a:dir =~? '^\%(\\\|[A-Z]:\)')
+    return v:true
+  endif
+  return v:false
+endfunction
+function! s:get_gitdir(dir) abort
+  let gitdir = a:dir . '/.git'
+  if isdirectory(gitdir)
+    return gitdir
+  elseif filereadable(gitdir)
+    try
+      let line = readfile(gitdir)[0]
+    catch
+      return ''
+    endtry
+    if line =~# '^gitdir: '
+      let dir = line[8:]
+      if s:isroot(dir)
+        let gitdir = dir
+      else
+        let gitdir = a:dir . '/' . dir
+      endif
+      if isdirectory(gitdir)
+        return gitdir
+      endif
+    endif
+  endif
+  return ''
+endfunction
+function! s:get_revision(dir) abort
+  let gitdir = s:get_gitdir(a:dir)
+  if gitdir ==# ''
+    return v:null
+  endif
+  try
+    let line = readfile(gitdir . '/HEAD')[0]
+    if line =~# '^ref: '
+      let ref = line[5:]
+      if filereadable(gitdir . '/' . ref)
+        let rev = readfile(gitdir . '/' . ref)[0]
+      else
+        let rev = v:null
+        for line in readfile(gitdir . '/packed-refs')
+          if line =~# ' ' . ref
+            let rev = substitute(line, '^\([0-9a-f]*\) ', '\1', '')
+            break
+          endif
+        endfor
+      endif
+    else
+      let rev = line
+    endif
+    return rev
+  catch
+    return v:null
+  endtry
+endfunction
+function! s:get_branch(dir) abort
+  let gitdir = s:get_gitdir(a:dir)
+  if gitdir ==# ''
+    return v:null
+  endif
+  try
+    let line = readfile(gitdir . '/HEAD')[0]
+    if line =~# '^ref: refs/heads/'
+      return line[16:]
+    endif
+    return ''
+  catch
+    return v:null
+  endtry
+endfunction
