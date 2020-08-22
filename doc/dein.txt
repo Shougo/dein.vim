@@ -512,6 +512,7 @@ g:dein#install_message_type
 						*g:dein#install_log_filename*
 g:dein#install_log_filename
 		The log filename. Set it to "" to disable logging.
+		Note: This option slows your installation process.
 
 		Default: ""
 
