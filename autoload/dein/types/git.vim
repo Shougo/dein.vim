@@ -137,12 +137,13 @@ function! s:type.get_sync_command(plugin) abort
   endif
 endfunction
 
-function! s:type.get_revision_number_command(plugin) abort
-  if !self.executable
-    return []
+function! s:type.get_revision_number(plugin) abort
+  let rev = s:get_revision(a:plugin.path)
+  if rev is v:null
+    return ''
   endif
 
-  return [self.command, 'rev-parse', 'HEAD']
+  return rev
 endfunction
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   if !self.executable || a:new_rev ==# '' || a:old_rev ==# ''
@@ -298,3 +299,69 @@ else
     return a:path =~# '^/'
   endfunction
 endif
+
+" From minpac plugin manager
+" https://github.com/k-takata/minpac
+function! s:isabsolute(dir) abort
+  return a:dir =~# '^/' || (has('win32') && a:dir =~? '^\%(\\\|[A-Z]:\)')
+endfunction
+
+function! s:get_gitdir(dir) abort
+  let gitdir = a:dir . '/.git'
+  if isdirectory(gitdir)
+    return gitdir
+  endif
+  try
+    let line = readfile(gitdir)[0]
+    if line =~# '^gitdir: '
+      let gitdir = line[8:]
+      if !s:isabsolute(gitdir)
+        let gitdir = a:dir . '/' . gitdir
+      endif
+      if isdirectory(gitdir)
+        return gitdir
+      endif
+    endif
+  catch
+  endtry
+  return ''
+endfunction
+
+function! s:get_revision(dir) abort
+  let gitdir = s:get_gitdir(a:dir)
+  if gitdir ==# ''
+    return v:null
+  endif
+  try
+    let line = readfile(gitdir . '/HEAD')[0]
+    if line =~# '^ref: '
+      let ref = line[5:]
+      if filereadable(gitdir . '/' . ref)
+        return readfile(gitdir . '/' . ref)[0]
+      endif
+      for line in readfile(gitdir . '/packed-refs')
+        if line =~# ' ' . ref
+          return substitute(line, '^\([0-9a-f]*\) ', '\1', '')
+        endif
+      endfor
+    endif
+  catch
+  endtry
+  return v:null
+endfunction
+
+function! s:get_branch(dir) abort
+  let gitdir = s:get_gitdir(a:dir)
+  if gitdir ==# ''
+    return v:null
+  endif
+  try
+    let line = readfile(gitdir . '/HEAD')[0]
+    if line =~# '^ref: refs/heads/'
+      return line[16:]
+    endif
+    return ''
+  catch
+    return v:null
+  endtry
+endfunction

@@ -526,10 +526,17 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   return [cmd, message]
 endfunction
 function! s:get_revision_number(plugin) abort
+  if !isdirectory(a:plugin.path)
+    return ''
+  endif
+
   let type = dein#util#_get_type(a:plugin.type)
 
-  if !isdirectory(a:plugin.path)
-        \ || !has_key(type, 'get_revision_number_command')
+  if has_key(type, 'get_revision_number')
+    return type.get_revision_number(a:plugin)
+  endif
+
+  if !has_key(type, 'get_revision_number_command')
     return ''
   endif
 
@@ -727,19 +734,17 @@ function! dein#install#_rm(path) abort
     return
   endif
 
-  " Todo: use :python3 instead.
-
-  " Note: delete rf is broken
-  " if has('patch-7.4.1120')
-  "   try
-  "     call delete(a:path, 'rf')
-  "   catch
-  "     call s:error('Error deleting directory: ' . a:path)
-  "     call s:error(v:exception)
-  "     call s:error(v:throwpoint)
-  "   endtry
-  "   return
-  " endif
+  " Note: delete rf is broken before Vim 8.1.1378
+  if has('patch-8.1.1378')
+    try
+      call delete(a:path, 'rf')
+    catch
+      call s:error('Error deleting directory: ' . a:path)
+      call s:error(v:exception)
+      call s:error(v:throwpoint)
+    endtry
+    return
+  endif
 
   " Note: In Windows, ['rmdir', '/S', '/Q'] does not work.
   " After Vim 8.0.928, double quote escape does not work in job.  Too bad.
