@@ -179,8 +179,8 @@ function! s:type.get_revision_lock_command(plugin) abort
     let rev = dein#install#_system([
           \ self.command, 'symbolic-ref', '--short', 'HEAD'
           \ ])
-    if rev =~# 'fata '
-      " Fix "fata ref HEAD is not a symbolic ref" error
+    if rev =~# 'fatal: '
+      " Fix "fatal: ref HEAD is not a symbolic ref" error
       let rev = 'master'
     endif
   endif
