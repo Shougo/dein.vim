@@ -79,8 +79,7 @@ function! dein#install#_update(plugins, update_type, async) abort
     unlet s:timer
   endif
 
-  let s:timer = timer_start(1000,
-        \ {-> dein#install#_polling()}, {'repeat': -1})
+  let s:timer = timer_start(100, {-> dein#install#_polling()}, {'repeat': -1})
 endfunction
 function! s:update_loop(context) abort
   let errored = 0
@@ -960,6 +959,9 @@ function! s:done(context) abort
     call dein#call_hook('done_update', a:context.synced_plugins)
     call dein#source(map(copy(a:context.synced_plugins), 'v:val.name'))
   endif
+
+  redraw
+  echo ''
 
   call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
 
