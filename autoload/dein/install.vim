@@ -591,8 +591,6 @@ function! s:lock_revision(process, context) abort
   let max = a:context.max_plugins
   let plugin = a:process.plugin
 
-  let plugin.new_rev = s:get_revision_number(plugin)
-
   let type = dein#util#_get_type(plugin.type)
   if !has_key(type, 'get_revision_lock_command')
     return 0
@@ -600,7 +598,7 @@ function! s:lock_revision(process, context) abort
 
   let cmd = type.get_revision_lock_command(plugin)
 
-  if empty(cmd) || plugin.new_rev ==# get(plugin, 'rev', '')
+  if empty(cmd)
     " Skipped.
     return 0
   elseif type(cmd) == v:t_string && cmd =~# '^E: '
@@ -1049,9 +1047,10 @@ function! s:init_process(plugin, context, cmd) abort
           \ 'installed': isdirectory(a:plugin.path),
           \ }
 
+    let rev_save = get(a:plugin, 'rev', '')
     if isdirectory(a:plugin.path)
           \ && !get(a:plugin, 'local', 0)
-      let rev_save = get(a:plugin, 'rev', '')
+          \ && rev_save !=# ''
       try
         " Force checkout HEAD revision.
         " The repository may be checked out.
@@ -1163,8 +1162,8 @@ function! s:check_output(context, process) abort
   let plugin = a:process.plugin
 
   if isdirectory(plugin.path)
-        \ && get(plugin, 'rev', '') !=# ''
-        \ && !get(plugin, 'local', 0)
+       \ && get(plugin, 'rev', '') !=# ''
+       \ && !get(plugin, 'local', 0)
     " Restore revision.
     call s:lock_revision(a:process, a:context)
   endif
