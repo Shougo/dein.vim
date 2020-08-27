@@ -194,25 +194,6 @@ function! s:type.get_rollback_command(plugin, rev) abort
 
   return [self.command, 'reset', '--hard', a:rev]
 endfunction
-function! s:type.get_revision_remote_command(plugin) abort
-  if !self.executable
-    return []
-  endif
-
-  let rev = get(a:plugin, 'rev', '')
-  if rev ==# ''
-    let rev = 'HEAD'
-  endif
-
-  return [self.command, 'ls-remote', 'origin', rev]
-endfunction
-function! s:type.get_fetch_remote_command(plugin) abort
-  if !self.executable
-    return []
-  endif
-
-  return [self.command, 'fetch', 'origin']
-endfunction
 
 function! s:is_git_dir(path) abort
   if isdirectory(a:path)
