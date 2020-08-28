@@ -112,9 +112,14 @@ function! dein#install#_check_update(plugins, async) abort
     call s:error('curl must be executable to check updated plugins.')
     return
   endif
+  if !exists('*strptime') && !has('nvim')
+    call s:error('strptime is needed to check updated plugins.')
+    return
+  endif
 
   let query_max = 100
-  let repos = map(dein#util#_get_plugins(a:plugins), "'repo:' . v:val.repo")
+  let plugins = dein#util#_get_plugins(a:plugins)
+  let repos = map(copy(plugins), "'repo:' . v:val.repo")
   let results = []
   for index in range(0, len(repos), query_max)
     let query = join(repos[index: index + query_max])
@@ -133,11 +138,29 @@ function! dein#install#_check_update(plugins, async) abort
     let result = s:job_check_update.candidates
     if !empty(result)
       let json = json_decode(result[0])
-      let results += json['data']['search']['edges']
+      let results += map(json['data']['search']['edges'], "v:val['node']")
     endif
   endfor
 
-  echomsg results
+  " Get pushed time.
+  let check_pushed = {}
+  for node in results
+    let check_pushed[node['nameWithOwner']] = exists('strptime') ?
+          \ strptime('%Y-%m-%dT%H:%M:%SZ', node['pushedAt']) :
+          \ msgpack#strptime('%Y-%m-%dT%H:%M:%SZ', node['pushedAt'])
+  endfor
+
+  " Compare with .git directory updated time.
+  let updated = []
+  for plugin in plugins
+    if has_key(check_pushed, plugin.repo)
+          \ && isdirectory(plugin.path . '/.git')
+          \ && getftime(plugin.path . '/.git') < check_pushed[plugin.repo]
+      call add(updated, plugin)
+    endif
+  endfor
+
+  echomsg string(map(updated, 'v:val.name'))
 endfunction
 let s:job_check_update = {}
 function! s:job_check_update.on_out(data) abort

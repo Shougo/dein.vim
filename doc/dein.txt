@@ -173,6 +173,8 @@ dein#check_update([{plugins}])
 		|dein#check_install()|.
 		Note: You need to set |g:dein#install_github_api_token| to use
 		the feature.
+		Note: |strptime()| or |msgpack#strptime()| is needed to use
+		the feature.
 
 							*dein#check_clean()*
 dein#check_clean()
