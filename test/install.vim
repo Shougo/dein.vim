@@ -671,7 +671,6 @@ function! s:suite.build() abort
   call s:assert.true(dein#check_install(['vimproc.vim']))
 
   call s:assert.equals(s:dein_install(), 0)
-  call s:assert.equals(s:dein_check_update(), 0)
 
   call s:assert.equals(g:foobar, 4)
 
