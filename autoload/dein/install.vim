@@ -23,6 +23,8 @@ let g:dein#install_log_filename =
       \ get(g:, 'dein#install_log_filename', '')
 let g:dein#install_github_api_token =
       \ get(g:, 'dein#install_github_api_token', '')
+let g:dein#install_curl_command =
+      \ get(g:, 'dein#install_curl_command', 'curl')
 
 function! s:get_job() abort
   if !exists('s:Job')
@@ -101,6 +103,60 @@ function! s:update_loop(context) abort
 endfunction
 
 function! dein#install#_check_update(plugins, async) abort
+  if g:dein#install_github_api_token ==# ''
+    call s:error('You need to set g:dein#install_github_api_token' .
+          \ ' to check updated plugins.')
+    return
+  endif
+  if !executable(g:dein#install_curl_command)
+    call s:error('curl must be executable to check updated plugins.')
+    return
+  endif
+
+  let query_max = 100
+  let repos = map(dein#util#_get_plugins(a:plugins), "'repo:' . v:val.repo")
+  let results = []
+  for index in range(0, len(repos), query_max)
+    let query = join(repos[index: index + query_max])
+
+    let commands = [
+          \ g:dein#install_curl_command, '-H', 'Authorization: bearer ' .
+          \ g:dein#install_github_api_token,
+          \ '-X', 'POST', '-d',
+          \ '{ "query": "query { search(query: \"' . query .
+          \ '\", type: REPOSITORY, first:100) { edges { node ' .
+          \ '{ ... on Repository { pushedAt nameWithOwner } }  } } }" }',
+          \ 'https://api.github.com/graphql'
+          \ ]
+    call s:job_check_update.execute(commands)
+
+    let result = s:job_check_update.candidates
+    if !empty(result)
+      let json = json_decode(result[0])
+      let results += json['data']['search']['edges']
+    endif
+  endfor
+
+  echomsg results
+endfunction
+let s:job_check_update = {}
+function! s:job_check_update.on_out(data) abort
+  let candidates = s:job_check_update.candidates
+  if empty(candidates)
+    call add(candidates, a:data[0])
+  else
+    let candidates[-1] .= a:data[0]
+  endif
+  let candidates += a:data[1:]
+endfunction
+function! s:job_check_update.execute(cmd) abort
+  let self.candidates = []
+
+  let job = s:get_job().start(
+        \ s:convert_args(a:cmd),
+        \ {'on_stdout': self.on_out})
+
+  return job.wait(g:dein#install_process_timeout * 1000)
 endfunction
 
 function! dein#install#_reinstall(plugins) abort
