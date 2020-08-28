@@ -33,6 +33,13 @@ function! s:get_job() abort
   return s:Job
 endfunction
 
+function! s:get_datetime() abort
+  if !exists('s:DateTime')
+    let s:DateTime = vital#dein#import('DateTime')
+  endif
+  return s:DateTime
+endfunction
+
 function! dein#install#_update(plugins, update_type, async) abort
   if g:dein#_is_sudo
     call s:error('update/install is disabled in sudo session.')
@@ -112,10 +119,6 @@ function! dein#install#_check_update(plugins, async) abort
     call s:error('curl must be executable to check updated plugins.')
     return
   endif
-  if !exists('*strptime') && !has('nvim')
-    call s:error('strptime is needed to check updated plugins.')
-    return
-  endif
 
   let query_max = 100
   let plugins = dein#util#_get_plugins(a:plugins)
@@ -145,9 +148,14 @@ function! dein#install#_check_update(plugins, async) abort
   " Get pushed time.
   let check_pushed = {}
   for node in results
-    let check_pushed[node['nameWithOwner']] = exists('strptime') ?
-          \ strptime('%Y-%m-%dT%H:%M:%SZ', node['pushedAt']) :
-          \ msgpack#strptime('%Y-%m-%dT%H:%M:%SZ', node['pushedAt'])
+    let format = '%Y-%m-%dT%H:%M:%SZ'
+    let pushed_at = node['pushedAt']
+    let check_pushed[node['nameWithOwner']] =
+          \ exists('strptime') ?
+          \  strptime(format, pushed_at) :
+          \ has('nvim') ?
+          \  msgpack#strptime(format, pushed_at) :
+          \ s:get_datetime().from_format(pushed_at, format).unix_time()
   endfor
 
   " Compare with .git directory updated time.
