@@ -162,10 +162,16 @@ function! dein#install#_check_update(plugins, async) abort
     endif
   endfor
 
-  if empty(updated) | return 0 | endif
+  if empty(updated) | return | endif
 
   call dein#util#_notify('Updated plugins: ' .
         \ string(map(copy(updated), 'v:val.name')))
+  if confirm('Updated plugins are exists. Install now?',
+        \         "yes\nNo", 2) != 1
+    return
+  endif
+
+  call dein#install#_update(updated, 'update', a:async)
 endfunction
 let s:job_check_update = {}
 function! s:job_check_update.on_out(data) abort
