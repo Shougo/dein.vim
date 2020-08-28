@@ -24,10 +24,6 @@ function! s:dein_update() abort
   return dein#install#_update([], 'update', 0)
 endfunction
 
-function! s:dein_check_update() abort
-  return dein#install#_update([], 'check_update', 0)
-endfunction
-
 function! s:suite.before_each() abort
   call dein#_init()
   let &runtimepath = s:runtimepath_save

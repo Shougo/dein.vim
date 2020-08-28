@@ -153,14 +153,19 @@ function! dein#install#_check_update(plugins, async) abort
   " Compare with .git directory updated time.
   let updated = []
   for plugin in plugins
-    if has_key(check_pushed, plugin.repo)
-          \ && isdirectory(plugin.path . '/.git')
-          \ && getftime(plugin.path . '/.git') < check_pushed[plugin.repo]
+    let git_path = plugin.path . '/.git'
+    if !isdirectory(plugin.path)
+          \ || (has_key(check_pushed, plugin.repo)
+          \     && isdirectory(git_path)
+          \     && getftime(git_path) < check_pushed[plugin.repo])
       call add(updated, plugin)
     endif
   endfor
 
-  echomsg string(map(updated, 'v:val.name'))
+  if empty(updated) | return 0 | endif
+
+  call dein#util#_notify('Updated plugins: ' .
+        \ string(map(copy(updated), 'v:val.name')))
 endfunction
 let s:job_check_update = {}
 function! s:job_check_update.on_out(data) abort
