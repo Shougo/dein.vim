@@ -162,7 +162,10 @@ function! dein#install#_check_update(plugins, async) abort
     endif
   endfor
 
-  if empty(updated) | return | endif
+  if empty(updated)
+    call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
+    return
+  endif
 
   call dein#util#_notify('Updated plugins: ' .
         \ string(map(copy(updated), 'v:val.name')))
