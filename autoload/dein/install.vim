@@ -109,7 +109,7 @@ function! s:update_loop(context) abort
   return errored
 endfunction
 
-function! dein#install#_check_update(plugins, async) abort
+function! dein#install#_check_update(plugins, force, async) abort
   if g:dein#install_github_api_token ==# ''
     call s:error('You need to set g:dein#install_github_api_token' .
           \ ' to check updated plugins.')
@@ -191,7 +191,8 @@ function! dein#install#_check_update(plugins, async) abort
 
   call dein#util#_notify('Updated plugins: ' .
         \ string(map(copy(updated), 'v:val.name')))
-  if confirm('Updated plugins are exists. Update now?', "yes\nNo", 2) != 1
+  if !a:force && confirm(
+        \ 'Updated plugins are exists. Update now?', "yes\nNo", 2) != 1
     return
   endif
 
