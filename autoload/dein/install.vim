@@ -181,8 +181,7 @@ function! dein#install#_check_update(plugins, async) abort
 
   call dein#util#_notify('Updated plugins: ' .
         \ string(map(copy(updated), 'v:val.name')))
-  if confirm('Updated plugins are exists. Install now?',
-        \         "yes\nNo", 2) != 1
+  if confirm('Updated plugins are exists. Update now?', "yes\nNo", 2) != 1
     return
   endif
 
