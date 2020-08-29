@@ -140,8 +140,12 @@ function! dein#install#_check_update(plugins, async) abort
 
     let result = s:job_check_update.candidates
     if !empty(result)
-      let json = json_decode(result[0])
-      let results += map(json['data']['search']['edges'], "v:val['node']")
+      try
+        let json = json_decode(result[0])
+        let results += map(json['data']['search']['edges'], "v:val['node']")
+      catch
+        call s:error('json output decode error: ' + string(result))
+      endtry
     endif
   endfor
 
