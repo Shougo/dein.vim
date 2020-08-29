@@ -174,7 +174,6 @@ function! dein#install#_check_update(plugins, async) abort
     let git_path = plugin.path . '/.git'
     if !isdirectory(plugin.path)
           \ || (has_key(check_pushed, plugin.repo)
-          \     && isdirectory(git_path)
           \     && getftime(git_path) < check_pushed[plugin.repo])
       call add(updated, plugin)
     endif
