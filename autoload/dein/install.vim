@@ -180,6 +180,8 @@ function! dein#install#_check_update(plugins, async) abort
     endif
   endfor
 
+  redraw | echo ''
+
   if empty(updated)
     call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     return
