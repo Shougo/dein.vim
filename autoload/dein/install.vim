@@ -161,7 +161,7 @@ function! dein#install#_check_update(plugins, async) abort
     let format = '%Y-%m-%dT%H:%M:%SZ'
     let pushed_at = node['pushedAt']
     let check_pushed[node['nameWithOwner']] =
-          \ exists('strptime') ?
+          \ exists('*strptime') ?
           \  strptime(format, pushed_at) :
           \ has('nvim') ?
           \  msgpack#strptime(format, pushed_at) :
