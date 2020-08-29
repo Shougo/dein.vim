@@ -120,12 +120,18 @@ function! dein#install#_check_update(plugins, async) abort
     return
   endif
 
+  let s:global_context.progress_type = 'echo'
+
   let query_max = 100
   let plugins = dein#util#_get_plugins(a:plugins)
   let repos = map(copy(plugins), "'repo:' . v:val.repo")
   let results = []
   for index in range(0, len(repos), query_max)
     let query = join(repos[index: index + query_max])
+
+    redraw
+    call s:print_progress_message(
+          \s:get_progress_message('', index, len(repos)))
 
     let commands = [
           \ g:dein#install_curl_command, '-H', 'Authorization: bearer ' .
@@ -596,12 +602,12 @@ function! dein#install#_get_progress() abort
   return s:progress
 endfunction
 
-function! s:get_progress_message(plugin, number, max) abort
+function! s:get_progress_message(name, number, max) abort
   return printf('(%'.len(a:max).'d/%'.len(a:max).'d) [%s%s] %s',
         \ a:number, a:max,
         \ repeat('+', (a:number*20/a:max)),
         \ repeat('-', 20 - (a:number*20/a:max)),
-        \ a:plugin.name)
+        \ a:name)
 endfunction
 function! s:get_plugin_message(plugin, number, max, message) abort
   return printf('(%'.len(a:max).'d/%d) |%-20s| %s',
@@ -949,7 +955,7 @@ function! s:install_async(context) abort
         \ && a:context.number < len(a:context.plugins)
     let plugin = a:context.plugins[a:context.number]
     call s:print_progress_message(
-          \ s:get_progress_message(plugin,
+          \ s:get_progress_message(plugin.name,
           \   a:context.number, a:context.max_plugins))
     let a:context.prev_number = a:context.number
   endif
@@ -965,7 +971,7 @@ function! s:check_loop(context) abort
 
     if !a:context.async
       call s:print_progress_message(
-            \ s:get_progress_message(plugin,
+            \ s:get_progress_message(plugin.name,
             \   a:context.number, a:context.max_plugins))
     endif
   endwhile
