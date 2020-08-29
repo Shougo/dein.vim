@@ -181,6 +181,9 @@ function! dein#install#_check_update(plugins, async) abort
 
   redraw | echo ''
 
+  " Clear global context
+  let s:global_context = {}
+
   if empty(updated)
     call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     return
