@@ -151,7 +151,7 @@ dein#call_hook({hook-name})
 
 							*dein#check_install()*
 dein#check_install({plugins})
-		Check the plugins installation.
+		Check {plugins} installation.
 		If {plugins} are not installed, it will return non-zero.
 		If {plugins} are invalid, it will return -1.
 		{plugins} are the plugins name list or the plugin name to
@@ -165,10 +165,12 @@ dein#check_lazy_plugins()
 		"plugin/" directory.
 
 							*dein#check_update()*
-dein#check_update([{force}])
-		Check updated plugins by github GraphQL API.
+dein#check_update([{force}[, {plugins}]])
+		Check updated {plugins} by github GraphQL API.
 		https://docs.github.com/en/graphql
 		If {force} is |v:true|, it call |dein#update()|after updated
+		check.
+		{plugins} are the plugins name list or the plugin name to
 		check.
 		Note: You can use it for github plugins.
 		Note: It does not return value instead of

@@ -127,7 +127,8 @@ function! dein#update(...) abort
         \ 'update', dein#install#_is_async())
 endfunction
 function! dein#check_update(...) abort
-  return dein#install#_check_update([], get(a:000, 0, v:false),
+  return dein#install#_check_update(
+        \ get(a:000, 1, []), get(a:000, 0, v:false),
         \ dein#install#_is_async())
 endfunction
 function! dein#direct_install(repo, ...) abort
