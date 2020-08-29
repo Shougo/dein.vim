@@ -167,8 +167,10 @@ dein#check_lazy_plugins()
 							*dein#check_update()*
 dein#check_update([{plugins}])
 		Check updated plugins by github GraphQL API.
+		https://docs.github.com/en/graphql
 		{plugins} is the plugins name list to check.
-		If you omit it, dein will check all plugins update.
+		If you omit it, it will check all plugins update.
+		Note: You can use it for github plugins.
 		Note: It does not return value instead of
 		|dein#check_install()|.
 		Note: You need to set |g:dein#install_github_api_token| to use
