@@ -124,8 +124,7 @@ function! dein#install#_check_update(plugins, force, async) abort
 
   let query_max = 100
   let plugins = dein#util#_get_plugins(a:plugins)
-  let results = []
-
+  let processes = []
   for index in range(0, len(plugins) - 1, query_max)
     redraw
     call s:print_progress_message(
@@ -153,12 +152,32 @@ function! dein#install#_check_update(plugins, force, async) abort
          \ '{ "query": "query {' . query . '}" }',
          \ 'https://api.github.com/graphql'
          \ ]
-    call s:job_check_update.execute(commands)
 
-    let result = s:job_check_update.candidates
-    if !empty(result)
+    let process = {'candidates': []}
+    function! process.on_out(data) abort
+      let candidates = self.candidates
+      if empty(candidates)
+        call add(candidates, a:data[0])
+      else
+        let candidates[-1] .= a:data[0]
+      endif
+      let candidates += a:data[1:]
+    endfunction
+    let process.job = s:get_job().start(
+        \ s:convert_args(commands),
+        \ {'on_stdout': function(process.on_out, [], process)})
+
+    call add(processes, process)
+  endfor
+
+  " Get outputs
+  let results = []
+  for process in processes
+    call process.job.wait(g:dein#install_process_timeout * 1000)
+
+    if !empty(process.candidates)
       try
-        let json = json_decode(result[0])
+        let json = json_decode(process.candidates[0])
         let results += filter(values(json['data']),
               \ "type(v:val) == v:t_dict && has_key(v:val, 'pushedAt')")
       catch
@@ -209,25 +228,6 @@ function! dein#install#_check_update(plugins, force, async) abort
   endif
 
   call dein#install#_update(updated, 'update', a:async)
-endfunction
-let s:job_check_update = {}
-function! s:job_check_update.on_out(data) abort
-  let candidates = s:job_check_update.candidates
-  if empty(candidates)
-    call add(candidates, a:data[0])
-  else
-    let candidates[-1] .= a:data[0]
-  endif
-  let candidates += a:data[1:]
-endfunction
-function! s:job_check_update.execute(cmd) abort
-  let self.candidates = []
-
-  let job = s:get_job().start(
-        \ s:convert_args(a:cmd),
-        \ {'on_stdout': self.on_out})
-
-  return job.wait(g:dein#install_process_timeout * 1000)
 endfunction
 
 function! dein#install#_reinstall(plugins) abort
