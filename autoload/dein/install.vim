@@ -124,31 +124,45 @@ function! dein#install#_check_update(plugins, force, async) abort
 
   let query_max = 100
   let plugins = dein#util#_get_plugins(a:plugins)
-  let repos = map(copy(plugins), "'repo:' . v:val.repo")
   let results = []
-  for index in range(0, len(repos), query_max)
+
+  for index in range(0, len(repos) - 1, query_max)
     let query = join(repos[index: index + query_max])
 
     redraw
     call s:print_progress_message(
-          \s:get_progress_message('', index, len(repos)))
+         \s:get_progress_message('', index, len(repos)))
+
+    let query = ''
+    for plug_index in range(index,
+          \ min([index + query_max, len(repos)]) - 1)
+      let plugin_names = split(plugins[plug_index].repo, '/')
+      if len(plugin_names) < 2
+        " Invalid repository name.
+        continue
+      endif
+
+      " Note: "repository" API is faster than "search" API
+      let query .= printf('a%d:repository(owner:\"%s\", name: \"%s\")' .
+            \ '{ pushedAt nameWithOwner }',
+            \ plug_index, plugin_names[-2], plugin_names[-1])
+    endfor
 
     let commands = [
-          \ g:dein#install_curl_command, '-H', 'Authorization: bearer ' .
-          \ g:dein#install_github_api_token,
-          \ '-X', 'POST', '-d',
-          \ '{ "query": "query { search(query: \"' . query .
-          \ '\", type: REPOSITORY, first:100) { edges { node ' .
-          \ '{ ... on Repository { pushedAt nameWithOwner } }  } } }" }',
-          \ 'https://api.github.com/graphql'
-          \ ]
+         \ g:dein#install_curl_command, '-H', 'Authorization: bearer ' .
+         \ g:dein#install_github_api_token,
+         \ '-X', 'POST', '-d',
+         \ '{ "query": "query {' . query . '}" }',
+         \ 'https://api.github.com/graphql'
+         \ ]
     call s:job_check_update.execute(commands)
 
     let result = s:job_check_update.candidates
     if !empty(result)
       try
         let json = json_decode(result[0])
-        let results += map(json['data']['search']['edges'], "v:val['node']")
+        let results += filter(values(json['data']),
+              \ "type(v:val) == v:t_dict && has_key(v:val, 'pushedAt')")
       catch
         call s:error('json output decode error: ' + string(result))
       endtry
