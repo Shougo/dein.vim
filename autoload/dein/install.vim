@@ -126,16 +126,14 @@ function! dein#install#_check_update(plugins, force, async) abort
   let plugins = dein#util#_get_plugins(a:plugins)
   let results = []
 
-  for index in range(0, len(repos) - 1, query_max)
-    let query = join(repos[index: index + query_max])
-
+  for index in range(0, len(plugins) - 1, query_max)
     redraw
     call s:print_progress_message(
-         \s:get_progress_message('', index, len(repos)))
+         \s:get_progress_message('', index, len(plugins)))
 
     let query = ''
     for plug_index in range(index,
-          \ min([index + query_max, len(repos)]) - 1)
+          \ min([index + query_max, len(plugins)]) - 1)
       let plugin_names = split(plugins[plug_index].repo, '/')
       if len(plugin_names) < 2
         " Invalid repository name.
