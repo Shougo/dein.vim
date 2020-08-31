@@ -283,6 +283,7 @@ endif
 
 " From minpac plugin manager
 " https://github.com/k-takata/minpac
+" https://github.com/junegunn/vim-plug/pull/937
 function! s:isabsolute(dir) abort
   return a:dir =~# '^/' || (has('win32') && a:dir =~? '^\%(\\\|[A-Z]:\)')
 endfunction
@@ -308,10 +309,44 @@ function! s:get_gitdir(dir) abort
   return ''
 endfunction
 
-function! s:get_revision(dir) abort
+function! s:git_get_remote_origin_url(dir) abort
   let gitdir = s:get_gitdir(a:dir)
   if gitdir ==# ''
-    return v:null
+    return ''
+  endif
+  try
+    let lines = readfile(gitdir . '/config')
+    let [n, ll, url] = [0, len(lines), '']
+    while n < ll
+      let line = trim(lines[n])
+      if stridx(line, '[remote "origin"]') != 0
+        let n += 1
+        continue
+      endif
+      let n += 1
+      while n < ll
+        let line = trim(lines[n])
+        if line ==# '['
+          break
+        endif
+        let url = matchstr(line, '^url\s*=\s*\zs[^ #]\+')
+        if !empty(url)
+          break
+        endif
+        let n += 1
+      endwhile
+      let n += 1
+    endwhile
+    return url
+  catch
+    return ''
+  endtry
+endfunction
+
+function! s:git_get_revision(dir) abort
+  let gitdir = s:get_gitdir(a:dir)
+  if gitdir ==# ''
+    return ''
   endif
   try
     let line = readfile(gitdir . '/HEAD')[0]
@@ -326,23 +361,24 @@ function! s:get_revision(dir) abort
         endif
       endfor
     endif
+    return line
   catch
   endtry
-  return v:null
+  return ''
 endfunction
 
-function! s:get_branch(dir) abort
+function! s:git_get_branch(dir) abort
   let gitdir = s:get_gitdir(a:dir)
   if gitdir ==# ''
-    return v:null
+    return ''
   endif
   try
     let line = readfile(gitdir . '/HEAD')[0]
     if line =~# '^ref: refs/heads/'
       return line[16:]
     endif
-    return ''
+    return 'HEAD'
   catch
-    return v:null
+    return ''
   endtry
 endfunction
