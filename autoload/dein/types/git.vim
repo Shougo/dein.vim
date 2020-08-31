@@ -138,12 +138,7 @@ function! s:type.get_sync_command(plugin) abort
 endfunction
 
 function! s:type.get_revision_number(plugin) abort
-  let rev = s:git_get_revision(a:plugin.path)
-  if rev is v:null
-    return ''
-  endif
-
-  return rev
+  return s:git_get_revision(a:plugin.path)
 endfunction
 function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   if !self.executable || a:new_rev ==# '' || a:old_rev ==# ''
