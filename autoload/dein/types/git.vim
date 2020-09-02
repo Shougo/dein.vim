@@ -124,16 +124,24 @@ function! s:type.get_sync_command(plugin) abort
   else
     let git = self.command
 
-    let cmd = g:dein#types#git#pull_command
+    let fetch_cmd = git . ' fetch'
+    let remote_origin_cmd = git . ' remote set-head origin -a'
+    let pull_cmd = git . ' ' . g:dein#types#git#pull_command
     let submodule_cmd = git . ' submodule update --init --recursive'
+
     if dein#util#_is_powershell()
+      let cmd = fetch_cmd
+      let cmd .= '; if ($?) { ' . remote_origin_cmd . ' }'
+      let cmd .= '; if ($?) { ' . pull_cmd . ' }'
       let cmd .= '; if ($?) { ' . submodule_cmd . ' }'
     else
       let and = dein#util#_is_fish() ? '; and ' : ' && '
-      let cmd .= and . submodule_cmd
+      let cmd = join([
+            \ fetch_cmd, remote_origin_cmd, pull_cmd, submodule_cmd
+            \ ],and)
     endif
 
-    return git . ' ' . cmd
+    return cmd
   endif
 endfunction
 
