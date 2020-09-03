@@ -187,6 +187,7 @@ function! dein#install#_check_update(plugins, force, async) abort
   endfor
 
   " Get pushed time.
+
   let check_pushed = {}
   for node in results
     let format = '%Y-%m-%dT%H:%M:%SZ'
@@ -199,13 +200,23 @@ function! dein#install#_check_update(plugins, force, async) abort
           \ s:get_datetime().from_format(pushed_at, format).unix_time()
   endfor
 
+  " Get the last updated time by rollbackfile timestamp.
+  " Note: .git timestamp may be changed by git commands.
+  let rollbacks = reverse(sort(dein#util#_globlist(
+        \ s:get_rollback_directory() . '/*')))
+  let rollback_time = empty(rollbacks) ? -1 : getftime(rollbacks[0])
+
   " Compare with .git directory updated time.
   let updated = []
   for plugin in plugins
+    if !has_key(check_pushed, plugin.repo)
+      continue
+    endif
+
     let git_path = plugin.path . '/.git'
-    if !isdirectory(plugin.path)
-          \ || (has_key(check_pushed, plugin.repo)
-          \     && getftime(git_path) < check_pushed[plugin.repo])
+    let repo_time = isdirectory(plugin.path) ? getftime(git_path) : -1
+
+    if min([repo_time, rollback_time]) < check_pushed[plugin.repo]
       call add(updated, plugin)
     endif
   endfor
