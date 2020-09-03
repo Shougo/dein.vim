@@ -442,9 +442,7 @@ function! s:get_rollback_directory() abort
   return parent
 endfunction
 function! s:check_rollback(plugin) abort
-  return !has_key(a:plugin, 'local')
-        \ && !get(a:plugin, 'frozen', 0)
-        \ && get(a:plugin, 'rev', '') ==# ''
+  return !has_key(a:plugin, 'local') && !get(a:plugin, 'frozen', 0)
 endfunction
 
 function! dein#install#_get_default_ftplugin() abort
