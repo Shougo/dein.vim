@@ -331,6 +331,13 @@ function! dein#util#_save_state(is_starting) abort
     if has_key(plugin, 'hook_add') && type(plugin.hook_add) == v:t_string
       let lines += s:skipempty(plugin.hook_add)
     endif
+
+    " Invalid hooks detection
+    for key in keys(filter(copy(plugin),
+          \ "stridx(v:key, 'hook_') == 0 && type(v:val) != v:t_string"))
+        call dein#util#_error(
+              \ printf('%s: "%s" must be string', plugin.name, key))
+    endfor
   endfor
 
   " Add events
