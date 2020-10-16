@@ -101,7 +101,7 @@ function! dein#end() abort
   return dein#util#_end()
 endfunction
 function! dein#add(repo, ...) abort
-  return dein#parse#_add(a:repo, get(a:000, 0, {}))
+  return dein#parse#_add(a:repo, get(a:000, 0, {}), v:false)
 endfunction
 function! dein#local(dir, ...) abort
   return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))

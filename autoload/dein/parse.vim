@@ -11,11 +11,18 @@ let g:dein#enable_name_conversion =
 
 let s:git = dein#types#git#define()
 
-function! dein#parse#_add(repo, options) abort
+function! dein#parse#_add(repo, options, overwrite) abort
   let plugin = dein#parse#_dict(dein#parse#_init(a:repo, a:options))
-  if get(get(g:dein#_plugins, plugin.name, {}), 'sourced', 0)
-        \ || !get(plugin, 'if', 1)
+  let plugin_check = get(g:dein#_plugins, plugin.name, {})
+  if get(plugin_check, 'sourced', 0) || !get(plugin, 'if', 1)
     " Skip already loaded or not enabled plugin.
+    return {}
+  endif
+
+  " Duplicated plugins check
+  if !a:overwrite && !empty(plugin_check)
+    call dein#util#_error(printf(
+          \ 'Plugin name "%s" is already defined.', plugin.name))
     return {}
   endif
 
@@ -269,7 +276,7 @@ function! dein#parse#_local(localdir, options, includes) abort
     if has_key(g:dein#_plugins, options.name)
       call dein#config(options.name, options)
     else
-      call dein#add(dir, options)
+      call dein#parse#_add(dir, options, v:true)
     endif
   endfor
 endfunction

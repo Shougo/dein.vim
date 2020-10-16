@@ -497,7 +497,7 @@ function! dein#util#_config(arg, dict) abort
   if has_key(plugin, 'orig_opts')
     call extend(options, copy(plugin.orig_opts), 'keep')
   endif
-  return dein#parse#_add(options.repo, options)
+  return dein#parse#_add(options.repo, options, v:true)
 endfunction
 
 function! dein#util#_call_hook(hook_name, ...) abort

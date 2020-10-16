@@ -117,6 +117,8 @@ dein#add({repo}[, {options}])
 		path.  If {repo} starts with github user name (ex:
 		"Shougo/dein.vim"), dein will install github plugins.
 		See |dein-options| for what to set in {options}.
+		Note: If plugin is already defined, duplicated calls will be
+		ignored.
 		Note: You must call it in |dein#begin()| block.
 		Note: If you install plugins, you need to call
 		|dein#install()| manually.
