@@ -107,6 +107,8 @@ function! s:type.get_sync_command(plugin) abort
     let commands = []
 
     call add(commands, self.command)
+    call add(commands, '-c')
+    call add(commands, 'credential.helper=')
     call add(commands, 'clone')
     call add(commands, '--recursive')
 
@@ -124,7 +126,7 @@ function! s:type.get_sync_command(plugin) abort
   else
     let git = self.command
 
-    let fetch_cmd = git . ' fetch'
+    let fetch_cmd = git . ' -c credential.helper= fetch '
     let remote_origin_cmd = git . ' remote set-head origin -a'
     let pull_cmd = git . ' ' . g:dein#types#git#pull_command
     let submodule_cmd = git . ' submodule update --init --recursive'
@@ -138,7 +140,7 @@ function! s:type.get_sync_command(plugin) abort
       let and = dein#util#_is_fish() ? '; and ' : ' && '
       let cmd = join([
             \ fetch_cmd, remote_origin_cmd, pull_cmd, submodule_cmd
-            \ ],and)
+            \ ], and)
     endif
 
     return cmd
