@@ -602,7 +602,6 @@ build		(String)
 		runtimepath.
 		Note: In previous versions of dein, build could also be of
 		type dictionary, but that is now deprecated.
-		dictionary, but that is now deprecated.
 		Please use |dein-options-hook_post_update| instead.
 
 		Example:
