@@ -534,7 +534,14 @@ g:dein#install_log_filename
 
 		Default: ""
 
-                                                                 *g:dein#name*
+							*g:dein#lazy_rplugins*
+g:dein#lazy_rplugins
+		If you set it to 1, neovim remote plugins are lazy loaded.
+		It is useful to save startup time.
+
+		Defaults: "0"
+
+								*g:dein#name*
 g:dein#name
 		Current plugin name.
 		You can only use it in |dein#tap()| block.

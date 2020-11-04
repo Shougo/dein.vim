@@ -27,6 +27,12 @@ function! dein#_init() abort
         \ && $HOME ==# expand('~'.$SUDO_USER)
   let g:dein#_progname = fnamemodify(v:progname, ':r')
   let g:dein#_init_runtimepath = &runtimepath
+  let g:dein#_loaded_rplugins = v:false
+
+  if get(g:, 'dein#lazy_rplugins', v:false)
+    " Disable remote plugin loading
+    let g:loaded_remote_plugins = 1
+  endif
 
   augroup dein
     autocmd!

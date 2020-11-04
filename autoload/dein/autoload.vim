@@ -297,6 +297,16 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
       call dein#util#_add_after(a:rtps, a:plugin.rtp.'/after')
     endif
   endif
+
+  if get(g:, 'dein#lazy_rplugins', v:false) && !g:dein#_loaded_rplugins
+        \ && isdirectory(a:plugin.rtp.'/rplugin')
+    " Enable remote plugin
+    unlet! g:loaded_remote_plugins
+
+    runtime! plugin/rplugin.vim
+
+    let g:dein#_loaded_rplugins = v:true
+  endif
 endfunction
 function! s:reset_ftplugin() abort
   let filetype_state = dein#util#_redir('filetype')
