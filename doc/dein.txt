@@ -479,6 +479,13 @@ https://github.com/julienXX/terminal-notifier
 
 		Defaults: "0"
 
+						*g:dein#inline_vimrcs*
+g:dein#inline_vimrcs
+		The vimrcs are sourced in |dein#end()| or
+		|dein#load_state()|.
+
+		Defaults: []
+
 					*g:dein#install_github_api_token*
 g:dein#install_github_api_token
 		github API key to use |dein#check_update()|.

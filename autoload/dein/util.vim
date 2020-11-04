@@ -345,6 +345,11 @@ function! dein#util#_save_state(is_starting) abort
           \ event, string(plugins)))
   endfor
 
+  " Add inline vimrcs
+  for vimrc in get(g:, 'dein#inline_vimrcs', [])
+    let lines += filter(readfile(vimrc), "v:val !=# '' && v:val[0] != '\"'")
+  endfor
+
   call writefile(lines, get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/state_' . g:dein#_progname . '.vim')
 endfunction
@@ -470,6 +475,10 @@ function! dein#util#_end() abort
           \. 'dein#autoload#_on_event("%s", %s)',
           \ (exists('##' . event) ? event . ' *' : 'User ' . event),
           \ event, string(plugins))
+  endfor
+
+  for vimrc in get(g:, 'dein#inline_vimrcs', [])
+    execute 'source' fnameescape(vimrc)
   endfor
 
   if !has('vim_starting')
