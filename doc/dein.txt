@@ -436,8 +436,7 @@ VARIABLES						*dein-variables*
 						*g:dein#auto_recache*
 g:dein#auto_recache
 		If you set it to 1, call |dein#recache_runtimepath()|
-		automatically if necessary when saving the vimrc, toml file.
-		Note: It reloads your $MYVIMRC.
+		automatically in |dein#save_state()|.
 
 		Default: 0
 

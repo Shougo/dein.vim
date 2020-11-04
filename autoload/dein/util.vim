@@ -235,13 +235,6 @@ function! dein#util#_check_vimrcs() abort
 
   call dein#clear_state()
 
-  if get(g:, 'dein#auto_recache', 0)
-    silent execute 'source' dein#util#_get_myvimrc()
-
-    call dein#util#_notify('auto recached')
-    call dein#recache_runtimepath()
-  endif
-
   return ret
 endfunction
 function! dein#util#_load_merged_plugins() abort
@@ -279,6 +272,11 @@ function! dein#util#_save_state(is_starting) abort
   if dein#util#_get_cache_path() ==# '' || !a:is_starting
     " Ignore
     return 1
+  endif
+
+  if get(g:, 'dein#auto_recache', 0)
+    call dein#util#_notify('auto recached')
+    call dein#recache_runtimepath()
   endif
 
   let g:dein#_vimrcs = dein#util#_uniq(g:dein#_vimrcs)
