@@ -238,10 +238,8 @@ function! dein#util#_check_vimrcs() abort
   if get(g:, 'dein#auto_recache', 0)
     silent execute 'source' dein#util#_get_myvimrc()
 
-    if dein#util#_get_merged_plugins() !=# dein#util#_load_merged_plugins()
-      call dein#util#_notify('auto recached')
-      call dein#recache_runtimepath()
-    endif
+    call dein#util#_notify('auto recached')
+    call dein#recache_runtimepath()
   endif
 
   return ret
