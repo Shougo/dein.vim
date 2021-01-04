@@ -10,7 +10,6 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 - [Requirements](#requirements)
 - [Quick start](#quick-start)
-  - [Unix/Linux or Mac OS X](#unixlinux-or-mac-os-x)
 - [Features](#features)
 - [Future works (TODO)](#future-works-todo)
   - [Options](#options)
