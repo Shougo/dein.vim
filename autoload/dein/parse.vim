@@ -21,9 +21,12 @@ function! dein#parse#_add(repo, options, overwrite) abort
 
   " Duplicated plugins check
   if !a:overwrite && !empty(plugin_check)
-    call dein#util#_error(printf(
-          \ 'Plugin name "%s" is already defined.', plugin.name))
-    return {}
+    " Only warning when starting
+    if has('vim_starting')
+      call dein#util#_error(printf(
+            \ 'Plugin name "%s" is already defined.', plugin.name))
+      return {}
+    endif
   endif
 
   if plugin.rtp !=# ''
