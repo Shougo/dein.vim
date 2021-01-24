@@ -703,6 +703,7 @@ on_event	(String) or (List)
 on_func		(List) or (String)
 		If it is matched to the called function, dein will call
 		|dein#source()|.
+		Note: It does not work when Vim initialised.
 
 							*dein-options-on_ft*
 on_ft		(List) or (String)
@@ -736,6 +737,12 @@ on_if		(String)
 		call dein#add('blueyed/vim-diminactive',
 		\ {'on_event': 'WinEnter', 'on_if': 'winnr("$") > 1'})
 <
+							*dein-options-on_lua*
+on_lua		(List) or (String)
+		If it is matched to the required lua module root, dein will
+		call |dein#source()|.
+		Note: It is for neovim only.
+
 							*dein-options-on_map*
 on_map		(Dictionary) or (List) or (String)
 		If it is the Dictionary, the key is {mode} and the items are
@@ -1276,6 +1283,10 @@ Why dein.vim has the feature?  It is for loading performance.
 Other plugin manager adds 'runtimepath' to load external plugins.
 But if 'runtimepath' is very big, plugin loading is slower.  Because Vim needs
 to search all huge 'runtimepath' to load it.  Dein.vim has not the problem.
+
+Q: I want to load plugins lazily on requiring lua modules
+A: >
+	call dein#add('neovim/nvim-lsp', {'on_lua': 'nvim_lsp'})
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*

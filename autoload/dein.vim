@@ -14,6 +14,7 @@ function! dein#_init() abort
   let g:dein#_runtime_path = ''
   let g:dein#_hook_add = ''
   let g:dein#_ftplugin = {}
+  let g:dein#_called_lua = {}
   let g:dein#_off1 = ''
   let g:dein#_off2 = ''
   let g:dein#_vimrcs = []
@@ -49,6 +50,16 @@ function! dein#_init() abort
   if !exists('##CmdUndefined') | return | endif
   autocmd dein CmdUndefined *
         \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
+  if has('nvim')
+    lua <<END
+table.insert(package.loaders, 1, (function()
+  return function(mod_name)
+    vim.fn['dein#autoload#_on_lua'](mod_name)
+    return nil
+  end
+end)())
+END
+  endif
 endfunction
 function! dein#load_cache_raw(vimrcs) abort
   let g:dein#_vimrcs = a:vimrcs

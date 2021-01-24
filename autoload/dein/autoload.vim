@@ -152,6 +152,21 @@ function! dein#autoload#_on_func(name) abort
         \   || (index(get(v:val, 'on_func', []), a:name) >= 0)"))
 endfunction
 
+function! dein#autoload#_on_lua(name) abort
+  if has_key(g:dein#_called_lua, a:name)
+    return
+  endif
+
+  " Only use the root of module name.
+  let mod_root = matchstr(a:name, '^[^./]\+')
+
+  " Prevent infinite loop
+  let g:dein#_called_lua[a:name] = v:true
+
+  call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
+        \  "index(get(v:val, 'on_lua', []), mod_root) >= 0"))
+endfunction
+
 function! dein#autoload#_on_pre_cmd(name) abort
   call dein#autoload#_source(
         \ filter(dein#util#_get_lazy_plugins(),

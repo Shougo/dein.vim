@@ -126,6 +126,7 @@ function! dein#parse#_dict(plugin) abort
           \ || has_key(plugin, 'on_ft')
           \ || has_key(plugin, 'on_cmd')
           \ || has_key(plugin, 'on_func')
+          \ || has_key(plugin, 'on_lua')
           \ || has_key(plugin, 'on_map')
           \ || has_key(plugin, 'on_path')
           \ || has_key(plugin, 'on_if')
@@ -209,6 +210,7 @@ function! dein#parse#_plugins2toml(plugins) abort
   let default.on_ft = []
   let default.on_cmd = []
   let default.on_func = []
+  let default.on_lua = []
   let default.on_map = []
   let default.on_path = []
   let default.on_source = []
@@ -284,7 +286,7 @@ function! s:parse_lazy(plugin) abort
   " Auto convert2list.
   for key in filter([
         \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
-        \ 'on_source', 'on_event',
+        \ 'on_lua', 'on_source', 'on_event',
         \ ], 'has_key(a:plugin, v:val)
         \     && type(a:plugin[v:val]) != v:t_list
         \     && type(a:plugin[v:val]) != v:t_dict
