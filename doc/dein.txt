@@ -868,9 +868,8 @@ HOOKS							*dein-hooks*
 
 		The string will be split by the lines.
 		It is useful for the plugins initialization.
-		Note: The Function hooks cannot be cached.  You must
-		initialize it.
 
+		Note: You cannot use function hooks in |dein#save_state()|.
 		Note: You can use |g:dein#plugin| in the hooks.
 		Note: The loading order is not guaranteed in non lazy plugins.
 		Note: The string is executed as Ex commands.

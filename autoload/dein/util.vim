@@ -335,7 +335,8 @@ function! dein#util#_save_state(is_starting) abort
     for key in keys(filter(copy(plugin),
           \ "stridx(v:key, 'hook_') == 0 && type(v:val) != v:t_string"))
         call dein#util#_error(
-              \ printf('%s: "%s" must be string', plugin.name, key))
+              \ printf('%s: "%s" must be string to save state',
+              \        plugin.name, key))
     endfor
   endfor
 
