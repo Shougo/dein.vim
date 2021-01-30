@@ -50,7 +50,7 @@ function! dein#_init() abort
   if !exists('##CmdUndefined') | return | endif
   autocmd dein CmdUndefined *
         \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
-  if has('nvim')
+  if has('nvim-0.5')
     lua <<END
 table.insert(package.loaders, 1, (function()
   return function(mod_name)
