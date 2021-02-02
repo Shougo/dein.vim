@@ -351,7 +351,7 @@ function! dein#util#_save_state(is_starting) abort
 
   " Add inline vimrcs
   for vimrc in get(g:, 'dein#inline_vimrcs', [])
-    let lines += filter(readfile(vimrc), "v:val !=# '' && v:val[0] != '\"'")
+    let lines += filter(readfile(vimrc), "v:val !=# '' && v:val !~# '^\\s*\"'")
   endfor
 
   call writefile(lines, get(g:, 'dein#cache_directory', g:dein#_base_path)
