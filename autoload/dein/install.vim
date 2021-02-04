@@ -33,13 +33,6 @@ function! s:get_job() abort
   return s:Job
 endfunction
 
-function! s:get_datetime() abort
-  if !exists('s:DateTime')
-    let s:DateTime = vital#dein#import('DateTime')
-  endif
-  return s:DateTime
-endfunction
-
 function! dein#install#_update(plugins, update_type, async) abort
   if g:dein#_is_sudo
     call s:error('update/install is disabled in sudo session.')
@@ -119,6 +112,10 @@ function! dein#install#_check_update(plugins, force, async) abort
     call s:error('curl must be executable to check updated plugins.')
     return
   endif
+  if !exists('*strptime') && !has('nvim')
+    call s:error('Vim 8.1.2326+ is needed.')
+    return
+  endif
 
   let s:global_context.progress_type = 'echo'
 
@@ -195,9 +192,7 @@ function! dein#install#_check_update(plugins, force, async) abort
     let check_pushed[node['nameWithOwner']] =
           \ exists('*strptime') ?
           \  strptime(format, pushed_at) :
-          \ has('nvim') ?
-          \  msgpack#strptime(format, pushed_at) :
-          \ s:get_datetime().from_format(pushed_at, format).unix_time()
+          \  msgpack#strptime(format, pushed_at)
   endfor
 
   " Get the last updated time by rollbackfile timestamp.

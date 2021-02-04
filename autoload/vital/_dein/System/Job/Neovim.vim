@@ -18,6 +18,9 @@ function! s:start(args, options) abort
   if has_key(a:options, 'cwd')
     let job_options.cwd = a:options.cwd
   endif
+  if has_key(a:options, 'env')
+    let job_options.env = a:options.env
+  endif
   if has_key(job, 'on_stdout')
     let job_options.on_stdout = funcref('s:_on_stdout', [job])
   endif

@@ -39,6 +39,9 @@ function! s:start(args, options) abort
   if has_key(job, 'cwd') && has('patch-8.0.0902')
     let job_options.cwd = job.cwd
   endif
+  if has_key(job, 'env') && has('patch-8.0.0902')
+    let job_options.env = job.env
+  endif
   let job.__job = job_start(a:args, job_options)
   let job.args = a:args
   return job
