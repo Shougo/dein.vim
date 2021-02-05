@@ -105,15 +105,15 @@ endfunction
 function! dein#install#_check_update(plugins, force, async) abort
   if g:dein#install_github_api_token ==# ''
     call s:error('You need to set g:dein#install_github_api_token' .
-          \ ' to check updated plugins.')
+          \ ' for the feature.')
     return
   endif
   if !executable(g:dein#install_curl_command)
-    call s:error('curl must be executable to check updated plugins.')
+    call s:error('curl must be executable for the feature.')
     return
   endif
-  if !exists('*strptime') && !has('nvim')
-    call s:error('Vim 8.1.2326+ is needed.')
+  if !exists('*strptime') && !has('python3')
+    call s:error('+python3 is required for the feature.')
     return
   endif
 
@@ -192,7 +192,9 @@ function! dein#install#_check_update(plugins, force, async) abort
     let check_pushed[node['nameWithOwner']] =
           \ exists('*strptime') ?
           \  strptime(format, pushed_at) :
-          \  msgpack#strptime(format, pushed_at)
+          \ has('nvim') ?
+          \  msgpack#strptime(format, pushed_at) :
+          \  s:strptime_py(format, pushed_at)
   endfor
 
   " Get the last updated time by rollbackfile timestamp.
@@ -1537,4 +1539,14 @@ function! dein#install#_args2string_windows(args) abort
 endfunction
 function! dein#install#_args2string_unix(args) abort
   return join(map(copy(a:args), 'string(v:val)'))
+endfunction
+
+function! s:strptime_py(format, str) abort
+python3 << EOF
+import datetime
+import vim
+vim.command('let ret = ' + str(datetime.datetime.strptime(
+  vim.eval('a:str'), vim.eval('a:format')).timestamp()))
+EOF
+  return ret
 endfunction
