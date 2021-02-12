@@ -21,8 +21,9 @@ function! dein#parse#_add(repo, options, overwrite) abort
 
   " Duplicated plugins check
   if !a:overwrite && !empty(plugin_check)
-    " Only warning when starting
-    if has('vim_starting')
+    " Only warning when starting and different options
+    let orig_opts = get(g:dein#_plugins[plugin.name], 'orig_opts', {})
+    if has('vim_starting') && orig_opts !=# get(plugin, 'orig_opts', {})
       call dein#util#_error(printf(
             \ 'Plugin name "%s" is already defined.', plugin.name))
       return {}
