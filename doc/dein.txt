@@ -118,7 +118,8 @@ dein#add({repo}[, {options}])
 		"Shougo/dein.vim"), dein will install github plugins.
 		See |dein-options| for what to set in {options}.
 		Note: If plugin is already defined, duplicated calls will be
-		ignored.
+		ignored.  If you want to overwrite plugin config, you need to
+		use |dein#config()| instead.
 		Note: You must call it in |dein#begin()| block.
 		Note: If you install plugins, you need to call
 		|dein#install()| manually.
