@@ -794,7 +794,8 @@ on_source	(List) or (String)
 
 						*dein-options-overwrite*
 overwrite	(Bool)
-		If set to v:true, dein overwrite config when |dein#add()|.
+		If set to v:true, dein overwrite existing plugin config when
+		|dein#add()|.
 
 							*dein-options-path*
 path		(String)
