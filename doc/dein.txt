@@ -766,11 +766,20 @@ on_map		(Dictionary) or (List) or (String)
 		\ { 'on_map': {'n': '<Plug>'} })
 <
 		Note: You can use "<Plug>" keyword as {mapping}. If
-		{mapping} is "<Plug>", "<Plug>(normalized_name" is
+		{mapping} is "<Plug>", "<Plug>({normalized_name}" is
 		used.
 		For example: >
-		" It is same as "'mappings': '<Plug>(anzu'
+		" It is same as "'on_map': '<Plug>(anzu'"
 		call dein#add('osyo-manga/vim-anzu', {'on_map': '<Plug>'})
+
+		" It is same as "'on_map': '<Plug>(easy-align'"
+		" But it does not work as expected.  Because the plugin
+		" defines '<Plug>(EasyAlign)' mapping instead.
+		call dein#add('junegunn/vim-easy-align', {'on_map': '<Plug>'})
+
+		" This works as expected
+		call dein#add('junegunn/vim-easy-align',
+		\ {'on_map': '<Plug>(EasyAlign)'})
 <
 		Note: You cannot use lazy <Plug> mappings twice.
 		For example: >
