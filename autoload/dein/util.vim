@@ -388,6 +388,9 @@ function! dein#util#_begin(path, vimrcs) abort
   call dein#util#_get_runtime_path()
   call dein#util#_get_cache_path()
   let g:dein#_vimrcs = dein#util#_get_vimrcs(a:vimrcs)
+  if exists('g:dein#inline_vimrcs')
+    let g:dein#_vimrcs += g:dein#inline_vimrcs
+  endif
   let g:dein#_hook_add = ''
 
   if has('vim_starting')
