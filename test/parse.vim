@@ -107,7 +107,7 @@ function! s:suite.load_toml() abort
   call s:assert.equals(dein#get('neosnippet.vim').hook_add,
         \ "\"echo\n\"comment\necho\n")
   call s:assert.equals(dein#get('neosnippet.vim').hook_source,
-        \ "echo\n\\\necho\n")
+        \ "echo\necho\n")
 endfunction
 
 function! s:suite.error_toml() abort
