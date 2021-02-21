@@ -491,6 +491,8 @@ https://github.com/julienXX/terminal-notifier
 g:dein#inline_vimrcs
 		The vimrcs are sourced in |dein#end()| or
 		|dein#load_state()|.
+		Note: The files must not be included "<<" pattern(here
+		document).  It breaks the parser.
 
 		Defaults: []
 
