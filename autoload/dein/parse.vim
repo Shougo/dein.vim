@@ -165,15 +165,6 @@ function! dein#parse#_dict(plugin) abort
     let plugin.if = eval(a:plugin.if)
   endif
 
-  " Hooks
-  for hook in filter([
-        \ 'hook_add', 'hook_source',
-        \ 'hook_post_source', 'hook_post_update',
-        \ ], 'has_key(plugin, v:val) && type(plugin[v:val]) == v:t_string')
-    let plugin[hook] = substitute(plugin[hook],
-          \ '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
-  endfor
-
   return plugin
 endfunction
 function! dein#parse#_load_toml(filename, default) abort
@@ -191,9 +182,7 @@ function! dein#parse#_load_toml(filename, default) abort
 
   " Parse.
   if has_key(toml, 'hook_add')
-    let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
-    let g:dein#_hook_add .= "\n" . substitute(
-          \ toml.hook_add, pattern, '', 'g')
+    let g:dein#_hook_add .= "\n" . toml.hook_add
   endif
   if has_key(toml, 'ftplugin')
     call s:merge_ftplugin(toml.ftplugin)
