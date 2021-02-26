@@ -79,24 +79,21 @@ endif
 set runtimepath+={path to dein.vim directory}
 
 " Required:
-if dein#load_state({path to plugin base path directory})
-  call dein#begin({path to plugin base path directory})
+call dein#begin({path to plugin base path directory})
 
-  " Let dein manage dein
-  call dein#add({path to dein.vim directory})
-  if !has('nvim')
-    call dein#add('roxma/nvim-yarp')
-    call dein#add('roxma/vim-hug-neovim-rpc')
-  endif
-
-  " Add or remove your plugins here like this:
-  "call dein#add('Shougo/neosnippet.vim')
-  "call dein#add('Shougo/neosnippet-snippets')
-
-  " Required:
-  call dein#end()
-  call dein#save_state()
+" Let dein manage dein
+call dein#add({path to dein.vim directory})
+if !has('nvim')
+  call dein#add('roxma/nvim-yarp')
+  call dein#add('roxma/vim-hug-neovim-rpc')
 endif
+
+" Add or remove your plugins here like this:
+"call dein#add('Shougo/neosnippet.vim')
+"call dein#add('Shougo/neosnippet-snippets')
+
+" Required:
+call dein#end()
 
 " Required:
 filetype plugin indent on

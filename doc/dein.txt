@@ -1073,24 +1073,21 @@ EXAMPLES						*dein-examples*
 	set runtimepath+={path to dein.vim directory}
 
 	" Required:
-	if dein#load_state({path to plugin base path directory})
-	  call dein#begin({path to plugin base path directory})
+	call dein#begin({path to plugin base path directory})
 
-	  " Let dein manage dein
-	  call dein#add({path to dein.vim directory})
-	  if !has('nvim')
-	    call dein#add('roxma/nvim-yarp')
-	    call dein#add('roxma/vim-hug-neovim-rpc')
-	  endif
-
-	  " Add or remove your plugins here like this:
-	  "call dein#add('Shougo/neosnippet.vim')
-	  "call dein#add('Shougo/neosnippet-snippets')
-
-	  " Required:
-	  call dein#end()
-	  call dein#save_state()
+	" Let dein manage dein
+	call dein#add({path to dein.vim directory})
+	if !has('nvim')
+	  call dein#add('roxma/nvim-yarp')
+	  call dein#add('roxma/vim-hug-neovim-rpc')
 	endif
+
+	" Add or remove your plugins here like this:
+	"call dein#add('Shougo/neosnippet.vim')
+	"call dein#add('Shougo/neosnippet-snippets')
+
+	" Required:
+	call dein#end()
 
 	" Required:
 	filetype plugin indent on
@@ -1323,6 +1320,22 @@ to search all huge 'runtimepath' to load it.  Dein.vim has not the problem.
 Q: I want to load plugins lazily on requiring lua modules
 A: >
 	call dein#add('neovim/nvim-lsp', {'on_lua': 'nvim_lsp'})
+
+Q: deoplete does not work when I use |dein#load_state()|.
+
+A: Please read |dein#load_state()| documentation.  "The block is skipped if
+dein's state is loaded." >
+
+	if dein#load_state(path)
+	  call dein#begin(path)
+	  call dein#add('Shougo/deoplete.nvim')
+	  let g:deoplete#enable_at_startup = 1  " It will be skipped!
+	  call dein#end()
+	  call dein#save_state()
+	endif
+
+	" You must set variables or execute functions outside the block
+	let g:deoplete#enable_at_startup = 1
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
