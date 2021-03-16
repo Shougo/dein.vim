@@ -1076,7 +1076,16 @@ function! s:done(context) abort
     let post_update_plugins = filter(copy(a:context.synced_plugins),
           \ "has_key(v:val, 'hook_post_update')")
     if !empty(post_update_plugins)
-      call s:call_post_update_hooks(post_update_plugins)
+      if has('vim_starting')
+        let s:post_updated_plugins = post_update_plugins
+        autocmd dein VimEnter * call s:call_post_update_hooks(
+              \ s:post_updated_plugins)
+      else
+        " Reload plugins to execute hooks
+        runtime! plugin/*.vim
+
+        call s:call_post_update_hooks(post_update_plugins)
+      endif
     endif
 
     call dein#call_hook('done_update', a:context.synced_plugins)
@@ -1101,9 +1110,6 @@ endfunction
 function! s:call_post_update_hooks(plugins) abort
   let cwd = getcwd()
   try
-    " Reload plugins to execute hooks
-    runtime! plugin/*.vim
-
     for plugin in a:plugins
       call dein#install#_cd(plugin.path)
       call dein#call_hook('post_update', plugin)
