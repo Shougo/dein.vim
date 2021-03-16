@@ -1070,8 +1070,16 @@ function! s:done(context) abort
   call dein#install#_recache_runtimepath()
 
   if !empty(a:context.synced_plugins)
-    call dein#call_hook('done_update', a:context.synced_plugins)
     call dein#source(map(copy(a:context.synced_plugins), 'v:val.name'))
+
+    " Execute post_update hooks
+    let post_update_plugins = filter(copy(a:context.synced_plugins),
+          \ "has_key(v:val, 'hook_post_update')")
+    if !empty(post_update_plugins)
+      call s:call_post_update_hooks(post_update_plugins)
+    endif
+
+    call dein#call_hook('done_update', a:context.synced_plugins)
   endif
 
   redraw
@@ -1089,6 +1097,20 @@ function! s:done(context) abort
     call timer_stop(s:timer)
     unlet s:timer
   endif
+endfunction
+function! s:call_post_update_hooks(plugins) abort
+  let cwd = getcwd()
+  try
+    " Reload plugins to execute hooks
+    runtime! plugin/*.vim
+
+    for plugin in a:plugins
+      call dein#install#_cd(plugin.path)
+      call dein#call_hook('post_update', plugin)
+    endfor
+  finally
+    call dein#install#_cd(cwd)
+  endtry
 endfunction
 
 function! s:sync(plugin, context) abort
@@ -1319,18 +1341,6 @@ function! s:check_output(context, process) abort
     let type = dein#util#_get_type(plugin.type)
     let plugin.uri = has_key(type, 'get_uri') ?
           \ type.get_uri(plugin.repo, plugin) : ''
-
-    let cwd = getcwd()
-    try
-      call dein#install#_cd(plugin.path)
-
-      " Reload plugins to execute hooks
-      runtime! plugin/*.vim
-
-      call dein#call_hook('post_update', plugin)
-    finally
-      call dein#install#_cd(cwd)
-    endtry
 
     if dein#install#_build([plugin.name])
       call s:log(s:get_plugin_message(plugin, num, max, 'Build failed'))
