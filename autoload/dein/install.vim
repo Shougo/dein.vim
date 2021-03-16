@@ -1324,6 +1324,9 @@ function! s:check_output(context, process) abort
     try
       call dein#install#_cd(plugin.path)
 
+      " Reload plugins to execute hooks
+      runtime! plugin/*.vim
+
       call dein#call_hook('post_update', plugin)
     finally
       call dein#install#_cd(cwd)
