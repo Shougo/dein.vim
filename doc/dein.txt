@@ -596,6 +596,12 @@ g:dein#types#git#command_path
 
 		Default: "git"
 
+					*g:dein#types#git#default_hub_site*
+g:dein#types#git#default_hub_site
+		The default hub site used for git type.
+
+		Default: "github.com"
+
 					*g:dein#types#git#default_protocol*
 g:dein#types#git#default_protocol
 		The default protocol used for git (github).
