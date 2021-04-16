@@ -1254,12 +1254,9 @@ function! s:init_job(process, context, cmd) abort
 
     let candidates = get(a:process.job, 'candidates', [])
     let output = join((self.eof ? candidates : candidates[: -2]), "\n")
-    if output !=# ''
+    if output !=# '' && a:process.output !=# output
       let a:process.output = output
       let a:process.start_time = localtime()
-      call s:log(s:get_short_message(
-            \ a:process.plugin, a:process.number,
-            \ a:process.max_plugins, output))
     endif
     let self.candidates = self.eof ? [] : candidates[-1:]
 
