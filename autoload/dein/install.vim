@@ -159,8 +159,6 @@ function! dein#install#_check_update(plugins, force, async) abort
         let candidates[-1] .= a:data[0]
       endif
 
-      call s:print_progress_message(candidates[-1])
-
       let candidates += a:data[1:]
     endfunction
     let process.job = s:get_job().start(
