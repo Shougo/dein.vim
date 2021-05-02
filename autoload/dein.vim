@@ -7,7 +7,7 @@
 function! dein#_init() abort
   let g:dein#name = ''
   let g:dein#plugin = {}
-  let g:dein#_cache_version = 210
+  let g:dein#_cache_version = 220
   let g:dein#_plugins = {}
   let g:dein#_base_path = ''
   let g:dein#_cache_path = ''
