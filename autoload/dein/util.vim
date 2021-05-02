@@ -333,7 +333,8 @@ function! dein#util#_save_state(is_starting) abort
 
     " Invalid hooks detection
     for key in keys(filter(copy(plugin),
-          \ "stridx(v:key, 'hook_') == 0 && type(v:val) != v:t_string"))
+          \ { key, val -> stridx(key, 'hook_') == 0
+          \                && type(val) != v:t_string }))
         call dein#util#_error(
               \ printf('%s: "%s" must be string to save state',
               \        plugin.name, key))

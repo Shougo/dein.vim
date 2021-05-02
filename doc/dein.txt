@@ -1168,7 +1168,7 @@ Q: How to remove the disabled plugins?
 A: You can remove them like below.
 Note: You must call |dein#recache_runtimepath()| after the remove.
 >
-	call map(dein#check_clean(), "delete(v:val, 'rf')")
+	call map(dein#check_clean(), { _, val -> delete(val, 'rf') })
 	call dein#recache_runtimepath()
 <
 Q: How to use the script functions for hooks feature?

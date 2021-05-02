@@ -13,8 +13,6 @@ let s:filetype_save = &l:filetype
 let s:this_script = fnamemodify(expand('<sfile>'), ':p')
 
 
-let s:merged_format = "{'repo': v:val.repo, 'rev': get(v:val, 'rev', '')}"
-
 function! s:dein_install() abort
   call dein#util#_save_merged_plugins()
   return dein#install#_update([], 'install', 0)
@@ -196,14 +194,14 @@ function! s:suite.lazy_manual() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   call s:assert.equals(dein#source(['deoplete.nvim']), 0)
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.lazy_on_i() abort
@@ -232,20 +230,20 @@ function! s:suite.lazy_on_ft() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   set filetype=c
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   set filetype=cpp
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.lazy_on_path() abort
@@ -261,14 +259,14 @@ function! s:suite.lazy_on_path() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   execute 'edit' tempname()
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.lazy_on_if() abort
@@ -286,7 +284,7 @@ function! s:suite.lazy_on_if() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   set filetype=foobar
 
@@ -294,7 +292,7 @@ function! s:suite.lazy_on_if() abort
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.lazy_on_source() abort
@@ -312,14 +310,14 @@ function! s:suite.lazy_on_source() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   call dein#source('deol.nvim')
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.lazy_on_func() abort
@@ -338,26 +336,26 @@ function! s:suite.lazy_on_func() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin2.rtp')), 0)
+        \     { _, val -> val ==# plugin2.rtp })), 0)
 
   call dein#autoload#_on_func('deoplete#initialize')
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin2.rtp')), 0)
+        \     { _, val -> val ==# plugin2.rtp })), 0)
 
   call neosnippet#expandable()
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin2.rtp')), 1)
+        \     { _, val -> val ==# plugin2.rtp })), 1)
 endfunction
 
 function! s:suite.lazy_on_cmd() abort
@@ -374,7 +372,7 @@ function! s:suite.lazy_on_cmd() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   NeoCompleteDisable
 
@@ -396,7 +394,7 @@ function! s:suite.lazy_on_map() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin1.rtp')), 0)
+        \     { _, val -> val ==# plugin1.rtp })), 0)
 
   call dein#autoload#_on_map('', 'deol.nvim', 'n')
   call dein#autoload#_on_map('', 'neosnippet.vim', 'n')
@@ -405,7 +403,7 @@ function! s:suite.lazy_on_map() abort
   call s:assert.equals(plugin2.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin1.rtp')), 1)
+        \     { _, val -> val ==# plugin1.rtp })), 1)
 endfunction
 
 function! s:suite.lazy_on_pre_cmd() abort
@@ -421,7 +419,7 @@ function! s:suite.lazy_on_pre_cmd() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   call dein#autoload#_on_pre_cmd('Deol')
 
@@ -429,7 +427,7 @@ function! s:suite.lazy_on_pre_cmd() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 if has('nvim-0.5')
@@ -446,14 +444,14 @@ if has('nvim-0.5')
 
     call s:assert.equals(
           \ len(filter(dein#util#_split_rtp(&runtimepath),
-          \     'v:val ==# plugin.rtp')), 0)
+          \     { _, val -> val ==# plugin.rtp })), 0)
 
     lua require'vim.highlight'
 
     call s:assert.equals(plugin.sourced, 1)
     call s:assert.equals(
           \ len(filter(dein#util#_split_rtp(&runtimepath),
-          \     'v:val ==# plugin.rtp')), 1)
+          \     { _, val -> val ==# plugin.rtp })), 1)
   endfunction
 endif
 
@@ -473,14 +471,14 @@ function! s:suite.lazy_on_idle() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   doautocmd CursorHold
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.depends() abort
@@ -497,7 +495,7 @@ function! s:suite.depends() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.depends_lazy() abort
@@ -517,7 +515,7 @@ function! s:suite.depends_lazy() abort
   call s:assert.equals(isdirectory(plugin.rtp), 1)
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 0)
+        \     { _, val -> val ==# plugin.rtp })), 0)
 
   call s:assert.equals(dein#source(['deoplete.nvim']), 0)
 
@@ -525,7 +523,7 @@ function! s:suite.depends_lazy() abort
 
   call s:assert.equals(
         \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     'v:val ==# plugin.rtp')), 1)
+        \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
 function! s:suite.depends_error_lazy() abort
