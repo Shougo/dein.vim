@@ -57,7 +57,7 @@ function! dein#util#_get_cache_path() abort
 endfunction
 function! dein#util#_get_vimrcs(vimrcs) abort
   return !empty(a:vimrcs) ?
-        \ map(dein#util#_convert2list(a:vimrcs), 'expand(v:val)') :
+        \ map(dein#util#_convert2list(a:vimrcs), { _, val -> expand(val) }) :
         \ [dein#util#_get_myvimrc()]
 endfunction
 function! dein#util#_get_myvimrc() abort
@@ -155,22 +155,24 @@ function! dein#util#_has_job() abort
 endfunction
 
 function! dein#util#_check_lazy_plugins() abort
-  return map(filter(dein#util#_get_lazy_plugins(),
-        \   "isdirectory(v:val.rtp)
-        \    && !get(v:val, 'local', 0)
-        \    && get(v:val, 'hook_source', '') ==# ''
-        \    && get(v:val, 'hook_add', '') ==# ''
-        \    && !isdirectory(v:val.rtp . '/plugin')
-        \    && !isdirectory(v:val.rtp . '/after/plugin')"),
-        \   'v:val.name')
+  return map(filter(dein#util#_get_lazy_plugins(), { _, val ->
+        \    isdirectory(val.rtp)
+        \    && !get(val, 'local', 0)
+        \    && get(val, 'hook_source', '') ==# ''
+        \    && get(val, 'hook_add', '') ==# ''
+        \    && !isdirectory(val.rtp . '/plugin')
+        \    && !isdirectory(val.rtp . '/after/plugin')
+        \ }), { _, val -> val.name })
 endfunction
 function! dein#util#_check_clean() abort
-  let plugins_directories = map(values(dein#get()), 'v:val.path')
+  let plugins_directories = map(values(dein#get()), { _, val -> val.path })
   let path = dein#util#_substitute_path(
         \ globpath(dein#util#_get_base_path(), 'repos/*/*/*'))
   return filter(split(path, "\n"),
-        \ "isdirectory(v:val) && fnamemodify(v:val, ':t') !=# 'dein.vim'
-        \  && index(plugins_directories, v:val) < 0")
+        \ { _, val -> isdirectory(val)
+        \  && fnamemodify(val, ':t') !=# 'dein.vim'
+        \  && index(plugins_directories, val) < 0
+        \ })
 endfunction
 
 function! dein#util#_writefile(path, list) abort
@@ -211,8 +213,8 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
     for hook in filter([
           \ 'hook_add', 'hook_source',
           \ 'hook_post_source', 'hook_post_update',
-          \ ], 'has_key(plugin, v:val)
-          \     && type(plugin[v:val]) == v:t_func')
+          \ ], { _, val -> has_key(plugin, val)
+          \      && type(plugin[val]) == v:t_func })
       call remove(plugin, hook)
     endfor
   endfor
@@ -228,8 +230,9 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
 endfunction
 function! dein#util#_check_vimrcs() abort
   let time = getftime(dein#util#_get_runtime_path())
-  let ret = !empty(filter(map(copy(g:dein#_vimrcs), 'getftime(expand(v:val))'),
-        \ 'time < v:val'))
+  let ret = !empty(filter(map(copy(g:dein#_vimrcs),
+        \ { _, val -> getftime(expand(val)) }),
+        \ { _, val -> time < val }))
   if !ret
     return 0
   endif
@@ -343,7 +346,7 @@ function! dein#util#_save_state(is_starting) abort
 
   " Add events
   for [event, plugins] in filter(items(g:dein#_event_plugins),
-        \ "exists('##' . v:val[0])")
+        \ { _, val -> exists('##' . val[0]) })
     call add(lines, printf('autocmd dein-events %s call '
           \. 'dein#autoload#_on_event("%s", %s)',
           \ (exists('##' . event) ? event . ' *' : 'User ' . event),
@@ -352,7 +355,8 @@ function! dein#util#_save_state(is_starting) abort
 
   " Add inline vimrcs
   for vimrc in get(g:, 'dein#inline_vimrcs', [])
-    let lines += filter(readfile(vimrc), "v:val !=# '' && v:val !~# '^\\s*\"'")
+    let lines += filter(readfile(vimrc),
+          \ { _, val -> val !=# '' && val !~# '^\s*"' })
   endfor
 
   call writefile(lines, get(g:, 'dein#cache_directory', g:dein#_base_path)
@@ -437,7 +441,7 @@ function! dein#util#_end() abort
 
   if !has('vim_starting')
     call dein#source(filter(values(g:dein#_plugins),
-       \ "!v:val.lazy && !v:val.sourced && v:val.rtp !=# ''"))
+       \ { _, val -> !val.lazy && !val.sourced && val.rtp !=# '' }))
   endif
 
   " Add runtimepath
@@ -452,7 +456,7 @@ function! dein#util#_end() abort
   let sourced = has('vim_starting') &&
         \ (!exists('&loadplugins') || &loadplugins)
   for plugin in filter(values(g:dein#_plugins),
-        \ "!v:val.lazy && !v:val.sourced && v:val.rtp !=# ''")
+        \ { _, val -> !val.lazy && !val.sourced && val.rtp !=# '' })
     " Load dependencies
     if has_key(plugin, 'depends')
       let depends += plugin.depends
@@ -478,7 +482,7 @@ function! dein#util#_end() abort
   endif
 
   for [event, plugins] in filter(items(g:dein#_event_plugins),
-        \ "exists('##' . v:val[0])")
+        \ { _, val -> exists('##' . val[0]) })
     execute printf('autocmd dein-events %s call '
           \. 'dein#autoload#_on_event("%s", %s)',
           \ (exists('##' . event) ? event . ' *' : 'User ' . event),
@@ -513,12 +517,14 @@ endfunction
 function! dein#util#_call_hook(hook_name, ...) abort
   let hook = 'hook_' . a:hook_name
   let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
-        \ "((a:hook_name !=# 'source'
-        \    && a:hook_name !=# 'post_source') || v:val.sourced)
-        \   && has_key(v:val, hook) && isdirectory(v:val.path)")
+        \ { _, val ->
+        \    ((a:hook_name !=# 'source'
+        \     && a:hook_name !=# 'post_source') || val.sourced)
+        \    && has_key(val, hook) && isdirectory(val.path)
+        \ })
 
   for plugin in filter(dein#util#_tsort(plugins),
-        \ 'has_key(v:val, hook)')
+        \ { _, val -> has_key(val, hook) })
     call dein#util#_execute_hook(plugin, plugin[hook])
   endfor
 endfunction
@@ -572,11 +578,12 @@ function! dein#util#_split_rtp(runtimepath) abort
   endif
 
   let split = split(a:runtimepath, '\\\@<!\%(\\\\\)*\zs,')
-  return map(split,'substitute(v:val, ''\\\([\\,]\)'', ''\1'', ''g'')')
+  return map(split, { _, val -> substitute(val, '\\\([\\,]\)', '\1', 'g') })
 endfunction
 function! dein#util#_join_rtp(list, runtimepath, rtp) abort
   return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
-        \ join(a:list, ',') : join(map(copy(a:list), 's:escape(v:val)'), ',')
+        \ join(a:list, ',') : join(map(copy(a:list),
+        \ { _, val -> s:escape(val) }), ',')
 endfunction
 
 function! dein#util#_add_after(rtps, path) abort
@@ -627,21 +634,22 @@ endfunction
 
 function! dein#util#_get_lazy_plugins() abort
   return filter(values(g:dein#_plugins),
-        \ "!v:val.sourced && v:val.rtp !=# ''")
+        \ { _, val -> !val.sourced && val.rtp !=# '' })
 endfunction
 
 function! dein#util#_get_plugins(plugins) abort
   return empty(a:plugins) ?
         \ values(dein#get()) :
         \ filter(map(dein#util#_convert2list(a:plugins),
-        \   'type(v:val) == v:t_dict ? v:val : dein#get(v:val)'),
-        \   '!empty(v:val)')
+        \   { _, val -> type(val) == v:t_dict ? val : dein#get(val) }),
+        \   { _, val -> !empty(val) })
 endfunction
 
 function! dein#util#_disable(names) abort
   for plugin in map(filter(dein#util#_convert2list(a:names),
-        \ 'has_key(g:dein#_plugins, v:val)
-        \  && !g:dein#_plugins[v:val].sourced'), 'g:dein#_plugins[v:val]')
+        \ { _, val ->
+        \   has_key(g:dein#_plugins, val) && !g:dein#_plugins[val].sourced
+        \ }), { _, val -> g:dein#_plugins[val]})
     if has_key(plugin, 'dummy_commands')
       for command in plugin.dummy_commands
         silent! execute 'delcommand' command[0]
@@ -700,19 +708,19 @@ endfunction
 function! dein#util#_check_install(plugins) abort
   if !empty(a:plugins)
     let invalids = filter(dein#util#_convert2list(a:plugins),
-          \ 'empty(dein#get(v:val))')
+          \ { _, val -> empty(dein#get(val)) })
     if !empty(invalids)
-      call dein#util#_error('Invalid plugins: ' .
-            \ string(map(invalids, 'v:val')))
+      call dein#util#_error('Invalid plugins: ' . string(invalids))
       return -1
     endif
   endif
   let plugins = empty(a:plugins) ? values(dein#get()) :
-        \ map(dein#util#_convert2list(a:plugins), 'dein#get(v:val)')
-  let plugins = filter(plugins, '!isdirectory(v:val.path)')
+        \ map(dein#util#_convert2list(a:plugins),
+        \     { _, val -> dein#get(val) })
+  let plugins = filter(plugins, { _, val -> !isdirectory(val.path) })
   if empty(plugins) | return 0 | endif
   call dein#util#_notify('Not installed plugins: ' .
-        \ string(map(plugins, 'v:val.name')))
+        \ string(map(plugins, { _, val -> val.name })))
   return 1
 endfunction
 
