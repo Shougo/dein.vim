@@ -43,22 +43,22 @@ let s:source.converters = s:source.source__converter
 
 
 function! s:source.gather_candidates(args, context) abort
-  let _ = map(copy(a:context.source__plugins), "{
-        \ 'word': substitute(v:val.repo,
+  let _ = map(copy(a:context.source__plugins), { _, val -> {
+        \ 'word': substitute(val.repo,
         \  '^\%(https\?\|git\)://\%(github.com/\)\?', '', ''),
         \ 'kind': 'dein',
-        \ 'action__path': v:val.path,
-        \ 'action__directory': v:val.path,
-        \ 'action__plugin': v:val,
-        \ 'action__plugin_name': v:val.name,
-        \ 'source__type': v:val.type,
-        \ 'source__is_sourced': v:val.sourced,
-        \ 'source__is_installed': isdirectory(v:val.path),
+        \ 'action__path': val.path,
+        \ 'action__directory': val.path,
+        \ 'action__plugin': val,
+        \ 'action__plugin_name': val.name,
+        \ 'source__type': val.type,
+        \ 'source__is_sourced': val.sourced,
+        \ 'source__is_installed': isdirectory(val.path),
         \ 'is_multiline': 1,
         \ }
-        \")
+        \ } )
 
-  let max = max(map(copy(_), 'len(v:val.word)'))
+  let max = max(map(copy(_), { _, val -> len(val.word) }))
 
   call unite#print_source_message(
         \ '#: not sourced, X: not installed', self.name)

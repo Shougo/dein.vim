@@ -13,7 +13,7 @@ function! dein#autoload#_source(...) abort
 
   if type(plugins[0]) != v:t_dict
     let plugins = map(dein#util#_convert2list(a:1),
-        \       'get(g:dein#_plugins, v:val, {})')
+        \       { _, val -> get(g:dein#_plugins, val, {}) })
   endif
 
   let rtps = dein#util#_split_rtp(&runtimepath)
@@ -24,7 +24,7 @@ function! dein#autoload#_source(...) abort
 
   let sourced = []
   for plugin in filter(plugins,
-        \ "!empty(v:val) && !v:val.sourced && v:val.rtp !=# ''")
+        \ { _, val -> !empty(val) && !val.sourced && val.rtp !=# '' })
     call s:source_plugin(rtps, index, plugin, sourced)
   endfor
 
@@ -36,7 +36,7 @@ function! dein#autoload#_source(...) abort
   " Reload script files.
   for plugin in sourced
     for directory in filter(['plugin', 'after/plugin'],
-          \ "isdirectory(plugin.rtp.'/'.v:val)")
+          \ { _, val -> isdirectory(plugin.rtp . '/' . val) })
       for file in dein#util#_globlist(plugin.rtp.'/'.directory.'/**/*.vim')
         execute 'source' fnameescape(file)
       endfor
@@ -87,28 +87,28 @@ function! dein#autoload#_on_default_event(event) abort
 
   for filetype in split(&l:filetype, '\.')
     let plugins += filter(copy(lazy_plugins),
-          \ "index(get(v:val, 'on_ft', []), filetype) >= 0")
+          \ { _, val -> index(get(val, 'on_ft', []), filetype) >= 0 })
   endfor
 
   let plugins += filter(copy(lazy_plugins),
-        \ "!empty(filter(copy(get(v:val, 'on_path', [])),
-        \                'path =~? v:val'))")
+        \ { _, val -> !empty(filter(copy(get(val, 'on_path', [])),
+        \                { _, val -> path =~? val })) })
   let plugins += filter(copy(lazy_plugins),
-        \ "!has_key(v:val, 'on_event')
-        \  && has_key(v:val, 'on_if') && eval(v:val.on_if)")
+        \ { _, val -> !has_key(val, 'on_event') && has_key(val, 'on_if')
+        \             && eval(val.on_if) })
 
   call s:source_events(a:event, plugins)
 endfunction
 function! dein#autoload#_on_event(event, plugins) abort
   let lazy_plugins = filter(dein#util#_get_plugins(a:plugins),
-        \ '!v:val.sourced')
+        \ { _, val -> !val.sourced })
   if empty(lazy_plugins)
     execute 'autocmd! dein-events' a:event
     return
   endif
 
   let plugins = filter(copy(lazy_plugins),
-        \ "!has_key(v:val, 'on_if') || eval(v:val.on_if)")
+        \ { _, val -> !has_key(val, 'on_if') || eval(val.on_if) })
   call s:source_events(a:event, plugins)
 endfunction
 function! s:source_events(event, plugins) abort
@@ -148,8 +148,8 @@ function! dein#autoload#_on_func(name) abort
   endif
 
   call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
-        \  "stridx(function_prefix, v:val.normalized_name.'#') == 0
-        \   || (index(get(v:val, 'on_func', []), a:name) >= 0)"))
+        \  { _, val -> stridx(function_prefix, val.normalized_name.'#') == 0
+        \   || (index(get(val, 'on_func', []), a:name) >= 0) }))
 endfunction
 
 function! dein#autoload#_on_lua(name) abort
@@ -164,7 +164,7 @@ function! dein#autoload#_on_lua(name) abort
   let g:dein#_called_lua[a:name] = v:true
 
   call dein#autoload#_source(filter(dein#util#_get_lazy_plugins(),
-        \  "index(get(v:val, 'on_lua', []), mod_root) >= 0"))
+        \  { _, val -> index(get(val, 'on_lua', []), mod_root) >= 0 }))
 endfunction
 
 function! dein#autoload#_on_pre_cmd(name) abort

@@ -131,7 +131,8 @@ function! dein#parse#_dict(plugin) abort
   endif
 
   " Deprecated check.
-  for key in filter(['directory', 'base'], 'has_key(plugin, v:val)')
+  for key in filter(['directory', 'base'],
+        \ { _, val -> has_key(plugin, val) })
     call dein#util#_error('plugin name = ' . plugin.name)
     call dein#util#_error(string(key) . ' is deprecated.')
   endfor
@@ -169,7 +170,8 @@ function! dein#parse#_dict(plugin) abort
   for hook in filter([
         \ 'hook_add', 'hook_source',
         \ 'hook_post_source', 'hook_post_update',
-        \ ], 'has_key(plugin, v:val) && type(plugin[v:val]) == v:t_string')
+        \ ], { _, val -> has_key(plugin, val)
+        \                && type(plugin[val]) == v:t_string })
     let plugin[hook] = substitute(plugin[hook], '\n\s*\\', '', 'g')
   endfor
 
