@@ -556,12 +556,6 @@ function! dein#util#_set_hook(plugins, hook_name, hook) abort
   endfor
 endfunction
 
-function! dein#util#_sort_by(list, expr) abort
-  let pairs = map(a:list, printf('[v:val, %s]', a:expr))
-  return map(s:sort(pairs,
-  \      { a, b -> a[1] ==# b[1] ? 0 : a[1] ># b[1] ? 1 : -1 }),
-  \      { _, val -> v:val[0] })
-endfunction
 function! dein#util#_tsort(plugins) abort
   let sorted = []
   let mark = {}
@@ -726,23 +720,12 @@ function! s:msg2list(expr) abort
   return type(a:expr) ==# v:t_list ? a:expr : split(a:expr, '\n')
 endfunction
 function! s:skipempty(string) abort
-  return filter(split(a:string, '\n'), "v:val !=# ''")
+  return filter(split(a:string, '\n'), { _, val -> val !=# '' })
 endfunction
 
 function! s:escape(path) abort
   " Escape a path for runtimepath.
   return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
-endfunction
-
-function! s:sort(list, expr) abort
-  if type(a:expr) == v:t_func
-    return sort(a:list, a:expr)
-  endif
-  let s:expr = a:expr
-  return sort(a:list, 's:_compare')
-endfunction
-function! s:_compare(a, b) abort
-  return eval(s:expr)
 endfunction
 
 function! s:execute(expr) abort

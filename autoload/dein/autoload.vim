@@ -170,11 +170,11 @@ endfunction
 function! dein#autoload#_on_pre_cmd(name) abort
   call dein#autoload#_source(
         \ filter(dein#util#_get_lazy_plugins(),
-        \ "index(map(copy(get(v:val, 'on_cmd', [])),
-        \            'tolower(v:val)'), a:name) >= 0
+        \ { _, val -> index(map(copy(get(val, 'on_cmd', [])),
+        \            { _, val2 -> tolower(val2) }), a:name) >= 0
         \  || stridx(tolower(a:name),
-        \            substitute(tolower(v:val.normalized_name),
-        \                       '[_-]', '', 'g')) == 0"))
+        \            substitute(tolower(val.normalized_name),
+        \                       '[_-]', '', 'g')) == 0 }))
 endfunction
 
 function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
@@ -286,7 +286,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   let a:plugin.sourced = 1
 
   for on_source in filter(dein#util#_get_lazy_plugins(),
-        \ "index(get(v:val, 'on_source', []), a:plugin.name) >= 0")
+        \ { _, val -> index(get(val, 'on_source', []), a:plugin.name) >= 0 })
     if s:source_plugin(a:rtps, index, on_source, a:sourced)
       let index += 1
     endif
@@ -371,8 +371,8 @@ function! s:is_reset_ftplugin(plugins) abort
     let after = plugin.rtp . '/after/ftplugin/' . &filetype
     if !empty(filter(['ftplugin', 'indent',
         \ 'after/ftplugin', 'after/indent',],
-        \ "filereadable(printf('%s/%s/%s.vim',
-        \    plugin.rtp, v:val, &filetype))"))
+        \ { _, val -> filereadable(printf('%s/%s/%s.vim',
+        \                          plugin.rtp, val, &filetype)) }))
         \ || isdirectory(ftplugin) || isdirectory(after)
         \ || glob(ftplugin. '_*.vim') !=# '' || glob(after . '_*.vim') !=# ''
       return 1

@@ -67,7 +67,7 @@ function! dein#load_cache_raw(vimrcs) abort
         \ .'/cache_' . g:dein#_progname
   let time = getftime(cache)
   if !empty(filter(map(copy(g:dein#_vimrcs),
-        \ 'getftime(expand(v:val))'), 'time < v:val'))
+        \ { _, val -> getftime(expand(val)) }), { _, val -> time < val }))
     return [{}, {}]
   endif
   let list = readfile(cache)
@@ -209,7 +209,7 @@ endfunction
 function! dein#config(arg, ...) abort
   return type(a:arg) != v:t_list ?
         \ dein#util#_config(a:arg, get(a:000, 0, {})) :
-        \ map(copy(a:arg), 'dein#util#_config(v:val, a:1)')
+        \ map(copy(a:arg), { _, val -> dein#util#_config(val, a:1) })
 endfunction
 function! dein#set_hook(plugins, hook_name, hook) abort
   return dein#util#_set_hook(a:plugins, a:hook_name, a:hook)

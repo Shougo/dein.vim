@@ -42,7 +42,7 @@ function! dein#install#_update(plugins, update_type, async) abort
   let plugins = dein#util#_get_plugins(a:plugins)
 
   if a:update_type ==# 'install'
-    let plugins = filter(plugins, '!isdirectory(v:val.path)')
+    let plugins = filter(plugins, { _, val -> !isdirectory(val.path) })
   endif
 
   if a:async && !empty(s:global_context) &&
@@ -178,7 +178,8 @@ function! dein#install#_check_update(plugins, force, async) abort
       try
         let json = json_decode(result)
         let results += filter(values(json['data']),
-              \ "type(v:val) == v:t_dict && has_key(v:val, 'pushedAt')")
+              \ { _, val -> type(val) == v:t_dict
+              \             && has_key(val, 'pushedAt') })
       catch
         call s:error('json output decode error: ' + string(result))
       endtry
@@ -231,7 +232,7 @@ function! dein#install#_check_update(plugins, force, async) abort
   endif
 
   call dein#util#_notify('Updated plugins: ' .
-        \ string(map(copy(updated), 'v:val.name')))
+        \ string(map(copy(updated), { _, val -> val.name })))
   if !a:force && confirm(
         \ 'Updated plugins are exists. Update now?', "yes\nNo", 2) != 1
     return
@@ -307,14 +308,16 @@ function! dein#install#_recache_runtimepath() abort
 
   let plugins = values(dein#get())
 
-  let merged_plugins = filter(copy(plugins), 'v:val.merged')
+  let merged_plugins = filter(copy(plugins), { _, val -> val.merged })
 
-  call s:copy_files(filter(copy(merged_plugins), 'v:val.lazy'), '')
+  call s:copy_files(filter(copy(merged_plugins),
+        \ { _, val -> val.lazy }), '')
   " Remove plugin directory
   call dein#install#_rm(dein#util#_get_runtime_path() . '/plugin')
   call dein#install#_rm(dein#util#_get_runtime_path() . '/after/plugin')
 
-  call s:copy_files(filter(copy(merged_plugins), '!v:val.lazy'), '')
+  call s:copy_files(filter(copy(merged_plugins),
+        \ { _, val -> !val.lazy }), '')
 
   call s:helptags()
 
@@ -369,7 +372,7 @@ function! s:helptags() abort
       call mkdir(tags, 'p')
     endif
     call s:copy_files(filter(
-          \ values(dein#get()), '!v:val.merged'), 'doc')
+          \ values(dein#get()), { _, val -> !val.merged }), 'doc')
     silent execute 'helptags' fnameescape(tags)
   catch /^Vim(helptags):E151:/
     " Ignore an error that occurs when there is no help file
@@ -381,8 +384,8 @@ function! s:helptags() abort
 endfunction
 function! s:copy_files(plugins, directory) abort
   let directory = (a:directory ==# '' ? '' : '/' . a:directory)
-  let srcs = filter(map(copy(a:plugins), 'v:val.rtp . directory'),
-        \ 'isdirectory(v:val)')
+  let srcs = filter(map(copy(a:plugins), { _, val -> val.rtp . directory }),
+        \ { _, val -> isdirectory(val) })
   let stride = 50
   for start in range(0, len(srcs), stride)
     call dein#install#_copy_directories(srcs[start : start + stride-1],
@@ -394,7 +397,7 @@ function! s:merge_files(plugins, directory) abort
   for plugin in a:plugins
     for file in filter(split(globpath(
           \ plugin.rtp, a:directory.'/**', 1), '\n'),
-          \ '!isdirectory(v:val)')
+          \ { _, val -> !isdirectory(val) })
       let files += readfile(file, ':t')
     endfor
   endfor
@@ -410,7 +413,7 @@ endfunction
 function! dein#install#_save_rollback(rollbackfile, plugins) abort
   let revisions = {}
   for plugin in filter(dein#util#_get_plugins(a:plugins),
-        \ 's:check_rollback(v:val)')
+        \ { _, val -> s:check_rollback(val) })
     let rev = s:get_revision_number(plugin)
     if rev !=# ''
       let revisions[plugin.name] = rev
@@ -423,11 +426,12 @@ function! dein#install#_load_rollback(rollbackfile, plugins) abort
   let revisions = json_decode(readfile(a:rollbackfile)[0])
 
   let plugins = dein#util#_get_plugins(a:plugins)
-  call filter(plugins, "has_key(revisions, v:val.name)
-        \ && has_key(dein#util#_get_type(v:val.type),
+  call filter(plugins, { _, val -> has_key(revisions, val.name)
+        \ && has_key(dein#util#_get_type(val.type),
         \            'get_rollback_command')
-        \ && s:check_rollback(v:val)
-        \ && s:get_revision_number(v:val) !=# revisions[v:val.name]")
+        \ && s:check_rollback(val)
+        \ && s:get_revision_number(val) !=# revisions[val.name]
+        \ })
   if empty(plugins)
     return
   endif
@@ -519,7 +523,8 @@ function! s:generate_ftplugin() abort
         \ dein#util#_get_runtime_path() . '/ftplugin.vim')
 
   " Generate after/ftplugin
-  for [filetype, list] in filter(items(ftplugin), "v:val[0] !=# '_'")
+  for [filetype, list] in filter(items(ftplugin),
+        \ { _, val -> val[0] !=# '_' })
     call writefile(list, printf('%s/%s.vim', after, filetype))
   endfor
 endfunction
@@ -559,12 +564,12 @@ function! dein#install#_remote_plugins() abort
 
   " Load not loaded neovim remote plugins
   let remote_plugins = filter(values(dein#get()),
-        \ "isdirectory(v:val.rtp . '/rplugin') && !v:val.sourced")
+        \ { _, val -> isdirectory(val.rtp . '/rplugin') && !val.sourced })
 
   call dein#autoload#_source(remote_plugins)
 
   call s:log('loaded remote plugins: ' .
-        \ string(map(copy(remote_plugins), 'v:val.name')))
+        \ string(map(copy(remote_plugins), { _, val -> val.name })))
 
   let &runtimepath = dein#util#_join_rtp(dein#util#_uniq(
         \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
@@ -575,7 +580,7 @@ endfunction
 
 function! dein#install#_each(cmd, plugins) abort
   let plugins = filter(dein#util#_get_plugins(a:plugins),
-        \ 'isdirectory(v:val.path)')
+        \ { _, val -> isdirectory(val.path) })
 
   let global_context_save = s:global_context
 
@@ -605,7 +610,7 @@ endfunction
 function! dein#install#_build(plugins) abort
   let error = 0
   for plugin in filter(dein#util#_get_plugins(a:plugins),
-        \ "isdirectory(v:val.path) && has_key(v:val, 'build')")
+        \ { _, val -> isdirectory(val.path) && has_key(val, 'build') })
     call s:print_progress_message('Building: ' . plugin.name)
     if dein#install#_each(plugin.build, plugin)
       let error = 1
@@ -744,17 +749,17 @@ function! s:get_updated_message(context, plugins) abort
 
   return "Updated plugins:\n".
         \ join(map(copy(a:plugins),
-        \ "'  ' . v:val.name . (v:val.commit_count == 0 ? ''
+        \ { _, val -> '  ' . val.name . (val.commit_count == 0 ? ''
         \                     : printf('(%d change%s)',
-        \                              v:val.commit_count,
-        \                              (v:val.commit_count == 1 ? '' : 's')))
-        \    . ((v:val.old_rev !=# ''
-        \        && v:val.uri =~# '^\\h\\w*://github.com/') ? \"\\n\"
+        \                              val.commit_count,
+        \                              (val.commit_count == 1 ? '' : 's')))
+        \    . ((val.old_rev !=# ''
+        \        && val.uri =~# '^\h\w*://github.com/') ? "\n"
         \      . printf('    %s/compare/%s...%s',
-        \        substitute(substitute(v:val.uri, '\\.git$', '', ''),
-        \          '^\\h\\w*:', 'https:', ''),
-        \        v:val.old_rev, v:val.new_rev) : '')")
-        \ , "\n")
+        \        substitute(substitute(val.uri, '\.git$', '', ''),
+        \          '^\h\w*:', 'https:', ''),
+        \        val.old_rev, val.new_rev) : '')
+        \ }) , "\n")
 endfunction
 function! s:get_errored_message(plugins) abort
   if empty(a:plugins)
@@ -762,7 +767,7 @@ function! s:get_errored_message(plugins) abort
   endif
 
   let msg = "Error installing plugins:\n".join(
-        \ map(copy(a:plugins), "'  ' . v:val.name"), "\n")
+        \ map(copy(a:plugins), { _, val -> '  ' . val.name }), "\n")
   let msg .= "\n"
   let msg .= "Please read the error message log with the :message command.\n"
 
@@ -922,7 +927,8 @@ function! dein#install#_copy_directories(srcs, dest) abort
     endif
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
-          \ 'len(s:list_directory(v:val))'), 'shellescape(v:val . ''/'')')
+          \ { _, val -> len(s:list_directory(val)) }),
+          \ { _, val -> shellescape(val . '/') })
     let is_rsync = executable('rsync')
     if is_rsync
       let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
@@ -1006,7 +1012,7 @@ function! s:check_loop(context) abort
   endfor
 
   " Filter eof processes.
-  call filter(a:context.processes, '!v:val.eof')
+  call filter(a:context.processes, { _, val -> !val.eof })
 endfunction
 function! s:restore_view(context) abort
   if a:context.progress_type ==# 'tabline'
@@ -1071,11 +1077,12 @@ function! s:done(context) abort
   call dein#install#_recache_runtimepath()
 
   if !empty(a:context.synced_plugins)
-    call dein#source(map(copy(a:context.synced_plugins), 'v:val.name'))
+    call dein#source(map(copy(a:context.synced_plugins),
+          \ { _, val -> val.name }))
 
     " Execute post_update hooks
     let post_update_plugins = filter(copy(a:context.synced_plugins),
-          \ "has_key(v:val, 'hook_post_update')")
+          \ { _, val -> has_key(val, 'hook_post_update') })
     if !empty(post_update_plugins)
       if has('vim_starting')
         let s:post_updated_plugins = post_update_plugins
@@ -1339,7 +1346,7 @@ function! s:check_output(context, process) abort
           \   plugin, new_rev, a:process.rev), '\n')
     let plugin.commit_count = len(log_messages)
     call s:log(map(log_messages,
-          \   's:get_short_message(plugin, num, max, v:val)'))
+          \   { _, val -> s:get_short_message(plugin, num, max, val) }))
 
     let plugin.old_rev = a:process.rev
     let plugin.new_rev = new_rev
@@ -1367,7 +1374,7 @@ function! s:iconv(expr, from, to) abort
   endif
 
   if type(a:expr) == v:t_list
-    return map(copy(a:expr), 'iconv(v:val, a:from, a:to)')
+    return map(copy(a:expr), { _, val -> iconv(val, a:from, a:to) })
   else
     let result = iconv(a:expr, a:from, a:to)
     return result !=# '' ? result : a:expr
@@ -1451,8 +1458,8 @@ endfunction
 
 
 function! s:echo(expr, mode) abort
-  let msg = map(filter(dein#util#_convert2list(a:expr), "v:val !=# ''"),
-        \ "'[dein] ' .  v:val")
+  let msg = map(filter(dein#util#_convert2list(a:expr),
+        \ { _, val -> val !=# '' }), { _, val -> '[dein] ' .  val })
   if empty(msg)
     return
   endif
@@ -1553,12 +1560,12 @@ function! dein#install#_args2string_windows(args) abort
   let str = (a:args[0] =~# ' ') ? '"' . a:args[0] . '"' : a:args[0]
   if len(a:args) > 1
     let str .= ' '
-    let str .= join(map(copy(a:args[1:]), '''"'' . v:val . ''"'''))
+    let str .= join(map(copy(a:args[1:]), { _, val -> '"' . val . '"' }))
   endif
   return str
 endfunction
 function! dein#install#_args2string_unix(args) abort
-  return join(map(copy(a:args), 'string(v:val)'))
+  return join(map(copy(a:args), { _, val -> string(val) }))
 endfunction
 
 function! s:strptime_py(format, str) abort
