@@ -44,9 +44,9 @@ function! s:source.async_gather_candidates(args, context) abort
         \   dein#install#_get_updates_log()
         \ : dein#install#_get_log()
   let candidates = map(copy(log[len(a:context.source__log):]), { _, val -> {
-        \ 'word' : (val =~# '^\\s*\\h\\w*://' ? ' -> diff URI' : val),
-        \ 'kind' : (val =~# '^\\s*\\h\\w*://' ? 'uri' : 'word'),
-        \ 'action__uri' : substitute(val, '^\\s\\+', '', ''),
+        \ 'word' : (val =~# '^\s*\h\w*://' ? ' -> diff URI' : val),
+        \ 'kind' : (val =~# '^\s*\h\w*://' ? 'uri' : 'word'),
+        \ 'action__uri' : substitute(val, '^\s\+', '', ''),
         \ } })
   let a:context.source__log = copy(log)
   return candidates

@@ -355,11 +355,11 @@ function! s:generate_dummy_mappings(plugin) abort
   let a:plugin.dummy_mappings = []
   let items = type(a:plugin.on_map) == v:t_dict ?
         \ map(items(a:plugin.on_map),
-        \   { _, val -> [split(val[0], '\\zs'),
+        \   { _, val -> [split(val[0], '\zs'),
         \                dein#util#_convert2list(val[1])]}) :
         \ map(copy(a:plugin.on_map),
         \  { _, val -> type(val) == v:t_list ?
-        \     [split(val[0], '\\zs'), val[1:]] : [['n', 'x'], [val]] })
+        \     [split(val[0], '\zs'), val[1:]] : [['n', 'x'], [val]] })
   for [modes, mappings] in items
     if mappings ==# ['<Plug>']
       " Use plugin name.
