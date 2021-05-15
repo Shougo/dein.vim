@@ -112,10 +112,6 @@ function! dein#install#_check_update(plugins, force, async) abort
     call s:error('curl must be executable for the feature.')
     return
   endif
-  if !exists('*strptime') && !has('python3')
-    call s:error('+python3 is required for the feature.')
-    return
-  endif
 
   let s:global_context.progress_type = 'echo'
 
@@ -195,9 +191,7 @@ function! dein#install#_check_update(plugins, force, async) abort
     let check_pushed[node['nameWithOwner']] =
           \ exists('*strptime') ?
           \  strptime(format, pushed_at) :
-          \ has('nvim') ?
-          \  msgpack#strptime(format, pushed_at) :
-          \  s:strptime_py(format, pushed_at)
+          \  dein#DateTime#from_format(pushed_at, format).unix_time()
   endfor
 
   " Get the last updated time by rollbackfile timestamp.
@@ -1566,15 +1560,4 @@ function! dein#install#_args2string_windows(args) abort
 endfunction
 function! dein#install#_args2string_unix(args) abort
   return join(map(copy(a:args), { _, val -> string(val) }))
-endfunction
-
-function! s:strptime_py(format, str) abort
-  let ret = ''
-python3 << EOF
-import datetime
-import vim
-vim.command('let ret = ' + str(datetime.datetime.strptime(
-  vim.eval('a:str'), vim.eval('a:format')).timestamp()))
-EOF
-  return ret
 endfunction

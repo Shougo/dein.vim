@@ -180,7 +180,6 @@ dein#check_update([{force}[, {plugins}]])
 		|dein#check_install()|.
 		Note: You need to set |g:dein#install_github_api_token| to use
 		the feature.
-		Note: |+python3| or |strptime()| is required.
 		Note: The update check is quick but it is not perfect
 		solution.  If "git" command change ".git" directory status(for
 		example: "git reset"), it cannot detect the update properly.
