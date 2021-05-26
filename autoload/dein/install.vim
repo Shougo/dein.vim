@@ -1068,9 +1068,9 @@ function! s:done(context) abort
     call s:notify(s:get_errored_message(a:context.errored_plugins))
   endif
 
-  call dein#install#_recache_runtimepath()
-
   if !empty(a:context.synced_plugins)
+    call dein#install#_recache_runtimepath()
+
     call dein#source(map(copy(a:context.synced_plugins),
           \ { _, val -> val.name }))
 
