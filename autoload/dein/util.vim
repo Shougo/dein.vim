@@ -280,7 +280,8 @@ function! dein#util#_save_state(is_starting) abort
     return 1
   endif
 
-  if get(g:, 'dein#auto_recache', 0)
+  " auto recache is needed for ftplugin feature
+  if get(g:, 'dein#auto_recache', 0) || !empty(g:dein#_ftplugin)
     call dein#util#_notify('auto recached')
     call dein#recache_runtimepath()
   endif
