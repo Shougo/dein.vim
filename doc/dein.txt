@@ -660,6 +660,8 @@ frozen		(Bool)
 ftplugin	(Dictionary)
 		"_" key is executed after all ftplugin.
 		"{filetype}" key is executed {filetype} ftplugin.
+		Note: You need to call |dein#recache_runtimepath()| or enable
+		|g:dein#auto_recache| after vimrc is changed.
 
 							*dein-options-if*
 if		(Bool) or (String)
@@ -982,6 +984,8 @@ TOML							*dein-toml*
 		"{filetype}" key is executed {filetype} ftplugin.
 		You can define multiple filetypes by "{filetype1}_{filetype2}"
 		key.  "b:undo_ftplugin" is defined automatically.
+		Note: You need to call |dein#recache_runtimepath()| or enable
+		|g:dein#auto_recache| after vimrc is changed.
 
 							*dein-toml-hook_add*
 		hook_add	(String)
