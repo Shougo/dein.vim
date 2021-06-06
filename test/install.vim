@@ -28,13 +28,13 @@ function! s:suite.before_each() abort
   let &l:filetype = s:filetype_save
   let g:temp = tempname()
   let g:dein#install_progress_type = 'echo'
-  let g:dein#enable_notification = 0
+  let g:dein#enable_notification = v:false
 endfunction
 
 " Note: It must be checked in the first
 function! s:suite.install() abort
   let g:dein#install_progress_type = 'title'
-  let g:dein#enable_notification = 1
+  let g:dein#enable_notification = v:true
 
   call dein#begin(s:path)
 

@@ -74,7 +74,7 @@ function! dein#util#_error(msg) abort
 endfunction
 function! dein#util#_notify(msg) abort
   call dein#util#_set_default(
-        \ 'g:dein#enable_notification', 0)
+        \ 'g:dein#enable_notification', v:false)
   call dein#util#_set_default(
         \ 'g:dein#notification_icon', '')
   call dein#util#_set_default(
@@ -281,7 +281,7 @@ function! dein#util#_save_state(is_starting) abort
   endif
 
   " auto recache is needed for ftplugin feature
-  if get(g:, 'dein#auto_recache', 0) || !empty(g:dein#_ftplugin)
+  if get(g:, 'dein#auto_recache', v:false) || !empty(g:dein#_ftplugin)
     call dein#util#_notify('auto recached')
     call dein#recache_runtimepath()
   endif

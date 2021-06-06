@@ -41,7 +41,7 @@ function! s:suite.parse_dict() abort
 endfunction
 
 function! s:suite.name_conversion() abort
-  let g:dein#enable_name_conversion = 1
+  let g:dein#enable_name_conversion = v:true
 
   let plugin = dein#parse#_dict(
         \ {'repo': 'https://github.com/Shougo/dein.vim.git'})
@@ -60,7 +60,7 @@ function! s:suite.name_conversion() abort
         \  'name': 'vim-qt-syntax'})
   call s:assert.equals(plugin.name, 'vim-qt-syntax')
 
-  let g:dein#enable_name_conversion = 0
+  let g:dein#enable_name_conversion = v:false
 endfunction
 
 function! s:suite.load_toml() abort

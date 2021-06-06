@@ -6,7 +6,7 @@
 
 " Global options definition."
 let g:dein#enable_name_conversion =
-      \ get(g:, 'dein#enable_name_conversion', 0)
+      \ get(g:, 'dein#enable_name_conversion', v:false)
 let g:dein#default_options =
       \ get(g:, 'dein#default_options', {})
 

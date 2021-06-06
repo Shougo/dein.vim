@@ -439,7 +439,7 @@ g:dein#auto_recache
 		If you set it to 1, call |dein#recache_runtimepath()|
 		automatically in |dein#save_state()|.
 
-		Default: 0
+		Default: v:false
 
 						*g:dein#cache_directory*
 g:dein#cache_directory
@@ -467,7 +467,7 @@ g:dein#enable_name_conversion
 		|dein-options-normalized_name| is used as plugin name.
 		It is useful for absorbing difference of repository name.
 
-		Defaults: "0"
+		Defaults: v:false
 
 						*g:dein#enable_notification*
 g:dein#enable_notification
@@ -484,7 +484,7 @@ https://github.com/julienXX/terminal-notifier
 
 		In Linux: "notify-send" command
 
-		Defaults: "0"
+		Defaults: v:false
 
 						*g:dein#inline_vimrcs*
 g:dein#inline_vimrcs
@@ -554,8 +554,10 @@ g:dein#install_log_filename
 g:dein#lazy_rplugins
 		If you set it to 1, neovim remote plugins are lazy loaded.
 		It is useful to save startup time.
+		Note: It disables all remote plugins at startup.  You must
+		define all remote plugins as lazy loaded if it is enabled.
 
-		Defaults: "0"
+		Defaults: v:false
 
 								*g:dein#name*
 g:dein#name
@@ -1334,13 +1336,13 @@ dein's state is loaded." >
 	if dein#load_state(path)
 	  call dein#begin(path)
 	  call dein#add('Shougo/deoplete.nvim')
-	  let g:deoplete#enable_at_startup = 1  " It will be skipped!
+	  let g:deoplete#enable_at_startup = v:true  " It will be skipped!
 	  call dein#end()
 	  call dein#save_state()
 	endif
 
 	" You must set variables or execute functions outside the block
-	let g:deoplete#enable_at_startup = 1
+	let g:deoplete#enable_at_startup = v:true
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
