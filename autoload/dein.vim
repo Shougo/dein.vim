@@ -220,7 +220,7 @@ endfunction
 function! dein#clear_state() abort
   call dein#util#_clear_state()
 
-  if !empty(g:dein#_ftplugin)
+  if !get(g:, 'dein#auto_recache', v:false) && !empty(g:dein#_ftplugin)
     call dein#util#_notify(
           \ 'call dein#recache_runtimepath() is needed for ftplugin feature')
   endif
