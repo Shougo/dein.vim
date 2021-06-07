@@ -330,8 +330,6 @@ function! dein#install#_recache_runtimepath() abort
 
   call dein#call_hook('post_source')
 
-  call dein#util#_save_merged_plugins()
-
   call dein#install#_save_rollback(
         \ s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S'), [])
 

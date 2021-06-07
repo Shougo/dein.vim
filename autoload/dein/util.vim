@@ -241,33 +241,6 @@ function! dein#util#_check_vimrcs() abort
 
   return ret
 endfunction
-function! dein#util#_load_merged_plugins() abort
-  let path = dein#util#_get_cache_path() . '/merged'
-  if !filereadable(path)
-    return []
-  endif
-  let merged = readfile(path)
-  if len(merged) != s:merged_length
-    return []
-  endif
-  sandbox return merged[: s:merged_length - 2] + eval(merged[-1])
-endfunction
-function! dein#util#_save_merged_plugins() abort
-  let merged = dein#util#_get_merged_plugins()
-  call writefile(merged[: s:merged_length - 2] +
-        \ [string(merged[s:merged_length - 1 :])],
-        \ dein#util#_get_cache_path() . '/merged')
-endfunction
-function! dein#util#_get_merged_plugins() abort
-  let ftplugin_len = 0
-  for ftplugin in values(g:dein#_ftplugin)
-    let ftplugin_len += len(ftplugin)
-  endfor
-  let merged_format =
-        \ "{'repo': v:val.repo, 'rev': get(v:val, 'rev', '')}"
-  return [merged_format, string(ftplugin_len)] +
-         \ sort(map(values(g:dein#_plugins), merged_format))
-endfunction
 
 function! dein#util#_save_state(is_starting) abort
   if g:dein#_block_level != 0

@@ -14,7 +14,6 @@ let s:this_script = fnamemodify(expand('<sfile>'), ':p')
 
 
 function! s:dein_install() abort
-  call dein#util#_save_merged_plugins()
   return dein#install#_update([], 'install', 0)
 endfunction
 
@@ -52,9 +51,6 @@ function! s:suite.install() abort
   let plugin = dein#get('deoplete.nvim')
   call s:assert.true(isdirectory(plugin.rtp))
   call s:assert.equals(dein#each('git gc'), 0)
-
-  call s:assert.equals(dein#util#_get_merged_plugins(),
-        \ dein#util#_load_merged_plugins())
 endfunction
 
 function! s:suite.tap() abort
