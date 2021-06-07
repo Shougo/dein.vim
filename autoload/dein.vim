@@ -218,5 +218,10 @@ function! dein#save_state() abort
   return dein#util#_save_state(has('vim_starting'))
 endfunction
 function! dein#clear_state() abort
-  return dein#util#_clear_state()
+  call dein#util#_clear_state()
+
+  if !empty(g:dein#_ftplugin)
+    call dein#util#_notify(
+          \ 'call dein#recache_runtimepath() is needed for ftplugin feature')
+  endif
 endfunction

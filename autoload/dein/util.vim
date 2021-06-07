@@ -283,9 +283,6 @@ function! dein#util#_save_state(is_starting) abort
   if get(g:, 'dein#auto_recache', v:false)
     call dein#util#_notify('auto recached')
     call dein#recache_runtimepath()
-  elseif !empty(g:dein#_ftplugin)
-    call dein#util#_notify(
-          \ 'call dein#recache_runtimepath() is needed for ftplugin feature')
   endif
 
   let g:dein#_vimrcs = dein#util#_uniq(g:dein#_vimrcs)

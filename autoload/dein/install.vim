@@ -335,7 +335,7 @@ function! dein#install#_recache_runtimepath() abort
   call dein#install#_save_rollback(
         \ s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S'), [])
 
-  call dein#clear_state()
+  call dein#util#_clear_state()
 
   call s:log(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
 endfunction
