@@ -474,12 +474,12 @@ g:dein#enable_notification
 		If you set it to 1, dein uses the notification feature.
 		You need the following commands to use it.
 
-		In Windows: "Snarl" and "Snarl_CMD" commands
-http://snarl.fullphat.net/
-https://www.tlhan-ghun.de/projects/snarl-command-line-tools/snarl_cmd-exe/
+		In Windows: "notify-send for Windows"
+		http://vaskovsky.net/notify-send/
+		https://github.com/vaskovsky/notify-send
 
 		In Mac: "terminal-notifier" or "osascript" command
-https://github.com/julienXX/terminal-notifier
+		https://github.com/julienXX/terminal-notifier
 		Note: "reattach-to-user-namespace" command is needed in tmux.
 
 		In Linux: "notify-send" command
@@ -567,7 +567,7 @@ g:dein#name
 
 						*g:dein#notification_icon*
 g:dein#notification_icon
-		The notification icon path.
+		The notification icon path or stocked icon to display.
 
 		Default: ""
 
