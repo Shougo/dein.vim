@@ -42,7 +42,7 @@ function! dein#_init() abort
     autocmd BufNew,BufNewFile *? call dein#autoload#_on_default_event('BufNew')
     autocmd VimEnter *? call dein#autoload#_on_default_event('VimEnter')
     autocmd FileType *? call dein#autoload#_on_default_event('FileType')
-    autocmd BufWritePost *.vim,*.toml,vimrc,.vimrc
+    autocmd BufWritePost *.lua,*.vim,*.toml,vimrc,.vimrc
           \ call dein#util#_check_vimrcs()
   augroup END
   augroup dein-events | augroup END

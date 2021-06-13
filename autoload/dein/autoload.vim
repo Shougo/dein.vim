@@ -35,9 +35,14 @@ function! dein#autoload#_source(...) abort
 
   " Reload script files.
   for plugin in sourced
-    for directory in filter(['plugin', 'after/plugin'],
-          \ { _, val -> isdirectory(plugin.rtp . '/' . val) })
-      for file in dein#util#_globlist(plugin.rtp.'/'.directory.'/**/*.vim')
+    for directory in map(filter(['plugin', 'after/plugin'],
+          \ { _, val -> isdirectory(plugin.rtp . '/' . val) }),
+          \ { _, val -> plugin.rtp . '/' . val })
+      let files = dein#util#_globlist(directory . '/**/*.vim')
+      if has('nvim-0.5')
+        let files += dein#util#_globlist(directory . '/**/*.lua')
+      endif
+      for file in files
         execute 'source' fnameescape(file)
       endfor
     endfor
@@ -64,9 +69,9 @@ function! dein#autoload#_source(...) abort
     call s:reset_ftplugin()
   endif
 
-  if (is_reset || filetype_before !=# filetype_after) && &filetype !=# ''
+  if (is_reset || filetype_before !=# filetype_after) && &l:filetype !=# ''
     " Recall FileType autocmd
-    let &filetype = &filetype
+    let &l:filetype = &l:filetype
   endif
 
   if !has('vim_starting')
@@ -362,19 +367,23 @@ function! s:get_input() abort
 endfunction
 
 function! s:is_reset_ftplugin(plugins) abort
-  if &filetype ==# ''
+  if &l:filetype ==# ''
     return 0
   endif
 
   for plugin in a:plugins
-    let ftplugin = plugin.rtp . '/ftplugin/' . &filetype
-    let after = plugin.rtp . '/after/ftplugin/' . &filetype
-    if !empty(filter(['ftplugin', 'indent',
+    let ftplugin = plugin.rtp . '/ftplugin/' . &l:filetype
+    let after = plugin.rtp . '/after/ftplugin/' . &l:filetype
+    let check_ftplugin = !empty(filter(['ftplugin', 'indent',
         \ 'after/ftplugin', 'after/indent',],
         \ { _, val -> filereadable(printf('%s/%s/%s.vim',
-        \                          plugin.rtp, val, &filetype)) }))
+        \                          plugin.rtp, val, &l:filetype))
+        \          || filereadable(printf('%s/%s/%s.lua',
+        \                          plugin.rtp, val, &l:filetype))}))
+    if check_ftplugin
         \ || isdirectory(ftplugin) || isdirectory(after)
         \ || glob(ftplugin. '_*.vim') !=# '' || glob(after . '_*.vim') !=# ''
+        \ || glob(ftplugin. '_*.lua') !=# '' || glob(after . '_*.lua') !=# ''
       return 1
     endif
   endfor

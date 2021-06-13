@@ -270,7 +270,7 @@ function! s:suite.lazy_on_if() abort
 
   let temp = tempname()
   call dein#add('Shougo/deol.nvim',
-        \ { 'on_if': '&filetype ==# "foobar"' })
+        \ { 'on_if': '&l:filetype ==# "foobar"' })
 
   call s:assert.equals(s:dein_install(), 0)
 

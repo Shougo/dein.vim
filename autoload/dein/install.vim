@@ -477,6 +477,11 @@ function! dein#install#_get_default_ftplugin() abort
         \ '      execute "runtime! ftplugin/" . ft . ".vim"',
         \ '      \ "ftplugin/" . ft . "_*.vim"',
         \ '      \ "ftplugin/" . ft . "/*.vim"',
+        \ '      if has("nvim-0.5")',
+        \ '        execute "runtime! ftplugin/" . ft . ".lua"',
+        \ '        \ "ftplugin/" . ft . "_*.lua"',
+        \ '        \ "ftplugin/" . ft . "/*.lua"',
+        \ '      endif',
         \ '    endfor',
         \ '  endif',
         \ '  call s:after_ftplugin()',
@@ -1082,7 +1087,12 @@ function! s:done(context) abort
               \ s:post_updated_plugins)
       else
         " Reload plugins to execute hooks
-        runtime! plugin/*.vim
+        runtime! plugin/**/*.vim
+
+        if has('nvim-0.5')
+          " Neovim loads lua files at startup
+          runtime! plugin/**/*.lua
+        endif
 
         call s:call_post_update_hooks(post_update_plugins)
       endif
