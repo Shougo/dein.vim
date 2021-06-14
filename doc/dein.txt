@@ -18,6 +18,7 @@ Interface		|dein-interface|
 Unite Sources		|dein-unite-sources|
 Denite Sources		|dein-denite-sources|
 Configuration Examples	|dein-examples|
+Plugins will be merged into a directory by default	|dein-merge|
 FAQ			|dein-faq|
 Compatibility		|dein-compatibility|
 
@@ -1110,6 +1111,28 @@ EXAMPLES						*dein-examples*
 	"endif
 <
 ==============================================================================
+Plugins will be merged into a directory by default					*dein-merge*
+
+dein.vim copies the files of multiple plugins into a single directory and
+loads them as plugins by default.  It expects to improve performance.
+
+That path is usually `DEIN_INSTALLED_DIR/.cache/init.vim/.dein`.
+For DEIN_INSTALLED_DIR, see |dein-install|.
+
+Other plugin managers add a 'runtimepath' to load external plugins.  However,
+if the 'runtimepath' is very large then it will load slowly.  This is because
+Vim needs to find and load all 'runtimepaths' to load plugins.  In dein.vim,
+this problem does not exist.
+
+The following plugins will not be merged
+- |dein-options-merged| is v:false
+- is local plugin
+- uses lazy loading
+- uses |dein-options-build|
+- uses |dein-options-hook_post_update|
+- uses |dein-options-if|
+
+==============================================================================
 FAQ							*dein-faq*
 
 Q: How to donate money to you?
@@ -1165,8 +1188,8 @@ Or you can use |dein#source()| for it.
 Q: There is the conflict between "jedi-vim" and "vim-pyenv" "initialize.py"
 file.
 
-A: It is the plugins problem.  The plugins should not create the conflited
-name file.  But you can avoid the problem by |dein-options-merged|.
+A: All plugins should avoid file name collisions.  dein.vim can load them
+by setting |dein-options-merged|.  See |dein-merge| for details.
 
 Q: How to remove the disabled plugins?
 
@@ -1235,9 +1258,10 @@ If you have found "Process timeout" error, you should increase
 
 Q: YouCompleteMe does not work.  I have built YouCompleteMe manually.
 
-A: dein.vim has merge feature.  It copys the plugins into the merge directory.
-So dein.vim does not know the manually built binary.  It does not be copied.
-You should disable the merge feature manually. >
+A: dein.vim has |dein-merge| feature.  It copies the plugin files into the
+merge directory.  If you build it manually, it will not be copied
+from time to time.
+You can disable the |dein-options-merge|. >
 	call dein#add('Valloric/YouCompleteMe', {'merged': 0})
 
 or >
@@ -1251,7 +1275,7 @@ If the directory has contains "[]" files, it will be errored.
 For example, vimtex has the file.
 https://github.com/lervag/vimtex/tree/master/test/issues/237/
 
-You can disable the merge feature to prevent the error. >
+You can disable the |dein-merge| feature to prevent the error. >
 	call dein#add('lervag/vimtex', {'merged': 0})
 
 
@@ -1262,8 +1286,8 @@ repository.
 
 Q: Why dein.vim merges the plugins directories automatically?
 
-A: To avoid long 'runtimepath'.  If 'runtimepath' is long, Vim/neovim loading
-performance will be bad.
+A: |dein-merge| merge improves performance by avoiding long 'runtimepath'.
+See also the |dein-merge|.
 
 Q: I want to update from shell.
 
@@ -1320,13 +1344,9 @@ plugins?
 https://github.com/Shougo/dein.vim/issues/357
 
 A: You can use |g:dein#auto_recache| option instead.
-Dein.vim has merge feature.  It copys the plugins into the merge directory.
-You can disable the feature by |dein-options-merged|.  It is like other plugin
-managers behavior.
-Why dein.vim has the feature?  It is for loading performance.
-Other plugin manager adds 'runtimepath' to load external plugins.
-But if 'runtimepath' is very big, plugin loading is slower.  Because Vim needs
-to search all huge 'runtimepath' to load it.  Dein.vim has not the problem.
+Dein.vim has |dein-merge| feature.  It copies the plugins into the
+merge directory.  You can disable the feature by setting |dein-options-merged|.
+See also the |dein-merge|.
 
 Q: I want to load plugins lazily on requiring lua modules
 A: >
