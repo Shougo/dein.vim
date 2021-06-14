@@ -18,7 +18,7 @@ Interface		|dein-interface|
 Unite Sources		|dein-unite-sources|
 Denite Sources		|dein-denite-sources|
 Configuration Examples	|dein-examples|
-Plugins will be merged into a directory by default	|dein-merge|
+Plugins merged feature	|dein-merge|
 FAQ			|dein-faq|
 Compatibility		|dein-compatibility|
 
@@ -1111,7 +1111,7 @@ EXAMPLES						*dein-examples*
 	"endif
 <
 ==============================================================================
-Plugins will be merged into a directory by default					*dein-merge*
+PLUGINS MERGED FEATURE					*dein-merge*
 
 dein.vim copies the files of multiple plugins into a single directory and
 loads them as plugins by default.  It expects to improve performance.
@@ -1119,15 +1119,15 @@ loads them as plugins by default.  It expects to improve performance.
 That path is usually `DEIN_INSTALLED_DIR/.cache/init.vim/.dein`.
 For DEIN_INSTALLED_DIR, see |dein-install|.
 
-Other plugin managers add a 'runtimepath' to load external plugins.  However,
-if the 'runtimepath' is very large then it will load slowly.  This is because
-Vim needs to find and load all 'runtimepaths' to load plugins.  In dein.vim,
-this problem does not exist.
+Other plugin managers add a plugin path into 'runtimepath' to load external
+plugins.  However, if the 'runtimepath' is very large then it will load
+slowly.  This is because Vim needs to find and load all 'runtimepath' to load
+plugins.  In dein.vim, this problem does not exist.
 
-The following plugins will not be merged
+The following plugins will not be merged to prevent merge problems
 - |dein-options-merged| is v:false
-- is local plugin
-- uses lazy loading
+- local plugin (|dein#local()|)
+- lazy loaded plugin (|dein-options-lazy|)
 - uses |dein-options-build|
 - uses |dein-options-hook_post_update|
 - uses |dein-options-if|
@@ -1261,7 +1261,7 @@ Q: YouCompleteMe does not work.  I have built YouCompleteMe manually.
 A: dein.vim has |dein-merge| feature.  It copies the plugin files into the
 merge directory.  If you build it manually, it will not be copied
 from time to time.
-You can disable the |dein-options-merge|. >
+You can disable the |dein-options-merged|. >
 	call dein#add('Valloric/YouCompleteMe', {'merged': 0})
 
 or >
@@ -1345,8 +1345,8 @@ https://github.com/Shougo/dein.vim/issues/357
 
 A: You can use |g:dein#auto_recache| option instead.
 Dein.vim has |dein-merge| feature.  It copies the plugins into the
-merge directory.  You can disable the feature by setting |dein-options-merged|.
-See also the |dein-merge|.
+merge directory.  You can disable the feature by setting
+|dein-options-merged|.  See also the |dein-merge|.
 
 Q: I want to load plugins lazily on requiring lua modules
 A: >
