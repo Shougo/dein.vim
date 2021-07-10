@@ -160,7 +160,7 @@ endfunction
 function! dein#util#_check_clean() abort
   let plugins_directories = map(values(dein#get()), { _, val -> val.path })
   let path = dein#util#_substitute_path(
-        \ globpath(dein#util#_get_base_path(), 'repos/*/*/*'))
+        \ globpath(dein#util#_get_base_path(), 'repos/*/*/*', v:true))
   return filter(split(path, "\n"),
         \ { _, val -> isdirectory(val)
         \  && fnamemodify(val, ':t') !=# 'dein.vim'
@@ -330,8 +330,8 @@ function! dein#util#_save_state(is_starting) abort
 endfunction
 function! dein#util#_clear_state() abort
   let base = get(g:, 'dein#cache_directory', g:dein#_base_path)
-  for cache in dein#util#_globlist(base.'/state_*.vim')
-        \ + dein#util#_globlist(base.'/cache_*')
+  for cache in glob(base.'/state_*.vim', v:true, v:true)
+        \ + glob(base.'/cache_*', v:true, v:true)
     call delete(cache)
   endfor
 endfunction
@@ -568,9 +568,6 @@ endfunction
 function! dein#util#_substitute_path(path) abort
   return ((s:is_windows || has('win32unix')) && a:path =~# '\\') ?
         \ tr(a:path, '\', '/') : a:path
-endfunction
-function! dein#util#_globlist(path) abort
-  return split(glob(a:path), '\n')
 endfunction
 
 function! dein#util#_convert2list(expr) abort

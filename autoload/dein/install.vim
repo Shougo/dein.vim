@@ -196,8 +196,8 @@ function! dein#install#_check_update(plugins, force, async) abort
 
   " Get the last updated time by rollbackfile timestamp.
   " Note: .git timestamp may be changed by git commands.
-  let rollbacks = reverse(sort(dein#util#_globlist(
-        \ s:get_rollback_directory() . '/*')))
+  let rollbacks = reverse(sort(glob(
+        \ s:get_rollback_directory() . '/*', v:true, v:true)))
   let rollback_time = empty(rollbacks) ? -1 : getftime(rollbacks[0])
 
   " Compare with .git directory updated time.
@@ -284,7 +284,7 @@ function! dein#install#_direct_install(repo, options) abort
 endfunction
 function! dein#install#_rollback(date, plugins) abort
   let glob = s:get_rollback_directory() . '/' . a:date . '*'
-  let rollbacks = reverse(sort(dein#util#_globlist(glob)))
+  let rollbacks = reverse(sort(glob(glob, v:true, v:true)))
   if empty(rollbacks)
     return
   endif
@@ -387,8 +387,8 @@ endfunction
 function! s:merge_files(plugins, directory) abort
   let files = []
   for plugin in a:plugins
-    for file in filter(split(globpath(
-          \ plugin.rtp, a:directory.'/**', 1), '\n'),
+    for file in filter(globpath(
+          \ plugin.rtp, a:directory.'/**', v:true, v:true),
           \ { _, val -> !isdirectory(val) })
       let files += readfile(file, ':t')
     endfor
@@ -398,9 +398,6 @@ function! s:merge_files(plugins, directory) abort
     call dein#util#_writefile(printf('.dein/%s/%s.vim',
           \ a:directory, a:directory), files)
   endif
-endfunction
-function! s:list_directory(directory) abort
-  return dein#util#_globlist(a:directory . '/*')
 endfunction
 function! dein#install#_save_rollback(rollbackfile, plugins) abort
   let revisions = {}
@@ -924,7 +921,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
     endif
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
-          \ { _, val -> len(s:list_directory(val)) }),
+          \ { _, val -> len(glob(val . '/*', v:true, v:true)) }),
           \ { _, val -> shellescape(val . '/') })
     let is_rsync = executable('rsync')
     if is_rsync

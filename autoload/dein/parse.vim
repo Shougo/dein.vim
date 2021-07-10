@@ -281,7 +281,7 @@ function! dein#parse#_local(localdir, options, includes) abort
   let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
-    let directories += map(filter(dein#util#_globlist(base . glob),
+    let directories += map(filter(glob(base . glob, v:true, v:true),
           \ { _, val -> isdirectory(val) }),
           \ { _, val -> substitute(dein#util#_substitute_path(
           \   fnamemodify(val, ':p')), '/$', '', '') })
@@ -403,8 +403,8 @@ function! dein#parse#_get_types() abort
   if !exists('s:types')
     " Load types.
     let s:types = {}
-    for type in filter(map(split(globpath(&runtimepath,
-          \ 'autoload/dein/types/*.vim', 1), '\n'),
+    for type in filter(map(globpath(&runtimepath,
+          \ 'autoload/dein/types/*.vim', v:true, v:true),
           \ { _, val -> dein#types#{fnamemodify(val, ':t:r')}#define() }),
           \ { _, val -> !empty(val) })
       let s:types[type.name] = type

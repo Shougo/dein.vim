@@ -38,9 +38,9 @@ function! dein#autoload#_source(...) abort
     for directory in map(filter(['plugin', 'after/plugin'],
           \ { _, val -> isdirectory(plugin.rtp . '/' . val) }),
           \ { _, val -> plugin.rtp . '/' . val })
-      let files = dein#util#_globlist(directory . '/**/*.vim')
+      let files = glob(directory . '/**/*.vim', v:true, v:true)
       if has('nvim-0.5')
-        let files += dein#util#_globlist(directory . '/**/*.lua')
+        let files += glob(directory . '/**/*.lua', v:true, v:true)
       endif
       for file in files
         execute 'source' fnameescape(file)
@@ -390,9 +390,11 @@ function! s:is_reset_ftplugin(plugins) abort
         \          || filereadable(printf('%s/%s/%s.lua',
         \                          plugin.rtp, val, &l:filetype))}))
     if check_ftplugin
-        \ || isdirectory(ftplugin) || isdirectory(after)
-        \ || glob(ftplugin. '_*.vim') !=# '' || glob(after . '_*.vim') !=# ''
-        \ || glob(ftplugin. '_*.lua') !=# '' || glob(after . '_*.lua') !=# ''
+          \ || isdirectory(ftplugin) || isdirectory(after)
+          \ || glob(ftplugin. '_*.vim', v:true) !=# ''
+          \ || glob(after . '_*.vim', v:true) !=# ''
+          \ || glob(ftplugin. '_*.lua', v:true) !=# ''
+          \ || glob(after . '_*.lua', v:true) !=# ''
       return 1
     endif
   endfor
