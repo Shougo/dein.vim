@@ -1036,7 +1036,7 @@ TOML							*dein-toml*
 ==============================================================================
 UNITE SOURCES						*dein-unite-sources*
 
-Here let me explain about a source for |unite| provided in dein.
+Here let me explain about a source for unite plugin provided in dein.
 
 						*dein-unite-source-dein*
 dein
@@ -1058,7 +1058,7 @@ dein_log
 ==============================================================================
 DENITE SOURCES						*dein-denite-sources*
 
-Here let me explain about a source for |denite| provided in dein.
+Here let me explain about a source for denite plugin provided in dein.
 
 						*dein-denite-source-dein*
 dein
