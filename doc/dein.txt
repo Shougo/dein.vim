@@ -298,10 +298,8 @@ dein#load_rollback({rollbackfile}[, {plugins}])
 
 							*dein#load_state()*
 dein#load_state({base-path})
-		Load dein's state from the cache script,
-		which is located in `dein#util#_get_runtime_path() . '/state_'
-		.  fnamemodify(v:progname, ':r') . '.vim'`.
-		{base-path} is where your downloaded plugins will be placed.
+		Load dein's state from the cache script, {base-path} is where
+		your downloaded plugins will be placed.
 		Note: You must call it before |dein#begin()|.  It clears dein
 		all configuration.
 		Note: It overwrites your 'runtimepath' completely, you must
