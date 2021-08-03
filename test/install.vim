@@ -789,17 +789,3 @@ function! s:suite.ftplugin() abort
   call s:assert.false(filereadable(dein#util#_get_runtime_path()
         \ . '/after/ftplugin/_.vim'))
 endfunction
-
-function! s:suite.denops_lazy() abort
-  call dein#begin(s:path)
-
-  call dein#add('vim-denops/denops-helloworld.vim',
-        \ { 'depends': 'denops.vim', 'lazy': 1 })
-  call dein#add('vim-denops/denops.vim', { 'lazy': 1 })
-
-  call s:assert.equals(s:dein_install(), 0)
-
-  call dein#end()
-
-  call s:assert.equals(dein#source(['denops-helloworld.vim']), 0)
-endfunction
