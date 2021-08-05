@@ -89,7 +89,13 @@ function! dein#util#_notify(msg) abort
 
   let title = '[dein]'
   let cmd = ''
-  if executable('notify-send')
+  if has('nvim') && dein#util#_luacheck('notify')
+    " Use nvim-notify plugin
+    call luaeval('require("notify")(_A.msg, "info", {'.
+          \ 'timeout=vim.g["dein#notification_time"] * 1000,'.
+          \ 'title=_A.title })',
+          \ { 'msg': a:msg, 'title': title })
+  elseif executable('notify-send')
     let cmd = printf('notify-send -t %d', g:dein#notification_time * 1000)
     if icon !=# ''
       let cmd .= ' -i ' . string(icon)
@@ -113,6 +119,10 @@ function! dein#util#_notify(msg) abort
     call dein#install#_system(cmd)
   endif
 endfunction
+function! dein#util#_luacheck(module) abort
+  return luaeval('pcall(require, _A.module)', { 'module': a:module })
+endfunction
+
 
 function! dein#util#_chomp(str) abort
   return a:str !=# '' && a:str[-1:] ==# '/' ? a:str[: -2] : a:str

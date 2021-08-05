@@ -473,6 +473,10 @@ g:dein#enable_notification
 		If you set it to 1, dein uses the notification feature.
 		You need the following commands to use it.
 
+		In neovim: "nvim-notify"
+		https://github.com/rcarriga/nvim-notify
+		Note: This is experimental.
+
 		In Windows: "notify-send for Windows"
 		http://vaskovsky.net/notify-send/
 		https://github.com/vaskovsky/notify-send
