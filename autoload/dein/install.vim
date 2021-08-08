@@ -221,11 +221,11 @@ function! dein#install#_check_update(plugins, force, async) abort
   let s:global_context = {}
 
   if empty(updated)
-    call dein#util#_notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
+    call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     return
   endif
 
-  call dein#util#_notify('Updated plugins: ' .
+  call s:updates_log('Updated plugins: ' .
         \ string(map(copy(updated), { _, val -> val.name })))
   if !a:force && confirm(
         \ 'Updated plugins are exists. Update now?', "yes\nNo", 2) != 1
