@@ -225,8 +225,9 @@ function! dein#install#_check_update(plugins, force, async) abort
     return
   endif
 
-  call s:updates_log('Updated plugins: ' .
-        \ string(map(copy(updated), { _, val -> val.name })))
+  " Note: Use echo to display it in confirm
+  call s:echo('Updated plugins: ' .
+        \ string(map(copy(updated), { _, val -> val.name })), 'echo')
   if !a:force && confirm(
         \ 'Updated plugins are exists. Update now?', "yes\nNo", 2) != 1
     return
