@@ -917,7 +917,7 @@ hook_add	(String) or (Function)
 		Because the plugin is not sourced when "hook_add".
 >
 		call dein#add('Shougo/defx.nvim', {
-		\ 'hook_add': 'nnoremap <silent>   [Space]v
+		\ 'hook_add': 'nnoremap <silent>   <Space>v
 		\              :<C-u>Defx<CR>'
 		\ })
 		call dein#add('kana/vim-niceblock', {
