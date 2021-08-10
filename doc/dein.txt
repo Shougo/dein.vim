@@ -1275,7 +1275,7 @@ A: It is Vim/neovim |delete()| implementation bug.
 It uses |glob()| internally.
 If the directory has contains "[]" files, it will be errored.
 For example, vimtex has the file.
-https://github.com/lervag/vimtex/tree/master/test/issues/237/
+https://github.com/lervag/vimtex/issues/237
 
 You can disable the |dein-merge| feature to prevent the error. >
 	call dein#add('lervag/vimtex', {'merged': 0})
