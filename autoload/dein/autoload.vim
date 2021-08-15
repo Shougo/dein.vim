@@ -59,15 +59,6 @@ function! dein#autoload#_source(...) abort
           silent execute 'doautocmd' augroup event
         endif
       endfor
-
-      " Register for lazy loaded denops plugin
-      if isdirectory(plugin.rtp . '/denops')
-        for name in map(globpath(plugin.rtp,
-              \ 'denops/*/main.ts', v:true, v:true),
-              \ { _, val -> fnamemodify(val, ':h:t')})
-          silent! call denops#plugin#register(name)
-        endfor
-      endif
     endif
   endfor
 
