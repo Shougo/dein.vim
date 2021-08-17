@@ -257,7 +257,12 @@ function! dein#util#_save_state(is_starting) abort
   endif
 
   if get(g:, 'dein#auto_recache', v:false)
-    call dein#util#_notify('auto recached')
+    if has('vim_starting')
+      call dein#util#_notify('auto recached')
+    else
+      autocmd dein VimEnter * call dein#util#_notify('auto recached')
+    endif
+
     call dein#recache_runtimepath()
   endif
 
