@@ -80,7 +80,8 @@ function! dein#util#_notify(msg) abort
   call dein#util#_set_default(
         \ 'g:dein#notification_time', 2)
 
-  if !g:dein#enable_notification || a:msg ==# '' || has('vim_starting')
+  if !g:dein#enable_notification || a:msg ==# ''
+        \ || (has('vim_starting') && !has('gui_running'))
     call dein#util#_error(a:msg)
     return
   endif
