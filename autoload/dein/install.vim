@@ -785,24 +785,33 @@ function! dein#install#_cd(path) abort
     call s:error(v:throwpoint)
   endtry
 endfunction
+
 function! dein#install#_system(command) abort
-  " Todo: use job API instead for Vim8/neovim only
-  " let job = s:Job.start()
-  " let exitval = job.wait()
-
-  if !has('nvim') && type(a:command) == v:t_list
-    " system() does not support List arguments in Vim.
-    let command = s:args2string(a:command)
+  return s:job_system.system(a:command)
+endfunction
+let s:job_system = {}
+function! s:job_system.on_out(data) abort
+  let candidates = s:job_system.candidates
+  if empty(candidates)
+    call add(candidates, a:data[0])
   else
-    let command = a:command
+    let candidates[-1] .= a:data[0]
   endif
+  let candidates += a:data[1:]
+endfunction
+function! s:job_system.system(cmd) abort
+  let self.candidates = []
 
-  let command = s:iconv(command, &encoding, 'char')
-  let output = s:iconv(system(command), 'char', &encoding)
-  return substitute(output, '\n$', '', '')
+  let job = s:get_job().start(
+        \ s:convert_args(a:cmd),
+        \ {'on_stdout': self.on_out})
+
+  let s:job_system.status = job.wait(
+        \ g:dein#install_process_timeout * 1000)
+  return join(s:job_system.candidates, "\n")
 endfunction
 function! dein#install#_status() abort
-  return v:shell_error
+  return s:job_system.status
 endfunction
 function! s:system_cd(command, path) abort
   let cwd = getcwd()
