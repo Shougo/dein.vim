@@ -7,7 +7,7 @@
 function! dein#_init() abort
   let g:dein#name = ''
   let g:dein#plugin = {}
-  let g:dein#_cache_version = 220
+  let g:dein#_cache_version = 230
   let g:dein#_plugins = {}
   let g:dein#_base_path = ''
   let g:dein#_cache_path = ''
@@ -100,10 +100,12 @@ function! dein#load_state(path, ...) abort
 endfunction
 
 function! dein#tap(name) abort
-  if !has_key(g:dein#_plugins, a:name)
-        \ || !isdirectory(g:dein#_plugins[a:name].path) | return 0 | endif
+  if !has_key(g:dein#_plugins, a:name) | return 0 | endif
+  let plugin = g:dein#_plugins[a:name]
+  if !isdirectory(plugin.path)
+        \ || (has_key(plugin, 'if') && !eval(plugin.if)) | return 0 | endif
   let g:dein#name = a:name
-  let g:dein#plugin = g:dein#_plugins[a:name]
+  let g:dein#plugin = plugin
   return 1
 endfunction
 function! dein#is_sourced(name) abort

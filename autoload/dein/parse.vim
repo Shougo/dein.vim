@@ -17,8 +17,8 @@ function! dein#parse#_add(repo, options, overwrite) abort
   let plugin = dein#parse#_dict(dein#parse#_init(a:repo, a:options))
   let plugin_check = get(g:dein#_plugins, plugin.name, {})
   let overwrite = get(a:options, 'overwrite', a:overwrite)
-  if get(plugin_check, 'sourced', 0) || !get(plugin, 'if', 1)
-    " Skip already loaded or not enabled plugin.
+  if get(plugin_check, 'sourced', 0)
+    " Skip already loaded plugin.
     return {}
   endif
 
@@ -163,10 +163,6 @@ function! dein#parse#_dict(plugin) abort
           \ && !has_key(plugin, 'hook_post_update')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
           \ && !dein#util#_is_windows()
-  endif
-
-  if has_key(plugin, 'if') && type(plugin.if) == v:t_string
-    let plugin.if = eval(a:plugin.if)
   endif
 
   " Hooks

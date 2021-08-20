@@ -24,7 +24,8 @@ function! dein#autoload#_source(...) abort
 
   let sourced = []
   for plugin in filter(plugins,
-        \ { _, val -> !empty(val) && !val.sourced && val.rtp !=# '' })
+        \ { _, val -> !empty(val) && !val.sourced && val.rtp !=# ''
+        \             && (!has_key(v:val, 'if') || eval(v:val.if)) })
     call s:source_plugin(rtps, index, plugin, sourced)
   endfor
 
@@ -270,6 +271,7 @@ endfunction
 
 function! s:source_plugin(rtps, index, plugin, sourced) abort
   if a:plugin.sourced || index(a:sourced, a:plugin) >= 0
+    \ || (has_key(a:plugin, 'if') && !eval(a:plugin.if))
     return
   endif
 

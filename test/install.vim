@@ -162,17 +162,7 @@ function! s:suite.if() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/deoplete.nvim', {'if': 0, 'on_cmd': 'FooBar'})
-
-  call s:assert.equals(dein#get('deoplete.nvim'), {})
-  call s:assert.false(exists(':FooBar'))
-
-  call dein#end()
-
-  call dein#begin(s:path)
-
-  call dein#add('Shougo/deoplete.nvim', {'if': '1+1'})
-
-  call s:assert.equals(dein#get('deoplete.nvim').if, 2)
+  call s:assert.equals(dein#get('deoplete.nvim').if, 0)
 
   call dein#end()
 endfunction

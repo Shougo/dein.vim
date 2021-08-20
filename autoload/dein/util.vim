@@ -433,7 +433,10 @@ function! dein#util#_end() abort
   let sourced = has('vim_starting') &&
         \ (!exists('&loadplugins') || &loadplugins)
   for plugin in filter(values(g:dein#_plugins),
-        \ { _, val -> !val.lazy && !val.sourced && val.rtp !=# '' })
+        \ { _, val -> !empty(val)
+        \             && !val.lazy && !val.sourced && val.rtp !=# ''
+        \             && (!has_key(v:val, 'if') || eval(v:val.if)) })
+
     " Load dependencies
     if has_key(plugin, 'depends')
       let depends += plugin.depends
