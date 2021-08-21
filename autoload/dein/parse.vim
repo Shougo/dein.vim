@@ -153,8 +153,6 @@ function! dein#parse#_dict(plugin) abort
   endif
 
   if !has_key(a:plugin, 'merged')
-    " Note: Disable merge feature in Windows.
-    " It is too slow!
     let plugin.merged = !plugin.lazy
           \ && plugin.normalized_name !=# 'dein'
           \ && !has_key(plugin, 'local')
@@ -162,7 +160,6 @@ function! dein#parse#_dict(plugin) abort
           \ && !has_key(plugin, 'if')
           \ && !has_key(plugin, 'hook_post_update')
           \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
-          \ && !dein#util#_is_windows()
   endif
 
   " Hooks

@@ -688,8 +688,6 @@ lazy		(Bool)
 merged		(Bool)
 		If set to v:false, dein doesn't merge the plugin directory.
 		It is useful for the plugin files conflicts.
-		If it is omitted, v:false ise used in Windows environment,
-		v:true is used in others.
 
 							*dein-options-name*
 name		(String)
