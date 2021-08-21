@@ -89,7 +89,7 @@ function! dein#util#_notify(msg) abort
   let icon = dein#util#_expand(g:dein#notification_icon)
 
   let title = '[dein]'
-  let cmd = ''
+  let cmd = []
   if has('nvim') && dein#util#_luacheck('notify')
     " Use nvim-notify plugin
     call luaeval('require("notify")(_A.msg, "info", {'.
@@ -97,26 +97,25 @@ function! dein#util#_notify(msg) abort
           \ 'title=_A.title })',
           \ { 'msg': a:msg, 'title': title })
   elseif executable('notify-send')
-    let cmd = printf('notify-send -t %d', g:dein#notification_time * 1000)
+    let cmd = ['notify-send', '-t', g:dein#notification_time * 1000]
     if icon !=# ''
-      let cmd .= ' -i ' . string(icon)
+      let cmd += ['-i', icon]
     endif
-    let cmd .= ' ' . string(title) . ' ' . string(a:msg)
+    let cmd += [title, a:msg]
   elseif dein#util#_is_mac()
-    let cmd = ''
+    let cmd = []
     if executable('terminal-notifier')
-      let cmd .= 'terminal-notifier -title '
-            \ . string(title) . ' -message ' . string(a:msg)
+      let cmd += ['terminal-notifier', '-title', 'title', '-message', a:msg]
       if icon !=# ''
-        let cmd .= ' -appIcon ' . string(icon)
+        let cmd += ['-appIcon', icon]
       endif
     else
-      let cmd .= printf("osascript -e 'display notification "
-            \        ."\"%s\" with title \"%s\"'", a:msg, title)
+      let cmd += ['osascript', '-e', 'display notification '
+            \ . printf('"%s" with title "%s"', a:msg, title)]
     endif
   endif
 
-  if cmd !=# ''
+  if !empty(cmd)
     call dein#install#_system(cmd)
   endif
 endfunction
