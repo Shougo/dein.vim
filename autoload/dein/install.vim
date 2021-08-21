@@ -922,6 +922,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
     endif
 
     let dest = substitute(a:dest, '/', '\\', 'g')
+    let jobs = []
     for src in a:srcs
       let commands = [
             \ 'robocopy.exe',
@@ -932,16 +933,33 @@ function! dein#install#_copy_directories(srcs, dest) abort
             \ '/XD', '.git',
             \ ]
       let job = dein#install#_system_bg(commands)
-
-      " Robocopy returns between 0 and 7 upon success
-      let status = job.wait(g:dein#install_process_timeout * 1000)
-      let status = (status > 7) ? status : 0
-
-      if status
-        call dein#util#_error('copy command failed.')
-        call dein#util#_error('cmdline: ' . str(commands))
-      endif
+      call add(jobs, { 'commands': commands, 'job': job })
     endfor
+
+    " Async check
+    while !empty(jobs)
+      let i = 0
+      for job in jobs
+        let status = job.job.wait(0)
+        if status == -1
+          " Next check
+          let i += 1
+          continue
+        endif
+
+        " Robocopy returns between 0 and 7 upon success
+        let status = (status > 7) ? status : 0
+
+        if status
+          call dein#util#_error('copy command failed.')
+          call dein#util#_error('cmdline: ' . str(commands))
+        endif
+
+        call remove(jobs, i)
+
+        break
+      endfor
+    endwhile
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
           \ { _, val -> len(glob(val . '/*', v:true, v:true)) }),
