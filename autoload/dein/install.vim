@@ -940,7 +940,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
     while !empty(jobs)
       let i = 0
       for job in jobs
-        let status = job.job.wait(0)
+        let status = job.job.wait(100)
         if status == -1
           " Next check
           let i += 1
@@ -952,7 +952,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
 
         if status
           call dein#util#_error('copy command failed.')
-          call dein#util#_error('cmdline: ' . str(commands))
+          call dein#util#_error('cmdline: ' . str(job.commands))
         endif
 
         call remove(jobs, i)
