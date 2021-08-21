@@ -668,10 +668,11 @@ ftplugin	(Dictionary)
 
 							*dein-options-if*
 if		(Bool) or (String)
-		If set to v:false, dein doesn't register the plugin, i.e. the
-		plugin will be disabled.
-		If it is String, dein will eval it.
+		If set to |v:false|, dein doesn't load the plugin.
+		If it is |String|, dein will eval it.
 		If you don't set it, dein will register (enable) the plugin.
+		Note: You cannot disable plugins register in dein if you use
+		the option.
 
 							*dein-options-lazy*
 lazy		(Bool)
@@ -1167,7 +1168,7 @@ A: You can use |dein#check_install()|.
 	  call dein#install()
 	endif
 <
-Q: I want to disable plugins.
+Q: I want to disable plugins loading dynamically.
 
 A: Please use |dein-options-if|.
 
