@@ -511,7 +511,7 @@ g:dein#install_max_processes
 		asynchronous update.
 		If it is less than equal 1, this feature is disabled.
 
-		Defaults: "8"
+		Defaults: "16"(Windows) or "8"(Others)
 
 					*g:dein#install_process_timeout*
 g:dein#install_process_timeout

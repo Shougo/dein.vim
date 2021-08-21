@@ -12,7 +12,8 @@ let s:progress = ''
 
 " Global options definition.
 let g:dein#install_max_processes =
-      \ get(g:, 'dein#install_max_processes', 8)
+      \ get(g:, 'dein#install_max_processes',
+      \     dein#util#_is_windows() ? 16 : 8)
 let g:dein#install_progress_type =
       \ get(g:, 'dein#install_progress_type', 'echo')
 let g:dein#install_message_type =
