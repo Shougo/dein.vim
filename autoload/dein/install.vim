@@ -298,6 +298,8 @@ function! dein#install#_recache_runtimepath() abort
     return
   endif
 
+  let start = reltime()
+
   " Clear runtime path.
   call s:clear_runtimepath()
 
@@ -337,6 +339,7 @@ function! dein#install#_recache_runtimepath() abort
   call dein#util#_clear_state()
 
   call s:log(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
+  call s:log('recache_runtimepath: ' . split(reltimestr(reltime(start)))[0])
 endfunction
 function! s:clear_runtimepath() abort
   if dein#util#_get_cache_path() ==# ''
@@ -895,6 +898,11 @@ function! dein#install#_copy_directories(srcs, dest) abort
     return 0
   endif
 
+  if dein#util#_is_windows() && has('python3')
+    " In Windows, copy directory is too slow!
+    return dein#install#_copy_directories_py(a:srcs, a:dest)
+  endif
+
   let status = 0
   if dein#util#_is_windows()
     if !executable('robocopy')
@@ -957,6 +965,14 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   return status
+endfunction
+function! dein#install#_copy_directories_py(srcs, dest) abort
+  py3 << EOF
+import shutil
+import vim
+for src in vim.eval('a:srcs'):
+  shutil.copytree(src, vim.eval('a:dest'), dirs_exist_ok=True)
+EOF
 endfunction
 
 function! s:install_blocking(context) abort
