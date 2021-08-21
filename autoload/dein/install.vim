@@ -367,8 +367,8 @@ function! s:helptags() abort
     if !isdirectory(tags)
       call mkdir(tags, 'p')
     endif
-    call s:copy_files(filter(
-          \ values(dein#get()), { _, val -> !val.merged }), 'doc')
+    call s:copy_files(filter(values(dein#get()),
+          \ { _, val -> !val.merged && val.lazy }), 'doc')
     silent execute 'helptags' fnameescape(tags)
   catch /^Vim(helptags):E151:/
     " Ignore an error that occurs when there is no help file
