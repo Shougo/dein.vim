@@ -855,18 +855,14 @@ function! s:job_execute.execute(cmd) abort
 endfunction
 
 function! dein#install#_system_bg(command) abort
-  return s:job_system_bg.system(a:command)
-endfunction
-let s:job_system_bg = {}
-function! s:job_system_bg.on_err(data) abort
-  for line in a:data
-    call dein#util#_error(line)
-  endfor
-endfunction
-function! s:job_system_bg.system(cmd) abort
   let job = s:get_job().start(
-        \ s:convert_args(a:cmd),
-        \ {'on_stderr': self.on_err})
+        \ s:convert_args(a:command),
+        \ {
+        \   'on_stderr': {
+        \     v -> map(copy(v), { _, val -> dein#util#_error(val) })
+        \   }
+        \ })
+  return job
 endfunction
 
 function! dein#install#_rm(path) abort
@@ -925,33 +921,45 @@ function! dein#install#_copy_directories(srcs, dest) abort
       return 1
     endif
 
-    let temp = tempname() . '.bat'
-    let exclude = tempname()
+    let dest = substitute(a:dest, '/', '\\', 'g')
+    let jobs = []
+    for src in a:srcs
+      let commands = [
+            \ 'robocopy.exe',
+            \ substitute(src, '/', '\\', 'g'),
+            \ dest,
+            \ '/E', '/NJH', '/NJS', '/NDL',
+            \ '/NC', '/NS', '/MT', '/XO',
+            \ '/XD', '.git',
+            \ ]
+      let job = dein#install#_system_bg(commands)
+      call add(jobs, { 'commands': commands, 'job': job })
+    endfor
 
-    try
-      let lines = ['@echo off']
-      let format ='robocopy.exe %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"'
-      for src in a:srcs
-        call add(lines, printf(format,
-              \                substitute(printf('"%s" "%s"', src, a:dest),
-              \                           '/', '\\', 'g')))
+    " Async check
+    while !empty(jobs)
+      let i = 0
+      for job in jobs
+        let status = job.job.wait(100)
+        if status == -1
+          " Next check
+          let i += 1
+          continue
+        endif
+
+        " Robocopy returns between 0 and 7 upon success
+        let status = (status > 7) ? status : 0
+
+        if status
+          call dein#util#_error('copy command failed.')
+          call dein#util#_error('cmdline: ' . str(job.commands))
+        endif
+
+        call remove(jobs, i)
+
+        break
       endfor
-      call writefile(lines, temp)
-      let result = dein#install#_system(temp)
-    finally
-      call delete(temp)
-    endtry
-
-    " Robocopy returns between 0 and 7 upon success
-    let status = dein#install#_status()
-    let status = (status > 7) ? status : 0
-
-    if status
-      call dein#util#_error('copy command failed.')
-      call dein#util#_error(s:iconv(result, 'char', &encoding))
-      call dein#util#_error('cmdline: ' . temp)
-      call dein#util#_error('tempfile: ' . string(lines))
-    endif
+    endwhile
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
           \ { _, val -> len(glob(val . '/*', v:true, v:true)) }),
