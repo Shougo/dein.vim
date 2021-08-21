@@ -503,7 +503,8 @@ function! dein#util#_call_hook(hook_name, ...) abort
         \    && (!has_key(v:val, 'if') || eval(v:val.if))
         \ })
 
-  for plugin in dein#util#_tsort(plugins)
+  for plugin in filter(dein#util#_tsort(plugins),
+        \ { _, val -> has_key(val, hook) })
     call dein#util#_execute_hook(plugin, plugin[hook])
   endfor
 endfunction
