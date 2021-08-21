@@ -911,7 +911,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
 
   if dein#util#_is_windows() && has('python3')
     " In Windows, copy directory is too slow!
-    return dein#install#_copy_directories_py(a:srcs, a:dest)
+    "return dein#install#_copy_directories_py(a:srcs, a:dest)
   endif
 
   let status = 0
@@ -921,33 +921,27 @@ function! dein#install#_copy_directories(srcs, dest) abort
       return 1
     endif
 
-    let temp = tempname() . '.bat'
-    let exclude = tempname()
+    let dest = substitute(dest, '/', '\\', 'g')
+    for src in a:srcs
+      let commands = [
+            \ 'robocopy.exe',
+            \ substitute(src, '/', '\\', 'g'),
+            \ dest,
+            \ '/E', '/NJH', '/NJS', '/NDL',
+            \ '/NC', '/NS', '/MT', '/XO',
+            \ '/XD', '.git',
+            \ ]
+      let job = dein#install#_system_bg(commands)
 
-    try
-      let lines = ['@echo off']
-      let format ='robocopy.exe %s /E /NJH /NJS /NDL /NC /NS /MT /XO /XD ".git"'
-      for src in a:srcs
-        call add(lines, printf(format,
-              \                substitute(printf('"%s" "%s"', src, a:dest),
-              \                           '/', '\\', 'g')))
-      endfor
-      call writefile(lines, temp)
-      let result = dein#install#_system(temp)
-    finally
-      call delete(temp)
-    endtry
+      " Robocopy returns between 0 and 7 upon success
+      let status = job.wait(g:dein#install_process_timeout * 1000)
+      let status = (status > 7) ? status : 0
 
-    " Robocopy returns between 0 and 7 upon success
-    let status = dein#install#_status()
-    let status = (status > 7) ? status : 0
-
-    if status
-      call dein#util#_error('copy command failed.')
-      call dein#util#_error(s:iconv(result, 'char', &encoding))
-      call dein#util#_error('cmdline: ' . temp)
-      call dein#util#_error('tempfile: ' . string(lines))
-    endif
+      if status
+        call dein#util#_error('copy command failed.')
+        call dein#util#_error('cmdline: ' . str(commands))
+      endif
+    endfor
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
           \ { _, val -> len(glob(val . '/*', v:true, v:true)) }),
