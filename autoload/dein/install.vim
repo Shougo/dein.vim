@@ -854,6 +854,21 @@ function! s:job_execute.execute(cmd) abort
   return job.wait(g:dein#install_process_timeout * 1000)
 endfunction
 
+function! dein#install#_system_bg(command) abort
+  return s:job_system_bg.system(a:command)
+endfunction
+let s:job_system_bg = {}
+function! s:job_system_bg.on_err(data) abort
+  for line in a:data
+    call dein#util#_error(line)
+  endfor
+endfunction
+function! s:job_system_bg.system(cmd) abort
+  let job = s:get_job().start(
+        \ s:convert_args(a:cmd),
+        \ {'on_stderr': self.on_err})
+endfunction
+
 function! dein#install#_rm(path) abort
   if !isdirectory(a:path) && !filereadable(a:path)
     return

@@ -116,7 +116,7 @@ function! dein#util#_notify(msg) abort
   endif
 
   if !empty(cmd)
-    call dein#install#_system(cmd)
+    call dein#install#_system_bg(cmd)
   endif
 endfunction
 function! dein#util#_luacheck(module) abort
