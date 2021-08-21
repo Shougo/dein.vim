@@ -921,7 +921,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
       return 1
     endif
 
-    let dest = substitute(dest, '/', '\\', 'g')
+    let dest = substitute(a:dest, '/', '\\', 'g')
     for src in a:srcs
       let commands = [
             \ 'robocopy.exe',
