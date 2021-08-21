@@ -217,6 +217,9 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
 
   let input = s:get_input()
 
+  " Prevent infinite loop
+  silent! execute a:mode.'unmap' a:mapping
+
   call dein#source(a:name)
 
   if a:mode ==# 'v' || a:mode ==# 'x'
