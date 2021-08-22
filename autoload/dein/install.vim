@@ -912,7 +912,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
 
   if dein#util#_is_windows() && has('python3')
     " In Windows, copy directory is too slow!
-    return dein#install#_copy_directories_py(a:srcs, a:dest)
+    "return dein#install#_copy_directories_py(a:srcs, a:dest)
   endif
 
   let status = 0
@@ -922,45 +922,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
       return 1
     endif
 
-    let dest = substitute(a:dest, '/', '\\', 'g')
-    let jobs = []
-    for src in a:srcs
-      let commands = [
-            \ 'robocopy.exe',
-            \ substitute(src, '/', '\\', 'g'),
-            \ dest,
-            \ '/E', '/NJH', '/NJS', '/NDL',
-            \ '/NC', '/NS', '/MT', '/XO',
-            \ '/XD', '.git',
-            \ ]
-      let job = dein#install#_system_bg(commands)
-      call add(jobs, { 'commands': commands, 'job': job })
-    endfor
-
-    " Async check
-    while !empty(jobs)
-      let i = 0
-      for job in jobs
-        let status = job.job.wait(100)
-        if status == -1
-          " Next check
-          let i += 1
-          continue
-        endif
-
-        " Robocopy returns between 0 and 7 upon success
-        let status = (status > 7) ? status : 0
-
-        if status
-          call dein#util#_error('copy command failed.')
-          call dein#util#_error('cmdline: ' . str(job.commands))
-        endif
-
-        call remove(jobs, i)
-
-        break
-      endfor
-    endwhile
+    let status = dein#install#_copy_directories_robocopy(a:srcs, a:dest)
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
           \ { _, val -> len(glob(val . '/*', v:true, v:true)) }),
@@ -989,6 +951,59 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   return status
+endfunction
+function! dein#install#_copy_directories_robocopy(srcs, dest) abort
+  let jobs = []
+  let format = 'robocopy.exe %s /E /NJH /NJS '
+        \ . '/NDL /NC /NS /MT:8 /XO /XD ".git"'
+  let srcs = a:srcs
+  let MAX_LINES = 8
+  while !empty(srcs)
+    let temp = tempname() . '.bat'
+    let lines = ['@echo off']
+
+    while len(lines) < MAX_LINES && !empty(srcs)
+      let path = substitute(printf('"%s" "%s"', srcs[0], a:dest),
+            \               '/', '\\', 'g')
+      call add(lines, printf(format, path))
+
+      let srcs = srcs[1:]
+    endwhile
+
+    call writefile(lines, temp)
+
+    let job = dein#install#_system_bg(temp)
+    call add(jobs, { 'commands': lines, 'job': job })
+  endwhile
+
+  " Async check
+  let ret = 0
+  while !empty(jobs)
+    let i = 0
+    for job in jobs
+      let status = job.job.wait(100)
+      if status == -1
+        " Next check
+        let i += 1
+        continue
+      endif
+
+      " Robocopy returns between 0 and 7 upon success
+      let status = (status > 7) ? status : 0
+
+      if status
+        call dein#util#_error('copy command failed.')
+        call dein#util#_error('cmdline: ' . string(job.commands))
+        let ret = 1
+      endif
+
+      call remove(jobs, i)
+
+      break
+    endfor
+  endwhile
+
+  return ret
 endfunction
 function! dein#install#_copy_directories_py(srcs, dest) abort
   py3 << EOF
