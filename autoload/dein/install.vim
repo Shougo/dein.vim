@@ -942,7 +942,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
       call writefile(lines, temp)
 
       let job = dein#install#_system_bg(temp)
-      call add(jobs, { 'commands': commands, 'job': job })
+      call add(jobs, { 'commands': lines, 'job': job })
     endwhile
 
     " Async check
