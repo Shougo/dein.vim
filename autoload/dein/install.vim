@@ -997,7 +997,7 @@ import vim
 for src in vim.eval('a:srcs'):
   shutil.copytree(src, vim.eval('a:dest'),
                   dirs_exist_ok=True,
-                  ignore=shutil.ignore_patterns=('.git'))
+                  ignore=shutil.ignore_patterns('.git'))
 EOF
 endfunction
 
