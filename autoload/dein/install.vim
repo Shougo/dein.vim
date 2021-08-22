@@ -912,7 +912,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
 
   if dein#util#_is_windows() && has('python3')
     " In Windows, copy directory is too slow!
-    return dein#install#_copy_directories_py(a:srcs, a:dest)
+    "return dein#install#_copy_directories_py(a:srcs, a:dest)
   endif
 
   let status = 0
