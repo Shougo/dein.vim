@@ -351,7 +351,7 @@ function! dein#util#_begin(path, vimrcs) abort
     call dein#_init()
   endif
 
-  if !dein#util#_has_job() || !has('patch-7.4.2071')
+  if !dein#util#_has_job()
     call dein#util#_error('Does not work in the Vim (' . v:version . ').')
     return 1
   endif

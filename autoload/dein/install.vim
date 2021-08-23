@@ -872,7 +872,7 @@ function! dein#install#_rm(path) abort
   endif
 
   " Note: delete rf is broken before Vim 8.1.1378
-  if has('patch-8.1.1378') || has('nvim-0.5.0')
+  if has('patch-8.1.1378') || has('nvim-0.5')
     try
       call delete(a:path, 'rf')
     catch
