@@ -911,7 +911,9 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   if dein#util#_is_windows() && has('python3')
+        \ && dein#install#_python_version_check()
     " In Windows, copy directory is too slow!
+    " Note: Python 3.8.0 is needed
     return dein#install#_copy_directories_py(a:srcs, a:dest)
   endif
 
@@ -1014,6 +1016,17 @@ for src in vim.eval('a:srcs'):
                   dirs_exist_ok=True,
                   ignore=shutil.ignore_patterns('.git'))
 EOF
+endfunction
+function! dein#install#_python_version_check() abort
+  python3 << EOF
+import vim
+import sys
+vim.vars['dein#_python_version_check'] = (
+    sys.version_info.major,
+    sys.version_info.minor,
+    sys.version_info.micro) >= (3, 8, 0)
+EOF
+  return get(g:, 'dein#_python_version_check', 0)
 endfunction
 
 function! s:install_blocking(context) abort
