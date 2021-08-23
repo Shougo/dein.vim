@@ -1030,7 +1030,6 @@ function! s:install_blocking(context) abort
     call s:done(a:context)
   endtry
 
-
   return len(a:context.errored_plugins)
 endfunction
 function! s:install_async(context) abort
@@ -1610,26 +1609,4 @@ function! s:strwidthpart_reverse(str, width) abort
   endwhile
 
   return ret
-endfunction
-
-function! s:args2string(args) abort
-  return type(a:args) == v:t_string ? a:args :
-        \ dein#util#_is_windows() ?
-        \   dein#install#_args2string_windows(a:args) :
-        \   dein#install#_args2string_unix(a:args)
-endfunction
-
-function! dein#install#_args2string_windows(args) abort
-  if empty(a:args)
-    return ''
-  endif
-  let str = (a:args[0] =~# ' ') ? '"' . a:args[0] . '"' : a:args[0]
-  if len(a:args) > 1
-    let str .= ' '
-    let str .= join(map(copy(a:args[1:]), { _, val -> '"' . val . '"' }))
-  endif
-  return str
-endfunction
-function! dein#install#_args2string_unix(args) abort
-  return join(map(copy(a:args), { _, val -> string(val) }))
 endfunction
