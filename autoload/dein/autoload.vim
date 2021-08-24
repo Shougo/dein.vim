@@ -66,7 +66,7 @@ function! dein#autoload#_source(...) abort
         for name in map(globpath(plugin.rtp,
               \ 'denops/*/main.ts', v:true, v:true),
               \ { _, val -> fnamemodify(val, ':h:t')})
-          silent! call denops#plugin#register(name)
+          call denops#plugin#register(name, { 'mode': 'skip' })
         endfor
       endif
     endif
