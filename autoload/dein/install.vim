@@ -479,7 +479,7 @@ function! dein#install#_get_default_ftplugin() abort
         \ '      execute "runtime! ftplugin/" . ft . ".vim"',
         \ '      \ "ftplugin/" . ft . "_*.vim"',
         \ '      \ "ftplugin/" . ft . "/*.vim"',
-        \ '      if has("nvim-0.5")',
+        \ '      if has("nvim")',
         \ '        execute "runtime! ftplugin/" . ft . ".lua"',
         \ '        \ "ftplugin/" . ft . "_*.lua"',
         \ '        \ "ftplugin/" . ft . "/*.lua"',
@@ -871,38 +871,13 @@ function! dein#install#_rm(path) abort
     return
   endif
 
-  " Note: delete rf is broken before Vim 8.1.1378
-  if has('patch-8.1.1378') || has('nvim-0.5')
-    try
-      call delete(a:path, 'rf')
-    catch
-      call s:error('Error deleting directory: ' . a:path)
-      call s:error(v:exception)
-      call s:error(v:throwpoint)
-    endtry
-    return
-  endif
-
-  " Note: In Windows, ['rmdir', '/S', '/Q'] does not work.
-  " After Vim 8.0.928, double quote escape does not work in job.  Too bad.
-  let cmdline = ' "' . a:path . '"'
-  if dein#util#_is_windows()
-    " Note: In rm command, must use "\" instead of "/".
-    let cmdline = substitute(cmdline, '/', '\\\\', 'g')
-  endif
-
-  let rm_command = dein#util#_is_windows() ? 'cmd /C rmdir /S /Q' : 'rm -rf'
-  let cmdline = rm_command . cmdline
-  let result = system(cmdline)
-  if v:shell_error
-    call dein#util#_error(result)
-  endif
-
-  " Error check.
-  if getftype(a:path) !=# ''
-    call dein#util#_error(printf('"%s" cannot be removed.', a:path))
-    call dein#util#_error(printf('cmdline is "%s".', cmdline))
-  endif
+  try
+    call delete(a:path, 'rf')
+  catch
+    call s:error('Error deleting directory: ' . a:path)
+    call s:error(v:exception)
+    call s:error(v:throwpoint)
+  endtry
 endfunction
 
 function! dein#install#_copy_directories(srcs, dest) abort
@@ -1165,7 +1140,7 @@ function! s:done(context) abort
         " Reload plugins to execute hooks
         runtime! plugin/**/*.vim
 
-        if has('nvim-0.5')
+        if has('nvim')
           " Neovim loads lua files at startup
           runtime! plugin/**/*.lua
         endif

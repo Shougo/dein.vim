@@ -152,10 +152,6 @@ endfunction
 function! dein#util#_is_powershell() abort
   return dein#install#_is_async() && fnamemodify(&shell, ':t:r') =~? 'powershell\|pwsh'
 endfunction
-function! dein#util#_has_job() abort
-  return (has('nvim') && exists('v:t_list'))
-        \ || (has('patch-8.0.0027') && has('job'))
-endfunction
 
 function! dein#util#_check_lazy_plugins() abort
   return map(filter(dein#util#_get_lazy_plugins(), { _, val ->
@@ -349,11 +345,6 @@ endfunction
 function! dein#util#_begin(path, vimrcs) abort
   if !exists('#dein')
     call dein#_init()
-  endif
-
-  if !dein#util#_has_job()
-    call dein#util#_error('Does not work in the Vim (' . v:version . ').')
-    return 1
   endif
 
   if a:path ==# '' || g:dein#_block_level != 0

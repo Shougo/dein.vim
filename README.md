@@ -19,11 +19,12 @@ Dein.vim is a dark powered Vim/Neovim plugin manager.
 
 ## Requirements
 
-- Vim 8.0 or above or NeoVim(0.2.0+).
-- "xcopy" command in $PATH (Windows)
+- Vim 8.2 or above or NeoVim(0.5.0+).
+- "xcopy" command in $PATH or Python3 interface (Windows)
 - "git" command in $PATH (if you want to install github or vim.org plugins)
 
-Note: If you use Vim 7.4, please use dein.vim ver.1.5 instead.
+Note: If you use below Vim 8.2 or neovim 0.5, please use dein.vim ver.2.2
+instead.
 
 If you need vim-plug like install UI, you can use dein-ui.vim.
 https://github.com/wsdjeg/dein-ui.vim

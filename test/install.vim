@@ -416,7 +416,7 @@ function! s:suite.lazy_on_pre_cmd() abort
         \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
-if has('nvim-0.5')
+if has('nvim')
   function! s:suite.lazy_on_lua() abort
     call dein#begin(s:path)
 

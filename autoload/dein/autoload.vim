@@ -40,7 +40,7 @@ function! dein#autoload#_source(...) abort
           \ { _, val -> isdirectory(plugin.rtp . '/' . val) }),
           \ { _, val -> plugin.rtp . '/' . val })
       let files = glob(directory . '/**/*.vim', v:true, v:true)
-      if has('nvim-0.5')
+      if has('nvim')
         let files += glob(directory . '/**/*.lua', v:true, v:true)
       endif
       for file in files
