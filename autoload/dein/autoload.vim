@@ -8,7 +8,7 @@ function! dein#autoload#_source(...) abort
   let plugins = empty(a:000) ? values(g:dein#_plugins) :
         \ dein#util#_convert2list(a:1)
   if empty(plugins)
-    return
+    return []
   endif
 
   if type(plugins[0]) != v:t_dict
@@ -19,7 +19,7 @@ function! dein#autoload#_source(...) abort
   let rtps = dein#util#_split_rtp(&runtimepath)
   let index = index(rtps, dein#util#_get_runtime_path())
   if index < 0
-    return 1
+    return []
   endif
 
   let sourced = []
@@ -88,6 +88,8 @@ function! dein#autoload#_source(...) abort
   if !has('vim_starting')
     call dein#call_hook('post_source', sourced)
   endif
+
+  return sourced
 endfunction
 
 function! dein#autoload#_on_default_event(event) abort
@@ -218,10 +220,11 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
 
   let input = s:get_input()
 
-  " Prevent infinite loop
-  silent! execute a:mode.'unmap' a:mapping
-
-  call dein#source(a:name)
+  let sourced = dein#source(a:name)
+  if empty(sourced)
+    " Prevent infinite loop
+    silent! execute a:mode.'unmap' a:mapping
+  endif
 
   if a:mode ==# 'v' || a:mode ==# 'x'
     call feedkeys('gv', 'n')

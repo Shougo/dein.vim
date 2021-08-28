@@ -182,7 +182,7 @@ function! s:suite.lazy_manual() abort
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     { _, val -> val ==# plugin.rtp })), 0)
 
-  call s:assert.equals(dein#source(['deoplete.nvim']), 0)
+  call s:assert.equals(len(dein#source(['deoplete.nvim'])), 1)
 
   call s:assert.equals(plugin.sourced, 1)
   call s:assert.equals(
@@ -503,7 +503,7 @@ function! s:suite.depends_lazy() abort
         \ len(filter(dein#util#_split_rtp(&runtimepath),
         \     { _, val -> val ==# plugin.rtp })), 0)
 
-  call s:assert.equals(dein#source(['deoplete.nvim']), 0)
+  call s:assert.equals(len(dein#source(['deoplete.nvim'])), 2)
 
   call s:assert.equals(plugin.sourced, 1)
 
@@ -522,7 +522,7 @@ function! s:suite.depends_error_lazy() abort
 
   call s:assert.equals(dein#end(), 0)
 
-  call s:assert.equals(dein#source(['deoplete.nvim']), 0)
+  call s:assert.equals(len(dein#source(['deoplete.nvim'])), 0)
 
   call dein#begin(s:path)
 
@@ -534,7 +534,7 @@ function! s:suite.depends_error_lazy() abort
 
   call s:assert.equals(dein#end(), 0)
 
-  call s:assert.equals(dein#source(['deoplete.nvim']), 0)
+  call s:assert.equals(len(dein#source(['deoplete.nvim'])), 0)
 endfunction
 
 function! s:suite.hooks() abort

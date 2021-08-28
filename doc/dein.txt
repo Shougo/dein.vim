@@ -424,6 +424,7 @@ dein#source([{plugins}])
 		|:source|  the plugins specified by {plugins}.
 		{plugins} is the plugins name list.
 		If you omit it, dein will source all plugins.
+		It returns sourced plugins list.
 
 							*dein#tap()*
 dein#tap({plugin-name})
@@ -1381,7 +1382,10 @@ A: >
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
-2021.08.20
+2021.08.28
+* Change dein#source() return value
+
+2021.08.26
 * Vim 8.2 or nvim 0.5 is required
 
 ==============================================================================
