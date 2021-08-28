@@ -62,7 +62,8 @@ function! dein#autoload#_source(...) abort
       endfor
 
       " Register for lazy loaded denops plugin
-      if isdirectory(plugin.rtp . '/denops') && exists('g:loaded_denops')
+      if isdirectory(plugin.rtp . '/denops')
+            \ && exists('g:loaded_denops') && !has('vim_starting')
         for name in map(globpath(plugin.rtp,
               \ 'denops/*/main.ts', v:true, v:true),
               \ { _, val -> fnamemodify(val, ':h:t')})
