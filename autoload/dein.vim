@@ -54,7 +54,9 @@ function! dein#_init() abort
     lua <<END
 table.insert(package.loaders, 1, (function()
   return function(mod_name)
-    vim.fn['dein#autoload#_on_lua'](mod_name)
+    if string.find(mod_name, '^vim.') == nil then
+      vim.fn['dein#autoload#_on_lua'](mod_name)
+    end
     return nil
   end
 end)())
