@@ -420,19 +420,19 @@ if has('nvim')
   function! s:suite.lazy_on_lua() abort
     call dein#begin(s:path)
 
-    call dein#add('Shougo/deoplete.nvim', { 'on_lua': 'vim' })
-
-    call s:assert.equals(s:dein_install(), 0)
+    call dein#add('rcarriga/nvim-notify', { 'on_lua': 'notify' })
 
     call dein#end()
 
-    let plugin = dein#get('deoplete.nvim')
+    call s:assert.equals(s:dein_install(), 0)
+
+    let plugin = dein#get('nvim-notify')
 
     call s:assert.equals(
           \ len(filter(dein#util#_split_rtp(&runtimepath),
           \     { _, val -> val ==# plugin.rtp })), 0)
 
-    lua require'vim.highlight'
+    lua require'notify'
 
     call s:assert.equals(plugin.sourced, 1)
     call s:assert.equals(

@@ -486,16 +486,15 @@ endfunction
 
 function! dein#util#_call_hook(hook_name, ...) abort
   let hook = 'hook_' . a:hook_name
-  let plugins = filter(dein#util#_get_plugins((a:0 ? a:1 : [])),
+
+  for plugin in filter(dein#util#_tsort(
+        \ dein#util#_get_plugins((a:0 ? a:1 : []))),
         \ { _, val ->
         \    ((a:hook_name !=# 'source'
         \     && a:hook_name !=# 'post_source') || val.sourced)
         \    && has_key(val, hook) && isdirectory(val.path)
         \    && (!has_key(v:val, 'if') || eval(v:val.if))
         \ })
-
-  for plugin in filter(dein#util#_tsort(plugins),
-        \ { _, val -> has_key(val, hook) })
     call dein#util#_execute_hook(plugin, plugin[hook])
   endfor
 endfunction
