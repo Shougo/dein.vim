@@ -420,17 +420,17 @@ if has('nvim')
   function! s:suite.lazy_on_lua() abort
     call dein#begin(s:path)
 
-    call dein#add('rcarriga/nvim-notify', { 'on_lua': 'notify' })
+    call dein#add('lewis6991/impatient.nvim', { 'on_lua': 'impatient' })
 
     call dein#end()
 
     call s:assert.equals(s:dein_install(), 0)
 
-    let plugin = dein#get('nvim-notify')
+    let plugin = dein#get('impatient')
 
     call s:assert.equals(plugin.sourced, 0)
 
-    lua require'notify'
+    lua require'impatient'
 
     call s:assert.equals(plugin.sourced, 1)
     call s:assert.equals(
