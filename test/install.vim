@@ -428,10 +428,6 @@ if has('nvim')
 
     let plugin = dein#get('impatient.nvim')
 
-    call s:assert.equals(
-          \ len(filter(dein#util#_split_rtp(&runtimepath),
-          \     { _, val -> val ==# plugin.rtp })), 0)
-
     lua require'impatient'
 
     call s:assert.equals(plugin.sourced, 1)
