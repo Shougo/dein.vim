@@ -416,27 +416,6 @@ function! s:suite.lazy_on_pre_cmd() abort
         \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
-if has('nvim')
-  function! s:suite.lazy_on_lua() abort
-    call dein#begin(s:path)
-
-    call dein#add('lewis6991/impatient.nvim', { 'on_lua': 'impatient' })
-
-    call dein#end()
-
-    call s:assert.equals(s:dein_install(), 0)
-
-    let plugin = dein#get('impatient.nvim')
-
-    lua require'impatient'
-
-    call s:assert.equals(plugin.sourced, 1)
-    call s:assert.equals(
-          \ len(filter(dein#util#_split_rtp(&runtimepath),
-          \     { _, val -> val ==# plugin.rtp })), 1)
-  endfunction
-endif
-
 function! s:suite.lazy_on_idle() abort
   call dein#begin(s:path)
 
