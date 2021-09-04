@@ -231,6 +231,8 @@ dein#disable({plugins})
 		{plugins} is the plugins name list.
 		Note: This command must be executed before dein loads
 		the plugins.
+		Note: Disabled plugins are removed from dein's plugin list.
+		You cannot get disabled plugins from dein.
 
 							*dein#each()*
 dein#each({command}[, {plugins}])
