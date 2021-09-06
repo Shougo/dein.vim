@@ -642,15 +642,13 @@ function! s:suite.build() abort
 
   call dein#add('Shougo/vimproc.vim', {
         \ 'build': 'make',
-        \ 'hook_add':
-        \   'let g:foobar = 1',
         \ 'hook_post_update':
         \   'let g:foobar = 4',
         \ })
 
   call dein#end()
 
-  call s:assert.equals(g:foobar, 1)
+  call s:assert.not_equals(g:foobar, 4)
 
   call s:assert.true(dein#check_install())
   call s:assert.true(dein#check_install(['vimproc.vim']))

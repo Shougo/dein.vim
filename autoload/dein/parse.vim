@@ -40,19 +40,19 @@ function! dein#parse#_add(repo, options, overwrite) abort
     let plugin = dein#parse#_dict(dein#parse#_init(a:repo, options))
   endif
 
+  let g:dein#_plugins[plugin.name] = plugin
+
   if plugin.rtp !=# ''
     if plugin.lazy
       call s:parse_lazy(plugin)
     endif
     if has_key(plugin, 'hook_add')
-      call dein#util#_execute_hook(plugin, plugin.hook_add)
+      call dein#util#_call_hook('add', plugin)
     endif
     if has_key(plugin, 'ftplugin')
       call s:merge_ftplugin(plugin.ftplugin)
     endif
   endif
-
-  let g:dein#_plugins[plugin.name] = plugin
 
   return plugin
 endfunction

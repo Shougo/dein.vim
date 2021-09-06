@@ -491,7 +491,7 @@ function! dein#util#_call_hook(hook_name, ...) abort
         \ dein#util#_get_plugins((a:0 ? a:1 : []))),
         \ { _, val ->
         \    ((a:hook_name !=# 'source'
-        \     && a:hook_name !=# 'post_source') || val.sourced)
+        \      && a:hook_name !=# 'post_source') || val.sourced)
         \    && has_key(val, hook) && isdirectory(val.path)
         \    && (!has_key(v:val, 'if') || eval(v:val.if))
         \ })
@@ -527,7 +527,7 @@ function! dein#util#_set_hook(plugins, hook_name, hook) abort
           \ type(a:hook) != v:t_string ? a:hook :
           \   substitute(a:hook, '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*', '', 'g')
     if a:hook_name ==# 'hook_add'
-      call dein#util#_execute_hook(plugin, plugin[a:hook_name])
+      call dein#util#_call_hook('add', plugin)
     endif
   endfor
 endfunction
