@@ -67,7 +67,7 @@ function! dein#autoload#_source(...) abort
         for name in filter(map(globpath(plugin.rtp,
               \ 'denops/*/main.ts', v:true, v:true),
               \ { _, val -> fnamemodify(val, ':h:t')}),
-              \ { _, val -> !denops#plugin#is_loaded(name) }})
+              \ { _, val -> !denops#plugin#is_loaded(name) })
           " denops#plugin#register() may be failed
           silent! call denops#plugin#register(name, { 'mode': 'skip' })
         endfor
