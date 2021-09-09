@@ -486,8 +486,7 @@ endfunction
 
 function! dein#util#_call_hook(hook_name, ...) abort
   let hook = 'hook_' . a:hook_name
-
-  for plugin in filter(dein#util#_tsort(
+  let plugins = filter(dein#util#_tsort(
         \ dein#util#_get_plugins((a:0 ? a:1 : []))),
         \ { _, val ->
         \    ((a:hook_name !=# 'source'
@@ -495,10 +494,17 @@ function! dein#util#_call_hook(hook_name, ...) abort
         \    && has_key(val, hook) && isdirectory(val.path)
         \    && (!has_key(v:val, 'if') || eval(v:val.if))
         \ })
+  for plugin in plugins
     call dein#util#_execute_hook(plugin, plugin[hook])
   endfor
 endfunction
 function! dein#util#_execute_hook(plugin, hook) abort
+  let called = 'called_' . string(a:hook)
+  " Skip twice call
+  if has_key(a:plugin, called)
+    return
+  endif
+
   try
     let g:dein#plugin = a:plugin
 
@@ -507,6 +513,8 @@ function! dein#util#_execute_hook(plugin, hook) abort
     else
       call call(a:hook, [])
     endif
+
+    let a:plugin[called] = v:true
   catch
     call dein#util#_error(
           \ 'Error occurred while executing hook: ' .
