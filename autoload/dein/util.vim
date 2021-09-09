@@ -37,9 +37,7 @@ function! dein#util#_get_runtime_path() abort
   endif
 
   let g:dein#_runtime_path = dein#util#_get_cache_path() . '/.dein'
-  if !isdirectory(g:dein#_runtime_path)
-    call mkdir(g:dein#_runtime_path, 'p')
-  endif
+  call dein#util#_safe_mkdir(g:dein#_runtime_path)
   return g:dein#_runtime_path
 endfunction
 function! dein#util#_get_cache_path() abort
@@ -50,9 +48,7 @@ function! dein#util#_get_cache_path() abort
   let g:dein#_cache_path = get(g:,
         \ 'dein#cache_directory', g:dein#_base_path)
         \ . '/.cache/' . fnamemodify(dein#util#_get_myvimrc(), ':t')
-  if !isdirectory(g:dein#_cache_path)
-    call mkdir(g:dein#_cache_path, 'p')
-  endif
+  call dein#util#_safe_mkdir(g:dein#_cache_path)
   return g:dein#_cache_path
 endfunction
 function! dein#util#_get_vimrcs(vimrcs) abort
@@ -174,18 +170,27 @@ function! dein#util#_check_clean() abort
         \ })
 endfunction
 
-function! dein#util#_writefile(path, list) abort
-  if g:dein#_is_sudo || !filewritable(dein#util#_get_cache_path())
+function! dein#util#_cache_writefile(list, path) abort
+  if !filewritable(dein#util#_get_cache_path())
     return 1
   endif
 
   let path = dein#util#_get_cache_path() . '/' . a:path
-  let dir = fnamemodify(path, ':h')
-  if !isdirectory(dir)
-    call mkdir(dir, 'p')
+  return dein#util#_safe_writefile(a:list, path)
+endfunction
+function! dein#util#_safe_writefile(list, path) abort
+  if g:dein#_is_sudo
+    return 1
   endif
 
-  return writefile(a:list, path)
+  call dein#util#_safe_mkdir(fnamemodify(a:path, ':h'))
+  return writefile(a:list, a:path)
+endfunction
+function! dein#util#_safe_mkdir(path) abort
+  if g:dein#_is_sudo || isdirectory(a:path)
+    return 1
+  endif
+  return mkdir(a:path, 'p')
 endfunction
 
 function! dein#util#_get_type(name) abort
@@ -218,11 +223,9 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
     endfor
   endfor
 
-  if !isdirectory(g:dein#_base_path)
-    call mkdir(g:dein#_base_path, 'p')
-  endif
+  call dein#util#_safe_mkdir(g:dein#_base_path)
 
-  call writefile([string(a:vimrcs),
+  call dein#util#_safe_writefile([string(a:vimrcs),
         \         json_encode(plugins), json_encode(g:dein#_ftplugin)],
         \ get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/cache_' . g:dein#_progname)
@@ -247,7 +250,7 @@ function! dein#util#_save_state(is_starting) abort
     return 1
   endif
 
-  if dein#util#_get_cache_path() ==# '' || !a:is_starting
+  if dein#util#_get_cache_path() ==# '' || !a:is_starting || g:dein#_is_sudo
     " Ignore
     return 1
   endif
@@ -331,8 +334,9 @@ function! dein#util#_save_state(is_starting) abort
           \ { _, val -> val !=# '' && val !~# '^\s*"' })
   endfor
 
-  call writefile(lines, get(g:, 'dein#cache_directory', g:dein#_base_path)
-        \ .'/state_' . g:dein#_progname . '.vim')
+  let state = get(g:, 'dein#cache_directory', g:dein#_base_path)
+        \ . '/state_' . g:dein#_progname . '.vim'
+  call dein#util#_safe_writefile(lines, state)
 endfunction
 function! dein#util#_clear_state() abort
   let base = get(g:, 'dein#cache_directory', g:dein#_base_path)

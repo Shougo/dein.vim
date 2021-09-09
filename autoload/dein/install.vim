@@ -279,9 +279,9 @@ function! dein#install#_direct_install(repo, options) abort
   let line = printf('call dein#add(%s, %s)',
         \ string(a:repo), string(options))
   if !filereadable(file)
-    call writefile([line], file)
+    call dein#util#_safe_writefile([line], file)
   else
-    call writefile(add(readfile(file), line), file)
+    call dein#util#_safe_writefile(add(readfile(file), line), file)
   endif
 endfunction
 function! dein#install#_rollback(date, plugins) abort
@@ -355,19 +355,17 @@ function! s:clear_runtimepath() abort
 
   if !isdirectory(runtimepath)
     " Create runtime path
-    call mkdir(runtimepath, 'p')
+    call dein#util#_safe_mkdir(runtimepath)
   endif
 endfunction
 function! s:helptags() abort
-  if g:dein#_runtime_path ==# '' || g:dein#_is_sudo
+  if g:dein#_runtime_path ==# ''
     return ''
   endif
 
   try
     let tags = dein#util#_get_runtime_path() . '/doc'
-    if !isdirectory(tags)
-      call mkdir(tags, 'p')
-    endif
+    call dein#util#_safe_mkdir(tags)
     call s:copy_files(filter(values(dein#get()),
           \ { _, val -> !val.merged }), 'doc')
     silent execute 'helptags' fnameescape(tags)
@@ -400,8 +398,8 @@ function! s:merge_files(plugins, directory) abort
   endfor
 
   if !empty(files)
-    call dein#util#_writefile(printf('.dein/%s/%s.vim',
-          \ a:directory, a:directory), files)
+    call dein#util#_cache_writefile(files,
+          \ printf('.dein/%s/%s.vim', a:directory, a:directory))
   endif
 endfunction
 function! dein#install#_save_rollback(rollbackfile, plugins) abort
@@ -414,7 +412,8 @@ function! dein#install#_save_rollback(rollbackfile, plugins) abort
     endif
   endfor
 
-  call writefile([json_encode(revisions)], expand(a:rollbackfile))
+  call dein#util#_safe_writefile(
+        \ [json_encode(revisions)], expand(a:rollbackfile))
 endfunction
 function! dein#install#_load_rollback(rollbackfile, plugins) abort
   let revisions = json_decode(readfile(a:rollbackfile)[0])
@@ -443,9 +442,7 @@ endfunction
 function! s:get_rollback_directory() abort
   let parent = printf('%s/rollbacks/%s',
         \ dein#util#_get_cache_path(), g:dein#_progname)
-  if !isdirectory(parent)
-    call mkdir(parent, 'p')
-  endif
+  call dein#util#_safe_mkdir(parent)
 
   return parent
 endfunction
@@ -494,9 +491,7 @@ endfunction
 function! s:generate_ftplugin() abort
   " Create after/ftplugin
   let after = dein#util#_get_runtime_path() . '/after/ftplugin'
-  if !isdirectory(after)
-    call mkdir(after, 'p')
-  endif
+  call dein#util#_safe_mkdir(after)
 
   " Merge g:dein#_ftplugin
   let ftplugin = {}
@@ -516,7 +511,8 @@ function! s:generate_ftplugin() abort
   endfor
 
   " Generate ftplugin.vim
-  call writefile(dein#install#_get_default_ftplugin() + [
+  call dein#util#_safe_writefile(
+        \ dein#install#_get_default_ftplugin() + [
         \ 'function! s:after_ftplugin()',
         \ ] + get(ftplugin, '_', []) + ['endfunction'],
         \ dein#util#_get_runtime_path() . '/ftplugin.vim')
@@ -524,7 +520,8 @@ function! s:generate_ftplugin() abort
   " Generate after/ftplugin
   for [filetype, list] in filter(items(ftplugin),
         \ { _, val -> val[0] !=# '_' })
-    call writefile(list, printf('%s/%s.vim', after, filetype))
+    call dein#util#_safe_writefile(
+          \ list, printf('%s/%s.vim', after, filetype))
   endfor
 endfunction
 
@@ -547,7 +544,7 @@ function! dein#install#_polling() abort
 endfunction
 
 function! dein#install#_remote_plugins() abort
-  if !has('nvim')
+  if !has('nvim') || g:dein#_is_sudo
     return
   endif
 
@@ -947,7 +944,7 @@ function! dein#install#_copy_directories_robocopy(srcs, dest) abort
       let srcs = srcs[1:]
     endwhile
 
-    call writefile(lines, temp)
+    call dein#util#_safe_writefile(lines, temp)
 
     let job = dein#install#_system_bg(temp)
     call add(jobs, { 'commands': lines, 'job': job })
@@ -1502,11 +1499,7 @@ function! s:append_log_file(msg) abort
     let msg = readfile(logfile) + msg
   endif
 
-  let dir = fnamemodify(logfile, ':h')
-  if !isdirectory(dir)
-    call mkdir(dir, 'p')
-  endif
-  call writefile(msg, logfile)
+  call dein#util#_safe_writefile(msg, logfile)
 endfunction
 
 
