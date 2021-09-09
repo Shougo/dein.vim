@@ -22,7 +22,7 @@ function! s:dein_update() abort
 endfunction
 
 function! s:suite.before_each() abort
-  call dein#_init()
+  call dein#min#_init()
   let &runtimepath = s:runtimepath_save
   let &l:filetype = s:filetype_save
   let g:temp = tempname()

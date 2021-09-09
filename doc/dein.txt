@@ -300,7 +300,9 @@ dein#load_rollback({rollbackfile}[, {plugins}])
 		Note: It is the dangerous command.
 
 							*dein#load_state()*
+							*dein#min#load_state()*
 dein#load_state({base-path})
+dein#min#load_state({base-path})
 		Load dein's state from the cache script, {base-path} is where
 		your downloaded plugins will be placed.
 		Note: You must call it before |dein#begin()|.  It clears dein
@@ -308,11 +310,12 @@ dein#load_state({base-path})
 		Note: It overwrites your 'runtimepath' completely, you must
 		not call it after change 'runtimepath' dynamically.
 		Note: The block is skipped if dein's state is loaded.
+		Note: |dein#min#load_state()| is faster a bit.
 
 		It returns 1, if the cache script is old or invalid or not
 		found.
 >
-	if dein#load_state(path)
+	if dein#min#load_state(path)
 	  call dein#begin(path)
 	  " My plugins here:
 	  " ...

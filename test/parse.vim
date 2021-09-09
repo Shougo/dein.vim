@@ -6,7 +6,7 @@ let s:assert = themis#helper('assert')
 let s:path = tempname()
 
 function! s:suite.before_each() abort
-  call dein#_init()
+  call dein#min#_init()
 endfunction
 
 function! s:suite.after_each() abort
