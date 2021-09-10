@@ -794,7 +794,7 @@ endfunction
 function! s:check_diff(plugins) abort
   for plugin in a:plugins
     let type = dein#util#_get_type(plugin.type)
-    if !has_key(type, 'get_diff_command')
+    if !has_key(type, 'get_diff_command') || plugin.old_rev == ''
       continue
     endif
 
