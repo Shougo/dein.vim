@@ -506,6 +506,12 @@ g:dein#inline_vimrcs
 
 		Defaults: []
 
+					*g:dein#install_check_diff*
+g:dein#install_check_diff
+		It checks plugins documentation diff when updated plugins.
+
+		Defaults: v:false
+
 					*g:dein#install_github_api_token*
 g:dein#install_github_api_token
 		github API key to use |dein#check_update()|.

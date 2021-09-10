@@ -201,6 +201,14 @@ function! s:type.get_rollback_command(plugin, rev) abort
 
   return [self.command, 'reset', '--hard', a:rev]
 endfunction
+function! s:type.get_diff_command(plugin, old_rev, new_rev) abort
+  if !self.executable
+    return []
+  endif
+
+  return [self.command, 'diff', a:old_rev . '..'. a:new_rev,
+        \ '--', 'doc', 'README', 'README.md']
+endfunction
 
 function! s:is_git_dir(path) abort
   if isdirectory(a:path)

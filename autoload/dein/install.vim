@@ -26,6 +26,8 @@ let g:dein#install_github_api_token =
       \ get(g:, 'dein#install_github_api_token', '')
 let g:dein#install_curl_command =
       \ get(g:, 'dein#install_curl_command', 'curl')
+let g:dein#install_check_diff =
+      \ get(g:, 'dein#install_check_diff', v:false)
 
 function! s:get_job() abort
   if !exists('s:Job')
@@ -758,6 +760,11 @@ function! s:get_updated_message(context, plugins) abort
     return ''
   endif
 
+  " Diff check
+  if g:dein#install_check_diff
+    call s:check_diff(a:plugins)
+  endif
+
   return "Updated plugins:\n".
         \ join(map(copy(a:plugins),
         \ { _, val -> '  ' . val.name . (val.commit_count == 0 ? ''
@@ -783,6 +790,21 @@ function! s:get_errored_message(plugins) abort
   let msg .= "Please read the error message log with the :message command.\n"
 
   return msg
+endfunction
+function! s:check_diff(plugins) abort
+  for plugin in a:plugins
+    let type = dein#util#_get_type(plugin.type)
+    if !has_key(type, 'get_diff_command')
+      continue
+    endif
+
+    let diff = s:system_cd(
+          \ type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev),
+          \ plugin.path)
+    if diff !=# ''
+      echo diff
+    endif
+  endfor
 endfunction
 
 
