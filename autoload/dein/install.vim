@@ -238,6 +238,11 @@ function! dein#install#_check_update(plugins, force, async) abort
 endfunction
 
 function! dein#install#_reinstall(plugins) abort
+  if g:dein#_is_sudo
+    call s:error('update/install is disabled in sudo session.')
+    return
+  endif
+
   let plugins = dein#util#_get_plugins(a:plugins)
 
   for plugin in plugins
@@ -263,6 +268,11 @@ function! dein#install#_reinstall(plugins) abort
         \ 'install', 0)
 endfunction
 function! dein#install#_direct_install(repo, options) abort
+  if g:dein#_is_sudo
+    call s:error('update/install is disabled in sudo session.')
+    return
+  endif
+
   let options = copy(a:options)
   let options.merged = 0
 
@@ -285,6 +295,11 @@ function! dein#install#_direct_install(repo, options) abort
   endif
 endfunction
 function! dein#install#_rollback(date, plugins) abort
+  if g:dein#_is_sudo
+    call s:error('update/install is disabled in sudo session.')
+    return
+  endif
+
   let glob = s:get_rollback_directory() . '/' . a:date . '*'
   let rollbacks = reverse(sort(glob(glob, v:true, v:true)))
   if empty(rollbacks)
