@@ -685,6 +685,10 @@ function! s:tsort_impl(target, mark, sorted) abort
 endfunction
 
 function! dein#util#_check_install(plugins) abort
+  if g:dein#_is_sudo
+    return
+  endif
+
   if !empty(a:plugins)
     let invalids = filter(dein#util#_convert2list(a:plugins),
           \ { _, val -> empty(dein#get(val)) })
