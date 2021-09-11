@@ -212,6 +212,9 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
     if has_key(plugin, 'orig_opts')
       call remove(plugin, 'orig_opts')
     endif
+    if has_key(plugin, 'called')
+      call remove(plugin, 'called')
+    endif
 
     " Hooks
     for hook in filter([
@@ -503,9 +506,11 @@ function! dein#util#_call_hook(hook_name, ...) abort
   endfor
 endfunction
 function! dein#util#_execute_hook(plugin, hook) abort
-  let called = 'called_' . string(a:hook)
   " Skip twice call
-  if has_key(a:plugin, called)
+  if !has_key(a:plugin, 'called')
+    let a:plugin.called = {}
+  endif
+  if has_key(a:plugin.called, string(a:hook))
     return
   endif
 
@@ -518,7 +523,7 @@ function! dein#util#_execute_hook(plugin, hook) abort
       call call(a:hook, [])
     endif
 
-    let a:plugin[called] = v:true
+    let a:plugin.called[string(a:hook)] = v:true
   catch
     call dein#util#_error(
           \ 'Error occurred while executing hook: ' .
