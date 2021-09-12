@@ -147,6 +147,9 @@ function! s:source_events(event, plugins) abort
     call feedkeys(v:char)
     let v:char = ''
   else
+    " Some plugins need BufEnter autocmd for example nvim-lspconfig
+    doautocmd <nomodeline> BufEnter
+
     if exists('#BufReadCmd') && a:event ==# 'BufNew'
       " For BufReadCmd plugins
       silent doautocmd <nomodeline> BufReadCmd
