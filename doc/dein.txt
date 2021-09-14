@@ -358,6 +358,11 @@ dein#local({directory}, [{options}, [{names}]])
 		call dein#local("~/.vim/bundle", {},
 		\ ['plugin1', 'plugin2', 'vim-*', '*.vim'])
 <
+							*dein#toml#syntax()*
+dein#toml#syntax()
+		Enable dein specific toml syntax.
+		Note: It is experimental feature.
+
 							*dein#update()*
 dein#update([{plugins}])
 		Install/Update the plugins.

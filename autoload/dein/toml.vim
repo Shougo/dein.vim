@@ -3,6 +3,26 @@
 "
 " public api
 "
+function! dein#toml#syntax() abort
+  if has('nvim') && exists(':TSEnableAll')
+    TSBufDisable highlight
+  endif
+
+  echomsg 'toml'
+  unlet! b:current_syntax
+  runtime! syntax/toml.vim
+
+  unlet! b:current_syntax
+  syntax include @tomlVim syntax/vim.vim
+
+  syntax region tomlVim matchgroup=tomlString
+        \ start=+\<\w*\s*=\s*'''+
+        \ end=+'''+ contains=@tomlVim keepend
+  syntax region tomlVim matchgroup=tomlString
+        \ start=+\<\w*\s*=\s*"""+
+        \ end=+"""+ contains=@tomlVim keepend
+endfunction
+
 function! dein#toml#parse(text) abort
   let input = {
   \   'text': a:text,
