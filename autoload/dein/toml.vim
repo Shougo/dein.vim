@@ -8,6 +8,8 @@ function! dein#toml#syntax() abort
     TSBufDisable highlight
   endif
 
+  syntax clear
+
   unlet! b:current_syntax
   runtime! syntax/toml.vim
 
