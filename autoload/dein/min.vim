@@ -1,7 +1,7 @@
 function! dein#min#_init() abort
   let g:dein#name = ''
   let g:dein#plugin = {}
-  let g:dein#_cache_version = 310
+  let g:dein#_cache_version = 400
   let g:dein#_plugins = {}
   let g:dein#_base_path = ''
   let g:dein#_cache_path = ''
@@ -66,12 +66,8 @@ function! dein#min#_load_cache_raw(vimrcs) abort
         \ { _, val -> getftime(expand(val)) }), { _, val -> time < val }))
     return [{}, {}]
   endif
-  let list = readfile(cache)
-  if len(list) != 3 || string(g:dein#_vimrcs) !=# list[0]
-    return [{}, {}]
-  endif
-  return [has('nvim') ? json_decode(list[1]) : js_decode(list[1]),
-        \ has('nvim') ? json_decode(list[2]) : js_decode(list[2])]
+  return has('nvim') ? json_decode(readfile(cache)[0])
+        \ : js_decode(readfile(cache)[0])
 endfunction
 function! dein#min#load_state(path, ...) abort
   if !exists('#dein')
