@@ -229,7 +229,8 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
   call dein#util#_safe_mkdir(g:dein#_base_path)
 
   call dein#util#_safe_writefile([string(a:vimrcs),
-        \         json_encode(plugins), json_encode(g:dein#_ftplugin)],
+        \         has('nvim') ? json_encode(plugins) : js_encode(plugins),
+        \         has('nvim') ? json_encode(g:dein#_ftplugin) : js_encode(g:dein#_ftplugin)],
         \ get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ .'/cache_' . g:dein#_progname)
 endfunction

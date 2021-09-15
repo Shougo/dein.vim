@@ -70,7 +70,8 @@ function! dein#min#_load_cache_raw(vimrcs) abort
   if len(list) != 3 || string(g:dein#_vimrcs) !=# list[0]
     return [{}, {}]
   endif
-  return [json_decode(list[1]), json_decode(list[2])]
+  return [has('nvim') ? json_decode(list[1]) : js_decode(list[1]),
+        \ has('nvim') ? json_decode(list[2]) : js_decode(list[2])]
 endfunction
 function! dein#min#load_state(path, ...) abort
   if !exists('#dein')
