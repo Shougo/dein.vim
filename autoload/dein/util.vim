@@ -178,13 +178,13 @@ function! dein#util#_cache_writefile(list, path) abort
   let path = dein#util#_get_cache_path() . '/' . a:path
   return dein#util#_safe_writefile(a:list, path)
 endfunction
-function! dein#util#_safe_writefile(list, path) abort
+function! dein#util#_safe_writefile(list, path, ...) abort
   if g:dein#_is_sudo
     return 1
   endif
 
   call dein#util#_safe_mkdir(fnamemodify(a:path, ':h'))
-  return writefile(a:list, a:path)
+  return writefile(a:list, a:path, get(a:000, 0, ''))
 endfunction
 function! dein#util#_safe_mkdir(path) abort
   if g:dein#_is_sudo || isdirectory(a:path)
@@ -230,9 +230,9 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
 
   let src = [plugins, g:dein#_ftplugin]
   call dein#util#_safe_writefile(
-        \ [has('nvim') ? json_encode(src) : js_encode(src)],
+        \ has('nvim') ? msgpackdump(src) : [js_encode(src)],
         \ get(g:, 'dein#cache_directory', g:dein#_base_path)
-        \ .'/cache_' . g:dein#_progname)
+        \ .'/cache_' . g:dein#_progname, has('nvim') ? 'b': '')
 endfunction
 function! dein#util#_check_vimrcs() abort
   let time = getftime(dein#util#_get_runtime_path())
