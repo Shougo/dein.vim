@@ -230,9 +230,9 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
 
   let src = [plugins, g:dein#_ftplugin]
   call dein#util#_safe_writefile(
-        \ has('nvim') ? msgpackdump(src) : [js_encode(src)],
+        \ has('nvim') ? [json_encode(src)] : [js_encode(src)],
         \ get(g:, 'dein#cache_directory', g:dein#_base_path)
-        \ .'/cache_' . g:dein#_progname, has('nvim') ? 'b': '')
+        \ .'/cache_' . g:dein#_progname)
 endfunction
 function! dein#util#_check_vimrcs() abort
   let time = getftime(dein#util#_get_runtime_path())

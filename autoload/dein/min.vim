@@ -66,7 +66,7 @@ function! dein#min#_load_cache_raw(vimrcs) abort
         \ { _, val -> getftime(expand(val)) }), { _, val -> time < val }))
     return [{}, {}]
   endif
-  return has('nvim') ? msgpackparse(readfile(cache, 'b'))
+  return has('nvim') ? json_decode(readfile(cache))
         \ : js_decode(readfile(cache)[0])
 endfunction
 function! dein#min#load_state(path, ...) abort
