@@ -794,7 +794,7 @@ endfunction
 function! s:check_diff(plugins) abort
   for plugin in a:plugins
     let type = dein#util#_get_type(plugin.type)
-    if !has_key(type, 'get_diff_command') || plugin.old_rev == ''
+    if !has_key(type, 'get_diff_command') || plugin.old_rev ==# ''
       continue
     endif
 
@@ -1164,14 +1164,14 @@ function! s:done(context) abort
     call dein#source(map(copy(a:context.synced_plugins),
           \ { _, val -> val.name }))
 
-    " Execute post_update hooks
-    let post_update_plugins = filter(copy(a:context.synced_plugins),
-          \ { _, val -> has_key(val, 'hook_post_update') })
-    if !empty(post_update_plugins)
+    " Execute done_update hooks
+    let done_update_plugins = filter(copy(a:context.synced_plugins),
+          \ { _, val -> has_key(val, 'hook_done_update') })
+    if !empty(done_update_plugins)
       if has('vim_starting')
-        let s:post_updated_plugins = post_update_plugins
-        autocmd dein VimEnter * call s:call_post_update_hooks(
-              \ s:post_updated_plugins)
+        let s:done_updated_plugins = done_update_plugins
+        autocmd dein VimEnter * call s:call_done_update_hooks(
+              \ s:done_updated_plugins)
       else
         " Reload plugins to execute hooks
         runtime! plugin/**/*.vim
@@ -1181,11 +1181,9 @@ function! s:done(context) abort
           runtime! plugin/**/*.lua
         endif
 
-        call s:call_post_update_hooks(post_update_plugins)
+        call s:call_done_update_hooks(done_update_plugins)
       endif
     endif
-
-    call dein#call_hook('done_update', a:context.synced_plugins)
   endif
 
   redraw
@@ -1204,12 +1202,12 @@ function! s:done(context) abort
     unlet s:timer
   endif
 endfunction
-function! s:call_post_update_hooks(plugins) abort
+function! s:call_done_update_hooks(plugins) abort
   let cwd = getcwd()
   try
     for plugin in a:plugins
       call dein#install#_cd(plugin.path)
-      call dein#call_hook('post_update', plugin)
+      call dein#call_hook('done_update', plugin)
     endfor
   finally
     call dein#install#_cd(cwd)
@@ -1439,6 +1437,9 @@ function! s:check_output(context, process) abort
 
     let plugin.old_rev = a:process.rev
     let plugin.new_rev = new_rev
+
+    " Execute "post_update" before "build"
+    call dein#call_hook('post_update', plugin)
 
     let type = dein#util#_get_type(plugin.type)
     let plugin.uri = has_key(type, 'get_uri') ?
