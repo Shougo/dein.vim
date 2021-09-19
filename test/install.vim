@@ -403,32 +403,6 @@ function! s:suite.lazy_on_pre_cmd() abort
         \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
-function! s:suite.lazy_on_idle() abort
-  call dein#begin(s:path)
-
-  call dein#add('Shougo/defx.nvim', { 'on_idle': 1})
-
-  call s:assert.equals(s:dein_install(), 0)
-
-  call dein#end()
-
-  call s:assert.equals(g:dein#_event_plugins,
-        \ {'CursorHold': ['defx.nvim'], 'FocusLost': ['defx.nvim']})
-
-  let plugin = dein#get('defx.nvim')
-
-  call s:assert.equals(
-        \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     { _, val -> val ==# plugin.rtp })), 0)
-
-  doautocmd CursorHold
-
-  call s:assert.equals(plugin.sourced, 1)
-  call s:assert.equals(
-        \ len(filter(dein#util#_split_rtp(&runtimepath),
-        \     { _, val -> val ==# plugin.rtp })), 1)
-endfunction
-
 function! s:suite.depends() abort
   call dein#begin(s:path)
 

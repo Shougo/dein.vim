@@ -139,8 +139,7 @@ function! dein#parse#_dict(plugin) abort
 
   if !has_key(plugin, 'lazy')
     let plugin.lazy =
-          \    has_key(plugin, 'on_idle')
-          \ || has_key(plugin, 'on_ft')
+          \    has_key(plugin, 'on_ft')
           \ || has_key(plugin, 'on_cmd')
           \ || has_key(plugin, 'on_func')
           \ || has_key(plugin, 'on_lua')
@@ -217,7 +216,6 @@ function! dein#parse#_plugins2toml(plugins) abort
   let default.frozen = 0
   let default.local = 0
   let default.depends = []
-  let default.on_idle = 0
   let default.on_ft = []
   let default.on_cmd = []
   let default.on_func = []
@@ -305,9 +303,6 @@ function! s:parse_lazy(plugin) abort
     let a:plugin[key] = [a:plugin[key]]
   endfor
 
-  if get(a:plugin, 'on_idle', 0)
-    let a:plugin.on_event = ['FocusLost', 'CursorHold']
-  endif
   if has_key(a:plugin, 'on_event')
     for event in a:plugin.on_event
       if !has_key(g:dein#_event_plugins, event)
