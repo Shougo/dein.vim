@@ -752,13 +752,6 @@ on_ft		(List) or (String)
 		If it is matched to 'filetype', dein will call
 		|dein#source()|.
 
-							*dein-options-on_i*
-on_i		(Bool)
-		If set to v:true, dein will call |dein#source()| on
-		|InsertEnter| autocmd.
-		Note: This is deprecated option.  You should use
-		|dein-options-on_event| instead.
-
 							*dein-options-on_idle*
 on_idle		(Bool)
 		If set to v:true, dein will call |dein#source()| on
@@ -1400,6 +1393,9 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
+
+2021.09.20
+* Remove "dein-options-on_i".
 
 2021.09.18
 * hook_post_update is executed before "build".

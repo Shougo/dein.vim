@@ -190,19 +190,6 @@ function! s:suite.lazy_manual() abort
         \     { _, val -> val ==# plugin.rtp })), 1)
 endfunction
 
-function! s:suite.lazy_on_i() abort
-  call dein#begin(s:path)
-
-  call dein#add('Shougo/deoplete.nvim', { 'on_i': 1 })
-
-  call s:assert.equals(s:dein_install(), 0)
-
-  call dein#end()
-
-  call s:assert.equals(g:dein#_event_plugins,
-        \ {'InsertEnter': ['deoplete.nvim']})
-endfunction
-
 function! s:suite.lazy_on_ft() abort
   call dein#begin(s:path)
 

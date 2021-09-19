@@ -78,7 +78,6 @@ function! s:suite.load_toml() abort
         \ "on_map = '<Plug>'",
         \ '[[plugins]]',
         \ "repo = 'Shougo/neosnippet.vim'",
-        \ 'on_i = 1',
         \ "on_ft = 'snippet'",
         \ "hook_add = '''",
         \ '"echo',
@@ -103,7 +102,6 @@ function! s:suite.load_toml() abort
         \ {'c': "let g:bar = 0\nlet g:bar = 0"})
   call dein#end()
 
-  call s:assert.equals(dein#get('neosnippet.vim').on_i, 1)
   call s:assert.equals(dein#get('neosnippet.vim').hook_add,
         \ "\"echo\n\"comment\necho\n")
   call s:assert.equals(dein#get('neosnippet.vim').hook_source,
@@ -118,7 +116,6 @@ function! s:suite.error_toml() abort
         \ '# repository name is required.',
         \ "on_map = '<Plug>'",
         \ '[[plugins]]',
-        \ 'on_i = 1',
         \ "on_ft = 'snippet'",
         \ ], toml)
 
@@ -158,29 +155,29 @@ function! s:suite.config() abort
         \ 'Shougo/denite.nvim': {}
         \ })
   let g:dein#name = 'denite.nvim'
-  call dein#config({'on_i': 1})
+  call dein#config({'on_event': ['InsertEnter']})
   call dein#end()
-  call dein#config('unite', {'on_i': 0})
+  call dein#config('unite', {'on_event': ['InsertEnter']})
 
-  call s:assert.equals(dein#get('denite.nvim').on_i, 1)
+  call s:assert.equals(dein#get('denite.nvim').on_event, ['InsertEnter'])
 endfunction
 
 function! s:suite.skip_overwrite() abort
   call dein#begin(s:path)
-  call dein#add('Shougo/denite.nvim', {'on_i': 0})
-  call dein#add('Shougo/denite.nvim', {'on_i': 1})
+  call dein#add('Shougo/denite.nvim', {'on_event': []})
+  call dein#add('Shougo/denite.nvim', {'on_event': ['InsertEnter']})
   call dein#end()
 
-  call s:assert.equals(dein#get('denite.nvim').on_i, 0)
+  call s:assert.equals(dein#get('denite.nvim').on_event, [])
 endfunction
 
 function! s:suite.overwrite() abort
   call dein#begin(s:path)
-  call dein#add('Shougo/denite.nvim', {'on_i': 0})
-  call dein#add('Shougo/denite.nvim', {'on_i': 1, 'overwrite': 1})
+  call dein#add('Shougo/denite.nvim', {'on_event': []})
+  call dein#add('Shougo/denite.nvim', {'on_event': ['InsertEnter'], 'overwrite': 1})
   call dein#end()
 
-  call s:assert.equals(dein#get('denite.nvim').on_i, 1)
+  call s:assert.equals(dein#get('denite.nvim').on_event, ['InsertEnter'])
 endfunction
 
 function! s:suite.plugins2toml() abort
