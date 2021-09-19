@@ -666,6 +666,7 @@ build		(String)
 		\ 'build':
 		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
 		\ })
+<
 							*dein-options-depends*
 depends		(List or String)
 		Specify a list of plugins a plugin depends on.
