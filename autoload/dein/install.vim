@@ -802,7 +802,8 @@ function! s:check_diff(plugins) abort
           \ type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev),
           \ plugin.path)
     if diff !=# ''
-      call s:notify(printf('%s: The documentation is updated', plugin.name))
+      call s:print_progress_message(
+            \ printf('%s: The documentation is updated', plugin.name))
 
       echo diff
     endif
