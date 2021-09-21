@@ -806,7 +806,7 @@ function! s:check_diff(plugins) abort
 
       echo diff
 
-      sleep 100m
+      redraw | echo ''
     endif
   endfor
 endfunction
