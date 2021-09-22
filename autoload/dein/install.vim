@@ -506,6 +506,10 @@ function! dein#install#_get_default_ftplugin() abort
         \]
 endfunction
 function! s:generate_ftplugin() abort
+  if empty(g:dein#_ftplugin)
+    return
+  endif
+
   " Create after/ftplugin
   let after = dein#util#_get_runtime_path() . '/after/ftplugin'
   call dein#util#_safe_mkdir(after)
