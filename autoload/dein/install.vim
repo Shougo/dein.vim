@@ -802,11 +802,10 @@ function! s:check_diff(plugins) abort
           \ type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev),
           \ plugin.path)
     if diff !=# ''
-      call s:error(printf('%s: The documentation is updated', plugin.name))
+      echohl WarningMsg | echomsg printf(
+            \ '%s: The documentation is updated', plugin.name) | echohl None
 
       echo diff
-
-      redraw | echo ''
     endif
   endfor
 endfunction
