@@ -36,16 +36,23 @@ function! dein#autoload#_source(...) abort
 
   " Reload script files.
   for plugin in sourced
-    for directory in map(filter(['plugin', 'after/plugin'],
+    for directory in map(filter(
+          \ ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin'],
           \ { _, val -> isdirectory(plugin.rtp . '/' . val) }),
           \ { _, val -> plugin.rtp . '/' . val })
       let files = glob(directory . '/**/*.vim', v:true, v:true)
       if has('nvim')
         let files += glob(directory . '/**/*.lua', v:true, v:true)
       endif
+      if directory =~# 'ftdetect'
+        execute 'augroup filetypedetect'
+      endif
       for file in files
         execute 'source' fnameescape(file)
       endfor
+      if directory =~# 'ftdetect'
+        execute 'augroup END'
+      endif
     endfor
 
     if !has('vim_starting')
