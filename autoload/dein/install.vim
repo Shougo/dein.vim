@@ -331,9 +331,11 @@ function! dein#install#_recache_runtimepath() abort
 
   call s:copy_files(lazy_merged_plugins, '')
 
+  let runtime = dein#util#_get_runtime_path()
+
   " Remove plugin directory
-  call dein#install#_rm(dein#util#_get_runtime_path() . '/plugin')
-  call dein#install#_rm(dein#util#_get_runtime_path() . '/after/plugin')
+  call dein#install#_rm(runtime . '/plugin')
+  call dein#install#_rm(runtime . '/after/plugin')
 
   call s:copy_files(nolazy_merged_plugins, '')
 
@@ -342,10 +344,8 @@ function! dein#install#_recache_runtimepath() abort
   call s:generate_ftplugin()
 
   " Clear ftdetect and after/ftdetect directories.
-  call dein#install#_rm(
-        \ dein#util#_get_runtime_path().'/ftdetect')
-  call dein#install#_rm(
-        \ dein#util#_get_runtime_path().'/after/ftdetect')
+  call dein#install#_rm(runtime . '/ftdetect')
+  call dein#install#_rm(runtime . '/after/ftdetect')
 
   call s:merge_files(nolazy_merged_plugins, 'ftdetect')
   call s:merge_files(nolazy_merged_plugins, 'after/ftdetect')
