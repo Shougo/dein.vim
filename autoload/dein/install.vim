@@ -324,15 +324,18 @@ function! dein#install#_recache_runtimepath() abort
   let plugins = values(dein#get())
 
   let merged_plugins = filter(copy(plugins), { _, val -> val.merged })
+  let lazy_merged_plugins = filter(copy(merged_plugins),
+        \ { _, val -> val.lazy })
+  let nolazy_merged_plugins = filter(copy(merged_plugins),
+        \ { _, val -> !val.lazy })
 
-  call s:copy_files(filter(copy(merged_plugins),
-        \ { _, val -> val.lazy }), '')
+  call s:copy_files(lazy_merged_plugins, '')
+
   " Remove plugin directory
   call dein#install#_rm(dein#util#_get_runtime_path() . '/plugin')
   call dein#install#_rm(dein#util#_get_runtime_path() . '/after/plugin')
 
-  call s:copy_files(filter(copy(merged_plugins),
-        \ { _, val -> !val.lazy }), '')
+  call s:copy_files(nolazy_merged_plugins, '')
 
   call s:helptags()
 
@@ -344,8 +347,8 @@ function! dein#install#_recache_runtimepath() abort
   call dein#install#_rm(
         \ dein#util#_get_runtime_path().'/after/ftdetect')
 
-  call s:merge_files(plugins, 'ftdetect')
-  call s:merge_files(plugins, 'after/ftdetect')
+  call s:merge_files(nolazy_merged_plugins, 'ftdetect')
+  call s:merge_files(nolazy_merged_plugins, 'after/ftdetect')
 
   silent call dein#remote_plugins()
 
