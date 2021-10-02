@@ -91,6 +91,9 @@ function! s:suite.load_toml() abort
         \ "'''",
         \ '[plugins.ftplugin]',
         \ 'c = "let g:bar = 0"',
+        \ '[[multiple_plugins]]',
+        \ "plugins = ['foo', 'bar']",
+        \ "hook_add = 'foo'",
         \ ], toml)
 
   call dein#begin(s:path)
@@ -100,6 +103,9 @@ function! s:suite.load_toml() abort
   call s:assert.equals(g:dein#_hook_add, "\nlet g:foo = 0")
   call s:assert.equals(g:dein#_ftplugin,
         \ {'c': "let g:bar = 0\nlet g:bar = 0"})
+  call s:assert.equals(g:dein#_multiple_plugins, [
+        \ {'plugins': ['foo', 'bar'], 'hook_add': 'foo'},
+        \ ])
   call dein#end()
 
   call s:assert.equals(dein#get('neosnippet.vim').hook_add,

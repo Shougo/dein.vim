@@ -455,6 +455,14 @@ function! dein#util#_end() abort
     call dein#source(depends)
   endif
 
+  for multi in filter(copy(g:dein#_multiple_plugins),
+        \ { _, val -> dein#is_available(val.plugins) })
+    if has(multi, 'hook_add')
+      let g:dein#_hook_add .= "\n" . substitute(
+            \ multi.hook_add, '\n\s*\\', '', 'g')
+    endif
+  endfor
+
   if g:dein#_hook_add !=# ''
     call dein#util#_execute_hook({}, g:dein#_hook_add)
   endif

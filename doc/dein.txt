@@ -277,6 +277,10 @@ dein#install([{plugins}])
 		{plugins} is the plugins name list.
 		If you omit it, dein will install all plugins.
 
+							*dein#is_available()*
+dein#is_available([{plugin-name}])
+		Return non-zero if {plugin-name} exists and is enabled.
+
 							*dein#is_sourced()*
 dein#is_sourced({plugin-name})
 		Return non-zero if {plugin-name} exists and is sourced.

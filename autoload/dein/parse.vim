@@ -192,6 +192,16 @@ function! dein#parse#_load_toml(filename, default) abort
   if has_key(toml, 'ftplugin')
     call s:merge_ftplugin(toml.ftplugin)
   endif
+  if has_key(toml, 'multiple_plugins')
+    for multi in toml.multiple_plugins
+      if !has_key(multi, 'plugins')
+        call dein#util#_error('Invalid multiple_plugins: ' . a:filename)
+        return 1
+      endif
+
+      call add(g:dein#_multiple_plugins, multi)
+    endfor
+  endif
 
   if has_key(toml, 'plugins')
     for plugin in toml.plugins
