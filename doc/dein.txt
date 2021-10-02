@@ -1014,6 +1014,11 @@ TOML							*dein-toml*
 		It is converted to |dein#add()|.
 		"repo" key is needed.
 
+						*dein-toml-multple_plugins*
+		multiple_plugins	(Dictionary)
+		It is converted to |dein-toml-hook_add|.
+		"plugins" key is needed.
+
 							*dein-toml-example*
 
 		TOML file sample is here:
@@ -1047,6 +1052,12 @@ TOML							*dein-toml*
 		python = '''
 		let b:undo_ftplugin .= 'setlocal foldmethod<'
 		setlocal foldmethod=indent
+
+		# "hook_add" is only executed when both "foo" and "bar" are
+		# available.
+		[[multiple_plugins]]
+		plugins = ['foo', 'bar']
+		hook_add = ''
 		'''
 
 ==============================================================================

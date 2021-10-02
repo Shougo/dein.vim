@@ -457,7 +457,7 @@ function! dein#util#_end() abort
 
   for multi in filter(copy(g:dein#_multiple_plugins),
         \ { _, val -> dein#is_available(val.plugins) })
-    if has(multi, 'hook_add')
+    if has_key(multi, 'hook_add')
       let g:dein#_hook_add .= "\n" . substitute(
             \ multi.hook_add, '\n\s*\\', '', 'g')
     endif
