@@ -718,7 +718,7 @@ merged		(Bool)
 merge_ftdetect	(Bool)
 		If set to v:true, dein merge the plugin "ftdetect" directory.
 		It is useful to enable file detection when lazy loaded plugin.
-		Note: It does not work fi ftdetect script depends on lazy
+		Note: It does not work if ftdetect script depends on lazy
 		plugin functions.
 
 							*dein-options-name*
