@@ -714,6 +714,13 @@ merged		(Bool)
 		If set to v:false, dein doesn't merge the plugin directory.
 		It is useful for the plugin files conflicts.
 
+						*dein-options-merge_ftdetect*
+merge_ftdetect	(Bool)
+		If set to v:true, dein merge the plugin "ftdetect" directory.
+		It is useful to enable file detection when lazy loaded plugin.
+		Note: It does not work fi ftdetect script depends on lazy
+		plugin functions.
+
 							*dein-options-name*
 name		(String)
 		Specify the name of the plugin.  This is used for dein

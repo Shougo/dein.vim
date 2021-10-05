@@ -328,6 +328,8 @@ function! dein#install#_recache_runtimepath() abort
         \ { _, val -> val.lazy })
   let nolazy_merged_plugins = filter(copy(merged_plugins),
         \ { _, val -> !val.lazy })
+  let merge_ftdetect_plugins = filter(copy(plugins),
+        \ { _, val -> get(val, 'merge_ftdetect', val.merged && !val.lazy) })
 
   call s:copy_files(lazy_merged_plugins, '')
 
@@ -347,8 +349,8 @@ function! dein#install#_recache_runtimepath() abort
   call dein#install#_rm(runtime . '/ftdetect')
   call dein#install#_rm(runtime . '/after/ftdetect')
 
-  call s:merge_files(nolazy_merged_plugins, 'ftdetect')
-  call s:merge_files(nolazy_merged_plugins, 'after/ftdetect')
+  call s:merge_files(merge_ftdetect_plugins, 'ftdetect')
+  call s:merge_files(merge_ftdetect_plugins, 'after/ftdetect')
 
   silent call dein#remote_plugins()
 
