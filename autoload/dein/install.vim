@@ -329,7 +329,8 @@ function! dein#install#_recache_runtimepath() abort
   let nolazy_merged_plugins = filter(copy(merged_plugins),
         \ { _, val -> !val.lazy })
   let merge_ftdetect_plugins = filter(copy(plugins),
-        \ { _, val -> get(val, 'merge_ftdetect', val.merged && !val.lazy) })
+        \ { _, val -> get(val, 'merge_ftdetect', 0)
+        \             || (val.merged && !val.lazy) })
 
   call s:copy_files(lazy_merged_plugins, '')
 
