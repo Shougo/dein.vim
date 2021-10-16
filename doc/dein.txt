@@ -510,6 +510,7 @@ g:dein#enable_notification
 g:dein#inline_vimrcs
 		The vimrcs are sourced in |dein#end()| or
 		|dein#load_state()|.
+		Note: It must be set before |dein#begin()|.
 		Note: The files must not be included "<<" pattern(here
 		document).  It breaks the parser.
 
