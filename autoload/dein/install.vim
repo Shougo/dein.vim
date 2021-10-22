@@ -1447,6 +1447,7 @@ function! s:check_output(context, process) abort
     let plugin.new_rev = new_rev
 
     " Execute "post_update" before "build"
+    call dein#source(plugin.name)
     call dein#call_hook('post_update', plugin)
 
     let type = dein#util#_get_type(plugin.type)
