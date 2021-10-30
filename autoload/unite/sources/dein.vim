@@ -86,23 +86,5 @@ function! s:get_commit_status(plugin) abort
   endif
 
   let type = dein#types#git#define()
-  let cmd = type.get_revision_number_command(a:plugin)
-  if cmd ==# ''
-    return ''
-  endif
-
-  let cwd = getcwd()
-  try
-    call dein#install#_cd(a:plugin.path)
-    let output = dein#install#_system(cmd)
-  finally
-    call dein#install#_cd(cwd)
-  endtry
-
-  if dein#install#_get_last_status()
-    return printf('Error(%d) occurred when executing "%s"',
-          \ dein#install#_get_last_status(), cmd)
-  endif
-
-  return output
+  return type.get_revision_number(a:plugin)
 endfunction
