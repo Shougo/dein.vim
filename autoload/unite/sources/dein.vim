@@ -85,6 +85,10 @@ function! s:get_commit_status(plugin) abort
     return 'Not installed'
   endif
 
-  let type = dein#types#git#define()
+  let type = dein#util#_get_type(a:plugin.type)
+  if !has_key(type, 'get_revision_number')
+    return ''
+  endif
+
   return type.get_revision_number(a:plugin)
 endfunction
