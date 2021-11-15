@@ -77,22 +77,30 @@ function! dein#util#_notify(msg) abort
         \ 'g:dein#notification_time', 2)
 
   if !g:dein#enable_notification || a:msg ==# ''
-        \ || (has('vim_starting') && !has('gui_running'))
     call dein#util#_error(a:msg)
     return
   endif
 
-  let icon = dein#util#_expand(g:dein#notification_icon)
-
   let title = '[dein]'
-  let cmd = []
+
   if has('nvim') && dein#util#_luacheck('notify')
     " Use nvim-notify plugin
     call luaeval('require("notify")(_A.msg, "info", {'.
           \ 'timeout=vim.g["dein#notification_time"] * 1000,'.
           \ 'title=_A.title })',
           \ { 'msg': a:msg, 'title': title })
-  elseif executable('notify-send')
+    return
+  endif
+
+  if has('vim_starting') && !has('gui_running')
+    call dein#util#_error(a:msg)
+    return
+  endif
+
+  let icon = dein#util#_expand(g:dein#notification_icon)
+
+  let cmd = []
+  if executable('notify-send')
     let cmd = ['notify-send', '-t', g:dein#notification_time * 1000]
     if icon !=# ''
       let cmd += ['-i', icon]
