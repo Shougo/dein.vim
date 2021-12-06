@@ -3,6 +3,8 @@
 # Original version is created by shoma2da
 # https://github.com/shoma2da/neobundle_installer
 
+set -e
+
 if [ $# -ne 1 ]; then
   echo "You must specify the installation directory!"
   exit 1
