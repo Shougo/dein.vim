@@ -78,8 +78,9 @@ function! dein#autoload#_source(...) abort
               \ 'denops/*/main.ts', v:true, v:true),
               \ { _, val -> fnamemodify(val, ':h:t')}),
               \ { _, val -> !denops#plugin#is_loaded(val) })
-          " denops#plugin#register() may be failed
+          " Note: denops#plugin#register() may be failed
           silent! call denops#plugin#register(name, { 'mode': 'skip' })
+          call denops#plugin#wait(name)
         endfor
       endif
     endif
