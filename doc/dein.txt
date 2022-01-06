@@ -231,6 +231,9 @@ dein#disable({plugins})
 		{plugins} is the plugins name list.
 		Note: This command must be executed before dein loads
 		the plugins.
+		Note: The plugins must be disabled |dein-options-merged|.
+		Because merged plugins are moved to plugins directory and
+		loaded automatically.
 		Note: Disabled plugins are removed from dein's plugin list.
 		You cannot get disabled plugins from dein.
 
@@ -714,6 +717,8 @@ lazy		(Bool)
 merged		(Bool)
 		If set to v:false, dein doesn't merge the plugin directory.
 		It is useful for the plugin files conflicts.
+
+		Default: See |dein-merge|.
 
 						*dein-options-merge_ftdetect*
 merge_ftdetect	(Bool)
