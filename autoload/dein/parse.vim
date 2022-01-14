@@ -88,7 +88,7 @@ function! dein#parse#_dict(plugin) abort
   if !has_key(plugin, 'normalized_name')
     let plugin.normalized_name = substitute(
           \ fnamemodify(plugin.name, ':r'),
-          \ '\c^\%(n\?vim\|dps\)[_-]\|[_-]n\?vim$', '', 'g')
+          \ '\c^\%(n\?vim\|dps\|denops\)[_-]\|[_-]n\?vim$', '', 'g')
   endif
 
   if !has_key(a:plugin, 'name') && g:dein#enable_name_conversion

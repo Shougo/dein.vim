@@ -749,6 +749,8 @@ normalized_name	(String)
 		denite.nvim       denite
 		dein.vim          dein
 		vim-quickrun      quickrun
+		dps-dial          dial
+		denops-foo        foo
 <
 							*dein-options-on_cmd*
 on_cmd		(List) or (String)
