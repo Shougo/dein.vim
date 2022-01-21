@@ -253,7 +253,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
   if a:mode ==# 'o' && v:operator ==# 'c'
     " Note: This is the dirty hack.
     execute matchstr(s:mapargrec(a:mapping . input, a:mode),
-          \ ':<C-U>\zs.*\ze<CR>')
+          \ ':<C-u>\zs.*\ze<CR>')
   else
     let mapping = a:mapping
     while mapping =~# '<[[:alnum:]_-]\+>'
@@ -280,11 +280,6 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
 
   " Load plugins
   call dein#autoload#_on_pre_cmd(tolower(command))
-
-  if exists(':'.command) == 2
-    " Print the candidates
-    call feedkeys("\<C-d>", 'n')
-  endif
 
   return [a:arglead]
 endfunction
