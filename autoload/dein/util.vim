@@ -284,11 +284,11 @@ function! dein#util#_save_state(is_starting) abort
         \ 'if g:dein#_cache_version !=# ' . g:dein#_cache_version . ' || ' .
         \ 'g:dein#_init_runtimepath !=# ' . string(g:dein#_init_runtimepath) .
         \      ' | throw ''Cache loading error'' | endif',
-        \ 'let [plugins, ftplugin] = dein#min#_load_cache_raw('.
+        \ 'let [s:plugins, s:ftplugin] = dein#min#_load_cache_raw('.
         \      string(g:dein#_vimrcs) .')',
-        \ "if empty(plugins) | throw 'Cache loading error' | endif",
-        \ 'let g:dein#_plugins = plugins',
-        \ 'let g:dein#_ftplugin = ftplugin',
+        \ "if empty(s:plugins) | throw 'Cache loading error' | endif",
+        \ 'let g:dein#_plugins = s:plugins',
+        \ 'let g:dein#_ftplugin = s:ftplugin',
         \ 'let g:dein#_base_path = ' . string(g:dein#_base_path),
         \ 'let g:dein#_runtime_path = ' . string(g:dein#_runtime_path),
         \ 'let g:dein#_cache_path = ' . string(g:dein#_cache_path),
