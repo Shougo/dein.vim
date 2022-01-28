@@ -475,12 +475,13 @@ endfunction
 
 function! dein#install#_get_default_ftplugin() abort
   return [
-        \ 'if exists("g:did_load_ftplugin")',
+        \ 'if exists("g:did_load_after_ftplugin")',
         \ '  finish',
         \ 'endif',
-        \ 'let g:did_load_ftplugin = 1',
+        \ 'let g:did_load_after_ftplugin = 1',
         \ '',
         \ 'augroup filetypeplugin',
+        \ '  autocmd!',
         \ '  autocmd FileType * call s:ftplugin()',
         \ 'augroup END',
         \ '',
@@ -542,7 +543,7 @@ function! s:generate_ftplugin() abort
         \ dein#install#_get_default_ftplugin() + [
         \ 'function! s:after_ftplugin()',
         \ ] + get(ftplugin, '_', []) + ['endfunction'],
-        \ dein#util#_get_runtime_path() . '/ftplugin.vim')
+        \ dein#util#_get_runtime_path() . '/after/ftplugin.vim')
 
   " Generate after/ftplugin
   for [filetype, list] in filter(items(ftplugin),
