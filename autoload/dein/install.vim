@@ -411,18 +411,27 @@ function! s:copy_files(plugins, directory) abort
   endfor
 endfunction
 function! s:merge_files(plugins, directory) abort
-  let files = []
+  let vimfiles = []
+  let luafiles = []
   for plugin in a:plugins
     for file in filter(globpath(
-          \ plugin.rtp, a:directory.'/**', v:true, v:true),
+          \ plugin.rtp, a:directory.'/**/*', v:true, v:true),
           \ { _, val -> !isdirectory(val) })
-      let files += readfile(file, ':t')
+      if fnamemodify(file, ':e') ==# 'vim'
+        let vimfiles += readfile(file, ':t')
+      elseif fnamemodify(file, ':e') ==# 'lua'
+        let luafiles += readfile(file, ':t')
+      endif
     endfor
   endfor
 
-  if !empty(files)
+  if !empty(vimfiles)
     call dein#util#_cache_writefile(files,
           \ printf('.dein/%s/%s.vim', a:directory, a:directory))
+  endif
+  if !empty(luafiles)
+    call dein#util#_cache_writefile(files,
+          \ printf('.dein/%s/%s.lua', a:directory, a:directory))
   endif
 endfunction
 function! dein#install#_save_rollback(rollbackfile, plugins) abort
