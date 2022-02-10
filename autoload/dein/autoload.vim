@@ -41,10 +41,9 @@ function! dein#autoload#_source(...) abort
           \ { _, val -> isdirectory(plugin.rtp . '/' . val) }),
           \ { _, val -> plugin.rtp . '/' . val })
       if directory =~# 'ftdetect'
-        if get(plugin, 'merge_ftdetect')
-          continue
+        if !get(plugin, 'merge_ftdetect')
+          execute 'augroup filetypedetect'
         endif
-        execute 'augroup filetypedetect'
       endif
       let files = glob(directory . '/**/*.vim', v:true, v:true)
       if has('nvim')
@@ -73,14 +72,17 @@ function! dein#autoload#_source(...) abort
 
       " Register for lazy loaded denops plugin
       if isdirectory(plugin.rtp . '/denops')
-            \ && exists('*denops#plugin#is_loaded')
         for name in filter(map(globpath(plugin.rtp,
               \ 'denops/*/main.ts', v:true, v:true),
               \ { _, val -> fnamemodify(val, ':h:t')}),
               \ { _, val -> !denops#plugin#is_loaded(val) })
-          " Note: denops#plugin#register() may be failed
-          silent! call denops#plugin#register(name, { 'mode': 'skip' })
+
+          if denops#server#status() ==# 'running'
+            " Note: denops#plugin#register() may be failed
+            silent! call denops#plugin#register(name, { 'mode': 'skip' })
+          endif
           call denops#plugin#wait(name)
+          redraw
         endfor
       endif
     endif
@@ -290,7 +292,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
     return
   endif
 
-  call add(a:sourced, a:plugin)
+  call insert(a:sourced, a:plugin)
 
   let index = a:index
 
