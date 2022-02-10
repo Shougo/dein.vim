@@ -114,6 +114,9 @@ endfunction
 function! dein#get_progress() abort
   return dein#install#_get_progress()
 endfunction
+function! dein#get_failed_plugins() abort
+  return dein#install#_get_failed_plugins()
+endfunction
 function! dein#each(command, ...) abort
   return dein#install#_each(a:command, (a:0 ? a:1 : []))
 endfunction

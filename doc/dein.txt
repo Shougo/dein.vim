@@ -262,6 +262,10 @@ dein#get([{plugin-name}])
 dein#get_direct_plugins_path()
 		Get the direct installed plugins script path.
 
+						*dein#get_failed_plugins()*
+dein#get_failed_plugins()
+		Get the previous installation failed plugins.
+
 							*dein#get_log()*
 dein#get_log()
 		Get all previous install logs.

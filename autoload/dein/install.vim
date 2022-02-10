@@ -9,6 +9,7 @@ let s:global_context = {}
 let s:log = []
 let s:updates_log = []
 let s:progress = ''
+let s:failed_plugins = []
 
 " Global options definition.
 let g:dein#install_max_processes =
@@ -664,6 +665,9 @@ endfunction
 function! dein#install#_get_progress() abort
   return s:progress
 endfunction
+function! dein#install#_get_failed_plugins() abort
+  return s:failed_plugins
+endfunction
 
 function! s:get_progress_message(name, number, max) abort
   return printf('(%'.len(a:max).'d/%'.len(a:max).'d) [%s%s] %s',
@@ -1171,6 +1175,9 @@ function! s:start() abort
 endfunction
 function! s:done(context) abort
   call s:restore_view(a:context)
+
+  let s:failed_plugins = map(copy(a:context.errored_plugins),
+        \ { _, val -> val.name })
 
   if !has('vim_starting')
     call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
