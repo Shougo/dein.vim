@@ -214,6 +214,9 @@ function! dein#install#_check_update(plugins, force, async) abort
     let git_path = plugin.path . '/.git'
     let repo_time = isdirectory(plugin.path) ? getftime(git_path) : -1
 
+    call s:log(printf('%s pushed_time:%d, repo_time: %d, rollback_time: %d',
+          \ plugin.name, check_pushed[plugin.repo], repo_time, rollback_time))
+
     if min([repo_time, rollback_time]) < check_pushed[plugin.repo]
       call add(updated, plugin)
     endif
