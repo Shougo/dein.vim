@@ -1080,6 +1080,13 @@ TOML							*dein-toml*
 		'''
 
 ==============================================================================
+DDU SOURCES						*dein-ddu-sources*
+
+						*dein-ddu-source-dein*
+dein
+		Nominates dein plugins as candidates.
+
+==============================================================================
 UNITE SOURCES						*dein-unite-sources*
 
 Here let me explain about a source for unite plugin provided in dein.
