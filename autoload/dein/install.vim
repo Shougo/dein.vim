@@ -214,11 +214,23 @@ function! dein#install#_check_update(plugins, force, async) abort
     let git_path = plugin.path . '/.git'
     let repo_time = isdirectory(plugin.path) ? getftime(git_path) : -1
 
-    call s:log(printf('%s pushed_time:%d, repo_time: %d, rollback_time: %d',
+    call s:log(printf('%s: pushed_time=%d, repo_time=%d, rollback_time=%d',
           \ plugin.name, check_pushed[plugin.repo], repo_time, rollback_time))
 
-    if min([repo_time, rollback_time]) < check_pushed[plugin.repo]
+    let local_update = min([repo_time, rollback_time])
+    if local_update < check_pushed[plugin.repo]
       call add(updated, plugin)
+    elseif abs(local_update - check_pushed[plugin.repo]) < 48 * 60 * 60
+      " Note: github Graph QL API may use cached value
+      " If the repository is updated recently, use "git ls-remote" instead.
+      let remote = matchstr(s:system_cd(
+            \ ['git', 'ls-remote', 'origin', 'HEAD'], plugin.path), '^\x\+')
+      let local = s:get_revision_number(plugin)
+      call s:log(printf('%s: remote=%s, local=%s',
+            \ plugin.name, remote, local))
+      if remote !=# '' && local !=# remote
+        call add(updated, plugin)
+      endif
     endif
   endfor
 
@@ -874,7 +886,6 @@ function! s:job_system.system(cmd) abort
   let job = s:get_job().start(
         \ s:convert_args(a:cmd),
         \ {'on_stdout': self.on_out})
-
   let s:job_system.status = job.wait(
         \ g:dein#install_process_timeout * 1000)
   return join(s:job_system.candidates, "\n")
