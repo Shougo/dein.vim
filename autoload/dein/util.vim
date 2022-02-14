@@ -45,15 +45,16 @@ function! dein#util#_get_cache_path() abort
     return g:dein#_cache_path
   endif
 
-  let g:dein#_cache_path = get(g:,
-        \ 'dein#cache_directory', g:dein#_base_path)
-        \ . '/.cache/' . fnamemodify(dein#util#_get_myvimrc(), ':t')
+  let g:dein#_cache_path = dein#util#_substitute_path(
+        \ get(g:, 'dein#cache_directory', g:dein#_base_path)
+        \ . '/.cache/' . fnamemodify(dein#util#_get_myvimrc(), ':t'))
   call dein#util#_safe_mkdir(g:dein#_cache_path)
   return g:dein#_cache_path
 endfunction
 function! dein#util#_get_vimrcs(vimrcs) abort
   return !empty(a:vimrcs) ?
-        \ map(dein#util#_convert2list(a:vimrcs), { _, val -> expand(val) }) :
+        \ map(dein#util#_convert2list(a:vimrcs),
+        \     { _, val -> dein#util#_substitute_path(expand(val)) }) :
         \ [dein#util#_get_myvimrc()]
 endfunction
 function! dein#util#_get_myvimrc() abort
@@ -398,7 +399,7 @@ function! dein#util#_begin(path, vimrcs) abort
 
   " Insert dein runtimepath to the head in 'runtimepath'.
   let rtps = dein#util#_split_rtp(&runtimepath)
-  let idx = index(rtps, $VIMRUNTIME)
+  let idx = index(rtps, dein#util#_substitute_path($VIMRUNTIME))
   if idx < 0
     call dein#util#_error('Invalid runtimepath.')
     return 1
@@ -578,11 +579,13 @@ endfunction
 
 function! dein#util#_split_rtp(runtimepath) abort
   if stridx(a:runtimepath, '\,') < 0
-    return split(a:runtimepath, ',')
+    let rtps = split(a:runtimepath, ',')
+  else
+    let split = split(a:runtimepath, '\\\@<!\%(\\\\\)*\zs,')
+    let rtps = map(split,
+          \ { _, val -> substitute(val, '\\\([\\,]\)', '\1', 'g') })
   endif
-
-  let split = split(a:runtimepath, '\\\@<!\%(\\\\\)*\zs,')
-  return map(split, { _, val -> substitute(val, '\\\([\\,]\)', '\1', 'g') })
+  return map(rtps, { _, val -> dein#util#_substitute_path(val) })
 endfunction
 function! dein#util#_join_rtp(list, runtimepath, rtp) abort
   return (stridx(a:runtimepath, '\,') < 0 && stridx(a:rtp, ',') < 0) ?
@@ -591,7 +594,7 @@ function! dein#util#_join_rtp(list, runtimepath, rtp) abort
 endfunction
 
 function! dein#util#_add_after(rtps, path) abort
-  let idx = index(a:rtps, $VIMRUNTIME)
+  let idx = index(a:rtps, dein#util#_substitute_path($VIMRUNTIME))
   call insert(a:rtps, a:path, (idx <= 0 ? -1 : idx + 1))
 endfunction
 
