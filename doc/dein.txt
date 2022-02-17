@@ -565,6 +565,8 @@ g:dein#install_progress_type
 		"title":
 			Displayed in the 'titlestring'.
 			Note: It is neovim only support
+		"floating":
+			Displayed in the floating/popup window.
 
 		Defaults: "echo"
 

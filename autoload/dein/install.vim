@@ -10,6 +10,7 @@ let s:log = []
 let s:updates_log = []
 let s:progress = ''
 let s:failed_plugins = []
+let s:progress_winid = -1
 
 " Global options definition.
 let g:dein#install_max_processes =
@@ -1201,6 +1202,15 @@ function! s:done(context) abort
     call s:notify(s:get_errored_message(a:context.errored_plugins))
   endif
 
+  if s:progress_winid > 0
+    if has('nvim')
+      call nvim_win_close(s:progress_winid, v:true)
+    else
+      call popup_close(s:progress_winid)
+    endif
+    let s:progress_winid = -1
+  endif
+
   if !empty(a:context.synced_plugins)
     call dein#install#_recache_runtimepath()
 
@@ -1530,6 +1540,13 @@ function! s:print_progress_message(msg) abort
   elseif progress_type ==# 'title'
     set title
     let &g:titlestring = join(msg, "\n")
+  elseif progress_type ==# 'floating'
+    if s:progress_winid <= 0
+      let s:progress_winid = s:new_progress_window()
+    endif
+
+    call appendbufline(winbufnr(s:progress_winid), '$', join(msg, "\n"))
+    call win_execute(s:progress_winid, 'normal! G')
   elseif progress_type ==# 'echo'
     call s:echo(msg, 'echo')
   endif
@@ -1537,6 +1554,36 @@ function! s:print_progress_message(msg) abort
   call s:log(msg)
 
   let s:progress = join(msg, "\n")
+endfunction
+function! s:new_progress_window() abort
+  let winrow = 0
+  let wincol = &columns / 4
+  let winwidth = 80
+  let winheight = 20
+
+  if has('nvim')
+    let winid = nvim_open_win(nvim_create_buf(v:false, v:true), v:true, {
+          \ 'relative': 'editor',
+          \ 'row': winrow,
+          \ 'col': wincol,
+          \ 'focusable': v:false,
+          \ 'noautocmd': v:true,
+          \ 'style': 'minimal',
+          \ 'width': winwidth,
+          \ 'height': winheight,
+          \})
+  else
+    let winid = popup_create([], {
+          \ 'pos': 'topleft',
+          \ 'line': winrow + 1,
+          \ 'col': wincol + 1,
+          \ 'minwidth': winwidth,
+          \ 'minheight': winheight,
+          \ 'wrap': 0,
+          \ })
+  endif
+
+  return winid
 endfunction
 function! s:error(msg) abort
   let msg = dein#util#_convert2list(a:msg)
