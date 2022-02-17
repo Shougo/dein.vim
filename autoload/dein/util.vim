@@ -743,6 +743,9 @@ function! s:escape(path) abort
   " Escape a path for runtimepath.
   return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
 endfunction
+function! dein#util#escape_match(str) abort
+  return escape(a:str, '~\.^$[]')
+endfunction
 
 function! s:execute(expr) abort
   if exists('*execute')

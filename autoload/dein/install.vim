@@ -962,6 +962,11 @@ function! dein#install#_copy_directories(srcs, dest) abort
     return 0
   endif
 
+  if has('nvim')
+    " Note: For neovim, vim.loop.fs_link is faster
+    return dein#install#_copy_directories_vim(a:srcs, a:dest)
+  endif
+
   if dein#util#_is_windows() && has('python3')
         \ && dein#install#_python_version_check()
     " In Windows, copy directory is too slow!
@@ -1079,6 +1084,30 @@ vim.vars['dein#_python_version_check'] = (
     sys.version_info.micro) >= (3, 8, 0)
 EOF
   return get(g:, 'dein#_python_version_check', 0)
+endfunction
+function! dein#install#_copy_directories_vim(srcs, dest) abort
+  for src in a:srcs
+    for srcpath in glob(src . '/**/*', 1, 1)
+      let destpath = substitute(srcpath,
+            \ dein#util#escape_match(src),
+            \ dein#util#escape_match(a:dest), '')
+      call mkdir(fnamemodify(destpath, ':p:h'), 'p')
+
+      if isdirectory(srcpath)
+        call mkdir(destpath, 'p')
+      else
+        call dein#install#_copy_file_vim(srcpath, destpath)
+      endif
+    endfor
+  endfor
+endfunction
+function! dein#install#_copy_file_vim(src, dest) abort
+  if has('nvim')
+    call v:lua.vim.loop.fs_link(a:src, a:dest)
+  else
+    let raw = readfile(a:src, 'b')
+    call writefile(raw, a:dest, 'b')
+  endif
 endfunction
 
 function! s:install_blocking(context) abort
