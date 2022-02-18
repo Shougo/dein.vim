@@ -963,7 +963,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   if has('nvim')
-    " Note: For neovim, vim.loop.fs_link is faster
+    " Note: For neovim, vim.loop.fs_symlink is faster
     return dein#install#_copy_directories_vim(a:srcs, a:dest)
   endif
 
@@ -1103,7 +1103,7 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
 endfunction
 function! dein#install#_copy_file_vim(src, dest) abort
   if has('nvim')
-    call v:lua.vim.loop.fs_link(a:src, a:dest)
+    call v:lua.vim.loop.fs_symlink(a:src, a:dest)
   else
     let raw = readfile(a:src, 'b')
     call writefile(raw, a:dest, 'b')
