@@ -1223,6 +1223,14 @@ endfunction
 function! s:start() abort
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction
+function! s:close_progress_popup() abort
+  if has('nvim')
+    call nvim_win_close(s:progress_winid, v:true)
+  else
+    call popup_close(s:progress_winid)
+  endif
+  let s:progress_winid = -1
+endfunction
 function! s:done(context) abort
   call s:restore_view(a:context)
 
@@ -1232,15 +1240,6 @@ function! s:done(context) abort
   if !has('vim_starting')
     call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
     call s:notify(s:get_errored_message(a:context.errored_plugins))
-  endif
-
-  if s:progress_winid > 0
-    if has('nvim')
-      call nvim_win_close(s:progress_winid, v:true)
-    else
-      call popup_close(s:progress_winid)
-    endif
-    let s:progress_winid = -1
   endif
 
   if !empty(a:context.synced_plugins)
@@ -1272,6 +1271,10 @@ function! s:done(context) abort
   endif
 
   redraw | echo ''
+
+  if s:progress_winid > 0
+    call timer_start(1000, { -> s:close_progress_popup() })
+  endif
 
   call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
 
