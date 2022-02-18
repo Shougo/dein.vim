@@ -1102,9 +1102,7 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
   endfor
 endfunction
 function! dein#install#_copy_file_vim(src, dest) abort
-  if has('nvim')
-    call v:lua.vim.loop.fs_symlink(a:src, a:dest)
-  else
+  if !has('nvim') || !v:lua.vim.loop.fs_symlink(a:src, a:dest)
     let raw = readfile(a:src, 'b')
     call writefile(raw, a:dest, 'b')
   endif
