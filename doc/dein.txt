@@ -186,6 +186,8 @@ dein#check_update([{force}[, {plugins}]])
 		solution.  If "git" command change ".git" directory status(for
 		example: "git reset"), it cannot detect the update properly.
 		And github API cannot detect upstream changes immediately.
+		If you set |g:dein#install_check_remote_threshold|, the check
+		is more strict but slower.
 
 							*dein#check_clean()*
 dein#check_clean()
@@ -528,6 +530,14 @@ g:dein#install_check_diff
 		It checks plugins documentation diff when updated plugins.
 
 		Defaults: v:false
+
+					*g:dein#install_check_remote_threshold*
+g:dein#install_check_remote_threshold
+		If the repository is updated newer than the threshold, use
+		"git ls-remote" check when |dein#check_update()|.
+		The unit is second.
+
+		Defaults: 0
 
 					*g:dein#install_github_api_token*
 g:dein#install_github_api_token

@@ -30,6 +30,8 @@ let g:dein#install_curl_command =
       \ get(g:, 'dein#install_curl_command', 'curl')
 let g:dein#install_check_diff =
       \ get(g:, 'dein#install_check_diff', v:false)
+let g:dein#install_check_remote_threshold =
+      \ get(g:, 'dein#install_check_remote_threshold', 0)
 
 function! s:get_job() abort
   if !exists('s:Job')
@@ -221,7 +223,8 @@ function! dein#install#_check_update(plugins, force, async) abort
     let local_update = min([repo_time, rollback_time])
     if local_update < check_pushed[plugin.repo]
       call add(updated, plugin)
-    elseif abs(local_update - check_pushed[plugin.repo]) < 48 * 60 * 60
+    elseif abs(local_update - check_pushed[plugin.repo]) <
+          \ g:dein#install_check_remote_threshold
       " Note: github Graph QL API may use cached value
       " If the repository is updated recently, use "git ls-remote" instead.
       let remote = matchstr(s:system_cd(
