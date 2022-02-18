@@ -120,15 +120,15 @@ function! dein#install#_check_update(plugins, force, async) abort
     return
   endif
 
-  let s:global_context.progress_type = 'echo'
+  let context = s:init_context(a:plugins, 'check_update', 0)
+  call s:init_variables(context)
 
   let query_max = 100
   let plugins = dein#util#_get_plugins(a:plugins)
   let processes = []
   for index in range(0, len(plugins) - 1, query_max)
-    redraw
     call s:print_progress_message(
-         \s:get_progress_message('', index, len(plugins)))
+          \ s:get_progress_message('send query', index, len(plugins)))
 
     let query = ''
     for plug_index in range(index,
@@ -209,10 +209,15 @@ function! dein#install#_check_update(plugins, force, async) abort
 
   " Compare with .git directory updated time.
   let updated = []
+  let index = 1
   for plugin in plugins
     if !has_key(check_pushed, plugin.repo)
+      let index += 1
       continue
     endif
+
+    call s:print_progress_message(
+          \ s:get_progress_message('compare plugin', index, len(plugins)))
 
     let git_path = plugin.path . '/.git'
     let repo_time = isdirectory(plugin.path) ? getftime(git_path) : -1
@@ -236,9 +241,15 @@ function! dein#install#_check_update(plugins, force, async) abort
         call add(updated, plugin)
       endif
     endif
+
+    let index += 1
   endfor
 
   redraw | echo ''
+
+  if s:progress_winid > 0
+    call timer_start(1000, { -> s:close_progress_popup() })
+  endif
 
   " Clear global context
   let s:global_context = {}
@@ -1570,6 +1581,8 @@ function! s:print_progress_message(msg) abort
   if empty(msg) || empty(context)
     return
   endif
+
+  redraw
 
   let progress_type = context.progress_type
   if progress_type ==# 'tabline'
