@@ -534,11 +534,14 @@ g:dein#install_check_diff
 					*g:dein#install_check_remote_threshold*
 g:dein#install_check_remote_threshold
 		If the repository is updated newer than the threshold, use
-		"git ls-remote" check when |dein#check_update()|.
+		strict "git ls-remote" check when |dein#check_update()|.
 		The unit is second.
 
 		Defaults: 0
-
+>
+		" Strict check updated plugins yesterday
+		let g:dein#install_check_remote_threshold = 24 * 60 * 60
+<
 					*g:dein#install_github_api_token*
 g:dein#install_github_api_token
 		github API key to use |dein#check_update()|.
