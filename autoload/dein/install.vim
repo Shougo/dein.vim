@@ -976,8 +976,8 @@ function! dein#install#_copy_directories(srcs, dest) abort
     return 0
   endif
 
-  if has('nvim')
-    " Note: For neovim, vim.loop.fs_(sym)link is faster
+  if has('nvim') && !dein#util#_is_windows()
+    " Note: For neovim, vim.loop.fs_{sym}link is faster
     return dein#install#_copy_directories_vim(a:srcs, a:dest)
   endif
 
@@ -1116,12 +1116,10 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
   endfor
 endfunction
 function! dein#install#_copy_file_vim(src, dest) abort
-  " Note: Windows requires administrator privileges
-  "       when using symlink.
-  if !has('nvim')
-        \ || dein#util#_is_windows() ?
-        \     !v:lua.vim.loop.fs_link(a:src, a:dest) :
-        \     !v:lua.vim.loop.fs_symlink(a:src, a:dest)
+  " Note: In Windows, v:lua.vim.loop.fs_{sym}link does not work.
+  if has('nvim') && !dein#util#_is_windows()
+    call v:lua.vim.loop.fs_symlink(a:src, a:dest)
+  else
     let raw = readfile(a:src, 'b')
     call writefile(raw, a:dest, 'b')
   endif
