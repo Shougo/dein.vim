@@ -1583,18 +1583,24 @@ function! s:print_progress_message(msg) abort
   redraw
 
   let progress_type = context.progress_type
+  let lines = join(msg, "\n")
   if progress_type ==# 'tabline'
     set showtabline=2
-    let &g:tabline = join(msg, "\n")
+    let &g:tabline = lines
   elseif progress_type ==# 'title'
     set title
-    let &g:titlestring = join(msg, "\n")
+    let &g:titlestring = lines
   elseif progress_type ==# 'floating'
     if s:progress_winid <= 0
       let s:progress_winid = s:new_progress_window()
     endif
 
-    call appendbufline(winbufnr(s:progress_winid), '$', join(msg, "\n"))
+    let bufnr = winbufnr(s:progress_winid)
+    if getbufline(bufnr, 1) ==# ['']
+      call setbufline(bufnr, 1, msg)
+    else
+      call appendbufline(bufnr, '$', msg)
+    endif
     call win_execute(s:progress_winid, 'normal! G')
   elseif progress_type ==# 'echo'
     call s:echo(msg, 'echo')
@@ -1602,7 +1608,7 @@ function! s:print_progress_message(msg) abort
 
   call s:log(msg)
 
-  let s:progress = join(msg, "\n")
+  let s:progress = lines
 endfunction
 function! s:new_progress_window() abort
   let winrow = 0
