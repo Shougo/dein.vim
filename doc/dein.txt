@@ -460,11 +460,18 @@ VARIABLES						*dein-variables*
 
 						*g:dein#auto_recache*
 g:dein#auto_recache
-		If you set it to 1, call |dein#recache_runtimepath()|
+		If you set it to |v:true|, call |dein#recache_runtimepath()|
 		automatically in |dein#save_state()|.
 		Note: It is slow especially Windows.
 
 		Default: v:false
+
+						*g:dein#auto_remote_plugins*
+g:dein#auto_remote_plugins
+		If you set it to |v:true|, call |dein#remote_plugins()|
+		automatically in |dein#recache_runtimepath()|.
+
+		Default: v:true
 
 						*g:dein#cache_directory*
 g:dein#cache_directory

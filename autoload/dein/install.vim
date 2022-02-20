@@ -387,7 +387,9 @@ function! dein#install#_recache_runtimepath() abort
   call s:merge_files(merge_ftdetect_plugins, 'ftdetect')
   call s:merge_files(merge_ftdetect_plugins, 'after/ftdetect')
 
-  silent call dein#remote_plugins()
+  if get(g:, 'dein#auto_remote_plugins', v:true)
+    silent call dein#remote_plugins()
+  endif
 
   call dein#call_hook('post_source')
 
@@ -630,8 +632,12 @@ function! dein#install#_remote_plugins() abort
   endif
 
   " Load not loaded neovim remote plugins
-  let remote_plugins = filter(values(dein#get()),
-        \ { _, val -> isdirectory(val.rtp . '/rplugin') && !val.sourced })
+  let remote_plugins = filter(values(dein#get()), { _, val ->
+        \ isdirectory(val.rtp . '/rplugin')
+        \ && !val.sourced })
+  if empty(remote_plugins)
+    return
+  endif
 
   call dein#autoload#_source(remote_plugins)
 
