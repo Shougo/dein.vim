@@ -32,6 +32,9 @@ let g:dein#install_check_diff =
       \ get(g:, 'dein#install_check_diff', v:false)
 let g:dein#install_check_remote_threshold =
       \ get(g:, 'dein#install_check_remote_threshold', 0)
+let g:dein#install_copy_vim =
+      \ get(g:, 'dein#install_copy_vim',
+      \     has('nvim') && !dein#util#_is_windows())
 
 function! s:get_job() abort
   if !exists('s:Job')
@@ -983,7 +986,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
     return 0
   endif
 
-  if has('nvim') && !dein#util#_is_windows()
+  if g:dein#install_copy_vim
     " Note: For neovim, vim.loop.fs_{sym}link is faster
     return dein#install#_copy_directories_vim(a:srcs, a:dest)
   endif
@@ -1127,9 +1130,13 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
   endfor
 endfunction
 function! dein#install#_copy_file_vim(src, dest) abort
-  " Note: In Windows, v:lua.vim.loop.fs_{sym}link does not work.
-  if has('nvim') && !dein#util#_is_windows()
-    call v:lua.vim.loop.fs_symlink(a:src, a:dest)
+  " Note: In Windows, v:lua.vim.loop.fs_symlink does not work.
+  if has('nvim')
+    if dein#util#_is_windows()
+      call v:lua.vim.loop.fs_link(a:src, a:dest)
+    else
+      call v:lua.vim.loop.fs_symlink(a:src, a:dest)
+    endif
   else
     let raw = readfile(a:src, 'b')
     call writefile(raw, a:dest, 'b')

@@ -549,6 +549,13 @@ g:dein#install_check_remote_threshold
 		" Strict check updated plugins yesterday
 		let g:dein#install_check_remote_threshold = 24 * 60 * 60
 <
+					*g:dein#install_copy_vim*
+g:dein#install_copy_vim
+		It use Vim script copy routine when
+		|dein#recache_runtimepath()|.
+
+		Defaults: v:true if neovim and not Windows
+
 					*g:dein#install_github_api_token*
 g:dein#install_github_api_token
 		github API key to use |dein#check_update()|.
