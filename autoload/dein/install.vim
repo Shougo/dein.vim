@@ -424,7 +424,7 @@ function! s:helptags() abort
     let tags = dein#util#_get_runtime_path() . '/doc'
     call dein#util#_safe_mkdir(tags)
     call s:copy_files(filter(values(dein#get()),
-          \ { _, val -> !val.merged }), 'doc')
+          \ { _, val -> !val.merged && !get(val, 'local', v:false) }), 'doc')
     silent execute 'helptags' fnameescape(tags)
   catch /^Vim(helptags):E151:/
     " Ignore an error that occurs when there is no help file
@@ -1105,11 +1105,15 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
       let destpath = substitute(srcpath,
             \ dein#util#escape_match(src),
             \ dein#util#escape_match(a:dest), '')
-      call mkdir(fnamemodify(destpath, ':p:h'), 'p')
+      let parent = fnamemodify(destpath, ':p:h')
+      if !isdirectory(parent)
+        call mkdir(parent, 'p')
+      endif
 
       if isdirectory(srcpath)
         call mkdir(destpath, 'p')
-      else
+      elseif srcpath !~# 'tags\%(-\w*\)\?$'
+        " Ignore tags
         call dein#install#_copy_file_vim(srcpath, destpath)
       endif
     endfor
