@@ -1254,6 +1254,10 @@ function! s:start() abort
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction
 function! s:close_progress_popup() abort
+  if s:progress_winid <= 0
+    return
+  endif
+
   if has('nvim')
     call nvim_win_close(s:progress_winid, v:true)
   else
