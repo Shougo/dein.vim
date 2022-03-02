@@ -1143,6 +1143,24 @@ function! dein#install#_copy_file_vim(src, dest) abort
   endif
 endfunction
 
+function! dein#install#_deno_cache(...) abort
+  if !executable('deno')
+    return
+  endif
+
+  let plugins = dein#util#_get_plugins(get(a:000, 0, []))
+
+  for plugin in plugins
+    if !isdirectory(plugin.rtp . '/denops')
+      continue
+    endif
+
+    call dein#install#_system(
+          \ ['deno', 'cache', '--no-check'] +
+          \ glob(plugin.rtp . '/denops/**/*.ts', 1, 1))
+  endfor
+endfunction
+
 function! s:install_blocking(context) abort
   try
     while 1
@@ -1279,8 +1297,11 @@ function! s:done(context) abort
   if !empty(a:context.synced_plugins)
     call dein#install#_recache_runtimepath()
 
-    call dein#source(map(copy(a:context.synced_plugins),
-          \ { _, val -> val.name }))
+    let names = map(copy(a:context.synced_plugins), { _, val -> val.name })
+
+    call dein#install#_deno_cache(names)
+
+    call dein#source(names)
 
     " Execute done_update hooks
     let done_update_plugins = filter(copy(a:context.synced_plugins),

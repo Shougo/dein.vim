@@ -148,3 +148,6 @@ function! dein#clear_state() abort
           \ 'call dein#recache_runtimepath() is needed for ftplugin feature')
   endif
 endfunction
+function! dein#deno_cache(...) abort
+  call dein#install#_deno_cache(get(a:000, 0, []))
+endfunction

@@ -216,6 +216,13 @@ dein#config({options})
 	\ 'lazy' : 1, 'on_event' : 'InsertEnter',
 	\ })
 <
+							*dein#deno_cache()*
+dein#deno_cache({plugins})
+		Update {plugins} deno cache.
+		If you omit {plugins}, all plugins cache is updated.
+		It is executed automatically when plugins are updated.
+		Note: "deno" must be executable in your "$PATH".
+
 						*dein#direct_install()*
 dein#direct_install({repo}[, {options}])
 		Direct install a plugin without editing the configuration.
