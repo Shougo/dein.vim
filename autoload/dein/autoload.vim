@@ -296,6 +296,14 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
 
   let index = a:index
 
+  " Note: on_source must sourced after depends
+  for on_source in filter(dein#util#_get_lazy_plugins(),
+        \ { _, val -> index(get(val, 'on_source', []), a:plugin.name) >= 0 })
+    if s:source_plugin(a:rtps, index, on_source, a:sourced)
+      let index += 1
+    endif
+  endfor
+
   " Load dependencies
   for name in get(a:plugin, 'depends', [])
     if !has_key(g:dein#_plugins, name)
@@ -317,13 +325,6 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   endfor
 
   let a:plugin.sourced = 1
-
-  for on_source in filter(dein#util#_get_lazy_plugins(),
-        \ { _, val -> index(get(val, 'on_source', []), a:plugin.name) >= 0 })
-    if s:source_plugin(a:rtps, index, on_source, a:sourced)
-      let index += 1
-    endif
-  endfor
 
   if has_key(a:plugin, 'dummy_commands')
     for command in a:plugin.dummy_commands
