@@ -869,8 +869,9 @@ function! s:check_diff(plugins) abort
           \ type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev),
           \ plugin.path)
     if diff !=# ''
+      " Note: truncate diff
       echo printf("%s: The documentation is updated\n%s\n\n",
-            \ plugin.name, diff)
+            \ plugin.name, diff[:500])
     endif
   endfor
 endfunction
@@ -1272,7 +1273,7 @@ function! s:start() abort
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction
 function! s:close_progress_popup() abort
-  if s:progress_winid <= 0
+  if winbufnr(s:progress_winid) < 0 || winnr('$') == 1
     return
   endif
 
