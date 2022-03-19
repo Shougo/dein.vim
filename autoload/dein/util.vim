@@ -317,7 +317,10 @@ function! dein#util#_save_state(is_starting) abort
   if !empty(g:dein#_hook_add)
     let lines += s:skipempty(g:dein#_hook_add)
   endif
-  for plugin in dein#util#_tsort(values(dein#get()))
+  for plugin in filter(dein#util#_tsort(values(dein#get())),
+        \ { _, val ->
+        \   isdirectory(val.path) && (!has_key(val, 'if') || eval(val.if))
+        \ })
     if has_key(plugin, 'hook_add') && type(plugin.hook_add) == v:t_string
       let lines += s:skipempty(plugin.hook_add)
     endif
@@ -517,7 +520,7 @@ function! dein#util#_call_hook(hook_name, ...) abort
         \    ((a:hook_name !=# 'source'
         \      && a:hook_name !=# 'post_source') || val.sourced)
         \    && has_key(val, hook) && isdirectory(val.path)
-        \    && (!has_key(v:val, 'if') || eval(v:val.if))
+        \    && (!has_key(val, 'if') || eval(val.if))
         \ })
   for plugin in plugins
     call dein#util#_execute_hook(plugin, plugin[hook])
