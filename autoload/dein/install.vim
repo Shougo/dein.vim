@@ -875,7 +875,7 @@ function! s:check_diff(plugins) abort
     " Note: truncate diff
     let diff = diff[:1000]
 
-    if exists('*bufadd') && exists('*win_execute')
+    if exists('*bufadd') && exists('*appendbufline')
       " Split buffer
       let bufname = 'dein-diff'
       if !bufexists(bufname)
