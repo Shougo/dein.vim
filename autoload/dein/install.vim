@@ -889,7 +889,6 @@ function! s:check_diff(plugins) abort
       endif
 
       call appendbufline(bufnr, '$', split(diff, '\n'))
-      call win_execute(bufwinid(bufnr), "call cursor('$', 0)")
     else
       echo printf("%s: The documentation is updated\n%s\n\n",
             \ plugin.name, diff)
