@@ -868,10 +868,31 @@ function! s:check_diff(plugins) abort
     let diff = s:system_cd(
           \ type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev),
           \ plugin.path)
-    if diff !=# ''
-      " Note: truncate diff
+    if diff ==# ''
+      continue
+    endif
+
+    " Note: truncate diff
+    let diff = diff[:1000]
+
+    if exists('*bufadd') && exists('*win_execute')
+      " Split buffer
+      let bufname = 'dein-diff'
+      if !bufexists(bufname)
+        let bufnr = bufadd(bufname)
+      else
+        let bufnr = bufnr(bufname)
+      endif
+
+      if bufwinnr(bufnr) < 0
+        execute 'sbuffer +setlocal\ filetype=diff\ buftype=nofile' bufnr
+      endif
+
+      call appendbufline(bufnr, '$', split(diff, '\n'))
+      call win_execute(bufwinid(bufnr), "call cursor('$', 0)")
+    else
       echo printf("%s: The documentation is updated\n%s\n\n",
-            \ plugin.name, diff[:500])
+            \ plugin.name, diff)
     endif
   endfor
 endfunction
@@ -1645,7 +1666,7 @@ function! s:print_progress_message(msg) abort
     else
       call appendbufline(bufnr, '$', msg)
     endif
-    call win_execute(s:progress_winid, 'normal! G')
+    call win_execute(s:progress_winid, "call cursor('$', 0)")
   elseif progress_type ==# 'echo'
     call s:echo(msg, 'echo')
   endif
