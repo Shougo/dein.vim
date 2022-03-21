@@ -1295,14 +1295,14 @@ function! s:start() abort
   call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
 endfunction
 function! s:close_progress_popup() abort
-  if winbufnr(s:progress_winid) < 0 || winnr('$') == 1
+  if winbufnr(s:progress_winid) < 0
     return
   endif
 
   if has('nvim')
-    call nvim_win_close(s:progress_winid, v:true)
+    silent! call nvim_win_close(s:progress_winid, v:true)
   else
-    call popup_close(s:progress_winid)
+    silent! call popup_close(s:progress_winid)
   endif
   let s:progress_winid = -1
 endfunction
@@ -1667,7 +1667,7 @@ function! s:print_progress_message(msg) abort
     else
       call appendbufline(bufnr, '$', msg)
     endif
-    call win_execute(s:progress_winid, "call cursor('$', 0)")
+    call win_execute(s:progress_winid, "call cursor('$', 0) | redraw")
   elseif progress_type ==# 'echo'
     call s:echo(msg, 'echo')
   endif
