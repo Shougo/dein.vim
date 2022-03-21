@@ -875,24 +875,20 @@ function! s:check_diff(plugins) abort
     " Note: truncate diff
     let diff = diff[:1000]
 
-    if exists('*bufadd') && exists('*appendbufline')
-      " Split buffer
-      let bufname = 'dein-diff'
-      if !bufexists(bufname)
-        let bufnr = bufadd(bufname)
-      else
-        let bufnr = bufnr(bufname)
-      endif
-
-      if bufwinnr(bufnr) < 0
-        execute 'sbuffer +setlocal\ filetype=diff\ buftype=nofile' bufnr
-      endif
-
-      call appendbufline(bufnr, '$', split(diff, '\n'))
+    " Split buffer
+    let bufname = 'dein-diff'
+    if !bufexists(bufname)
+      let bufnr = bufadd(bufname)
     else
-      echo printf("%s: The documentation is updated\n%s\n\n",
-            \ plugin.name, diff)
+      let bufnr = bufnr(bufname)
     endif
+
+    if bufwinnr(bufnr) < 0
+      let cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile'
+      execute printf('sbuffer +%s', escape(cmd, ' ')) bufnr
+    endif
+
+    call appendbufline(bufnr, '$', split(diff, '\n'))
   endfor
 endfunction
 
