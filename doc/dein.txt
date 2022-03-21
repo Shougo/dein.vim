@@ -542,8 +542,7 @@ g:dein#inline_vimrcs
 					*g:dein#install_check_diff*
 g:dein#install_check_diff
 		It checks plugins documentation diff when updated plugins.
-		Note: If |appendbufline()| exists, dein outputs the diff to
-		new buffer.
+		Note: Dein outputs the diff to new buffer in the background.
 
 		Defaults: v:false
 
