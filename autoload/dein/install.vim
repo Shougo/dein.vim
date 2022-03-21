@@ -823,9 +823,9 @@ function! s:lock_revision(process, context) abort
   endif
 endfunction
 function! s:get_updated_message(context, plugins) abort
-  if empty(a:plugins)
-    return ''
-  endif
+  "if empty(a:plugins)
+  "  return ''
+  "endif
 
   " Diff check
   if g:dein#install_check_diff
@@ -858,6 +858,7 @@ function! s:get_errored_message(plugins) abort
 
   return msg
 endfunction
+
 function! s:check_diff(plugins) abort
   for plugin in a:plugins
     let type = dein#util#_get_type(plugin.type)
@@ -865,31 +866,36 @@ function! s:check_diff(plugins) abort
       continue
     endif
 
-    let diff = s:system_cd(
-          \ type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev),
-          \ plugin.path)
-    if diff ==# ''
-      continue
-    endif
-
-    " Note: truncate diff
-    let diff = diff[:1000]
-
-    " Split buffer
-    let bufname = 'dein-diff'
-    if !bufexists(bufname)
-      let bufnr = bufadd(bufname)
-    else
-      let bufnr = bufnr(bufname)
-    endif
-
-    if bufwinnr(bufnr) < 0
-      let cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile'
-      execute printf('sbuffer +%s', escape(cmd, ' ')) bufnr
-    endif
-
-    call appendbufline(bufnr, '$', split(diff, '\n'))
+    " Note: execute diff command in background
+    let cmd = type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev)
+    let cwd = getcwd()
+    try
+      call dein#install#_cd(plugin.path)
+      call s:get_job().start(
+            \ s:convert_args(cmd), {
+            \   'on_stdout': function('s:check_diff_on_out')
+            \ })
+    finally
+      call dein#install#_cd(cwd)
+    endtry
   endfor
+endfunction
+function! s:check_diff_on_out(data) abort
+  let bufname = 'dein-diff'
+  if !bufexists(bufname)
+    let bufnr = bufadd(bufname)
+  else
+    let bufnr = bufnr(bufname)
+  endif
+
+  if bufwinnr(bufnr) < 0
+    let cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile'
+    execute printf('sbuffer +%s', escape(cmd, ' ')) bufnr
+  endif
+
+  let current = getbufline(bufnr, '$')[0]
+  call setbufline(bufnr, '$', current . a:data[0])
+  call appendbufline(bufnr, '$', a:data[1:])
 endfunction
 
 
