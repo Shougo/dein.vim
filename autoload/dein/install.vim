@@ -1312,11 +1312,6 @@ function! s:done(context) abort
   let s:failed_plugins = map(copy(a:context.errored_plugins),
         \ { _, val -> val.name })
 
-  if !has('vim_starting')
-    call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
-    call s:notify(s:get_errored_message(a:context.errored_plugins))
-  endif
-
   if !empty(a:context.synced_plugins)
     call dein#install#_recache_runtimepath()
 
@@ -1346,6 +1341,11 @@ function! s:done(context) abort
         call s:call_done_update_hooks(done_update_plugins)
       endif
     endif
+  endif
+
+  if !has('vim_starting')
+    call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
+    call s:notify(s:get_errored_message(a:context.errored_plugins))
   endif
 
   redraw | echo ''
