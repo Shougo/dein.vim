@@ -1001,9 +1001,7 @@ hook_add	(String) or (Function)
 <
 					*dein-options-hook_done_update*
 hook_done_update (String) or (Function)
-		It is executed after are updated and before
-		|dein-options-build|.
-		Note: The plugin may not be sourced.
+		It is executed after plugins are sourced and updated.
 
 					*dein-options-hook_post_source*
 hook_post_source (String) or (Function)
@@ -1016,7 +1014,9 @@ hook_post_source (String) or (Function)
 <
 					*dein-options-hook_post_update*
 hook_post_update (String) or (Function)
-		It is executed after plugins are sourced and updated.
+		It is executed after are updated and before
+		|dein-options-build|.
+		Note: The plugin may not be sourced.
 
 						*dein-options-hook_source*
 hook_source	(String) or (Function)
