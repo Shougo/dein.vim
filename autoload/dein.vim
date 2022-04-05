@@ -151,3 +151,6 @@ endfunction
 function! dein#deno_cache(...) abort
   call dein#install#_deno_cache(get(a:000, 0, []))
 endfunction
+function! dein#post_sync(plugins) abort
+  call dein#install#_post_sync(a:plugins)
+endfunction
