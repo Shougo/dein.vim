@@ -1184,6 +1184,39 @@ function! dein#install#_deno_cache(...) abort
   endfor
 endfunction
 
+function! dein#install#_post_sync(plugins) abort
+  if empty(a:plugins)
+    return
+  endif
+
+  call dein#install#_recache_runtimepath()
+
+  call dein#install#_deno_cache(a:plugins)
+
+  call dein#source(a:plugins)
+
+  " Execute done_update hooks
+  let done_update_plugins = filter(dein#util#_get_plugins(a:plugins),
+        \ { _, val -> has_key(val, 'hook_done_update') })
+  if !empty(done_update_plugins)
+    if has('vim_starting')
+      let s:done_updated_plugins = done_update_plugins
+      autocmd dein VimEnter * call s:call_done_update_hooks(
+            \ s:done_updated_plugins)
+    else
+      " Reload plugins to execute hooks
+      runtime! plugin/**/*.vim
+
+      if has('nvim')
+        " Neovim loads lua files at startup
+        runtime! plugin/**/*.lua
+      endif
+
+      call s:call_done_update_hooks(done_update_plugins)
+    endif
+  endif
+endfunction
+
 function! s:install_blocking(context) abort
   try
     while 1
@@ -1313,34 +1346,8 @@ function! s:done(context) abort
         \ { _, val -> val.name })
 
   if !empty(a:context.synced_plugins)
-    call dein#install#_recache_runtimepath()
-
     let names = map(copy(a:context.synced_plugins), { _, val -> val.name })
-
-    call dein#install#_deno_cache(names)
-
-    call dein#source(names)
-
-    " Execute done_update hooks
-    let done_update_plugins = filter(copy(a:context.synced_plugins),
-          \ { _, val -> has_key(val, 'hook_done_update') })
-    if !empty(done_update_plugins)
-      if has('vim_starting')
-        let s:done_updated_plugins = done_update_plugins
-        autocmd dein VimEnter * call s:call_done_update_hooks(
-              \ s:done_updated_plugins)
-      else
-        " Reload plugins to execute hooks
-        runtime! plugin/**/*.vim
-
-        if has('nvim')
-          " Neovim loads lua files at startup
-          runtime! plugin/**/*.lua
-        endif
-
-        call s:call_done_update_hooks(done_update_plugins)
-      endif
-    endif
+    call dein#install#_post_sync(names)
   endif
 
   if !has('vim_starting')

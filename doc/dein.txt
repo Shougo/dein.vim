@@ -396,6 +396,12 @@ dein#plugins2toml({plugins})
 		Returns the toml configurations for {plugins}
 		{plugins} is the plugins dictionary from |dein#get()|.
 
+							*dein#post_sync()*
+dein#post_sync({plugins})
+		Execute an process needed after the plugins are updated.
+		It can be used to create third-party dein upgrader.
+		{plugins} is the plugins name list that was updated.
+
 							*dein#reinstall()*
 dein#reinstall({plugins})
 		Reinstall the plugins.
