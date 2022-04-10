@@ -1,9 +1,3 @@
-"=============================================================================
-" FILE: install.vim
-" AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license
-"=============================================================================
-
 " Variables
 let s:global_context = {}
 let s:log = []
@@ -112,15 +106,15 @@ function! s:update_loop(context) abort
   return errored
 endfunction
 
-function! dein#install#_check_update(plugins, force, async) abort
+function! dein#install#_get_updated_plugins(plugins, force, async) abort
   if g:dein#install_github_api_token ==# ''
     call s:error('You need to set g:dein#install_github_api_token' .
           \ ' for the feature.')
-    return
+    return []
   endif
   if !executable(g:dein#install_curl_command)
     call s:error('curl must be executable for the feature.')
-    return
+    return []
   endif
 
   let context = s:init_context(a:plugins, 'check_update', 0)
@@ -257,6 +251,10 @@ function! dein#install#_check_update(plugins, force, async) abort
   " Clear global context
   let s:global_context = {}
 
+  return updated
+endfunction
+function! dein#install#_check_update(plugins, force, async) abort
+  let updated = dein#install#_get_updated_plugins(a:plugins, a:force, a:async)
   if empty(updated)
     call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     return
