@@ -150,6 +150,5 @@ function! dein#post_sync(plugins) abort
 endfunction
 function! dein#get_updated_plugins(...) abort
   return dein#install#_get_updated_plugins(
-        \ get(a:000, 1, []), get(a:000, 0, v:false),
-        \ dein#install#_is_async())
+        \ get(a:000, 0, []), dein#install#_is_async())
 endfunction

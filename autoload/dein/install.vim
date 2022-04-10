@@ -106,7 +106,7 @@ function! s:update_loop(context) abort
   return errored
 endfunction
 
-function! dein#install#_get_updated_plugins(plugins, force, async) abort
+function! dein#install#_get_updated_plugins(plugins, async) abort
   if g:dein#install_github_api_token ==# ''
     call s:error('You need to set g:dein#install_github_api_token' .
           \ ' for the feature.')
@@ -254,7 +254,7 @@ function! dein#install#_get_updated_plugins(plugins, force, async) abort
   return updated
 endfunction
 function! dein#install#_check_update(plugins, force, async) abort
-  let updated = dein#install#_get_updated_plugins(a:plugins, a:force, a:async)
+  let updated = dein#install#_get_updated_plugins(a:plugins, a:async)
   if empty(updated)
     call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     return
