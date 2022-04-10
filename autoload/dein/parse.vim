@@ -1,9 +1,3 @@
-"=============================================================================
-" FILE: parse.vim
-" AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license
-"=============================================================================
-
 " Global options definition."
 let g:dein#enable_name_conversion =
       \ get(g:, 'dein#enable_name_conversion', v:false)

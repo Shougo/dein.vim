@@ -1,9 +1,3 @@
-"=============================================================================
-" FILE: autoload.vim
-" AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license
-"=============================================================================
-
 function! dein#autoload#_source(...) abort
   let plugins = empty(a:000) ? values(g:dein#_plugins) :
         \ dein#util#_convert2list(a:1)

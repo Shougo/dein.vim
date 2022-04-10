@@ -1,9 +1,3 @@
-"=============================================================================
-" FILE: util.vim
-" AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
-" License: MIT license
-"=============================================================================
-
 let s:is_windows = has('win32') || has('win64')
 let s:merged_length = 3
 
