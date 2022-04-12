@@ -325,6 +325,12 @@ function! s:parse_lazy(plugin) abort
   if has_key(a:plugin, 'on_map')
     call s:generate_dummy_mappings(a:plugin)
   endif
+
+  if has_key(a:plugin, 'on_lua')
+    for mod in a:plugin.on_lua
+      let g:dein#_on_lua_plugins[mod] = v:true
+    endfor
+  endif
 endfunction
 function! s:generate_dummy_commands(plugin) abort
   let a:plugin.dummy_commands = []

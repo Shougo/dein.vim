@@ -287,6 +287,7 @@ function! dein#util#_save_state(is_starting) abort
         \ 'let g:dein#_base_path = ' . string(g:dein#_base_path),
         \ 'let g:dein#_runtime_path = ' . string(g:dein#_runtime_path),
         \ 'let g:dein#_cache_path = ' . string(g:dein#_cache_path),
+        \ 'let g:dein#_on_lua_plugins = ' . string(g:dein#_on_lua_plugins),
         \ 'let &runtimepath = ' . string(&runtimepath),
         \ ]
 

@@ -847,7 +847,8 @@ on_lua		(List) or (String)
 		If it is matched to the required lua module root, dein will
 		call |dein#source()|.
 		Note: It is for neovim only.
-		Note: It does not work for neovim standard modules.
+		Note: It does not work for neovim standard modules and async
+		loading modules.
 
 							*dein-options-on_map*
 on_map		(Dictionary) or (List) or (String)
