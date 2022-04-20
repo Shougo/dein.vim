@@ -90,7 +90,7 @@ function! dein#util#_notify(msg) abort
     endif
   else
     if dein#is_available('vim-notification') ||
-        \ exists('g:loaded_notification'))
+        \ exists('g:loaded_notification')
       " Use vim-notification plugin
       call notification#show({
             \ 'text': a:msg,
