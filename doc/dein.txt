@@ -527,21 +527,12 @@ g:dein#enable_name_conversion
 						*g:dein#enable_notification*
 g:dein#enable_notification
 		If you set it to 1, dein uses the notification feature.
-		You need the following commands to use it.
 
-		In neovim: "nvim-notify"
+		In neovim: Use "nvim-notify" or |nvim_notify()| API
 		https://github.com/rcarriga/nvim-notify
-		Note: This is experimental.
 
-		In Windows: "notify-send for Windows"
-		http://vaskovsky.net/notify-send/
-		https://github.com/vaskovsky/notify-send
-
-		In Mac: "terminal-notifier" or "osascript" command
-		https://github.com/julienXX/terminal-notifier
-		Note: "reattach-to-user-namespace" command is needed in tmux.
-
-		In Linux: "notify-send" command
+		In Vim: Use "vim-notification" or |popup_notification()| API
+		https://github.com/mattn/vim-notification
 
 		Defaults: v:false
 
@@ -661,9 +652,9 @@ g:dein#notification_icon
 						*g:dein#notification_time*
 g:dein#notification_time
 		This is the time the notification should be displayed in
-		seconds.  For Linux and Windows only.
+		milli seconds.
 
-		Default: 2
+		Default: 2000
 
 							*g:dein#plugin*
 g:dein#plugin
@@ -1485,6 +1476,9 @@ A: >
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
+
+2022.04.20
+* Use Vim/neovim standard API for notification instead of commands.
 
 2021.09.20
 * Remove "dein-options-on_i".

@@ -69,7 +69,7 @@ function! dein#util#_notify(msg) abort
   call dein#util#_set_default(
         \ 'g:dein#notification_icon', '')
   call dein#util#_set_default(
-        \ 'g:dein#notification_time', 2)
+        \ 'g:dein#notification_time', 2000)
 
   if !g:dein#enable_notification || a:msg ==# ''
     call dein#util#_error(a:msg)
@@ -78,44 +78,31 @@ function! dein#util#_notify(msg) abort
 
   let title = '[dein]'
 
-  if has('nvim') && dein#util#_luacheck('notify')
-    " Use nvim-notify plugin
-    call luaeval('require("notify")(_A.msg, "info", {'.
-          \ 'timeout=vim.g["dein#notification_time"] * 1000,'.
-          \ 'title=_A.title })',
-          \ { 'msg': a:msg, 'title': title })
-    return
-  endif
-
-  if has('vim_starting') && !has('gui_running')
-    call dein#util#_error(a:msg)
-    return
-  endif
-
-  let icon = dein#util#_expand(g:dein#notification_icon)
-
-  let cmd = []
-  if executable('notify-send')
-    let cmd = ['notify-send', '-t', g:dein#notification_time * 1000]
-    if icon !=# ''
-      let cmd += ['-i', icon]
-    endif
-    let cmd += [title, a:msg]
-  elseif dein#util#_is_mac()
-    let cmd = []
-    if executable('terminal-notifier')
-      let cmd += ['terminal-notifier', '-title', 'title', '-message', a:msg]
-      if icon !=# ''
-        let cmd += ['-appIcon', icon]
-      endif
+  if has('nvim')
+    if dein#util#_luacheck('notify')
+      " Use nvim-notify plugin
+      call luaeval('require("notify")(_A.msg, "info", {'.
+            \ 'timeout=vim.g["dein#notification_time"],'.
+            \ 'title=_A.title })',
+            \ { 'msg': a:msg, 'title': title })
     else
-      let cmd += ['osascript', '-e', 'display notification '
-            \ . printf('"%s" with title "%s"', a:msg, title)]
+      call nvim_notify(a:msg, 1, {})
     endif
-  endif
-
-  if !empty(cmd)
-    call dein#install#_system_bg(cmd)
+  else
+    if dein#is_available('vim-notification') ||
+        \ exists('g:loaded_notification'))
+      " Use vim-notification plugin
+      call notification#show({
+            \ 'text': a:msg,
+            \ 'title': title,
+            \ 'wait': g:dein#notification_time,
+            \ })
+    else
+      call popup_notification(a:msg, {
+            \ 'title': title,
+            \ 'time': g:dein#notification_time,
+            \ })
+    endif
   endif
 endfunction
 function! dein#util#_luacheck(module) abort

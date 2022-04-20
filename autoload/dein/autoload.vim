@@ -170,7 +170,6 @@ function! dein#autoload#_on_func(name) abort
   let function_prefix = substitute(a:name, '[^#]*$', '', '')
   if function_prefix =~# '^dein#'
         \ || function_prefix =~# '^vital#'
-        \ || has('vim_starting')
     return
   endif
 
