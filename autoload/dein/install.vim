@@ -887,7 +887,7 @@ function! s:check_diff_on_out(data) abort
   endif
 
   if bufwinnr(bufnr) < 0
-    let cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile'
+    let cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile nolist'
           \ . '| syntax enable'
     execute printf('sbuffer +%s', escape(cmd, ' ')) bufnr
   endif
