@@ -1203,14 +1203,6 @@ function! dein#install#_post_sync(plugins) abort
       autocmd dein VimEnter * call s:call_done_update_hooks(
             \ s:done_updated_plugins)
     else
-      " Reload plugins to execute hooks
-      runtime! plugin/**/*.vim
-
-      if has('nvim')
-        " Neovim loads lua files at startup
-        runtime! plugin/**/*.lua
-      endif
-
       call s:call_done_update_hooks(done_update_plugins)
     endif
   endif
