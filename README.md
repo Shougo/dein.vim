@@ -4,7 +4,7 @@
 
 Please read [help](doc/dein.txt) for details.
 
-Dein.vim is a dark powered Vim/Neovim plugin manager.
+Dein.vim is a dark Deno-powered Vim/Neovim plugin manager.
 
 <!-- vim-markdown-toc GFM -->
 
