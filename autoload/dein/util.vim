@@ -387,7 +387,9 @@ function! dein#util#_begin(path, vimrcs) abort
   let rtps = dein#util#_split_rtp(&runtimepath)
   let idx = index(rtps, dein#util#_substitute_path($VIMRUNTIME))
   if idx < 0
-    call dein#util#_error('Invalid runtimepath.')
+    call dein#util#_error(printf(
+          \ '%s is not contained in "runtimepath".', $VIMRUNTIME))
+    call dein#util#_error(execute('verbose set runtimepath?'))
     return 1
   endif
   if fnamemodify(a:path, ':t') ==# 'plugin'
@@ -418,7 +420,9 @@ function! dein#util#_end() abort
   let rtps = dein#util#_split_rtp(&runtimepath)
   let index = index(rtps, g:dein#_runtime_path)
   if index < 0
-    call dein#util#_error('Invalid runtimepath.')
+    call dein#util#_error(printf(
+          \ '%s is not contained in "runtimepath".', $VIMRUNTIME))
+    call dein#util#_error(execute('verbose set runtimepath?'))
     return 1
   endif
 
