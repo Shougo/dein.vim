@@ -516,6 +516,15 @@ g:dein#download_command
 		Default: "curl --silent --location --output" or "wget -q -O"
 		or use PowerShell.
 
+					*g:dein#enable_hook_function_cache*
+g:dein#enable_hook_function_cache
+		If you set it to 1, function hooks may be used in
+		|dein#save_state()|.
+		See |dein-hooks| notes.
+		Note: lambdas are not supported.
+
+		Defaults: v:false
+
 					*g:dein#enable_name_conversion*
 g:dein#enable_name_conversion
 		If you set it to 1 and omit plugin name,
