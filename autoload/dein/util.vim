@@ -352,7 +352,6 @@ function! dein#util#_save_state(is_starting) abort
 
   let state = get(g:, 'dein#cache_directory', g:dein#_base_path)
         \ . '/state_' . g:dein#_progname . '.vim'
-  echomsg state
   call dein#util#_safe_writefile(lines, state)
 endfunction
 function! dein#util#_clear_state() abort
