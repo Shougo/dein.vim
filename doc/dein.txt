@@ -521,7 +521,7 @@ g:dein#enable_hook_function_cache
 		If you set it to 1, function hooks may be used in
 		|dein#save_state()|.
 		See |dein-hooks| notes.
-		Note: lambdas are not supported.
+		Note: |lambda| function is not supported.
 
 		Defaults: v:false
 
