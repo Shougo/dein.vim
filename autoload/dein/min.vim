@@ -85,6 +85,13 @@ function! dein#min#load_state(path, ...) abort
   if !filereadable(state) | return 1 | endif
   try
     execute 'source' fnameescape(state)
+    if get(g:, 'enable_hook_function_cache', v:false)
+      call map(g:dein#_plugins, {k,v -> empty(map(filter(['hook_add',
+        \ 'hook_source', 'hook_post_source', 'hook_post_update',
+        \ 'hook_done_source'], { _, h -> has_key(v, h)}),
+        \ { _, h -> execute('let v[h] = function("'.get(v[h], 'name').'",'.
+        \ string(get(v[h], 'args')).')')})) ? v : v})
+    endif
   catch
     if v:exception !=# 'Cache loading error'
       call dein#util#_error('Loading state error: ' . v:exception)

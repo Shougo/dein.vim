@@ -209,10 +209,15 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
     " Hooks
     for hook in filter([
           \ 'hook_add', 'hook_source',
-          \ 'hook_post_source', 'hook_post_update',
+          \ 'hook_post_source', 'hook_post_update', 'hook_done_update',
           \ ], { _, val -> has_key(plugin, val)
           \      && type(plugin[val]) == v:t_func })
-      call remove(plugin, hook)
+      let name = get(plugin[hook], 'name')
+      if name =~# '^<lambda>'
+        call remove(plugin, hook)
+      else
+        let plugin[hook] = {'name': name, 'args': get(plugin[hook], 'args')}
+      endif
     endfor
   endfor
 
@@ -310,9 +315,9 @@ function! dein#util#_save_state(is_starting) abort
     " Invalid hooks detection
     for key in keys(filter(copy(plugin),
           \ { key, val -> stridx(key, 'hook_') == 0
-          \                && type(val) != v:t_string }))
+          \   && type(val) == v:t_func && get(val, 'name') =~# '^<lambda>'}))
         call dein#util#_error(
-              \ printf('%s: "%s" must be string to save state',
+              \ printf('%s: "%s" cannot be lambda to save state',
               \        plugin.name, key))
     endfor
   endfor
