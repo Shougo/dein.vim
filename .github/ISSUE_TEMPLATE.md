@@ -1,5 +1,5 @@
-**Warning: I will close the bug issue without the minimal init.vim and the
-reproduce ways.**
+**Warning: I will close the issue without the minimal init.vim and the
+reproduction instructions.**
 
 # Problems summary
 
@@ -11,9 +11,9 @@ reproduce ways.**
 
 - OS:
 
-- Vim/neovim version:
+- neovim/Vim `:version` output:
 
-## Provide a minimal .vimrc with less than 50 lines (Required!)
+## Provide a minimal init.vim/vimrc without plugin managers (Required!)
 
 ```vim
 " Your minimal .vimrc
@@ -22,7 +22,7 @@ call dein#begin(path)
 call dein#end()
 ```
 
-## The reproduce ways from Vim starting (Required!)
+## How to reproduce the problem from neovim/Vim startup (Required!)
 
 1. foo
 2. bar
