@@ -283,15 +283,15 @@ function! dein#util#_save_state(is_starting) abort
         \ 'let &runtimepath = ' . string(&runtimepath),
         \ ]
 
-  if get(g:, 'enable_hook_function_cache', v:false)
+  if get(g:, 'dein#enable_hook_function_cache', v:false)
     let lines += [
-          \ 'let s:hook_names = ["hook_add", "hook_source",' .
-          \ '"hook_post_source", "hook_post_update", "hook_done_source"]',
           \ 'call map(g:dein#_plugins, {' .
-          \ 'k,v -> empty(map(filter(s:hook_names,' .
+          \ 'k,v -> empty(map(filter(["hook_add", "hook_source",' .
+          \ '"hook_post_source", "hook_post_update", "hook_done_source"],' .
           \ '{ _, h -> has_key(v, h)}),' .
-          \ '{ _, h -> execute("let v[h] = function(''".get(v[h], "name")' .
-          \ ' .''",''.string(get(v[h], "args")).")")' .
+          \ '{ _, h -> type(v[h]) == v:t_dict ? ' .
+          \ ' execute("let v[h] = function(''".get(v[h], "name")' .
+          \ ' ."'',".string(get(v[h], "args")).")") : v:null' .
           \ '})) ? v : v })'
           \ ]
   endif
