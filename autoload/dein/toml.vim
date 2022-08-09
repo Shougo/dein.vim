@@ -4,7 +4,7 @@
 " public api
 "
 function! dein#toml#syntax() abort
-  if has('nvim') && exists(':TSEnableAll')
+  if has('nvim') && exists(':TSBufDisable')
     TSBufDisable highlight
   endif
 
