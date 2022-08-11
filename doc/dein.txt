@@ -1483,6 +1483,12 @@ Q: I want to enable default merged config in Windows.
 A: >
 	let g:dein#default_options = { 'merged': v:true }
 
+Q: I want to use "dein.vim" in init.lua.
+
+A: You can use "dein-snip.lua".
+
+https://github.com/ryota2357/dein-snip.lua
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
