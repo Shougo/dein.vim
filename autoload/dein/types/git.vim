@@ -175,20 +175,21 @@ function! s:type.get_revision_lock_command(plugin) abort
   let rev = get(a:plugin, 'rev', '')
   if rev =~# '*'
     " Use the released tag (git 1.9.2 or above required)
-    let rev = get(split(dein#install#_system(
-          \ [self.command, 'tag', '--list',
-          \  escape(rev, '*'), '--sort', '-version:refname']),
-          \ "\n"), 0, '')
+    let output = dein#install#_system(
+          \ [self.command, 'tag', escape(rev, '*'),
+          \  '--list', '--sort', '-version:refname'])
+    let rev = get(split(output, "\n"), 0, '')
   endif
   if rev ==# ''
     " Fix detach HEAD.
     " Use symbolic-ref feature (git 1.8.7 or above required)
-    let rev = dein#install#_system([
-          \ self.command, 'symbolic-ref', '--short', 'HEAD'
-          \ ])
+    let output = dein#install#_system(
+          \ [self.command, 'symbolic-ref', '--short', 'HEAD'])
+    let rev = get(split(output, "\n"), 0, '')
     if rev =~# 'fatal: '
       " Fix "fatal: ref HEAD is not a symbolic ref" error
-      let rev = 'master'
+      " NOTE: Should specify the default branch?
+      let rev = 'main'
     endif
   endif
 

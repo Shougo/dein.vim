@@ -931,8 +931,10 @@ function! s:job_system.system(cmd) abort
   let self.candidates = []
 
   let job = s:get_job().start(
-        \ s:convert_args(a:cmd),
-        \ {'on_stdout': self.on_out})
+        \ s:convert_args(a:cmd), {
+        \   'on_stdout': self.on_out,
+        \   'on_stderr': self.on_out,
+        \ })
   let s:job_system.status = job.wait(
         \ g:dein#install_process_timeout * 1000)
   return join(s:job_system.candidates, "\n")
@@ -1562,7 +1564,14 @@ function! s:check_output(context, process) abort
        \ && get(plugin, 'rev', '') !=# ''
        \ && !get(plugin, 'local', 0)
     " Restore revision.
-    call s:lock_revision(a:process, a:context)
+    let cwd = getcwd()
+    try
+      call dein#install#_cd(plugin.path)
+
+      call s:lock_revision(a:process, a:context)
+    finally
+      call dein#install#_cd(cwd)
+    endtry
   endif
 
   let new_rev = s:get_revision_number(plugin)
