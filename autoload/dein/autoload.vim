@@ -19,7 +19,9 @@ function! dein#autoload#_source(...) abort
   let sourced = []
   for plugin in filter(plugins,
         \ { _, val -> !empty(val) && !val.sourced && val.rtp !=# ''
-        \             && (!has_key(v:val, 'if') || eval(v:val.if)) })
+        \             && (!has_key(v:val, 'if') || eval(v:val.if))
+        \             && isdirectory(v:val.path)
+        \ })
     call s:source_plugin(rtps, index, plugin, sourced)
   endfor
 

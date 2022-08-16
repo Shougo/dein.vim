@@ -12,9 +12,7 @@ function! dein#tap(name) abort
   return 1
 endfunction
 function! dein#is_sourced(name) abort
-  return has_key(g:dein#_plugins, a:name)
-        \ && isdirectory(g:dein#_plugins[a:name].path)
-        \ && g:dein#_plugins[a:name].sourced
+  return has_key(g:dein#_plugins, a:name) && g:dein#_plugins[a:name].sourced
 endfunction
 function! dein#is_available(names) abort
   for name in type(a:names) ==# v:t_list ? a:names : [a:names]

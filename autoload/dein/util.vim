@@ -450,7 +450,9 @@ function! dein#util#_end() abort
   for plugin in filter(values(g:dein#_plugins),
         \ { _, val -> !empty(val)
         \             && !val.lazy && !val.sourced && val.rtp !=# ''
-        \             && (!has_key(v:val, 'if') || eval(v:val.if)) })
+        \             && (!has_key(v:val, 'if') || eval(v:val.if))
+        \             && isdirectory(v:val.path)
+        \ })
 
     " Load dependencies
     if has_key(plugin, 'depends')
