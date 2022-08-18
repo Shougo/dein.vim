@@ -176,7 +176,7 @@ function! s:type.get_revision_lock_command(plugin) abort
   if rev =~# '*'
     " Use the released tag (git 1.9.2 or above required)
     let output = dein#install#_system(
-          \ [self.command, 'tag', escape(rev, '*'),
+          \ [self.command, 'tag', rev,
           \  '--list', '--sort', '-version:refname'])
     let rev = get(split(output, "\n"), 0, '')
   endif
