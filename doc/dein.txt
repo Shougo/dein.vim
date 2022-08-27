@@ -330,7 +330,7 @@ dein#load_rollback({rollbackfile}[, {plugins}])
 		Note: It is the dangerous command.
 
 							*dein#load_state()*
-							*dein#min#load_state()*
+						*dein#min#load_state()*
 dein#load_state({base-path})
 dein#min#load_state({base-path})
 		Load dein's state from the cache script, {base-path} is where
@@ -562,7 +562,7 @@ g:dein#install_check_diff
 
 		Defaults: v:false
 
-					*g:dein#install_check_remote_threshold*
+				*g:dein#install_check_remote_threshold*
 g:dein#install_check_remote_threshold
 		If the repository is updated newer than the threshold, use
 		strict "git ls-remote" check when |dein#check_update()|.
