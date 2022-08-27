@@ -25,10 +25,10 @@ function! s:_vital_depends() abort
         \]
 endfunction
 
-" Note:
+" NOTE:
 " Vim does not raise E902 on Unix system even the prog is not found so use a
 " custom exception instead to make the method compatible.
-" Note:
+" NOTE:
 " Vim/Neovim treat String a bit differently so prohibit String as well
 function! s:_validate_args(args) abort
   if type(a:args) != s:t_list

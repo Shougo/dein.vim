@@ -157,7 +157,7 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort
     return []
   endif
 
-  " Note: If the a:old_rev is not the ancestor of two branchs. Then do not use
+  " NOTE: If the a:old_rev is not the ancestor of two branchs. Then do not use
   " %s^.  use %s^ will show one commit message which already shown last time.
   let is_not_ancestor = dein#install#_system(
         \ self.command . ' merge-base '
@@ -238,12 +238,12 @@ function! s:is_git_dir(path) abort
 
   " Git only considers it to be a git dir if a few required files/dirs exist
   " and are accessible inside the directory.
-  " Note: we can't actually test file permissions the way we'd like to, since
+  " NOTE: We can't actually test file permissions the way we'd like to, since
   " getfperm() gives the mode string but doesn't tell us whether the user or
   " group flags apply to us. Instead, just check if dirname/. is a directory.
   " This should also check if we have search permissions.
   " I'm assuming here that dirname/. works on windows, since I can't test.
-  " Note: Git also accepts having the GIT_OBJECT_DIRECTORY env var set instead
+  " NOTE: Git also accepts having the GIT_OBJECT_DIRECTORY env var set instead
   " of using .git/objects, but we don't care about that.
   for name in ['objects', 'refs']
     if !isdirectory(s:join_paths(git_dir, name))
@@ -254,7 +254,7 @@ function! s:is_git_dir(path) abort
   " Git also checks if HEAD is a symlink or a properly-formatted file.
   " We don't really care to actually validate this, so let's just make
   " sure the file exists and is readable.
-  " Note: it may also be a symlink, which can point to a path that doesn't
+  " NOTE: It may also be a symlink, which can point to a path that doesn't
   " necessarily exist yet.
   let head = s:join_paths(git_dir, 'HEAD')
   if !filereadable(head) && getftype(head) !=# 'link'
@@ -280,7 +280,7 @@ function! s:join_paths(path1, path2) abort
     " the appropriate separator already exists
     return a:path1 . a:path2
   else
-    " note: I'm assuming here that '/' is always valid as a directory
+    " NOTE: I'm assuming here that '/' is always valid as a directory
     " separator on Windows. I know Windows has paths that start with \\?\ that
     " diasble behavior like that, but I don't know how Vim deals with that.
     return a:path1 . '/' . a:path2

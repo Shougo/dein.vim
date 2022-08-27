@@ -136,7 +136,7 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
         continue
       endif
 
-      " Note: "repository" API is faster than "search" API
+      " NOTE: "repository" API is faster than "search" API
       let query .= printf('a%d:repository(owner:\"%s\", name: \"%s\")' .
             \ '{ pushedAt nameWithOwner }',
             \ plug_index, plugin_names[-2], plugin_names[-1])
@@ -199,7 +199,7 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
   endfor
 
   " Get the last updated time by rollbackfile timestamp.
-  " Note: .git timestamp may be changed by git commands.
+  " NOTE: .git timestamp may be changed by git commands.
   let rollbacks = reverse(sort(glob(
         \ s:get_rollback_directory() . '/*', v:true, v:true)))
   let rollback_time = empty(rollbacks) ? -1 : getftime(rollbacks[0])
@@ -227,7 +227,7 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
       call add(updated, plugin)
     elseif abs(local_update - check_pushed[plugin.repo]) <
           \ g:dein#install_check_remote_threshold
-      " Note: github Graph QL API may use cached value
+      " NOTE: github Graph QL API may use cached value
       " If the repository is updated recently, use "git ls-remote" instead.
       let remote = matchstr(s:system_cd(
             \ ['git', 'ls-remote', 'origin', 'HEAD'], plugin.path), '^\x\+')
@@ -264,7 +264,7 @@ function! dein#install#_check_update(plugins, force, async) abort
         \ string(map(copy(updated), { _, val -> val.name }))
   call s:log(updated_msg)
 
-  " Note: Use echomsg to display it in confirm
+  " NOTE: Use echomsg to display it in confirm
   call s:echo(updated_msg, 'echomsg')
   if !a:force && confirm(
         \ 'Updated plugins are exists. Update now?', "yes\nNo", 2) != 1
@@ -605,7 +605,7 @@ endfunction
 
 function! dein#install#_polling() abort
   if exists('+guioptions')
-    " Note: guioptions-! does not work in async state
+    " NOTE: guioptions-! does not work in async state
     let save_guioptions = &guioptions
     set guioptions-=!
   endif
@@ -623,7 +623,7 @@ function! dein#install#_remote_plugins() abort
   endif
 
   if has('vim_starting')
-    " Note: UpdateRemotePlugins is not defined in vim_starting
+    " NOTE: UpdateRemotePlugins is not defined in vim_starting
     autocmd dein VimEnter * silent call dein#remote_plugins()
     return
   endif
@@ -864,7 +864,7 @@ function! s:check_diff(plugins) abort
       continue
     endif
 
-    " Note: execute diff command in background
+    " NOTE: execute diff command in background
     let cmd = type.get_diff_command(plugin, plugin.old_rev, plugin.new_rev)
     let cwd = getcwd()
     try
@@ -1011,14 +1011,14 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   if g:dein#install_copy_vim
-    " Note: For neovim, vim.loop.fs_{sym}link is faster
+    " NOTE: For neovim, vim.loop.fs_{sym}link is faster
     return dein#install#_copy_directories_vim(a:srcs, a:dest)
   endif
 
   if dein#util#_is_windows() && has('python3')
         \ && dein#install#_python_version_check()
     " In Windows, copy directory is too slow!
-    " Note: Python 3.8.0 is needed
+    " NOTE: Python 3.8.0 is needed
     return dein#install#_copy_directories_py(a:srcs, a:dest)
   endif
 
@@ -1154,7 +1154,7 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
   endfor
 endfunction
 function! dein#install#_copy_file_vim(src, dest) abort
-  " Note: In Windows, v:lua.vim.loop.fs_symlink does not work.
+  " NOTE: In Windows, v:lua.vim.loop.fs_symlink does not work.
   if has('nvim')
     if dein#util#_is_windows()
       call v:lua.vim.loop.fs_link(a:src, a:dest)

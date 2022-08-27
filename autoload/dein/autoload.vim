@@ -74,7 +74,7 @@ function! dein#autoload#_source(...) abort
               \ { _, val -> !denops#plugin#is_loaded(val) })
 
           if denops#server#status() ==# 'running'
-            " Note: denops#plugin#register() may be failed
+            " NOTE: denops#plugin#register() may be failed
             silent! call denops#plugin#register(name, { 'mode': 'skip' })
           endif
           call denops#plugin#wait(name)
@@ -88,6 +88,7 @@ function! dein#autoload#_source(...) abort
 
   let is_reset = s:is_reset_ftplugin(sourced)
   if is_reset
+    " NOTE: filetype plugins must be reset to load new ftplugins
     call s:reset_ftplugin()
   endif
 
@@ -248,7 +249,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
   call feedkeys(cnt, 'n')
 
   if a:mode ==# 'o' && v:operator ==# 'c'
-    " Note: This is the dirty hack.
+    " NOTE: This is the dirty hack.
     execute matchstr(s:mapargrec(a:mapping . input, a:mode),
           \ ':<C-u>\zs.*\ze<CR>')
   else
@@ -291,7 +292,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
 
   let index = a:index
 
-  " Note: on_source must sourced after depends
+  " NOTE: on_source must sourced after depends
   for on_source in filter(dein#util#_get_lazy_plugins(),
         \ { _, val -> index(get(val, 'on_source', []), a:plugin.name) >= 0 })
     if s:source_plugin(a:rtps, index, on_source, a:sourced)

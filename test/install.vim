@@ -30,7 +30,7 @@ function! s:suite.before_each() abort
   let g:dein#enable_notification = v:false
 endfunction
 
-" Note: It must be checked in the first
+" NOTE: It must be checked in the first
 function! s:suite.install() abort
   let g:dein#install_progress_type = 'title'
   let g:dein#enable_notification = v:true
