@@ -1489,6 +1489,13 @@ A: You can use "dein-snip.lua".
 
 https://github.com/ryota2357/dein-snip.lua
 
+Q: My `autocmd FileType` is overwritten by default ftplugins.
+https://github.com/Shougo/dein.vim/issues/460
+
+A: It is the feature of dein to load ftplugins lazily.
+You should not use `autocmd Filetype` to overwrite ftplugin configuration.
+You need to use "after/ftplugin" instead.
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
