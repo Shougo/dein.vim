@@ -691,7 +691,7 @@ endfunction
 function! s:suite.ftplugin() abort
   call dein#begin(tempname())
 
-  let g:dein#_ftplugin = {
+  let g:dein#ftplugin = {
         \ '_': 'echo 5555',
         \ 'python': 'setlocal foldmethod=indent',
         \ }
@@ -705,11 +705,11 @@ function! s:suite.ftplugin() abort
         \ readfile(dein#util#_get_runtime_path() . '/after/ftplugin.vim'),
         \ dein#install#_get_default_ftplugin() + [
         \ 'function! s:after_ftplugin()',
-        \ ] + split(get(g:dein#_ftplugin, '_', []), '\n') + ['endfunction'])
+        \ ] + split(get(g:dein#ftplugin, '_', []), '\n') + ['endfunction'])
 
   let python = readfile(dein#util#_get_runtime_path()
         \ . '/after/ftplugin/python.vim')
-  call s:assert.equals(python[-1], g:dein#_ftplugin['python'])
+  call s:assert.equals(python[-1], g:dein#ftplugin['python'])
   call s:assert.false(filereadable(dein#util#_get_runtime_path()
         \ . '/after/ftplugin/_.vim'))
 endfunction

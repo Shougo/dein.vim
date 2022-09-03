@@ -386,13 +386,13 @@ endfunction
 function! s:merge_ftplugin(ftplugin) abort
   let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
   for [ft, val] in items(a:ftplugin)
-    if !has_key(g:dein#_ftplugin, ft)
-      let g:dein#_ftplugin[ft] = val
+    if !has_key(g:dein#ftplugin, ft)
+      let g:dein#ftplugin[ft] = val
     else
-      let g:dein#_ftplugin[ft] .= "\n" . val
+      let g:dein#ftplugin[ft] .= "\n" . val
     endif
   endfor
-  call map(g:dein#_ftplugin, { _, val -> substitute(val, pattern, '', 'g') })
+  call map(g:dein#ftplugin, { _, val -> substitute(val, pattern, '', 'g') })
 endfunction
 
 function! dein#parse#_get_types() abort

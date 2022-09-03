@@ -98,10 +98,10 @@ function! s:suite.load_toml() abort
 
   call dein#begin(s:path)
   call s:assert.equals(g:dein#_hook_add, '')
-  call s:assert.equals(g:dein#_ftplugin, {})
+  call s:assert.equals(g:dein#ftplugin, {})
   call s:assert.equals(dein#load_toml(toml), 0)
   call s:assert.equals(g:dein#_hook_add, "\nlet g:foo = 0")
-  call s:assert.equals(g:dein#_ftplugin,
+  call s:assert.equals(g:dein#ftplugin,
         \ {'c': "let g:bar = 0\nlet g:bar = 0"})
   call s:assert.equals(g:dein#_multiple_plugins, [
         \ {'plugins': ['foo', 'bar'], 'hook_add': 'foo'},

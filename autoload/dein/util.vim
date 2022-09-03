@@ -223,7 +223,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
 
   call dein#util#_safe_mkdir(g:dein#_base_path)
 
-  let src = [plugins, g:dein#_ftplugin]
+  let src = [plugins, g:dein#ftplugin]
   call dein#util#_safe_writefile(
         \ has('nvim') ? [json_encode(src)] : [js_encode(src)],
         \ get(g:, 'dein#cache_directory', g:dein#_base_path)
@@ -275,7 +275,7 @@ function! dein#util#_save_state(is_starting) abort
         \      string(g:dein#_vimrcs) .')',
         \ "if empty(s:plugins) | throw 'Cache loading error' | endif",
         \ 'let g:dein#_plugins = s:plugins',
-        \ 'let g:dein#_ftplugin = s:ftplugin',
+        \ 'let g:dein#ftplugin = s:ftplugin',
         \ 'let g:dein#_base_path = ' . string(g:dein#_base_path),
         \ 'let g:dein#_runtime_path = ' . string(g:dein#_runtime_path),
         \ 'let g:dein#_cache_path = ' . string(g:dein#_cache_path),

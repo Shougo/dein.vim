@@ -545,6 +545,22 @@ g:dein#enable_notification
 
 		Defaults: v:false
 
+						*g:dein#ftplugin*
+g:dein#ftplugin
+		"_" key is executed after all ftplugin.
+		"{filetype}" key is executed {filetype} ftplugin.
+		You can define multiple filetypes by "{filetype1}_{filetype2}"
+		key.  "b:undo_ftplugin" is defined automatically.
+		Note: You need to call |dein#recache_runtimepath()| or enable
+		|g:dein#auto_recache| after vimrc is changed.
+>
+		let g:dein#ftplugin = {
+		      \ '_': 'echo 5555',
+		      \ 'python': 'setlocal foldmethod=indent',
+		      \ }
+<
+		Default: {}
+
 						*g:dein#inline_vimrcs*
 g:dein#inline_vimrcs
 		The vimrcs are sourced in |dein#end()| or
@@ -1077,6 +1093,7 @@ TOML							*dein-toml*
 		"{filetype}" key is executed {filetype} ftplugin.
 		You can define multiple filetypes by "{filetype1}_{filetype2}"
 		key.  "b:undo_ftplugin" is defined automatically.
+		Note: It changes |g:dein#ftplugin|.
 		Note: You need to call |dein#recache_runtimepath()| or enable
 		|g:dein#auto_recache| after vimrc is changed.
 

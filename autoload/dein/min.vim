@@ -1,14 +1,14 @@
 function! dein#min#_init() abort
   let g:dein#name = ''
   let g:dein#plugin = {}
-  let g:dein#_cache_version = 410
+  let g:dein#ftplugin = {}
+  let g:dein#_cache_version = 420
   let g:dein#_plugins = {}
   let g:dein#_multiple_plugins = []
   let g:dein#_base_path = ''
   let g:dein#_cache_path = ''
   let g:dein#_runtime_path = ''
   let g:dein#_hook_add = ''
-  let g:dein#_ftplugin = {}
   let g:dein#_called_lua = {}
   let g:dein#_off1 = ''
   let g:dein#_off2 = ''

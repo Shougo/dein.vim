@@ -559,7 +559,7 @@ function! dein#install#_get_default_ftplugin() abort
         \]
 endfunction
 function! s:generate_ftplugin() abort
-  if empty(g:dein#_ftplugin)
+  if empty(g:dein#ftplugin)
     return
   endif
 
@@ -567,9 +567,9 @@ function! s:generate_ftplugin() abort
   let after = dein#util#_get_runtime_path() . '/after/ftplugin'
   call dein#util#_safe_mkdir(after)
 
-  " Merge g:dein#_ftplugin
+  " Merge g:dein#ftplugin
   let ftplugin = {}
-  for [key, string] in items(g:dein#_ftplugin)
+  for [key, string] in items(g:dein#ftplugin)
     for ft in (key ==# '_' ? ['_'] : split(key, '_'))
       if !has_key(ftplugin, ft)
         let ftplugin[ft] = (ft ==# '_') ? [] : [
