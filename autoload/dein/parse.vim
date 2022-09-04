@@ -355,7 +355,9 @@ function! s:generate_dummy_mappings(plugin) abort
         \                dein#util#_convert2list(val[1])]}) :
         \ map(copy(a:plugin.on_map),
         \  { _, val -> type(val) == v:t_list ?
-        \     [split(val[0], '\zs'), val[1:]] : [['n', 'x'], [val]] })
+        \     [split(val[0], '\zs'), val[1:]] :
+        \     [['n', 'x', 'o'], [val]]
+        \  })
   for [modes, mappings] in items
     if mappings ==# ['<Plug>']
       " Use plugin name.
