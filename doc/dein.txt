@@ -15,8 +15,9 @@ Interface		|dein-interface|
   Variables		  |dein-variables|
   Options		  |dein-options|
   Toml			  |dein-toml|
-Unite Sources		|dein-unite-sources|
+Ddu Sources		|dein-ddu-sources|
 Denite Sources		|dein-denite-sources|
+Unite Sources		|dein-unite-sources|
 Configuration Examples	|dein-examples|
 Plugins merged feature	|dein-merge|
 FAQ			|dein-faq|
@@ -1169,7 +1170,26 @@ DDU SOURCES						*dein-ddu-sources*
 
 						*dein-ddu-source-dein*
 dein
+		Nominates dein plugins as items.
+
+==============================================================================
+DENITE SOURCES						*dein-denite-sources*
+
+Here let me explain about a source for denite plugin provided in dein.
+
+						*dein-denite-source-dein*
+dein
 		Nominates dein plugins as candidates.
+
+						*dein-denite-source-dein-log*
+dein/log
+		Print previous dein install logs.
+		And you can jump the diff URI in github.
+
+		If argument 1 is "!", the updated logs are displayed.
+
+		Source arguments:
+		1. "!"
 
 ==============================================================================
 UNITE SOURCES						*dein-unite-sources*
@@ -1185,25 +1205,6 @@ dein
 
 						*dein-unite-source-dein_log*
 dein_log
-		Print previous dein install logs.
-		And you can jump the diff URI in github.
-
-		If argument 1 is "!", the updated logs are displayed.
-
-		Source arguments:
-		1. "!"
-
-==============================================================================
-DENITE SOURCES						*dein-denite-sources*
-
-Here let me explain about a source for denite plugin provided in dein.
-
-						*dein-denite-source-dein*
-dein
-		Nominates dein plugins as candidates.
-
-						*dein-denite-source-dein-log*
-dein/log
 		Print previous dein install logs.
 		And you can jump the diff URI in github.
 
