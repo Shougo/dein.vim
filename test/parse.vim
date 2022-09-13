@@ -67,6 +67,8 @@ function! s:suite.load_toml() abort
   let toml = tempname()
   call writefile([
         \ '# TOML sample',
+        \ 'lua_add = "foo"',
+        \ '',
         \ 'hook_add = "let g:foo = 0"',
         \ '',
         \ '[ftplugin]',
@@ -89,6 +91,10 @@ function! s:suite.load_toml() abort
         \ '\',
         \ "echo",
         \ "'''",
+        \ "lua_source = '''",
+        \ "foo",
+        \ "bar",
+        \ "'''",
         \ '[plugins.ftplugin]',
         \ 'c = "let g:bar = 0"',
         \ '[[multiple_plugins]]',
@@ -100,7 +106,8 @@ function! s:suite.load_toml() abort
   call s:assert.equals(g:dein#_hook_add, '')
   call s:assert.equals(g:dein#ftplugin, {})
   call s:assert.equals(dein#load_toml(toml), 0)
-  call s:assert.equals(g:dein#_hook_add, "\nlet g:foo = 0")
+  call s:assert.equals(g:dein#_hook_add,
+        \ "\nlua <<EOF\nfoo\nEOF\nlet g:foo = 0")
   call s:assert.equals(g:dein#ftplugin,
         \ {'c': "let g:bar = 0\nlet g:bar = 0"})
   call s:assert.equals(g:dein#_multiple_plugins, [
@@ -111,7 +118,7 @@ function! s:suite.load_toml() abort
   call s:assert.equals(dein#get('neosnippet.vim').hook_add,
         \ "\"echo\n\"comment\necho\n")
   call s:assert.equals(dein#get('neosnippet.vim').hook_source,
-        \ "echo\necho\n")
+        \ "lua <<EOF\nfoo\nbar\nEOF\necho\necho\n")
 endfunction
 
 function! s:suite.error_toml() abort

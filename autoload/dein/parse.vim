@@ -179,9 +179,15 @@ function! dein#parse#_load_toml(filename, default) abort
   endif
 
   " Parse.
+  if has_key(toml, 'lua_add')
+    let g:dein#_hook_add .= printf("\nlua <<EOF\n%s\nEOF",
+          \ substitute(toml.lua_add, '\n\s*\\', '', 'g'),
+          \ )
+  endif
   if has_key(toml, 'hook_add')
-    let g:dein#_hook_add .= "\n" . substitute(
-          \ toml.hook_add, '\n\s*\\', '', 'g')
+    let g:dein#_hook_add .= printf("\n%s",
+          \ substitute(toml.hook_add, '\n\s*\\', '', 'g'),
+          \ )
   endif
   if has_key(toml, 'ftplugin')
     call s:merge_ftplugin(toml.ftplugin)
@@ -203,6 +209,13 @@ function! dein#parse#_load_toml(filename, default) abort
         call dein#util#_error('No repository plugin data: ' . a:filename)
         return 1
       endif
+
+      " Convert lua_xxx keys
+      for [key, val] in filter(items(plugin), { _, v -> v[0] =~# '^lua_' })
+        let hook_key = substitute(key, '^lua_', 'hook_', '')
+        let plugin[hook_key] = printf(
+              \ "lua <<EOF\n%sEOF\n%s", val, get(plugin, hook_key, ''))
+      endfor
 
       let options = extend(plugin, a:default, 'keep')
       call dein#add(plugin.repo, options)

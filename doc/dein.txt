@@ -1079,6 +1079,12 @@ hook_source	(String) or (Function)
 		call dein#end()
 		call dein#call_hook('source')
 <
+							*dein-options-lua_xxx*
+lua_xxx		(String)
+		Lua lauguage string hook instead of Vim script.
+		It is converted to "hook_xxx" key.
+		Note: It is only available in |dein-toml|.
+
 ------------------------------------------------------------------------------
 TOML							*dein-toml*
 
@@ -1100,6 +1106,11 @@ TOML							*dein-toml*
 							*dein-toml-hook_add*
 		hook_add	(String)
 		It is the global |dein-options-hook_add|.
+		It is executed in |dein#end()|.
+
+							*dein-toml-lua_add*
+		lua_add	(String)
+		It is the global |dein-options-hook_add| in Lua language.
 		It is executed in |dein#end()|.
 
 							*dein-toml-plugins*
