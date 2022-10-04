@@ -106,7 +106,8 @@ function! dein#util#_notify(msg) abort
   endif
 endfunction
 function! dein#util#_luacheck(module) abort
-  return luaeval('pcall(require, _A.module)', { 'module': a:module })
+  return has('nvim') &&
+        \ luaeval('pcall(require, _A.module)', { 'module': a:module })
 endfunction
 
 
