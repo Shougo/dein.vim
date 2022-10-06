@@ -86,7 +86,7 @@ function! dein#util#_notify(msg) abort
             \ 'title=_A.title })',
             \ { 'msg': a:msg, 'title': title })
     else
-      call nvim_notify(a:msg, 1, {})
+      call nvim_notify(a:msg, -1, { 'title': title })
     endif
   else
     if dein#is_available('vim-notification') ||
