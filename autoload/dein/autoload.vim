@@ -240,10 +240,11 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
   if a:mode ==# 'v' || a:mode ==# 'x'
     call feedkeys('gv', 'n')
   elseif a:mode ==# 'o' && v:operator !=# 'c'
-    " TODO: omap
-    " v:prevcount?
+    let save_operator = v:operator
+    call feedkeys("\<Esc>", 'in')
+
     " Cancel waiting operator mode.
-    call feedkeys(v:operator, 'm')
+    call feedkeys(save_operator, 'imx')
   endif
 
   call feedkeys(cnt, 'n')
