@@ -114,11 +114,14 @@ function! s:type.get_sync_command(plugin) abort
     call add(commands, 'clone')
     call add(commands, '--recursive')
 
-    let depth = get(a:plugin, 'type__depth',
-          \ g:dein#types#git#clone_depth)
-    if depth > 0 && get(a:plugin, 'rev', '') ==# ''
-          \ && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
+    let depth = get(a:plugin, 'type__depth', g:dein#types#git#clone_depth)
+    if depth > 0 && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
       call add(commands, '--depth=' . depth)
+
+      if get(a:plugin, 'rev', '') !=# ''
+        call add(commands, '--branch')
+        call add(commands, a:plugin.rev)
+      endif
     endif
 
     call add(commands, self.get_uri(a:plugin.repo, a:plugin))
@@ -133,16 +136,24 @@ function! s:type.get_sync_command(plugin) abort
     let pull_cmd = git . ' ' . g:dein#types#git#pull_command
     let submodule_cmd = git . ' submodule update --init --recursive'
 
+    " Note: "remote_origin_cmd" does not work when "depth" is specified.
+    let depth = get(a:plugin, 'type__depth', g:dein#types#git#clone_depth)
+
     if dein#util#_is_powershell()
       let cmd = fetch_cmd
-      let cmd .= '; if ($?) { ' . remote_origin_cmd . ' }'
+      if depth <= 0
+        let cmd .= '; if ($?) { ' . remote_origin_cmd . ' }'
+      endif
       let cmd .= '; if ($?) { ' . pull_cmd . ' }'
       let cmd .= '; if ($?) { ' . submodule_cmd . ' }'
     else
       let and = dein#util#_is_fish() ? '; and ' : ' && '
-      let cmd = join([
-            \ fetch_cmd, remote_origin_cmd, pull_cmd, submodule_cmd
-            \ ], and)
+      let cmds = [fetch_cmd]
+      if depth <= 0
+        call add(cmds, remote_origin_cmd)
+      endif
+      let cmds += [pull_cmd, submodule_cmd]
+      let cmd = join(cmds, and)
     endif
 
     return cmd
