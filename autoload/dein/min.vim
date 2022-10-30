@@ -51,8 +51,7 @@ function! dein#min#_init() abort
 table.insert(package.loaders, 1, (function()
   return function(mod_name)
     mod_root = string.match(mod_name, '^[^./]+')
-    plugins = vim.g['dein#_on_lua_plugins']
-    if plugins[mod_root] or plugins[mod_name] then
+    if vim.g['dein#_on_lua_plugins'][mod_root] then
       vim.fn['dein#autoload#_on_lua'](mod_name)
     end
     return nil

@@ -340,7 +340,8 @@ function! s:parse_lazy(plugin) abort
   endif
 
   if has_key(a:plugin, 'on_lua')
-    for mod in a:plugin.on_lua
+    " NOTE: Use module root
+    for mod in map(a:plugin.on_lua, { _, val -> matchstr(val, '^[^./]\+') })
       let g:dein#_on_lua_plugins[mod] = v:true
     endfor
   endif
