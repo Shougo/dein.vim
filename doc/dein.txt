@@ -839,7 +839,9 @@ on_event	(String) or (List)
 on_func		(List) or (String)
 		If it is matched to the called function, dein will call
 		|dein#source()|.
-		Note: It does not work when Vim initialised.
+		Note: It does not work when Vim initialized.
+		Note: It does not work for Vim9 script. It is |FuncUndefined|
+		limitation.
 
 							*dein-options-on_ft*
 on_ft		(List) or (String)
