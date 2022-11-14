@@ -1,85 +1,253 @@
 #!/bin/sh
-# Standalone installer for Unixs
-# Original version is created by shoma2da
-# https://github.com/shoma2da/neobundle_installer
 
 set -e
 
-if [ $# -ne 1 ]; then
-  echo "You must specify the installation directory!"
-  exit 1
-fi
+KEEP_CONFIG=no
 
-# Convert the installation directory to absolute path
-case $1 in
-  /*) PLUGIN_DIR=$1;;
-  *) PLUGIN_DIR=$PWD/$1;;
-esac
-INSTALL_DIR="${PLUGIN_DIR}/repos/github.com/Shougo/dein.vim"
-echo "Install to \"$INSTALL_DIR\"..."
-if [ -e "$INSTALL_DIR" ]; then
-  echo "\"$INSTALL_DIR\" already exists!"
-fi
+AUTHOR="Shougen"
+VERSION="2.2"
+LICENSE="MIT License"
+BRANCH="master"
+REMOTE="https://github.com/Shougo/dein.vim.git"
 
-echo ""
+# The script will need to handle the creation of the
+# directories automatically which requires two things:
+#
+# USER - The username of the current user
+# HOME - The home path of the current user
+#
+# To handle edge cases and allow the usage with an diversity
+# of systems this script uses the following commands:
+#
+# 1. id - to get most accurrate username.
+# 2. getent - to get the home path instead of ~ or pwd
+# 3. eval - to get home path in macOS
+USER=${USER:-$(id -u -n)}
+HOME=${HOME:-$(getent passwd $USER 2>/dev/null | cut -d: -f6)}
+HOME=${HOME:-$(eval echo ~$USER)}
 
-# check git command
-type git || {
-  echo 'Please install git or update your path to include the git executable!'
-  exit 1
-}
-echo ""
-
-# make plugin dir and fetch dein
-if ! [ -e "$INSTALL_DIR" ]; then
-  echo "Begin fetching dein..."
-  mkdir -p "$PLUGIN_DIR"
-  git clone --depth=1 https://github.com/Shougo/dein.vim "$INSTALL_DIR"
-  echo "Done."
-  echo ""
-fi
-
-# write initial setting for .vimrc
-echo "Please add the following settings for dein to the top of your vimrc (Vim) or init.vim (NeoVim) file:"
-{
-    echo ""
-    echo ""
-    echo "\"dein Scripts-----------------------------"
-    echo "if &compatible"
-    echo "  set nocompatible               \" Be iMproved"
-    echo "endif"
-    echo ""
-    echo "\" Required:"
-    echo "set runtimepath+=$INSTALL_DIR"
-    echo ""
-    echo "\" Required:"
-    echo "call dein#begin('$PLUGIN_DIR')"
-    echo ""
-    echo "\" Let dein manage dein"
-    echo "\" Required:"
-    echo "call dein#add('$INSTALL_DIR')"
-    echo ""
-    echo "\" Add or remove your plugins here like this:"
-    echo "\"call dein#add('Shougo/neosnippet.vim')"
-    echo "\"call dein#add('Shougo/neosnippet-snippets')"
-    echo ""
-    echo "\" Required:"
-    echo "call dein#end()"
-    echo ""
-    echo "\" Required:"
-    echo "filetype plugin indent on"
-    echo "syntax enable"
-    echo ""
-    echo "\" If you want to install not installed plugins on startup."
-    echo "\"if dein#check_install()"
-    echo "\"  call dein#install()"
-    echo "\"endif"
-    echo ""
-    echo "\"End dein Scripts-------------------------"
-    echo ""
-    echo ""
+# Helper function to verify if command exists
+is_command() {
+  command -v "$@" >/dev/null 2>&1
 }
 
-echo "Done."
+# Improve user experience formatting messages with colors.
+# Usage: echo -ne "$(ansi 32)"
+# 0: reset; 1: bold; 22: no bold; 30: grey; 31: red; 32: green; 33: yellow; 35: magenta; 36: cyan;
+ansi() {
+  [ $# -gt 0 ] || return
+  printf "\x1B[%sm" $*
+}
+# If stdout is not a terminal ignore all formatting
+[ -t 1 ] || ansi() { :; }
 
-echo "Complete setup dein!"
+reset_clb() {
+  printf '\33c\x1B[3J'
+}
+
+typography() {
+  case $1 in
+  "title")
+    reset_clb
+    echo -e "$(ansi 1 30)"
+    echo -ne "_______________________________________________________________\n"
+    echo -ne "$(ansi 1 32)"
+    echo -e " #######  ######## ### ###  ###       ###  ### ### ########### "
+    echo -e " ##!  ### ##!      ##! ##!#!###       ##!  ### ##! ##! ##! ##!"
+    echo -e " #!#  !#! #!!!:!   !!# #!##!!#!       #!#  !#! !!# #!! !#! #!#"
+    echo -e " !!:  !!! !!:      !!: !!:  !!!        !:..:!  !!: !!:     !!:"
+    echo -e " ::::::   :::::::: ::: :::   ::   ::     ::    ::: :::     :::"
+    echo -ne "$(ansi 1 30)"
+    echo -e "\n              $(ansi 0)by $AUTHOR$(ansi 30) • $(ansi 0)$LICENSE$(ansi 30) • $(ansi 0)v$VERSION$(ansi 30)"
+    echo -e "_______________________________________________________________"
+    echo -ne "$(ansi 0)\n\n"
+    ;;
+  "header")
+    reset_clb
+    echo -e "\n\n$(ansi 1)[ $2 ]$(ansi 1 0)\n"
+    ;;
+  'end')
+    echo -e "$(ansi 36)➤$(ansi 0) Installation finished.$(ansi 0)"
+    echo -e "$(ansi 36)➤$(ansi 0) Run $(ansi 36)'cat $DEIN/doc/dein.txt'$(ansi 0) for more usage information.$(ansi 0)"
+    ;;
+  "output") echo -e "$(ansi 32)\n$2\n$(ansi 0)" ;;
+  "input_opt") echo -e "$(ansi 1 35)$2$(ansi 0) $(ansi 36)$3$(ansi 0) $4" ;;
+  "input") echo -e "\n$(ansi 32)➤$(ansi 0) $2" ;;
+  'action') echo -e "$(ansi 36)➤$(ansi 0) $2 $(ansi 36)$3$(ansi 0)" ;;
+  'error') echo -e "$(ansi 31)Error: $2$(ansi 0)" ;;
+  'warning') echo -e "$(ansi 33)Warning: $2$(ansi 0)" ;;
+  *) echo "" ;;
+  esac
+}
+
+# Make sure git is installed and is executable
+is_command git || {
+  typography error "Please install git or update your path to include the git executable! Exit error."
+  exit 1
+}
+
+# Since dein.vim currently doesn't have a default path location,
+# the execution of an function to generate an initial config is
+# expected.
+generate_vimrc() {
+  cat <<EOF
+" Ward off unexpected things that your distro might have made, as
+" well as sanely reset options when re-sourcing .vimrc
+set nocompatible
+
+" Set dein runtime path (required)
+set runtimepath+=$DEIN
+
+" Call dein initialization (required)
+call dein#begin($BASE)
+
+call dein#add($DEIN)
+
+if !has('nvim')
+  call dein#add('roxma/nvim-yarp')
+  call dein#add('roxma/vim-hug-neovim-rpc')
+endif
+
+" Your plugins go here:
+"call dein#add('Shougo/neosnippet.vim')
+"call dein#add('Shougo/neosnippet-snippets')
+
+" Finish dein initialization (required)
+call dein#end()
+
+" Attempt to determine the type of a file based on its name and possibly its
+" contents. Use this to allow intelligent auto-indenting for each filetype,
+" and for plugins that are filetype specific.
+if has('filetype')
+  filetype indent plugin on
+endif
+
+" Enable syntax highlighting
+if has('syntax')
+  syntax on
+endif
+
+
+" Uncomment if you want to install not-installed plugins on startup.
+"if dein#check_install()
+" call dein#install()
+"endif
+EOF
+}
+
+# This function allows the user to select an few installation options
+# availiable. If in the future dein.vim community defines an default
+# path for each of the options, update this function accordingly.
+dein_menu() {
+  while typography header "CONFIG LOCATION" &&
+    typography input_opt "1" "vim" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.vimrc)$(ansi 0)" &&
+    typography input_opt "2" "neovim" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.config/nvim/init.vim)$(ansi 0)" &&
+    typography input "Select your editor config location (eg. 1 or 2)" && read -p "$(ansi 32)➤$(ansi 0) " OPT_CL; do
+    case $OPT_CL in
+    1)
+      export VIMRC="${HOME}/.vimrc"
+      break
+      ;;
+    2)
+      export VIMRC="${HOME}/.config/nvim/init.vim"
+      break
+      ;;
+    esac
+  done
+
+  while typography header "DEIN.VIM LOCATION" &&
+    typography input_opt "1" "cache" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.cache/dein)$(ansi 0)" &&
+    typography input_opt "2" "local" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.local/share/dein)$(ansi 0)" &&
+    typography input "Select dein.vim location to clone with git (eg. 1 or 2)" &&
+    read -p "$(ansi 32)➤$(ansi 0) " OPT_DL; do
+    case $OPT_DL in
+    1)
+      export BASE="${HOME}/.cache/dein"
+      break
+      ;;
+    2)
+      export BASE="${HOME}/.local/share/dein/"
+      break
+      ;;
+    esac
+  done
+
+  export DEIN="${BASE}/repos/github.com/Shougo/dein.vim"
+}
+
+# To setup dein.vim and support older git versions
+# this function will manually clone the repository.
+dein_setup() {
+  typography action "Dein.vim setup initialized..."
+  git init -q "$DEIN" && cd "$DEIN" &&
+    git config fsck.zeroPaddedFilemode ignore &&
+    git config fetch.fsck.zeroPaddedFilemode ignore &&
+    git config receive.fsck.zeroPaddedFilemode ignore &&
+    git config core.eol lf &&
+    git config core.autocrlf false &&
+    git config oh-my-zsh.remote origin &&
+    git config oh-my-zsh.branch "$BRANCH" &&
+    git remote add origin "$REMOTE" &&
+    git fetch --depth=1 origin -q &&
+    git checkout -b "$BRANCH" "origin/$BRANCH" -q || {
+    [ ! -d "$DEIN" ] || {
+      cd -
+      rm -rf "$DEIN" &>/dev/null
+    }
+    typography error "Git clone of dein.vim repo failed"
+    exit 1
+  }
+
+  command cd - &>/dev/null || {
+    typography error "Failed to exit installation directory"
+    exit 1
+  }
+
+  typography action "Git cloned dein.vim successfully!" "($DEIN)"
+}
+
+# This function will generate the initial config for the user.
+# Required for an more conventional user experience.
+editor_setup() {
+  typography action "Editor setup initialized..."
+
+  if [ -e "$VIMRC" ] && [ $KEEP_CONFIG = "yes" ]; then
+    typography warning "Found old editor config. Generating config in the base path.\nRun 'cat $BASE/.vimrc' in your terminal to check it out."
+    OUTDIR="$BASE/.vimrc"
+  fi
+
+  OUTDIR=${OUTDIR:-$VIMRC}
+
+  if command echo "$(generate_vimrc)" >$OUTDIR; then
+    typography action "Config file created successfully! $(ansi 30)" "($OUTDIR)"
+  else
+    typography error "Failed to generate vim config file. ($OUTDIR)"
+    exit 1
+  fi
+}
+
+dein() {
+  # Handle script arguments
+  while [ $# -gt 0 ]; do
+    case $1 in
+    --keep-config | -K) KEEP_CONFIG=yes ;;
+    esac
+    shift
+  done
+
+  dein_menu
+
+  if [ -d $DEIN ]; then
+    typography warning "The DEIN folder already exists ($DEIN).\nYou'll need to move or remove it."
+    exit 1
+  fi
+
+  typography title
+  dein_setup
+  editor_setup
+  typography end
+}
+
+dein "$@"
+
+exit 0
