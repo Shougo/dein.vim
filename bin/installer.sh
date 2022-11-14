@@ -99,9 +99,9 @@ set nocompatible
 set runtimepath+=$DEIN
 
 " Call dein initialization (required)
-call dein#begin($BASE)
+call dein#begin('$BASE')
 
-call dein#add($DEIN)
+call dein#add('$DEIN')
 
 if !has('nvim')
   call dein#add('roxma/nvim-yarp')
