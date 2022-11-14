@@ -122,7 +122,6 @@ if has('syntax')
   syntax on
 endif
 
-
 " Uncomment if you want to install not-installed plugins on startup.
 "if dein#check_install()
 " call dein#install()
@@ -174,6 +173,7 @@ dein_menu() {
 # this function will manually clone the repository.
 dein_setup() {
   typography action "Dein.vim setup initialized..."
+
   git init -q "$DEIN" && cd "$DEIN" &&
     git config fsck.zeroPaddedFilemode ignore &&
     git config fetch.fsck.zeroPaddedFilemode ignore &&
