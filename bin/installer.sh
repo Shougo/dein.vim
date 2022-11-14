@@ -166,7 +166,7 @@ dein_menu() {
       break
       ;;
     2)
-      export BASE="${HOME}/.local/share/dein/"
+      export BASE="${HOME}/.local/share/dein"
       break
       ;;
     esac
