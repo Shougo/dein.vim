@@ -26,11 +26,6 @@ USER=${USER:-$(id -u -n)}
 HOME=${HOME:-$(getent passwd $USER 2>/dev/null | cut -d: -f6)}
 HOME=${HOME:-$(eval echo ~$USER)}
 
-# Helper function to verify if command exists
-is_command() {
-  command -v "$@" >/dev/null 2>&1
-}
-
 # Improve user experience formatting messages with colors.
 # Usage: echo -ne "$(ansi 32)"
 # 0: reset; 1: bold; 22: no bold; 30: grey; 31: red; 32: green; 33: yellow; 35: magenta; 36: cyan;
@@ -81,7 +76,7 @@ typography() {
 }
 
 # Make sure git is installed and is executable
-is_command git || {
+command -v git >/dev/null 2>&1 || {
   typography error "Please install git or update your path to include the git executable! Exit error."
   exit 1
 }
