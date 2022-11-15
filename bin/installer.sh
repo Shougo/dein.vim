@@ -4,8 +4,8 @@ set -e
 
 KEEP_CONFIG=no
 
-AUTHOR="Shougen"
-VERSION="2.2"
+AUTHOR="Shougo"
+VERSION="3.0"
 LICENSE="MIT License"
 BRANCH="master"
 REMOTE="https://github.com/Shougo/dein.vim.git"
@@ -98,11 +98,6 @@ call dein#begin('$BASE')
 
 call dein#add('$DEIN')
 
-if !has('nvim')
-  call dein#add('roxma/nvim-yarp')
-  call dein#add('roxma/vim-hug-neovim-rpc')
-endif
-
 " Your plugins go here:
 "call dein#add('Shougo/neosnippet.vim')
 "call dein#add('Shougo/neosnippet-snippets')
@@ -180,8 +175,8 @@ dein_setup() {
     git config receive.fsck.zeroPaddedFilemode ignore &&
     git config core.eol lf &&
     git config core.autocrlf false &&
-    git config oh-my-zsh.remote origin &&
-    git config oh-my-zsh.branch "$BRANCH" &&
+    git config dein.vim.remote origin &&
+    git config dein.vim.branch "$BRANCH" &&
     git remote add origin "$REMOTE" &&
     git fetch --depth=1 origin -q &&
     git checkout -b "$BRANCH" "origin/$BRANCH" -q || {
