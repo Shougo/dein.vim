@@ -36,10 +36,13 @@ ansi() {
 # If stdout is not a terminal ignore all formatting
 [ -t 1 ] || ansi() { :; }
 
+# Reset the terminal. Used to clear the screen in each step of
+# the installation process.
 reset_clb() {
   printf '\33c\x1B[3J'
 }
 
+# This function handle the format of the script messages.
 typography() {
   case $1 in
   "title")
@@ -175,8 +178,6 @@ dein_setup() {
     git config receive.fsck.zeroPaddedFilemode ignore &&
     git config core.eol lf &&
     git config core.autocrlf false &&
-    git config dein.vim.remote origin &&
-    git config dein.vim.branch "$BRANCH" &&
     git remote add origin "$REMOTE" &&
     git fetch --depth=1 origin -q &&
     git checkout -b "$BRANCH" "origin/$BRANCH" -q || {
