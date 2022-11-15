@@ -54,6 +54,13 @@ table.insert(package.loaders, 1, (function()
     if vim.g['dein#_on_lua_plugins'][mod_root] then
       vim.fn['dein#autoload#_on_lua'](mod_name)
     end
+    -- Note: If loaded module at hook, must return loaded module at this point. because native loaded check was skipped.
+    if package.loaded[mod_name] ~= nil then
+      local m = package.loaded[mod_name]
+      return function()
+        return m
+      end
+    end
     return nil
   end
 end)())
