@@ -2,7 +2,11 @@
 
 set -e
 
-KEEP_CONFIG=no
+# The script argumets changes the following variables:
+#
+# KEEP_CONFIG - If set to yes will save the new generated config to the dein.vim base path.
+#               Otherwise, it will overwrite the config.
+KEEP_CONFIG=yes
 
 AUTHOR="Shougo"
 VERSION="3.0"
@@ -221,7 +225,7 @@ dein() {
   # Handle script arguments
   while [ $# -gt 0 ]; do
     case $1 in
-    --keep-config | -K) KEEP_CONFIG=yes ;;
+    --overwrite-config | -oWC) KEEP_CONFIG=no;;
     esac
     shift
   done
