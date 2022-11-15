@@ -40,21 +40,20 @@ function! dein#min#_init() abort
     autocmd FileType *? call dein#autoload#_on_default_event('FileType')
     autocmd BufWritePost *.lua,*.vim,*.toml,vimrc,.vimrc
           \ call dein#util#_check_vimrcs()
+    autocmd CmdUndefined * call dein#autoload#_on_pre_cmd(expand('<afile>'))
   augroup END
   augroup dein-events | augroup END
 
-  if !exists('##CmdUndefined') | return | endif
-  autocmd dein CmdUndefined *
-        \ call dein#autoload#_on_pre_cmd(expand('<afile>'))
-  if has('nvim')
-    lua <<END
+  if !has('nvim') | return | endif
+  lua <<END
 table.insert(package.loaders, 1, (function()
   return function(mod_name)
     mod_root = string.match(mod_name, '^[^./]+')
     if vim.g['dein#_on_lua_plugins'][mod_root] then
       vim.fn['dein#autoload#_on_lua'](mod_name)
     end
-    -- Note: If loaded module at hook, must return loaded module at this point. because native loaded check was skipped.
+    -- NOTE: If loaded module at hook, must return loaded module at this point.
+    -- because native loaded check was skipped.
     if package.loaded[mod_name] ~= nil then
       local m = package.loaded[mod_name]
       return function()
@@ -65,7 +64,6 @@ table.insert(package.loaders, 1, (function()
   end
 end)())
 END
-  endif
 endfunction
 function! dein#min#_load_cache_raw(vimrcs) abort
   let g:dein#_vimrcs = a:vimrcs
