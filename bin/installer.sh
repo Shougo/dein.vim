@@ -2,11 +2,14 @@
 
 set -e
 
-# The script argumets changes the following variables:
-#
-# KEEP_CONFIG - If set to yes will save the new generated config to the dein.vim base path.
-#               Otherwise, it will overwrite the config.
+# Control if the script should overwrite or not an existent config
 KEEP_CONFIG=yes
+
+# Store the dein.bim base path location (eg. '~/.cache/dein')
+BASE=none
+
+# Store the dein.vim path location (eg. '~/.cache/dein/repos/github.com/Shougo/dein.vim')
+DEIN=none
 
 AUTHOR="Shougo"
 VERSION="3.0"
@@ -131,26 +134,27 @@ endif
 EOF
 }
 
-# This function allows the user to select an few installation options
-# availiable. If in the future dein.vim community defines an default
-# path for each of the options, update this function accordingly.
-dein_menu() {
+# Prompt the user for the vim config path location.
+config_prompt() {
   while typography header "CONFIG LOCATION" &&
     typography input_opt "1" "vim" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.vimrc)$(ansi 0)" &&
     typography input_opt "2" "neovim" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.config/nvim/init.vim)$(ansi 0)" &&
     typography input "Select your editor config location (eg. 1 or 2)" && read -p "$(ansi 32)➤$(ansi 0) " OPT_CL; do
     case $OPT_CL in
     1)
-      export VIMRC="${HOME}/.vimrc"
+      VIMRC="${HOME}/.vimrc"
       break
       ;;
     2)
-      export VIMRC="${HOME}/.config/nvim/init.vim"
+      VIMRC="${HOME}/.config/nvim/init.vim"
       break
       ;;
     esac
   done
+}
 
+# Prompt the user for the dein.vim base path location.
+base_prompt() {
   while typography header "DEIN.VIM LOCATION" &&
     typography input_opt "1" "cache" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.cache/dein)$(ansi 0)" &&
     typography input_opt "2" "local" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.local/share/dein)$(ansi 0)" &&
@@ -158,17 +162,15 @@ dein_menu() {
     read -p "$(ansi 32)➤$(ansi 0) " OPT_DL; do
     case $OPT_DL in
     1)
-      export BASE="${HOME}/.cache/dein"
+      BASE="${HOME}/.cache/dein"
       break
       ;;
     2)
-      export BASE="${HOME}/.local/share/dein"
+      BASE="${HOME}/.local/share/dein"
       break
       ;;
     esac
   done
-
-  export DEIN="${BASE}/repos/github.com/Shougo/dein.vim"
 }
 
 # To setup dein.vim and support older git versions
@@ -225,17 +227,32 @@ dein() {
   # Handle script arguments
   while [ $# -gt 0 ]; do
     case $1 in
-    --overwrite-config | -oWC) KEEP_CONFIG=no;;
+    --overwrite-config | -oWC) KEEP_CONFIG=no ;;
+    ./* | /home/* | ~/*) BASE=$(echo $1) ;;
+    *)
+      typography error "Invalid '$1' command line argument given."
+      exit 1
+      ;;
     esac
     shift
   done
 
-  dein_menu
+  case $BASE in
+  none) base_prompt ;;
+  *.vim/plugin* | *.config/nvim/plugin*)
+    typography error "The base path cannot be '$BASE'. Please, enter another directory."
+    exit 1
+    ;;
+  esac
+
+  DEIN="${BASE}/repos/github.com/Shougo/dein.vim"
 
   if [ -d $DEIN ]; then
     typography warning "The DEIN folder already exists ($DEIN).\nYou'll need to move or remove it."
     exit 1
   fi
+
+  config_prompt
 
   typography title
   dein_setup
