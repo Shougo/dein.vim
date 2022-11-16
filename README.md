@@ -3,6 +3,7 @@
 [![Gitter](https://img.shields.io/gitter/room/Shougo/dein.vim?color=mediumaquamarine)](https://gitter.im/Shougo/dein.vim)
 ![Version](https://img.shields.io/badge/version-3.0-mediumaquamarine)
 [![GitHub issues](https://img.shields.io/github/issues/shougo/dein.vim?color=mediumaquamarine)](https://github.com/Shougo/dein.vim/issues)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Shougo/dein.vim)
 
 **Dein.vim** is a dark powered Vim/Neovim plugin manager.
 
