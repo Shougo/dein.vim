@@ -1,132 +1,188 @@
-# dein.vim
+# Dein.vim
 
-[![Join the chat at https://gitter.im/Shougo/dein.vim](https://badges.gitter.im/Shougo/dein.vim.svg)](https://gitter.im/Shougo/dein.vim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://img.shields.io/gitter/room/Shougo/dein.vim?color=mediumaquamarine)](https://gitter.im/Shougo/dein.vim)
+![Version](https://img.shields.io/badge/version-3.0-mediumaquamarine)
+[![GitHub issues](https://img.shields.io/github/issues/shougo/dein.vim?color=mediumaquamarine)](https://github.com/Shougo/dein.vim/issues)
 
-Please read [help](doc/dein.txt) for details.
+**Dein.vim** is a dark powered Vim/Neovim plugin manager.
 
-Dein.vim is a dark powered Vim/Neovim plugin manager.
+To learn more details, visit [here](doc/dein.txt).
+
+<details>
+ <summary><strong>Table of contents</strong></summary>
+ <br/>
 
 <!-- vim-markdown-toc GFM -->
 
-- [Requirements](#requirements)
-- [Quick start](#quick-start)
-- [Features](#features)
-- [Future works (TODO)](#future-works-todo)
-  - [Options](#options)
+- [Dein.vim](#deinvim)
+  - [Features](#features)
+  - [Getting started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Basic installation](#basic-installation)
+      - [Wget](#wget)
+      - [Curl](#curl)
+      - [Manual inspection](#manual-inspection)
+      - [Additional Notes](#additional-notes)
+    - [Powershell (Windows)](#powershell-windows)
+    - [Config example](#config-example)
+  - [Q&A](#qa)
+      - [Dein supports NeoBundle?](#dein-supports-neobundle)
+      - [Dein has an user interface like vim-plug?](#dein-has-an-user-interface-like-vim-plug)
+  - [Feedback](#feedback)
+  - [Tasks](#tasks)
+  - [License](#license)
 
 <!-- vim-markdown-toc -->
 
-## Requirements
+<br/>
+</details>
 
-- Vim 8.2 or above or NeoVim(0.5.0+).
-- "xcopy" command in $PATH or Python3 interface (Windows)
-- "git" command in $PATH (if you want to install github or vim.org plugins)
+## Features
 
-Note: If you use below Vim 8.2 or neovim 0.5, please use dein.vim ver.2.2
+- **Fast** - Faster than NeoBundle.
+- **Simple** - Function API and familiar patterns, without commands or dependecy hell.
+- **Async** - Clean asynchronous installation supported.
+- **Extendable** - Supports plugins from local or remote sources, and also Non-Github plugins.
+- **Consistent** - Go-like directory structure (eg. github.com/{_author_}/{_repository_})
+- **Practical** - Automatically merge plugins directories to avoid long **runtimepath**
+
+## Getting started
+
+### Prerequisites
+
+- **Vim** (v8.2 or higher) or **NeoVim** (v0.5.0 or higher)
+- **Git** should be installed (v2.4.11 or higher)
+- **xcopy** installed or **Python3** interface (on Windows)
+
+**Note:** If you use **Vim** (lower than 8.2) or **NeoVim** (lower than 0.5), please use **dein.vim** `v2.2`
 instead.
 
-If you need vim-plug like install UI, you can use dein-ui.vim.
-https://github.com/wsdjeg/dein-ui.vim
 
-## Quick start
+### Basic installation
 
-**Note**: You must define the installation directory before to use dein. The
-directory that you will want to use depends on your usage.
+To install dein.vim on **UNIX** systems, you should run the install script. To do that, you may either download and run the script manually, or use the following **wget** or **curl** command:
 
-For example, `~/.vim/bundles` or `~/.cache/dein` or `~/.local/share/dein`.
-dein.vim does not define a default installation directory. You must **not** set
-the installation directory as `~/.vim/plugin` or `~/.config/nvim/plugin`.
-
-1. Run below script.
-
-For Unix/Linux or Mac OS X
+#### Wget
 
 ```sh
-curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
-# For example, we just use `~/.cache/dein` as installation directory
-sh ./installer.sh ~/.cache/dein
+sh -c "$(wget -O- https://raw.githubusercontent.com/shougo/dein.vim/master/bin/installer.sh)"
 ```
 
-For Windows(PowerShell)
+#### Curl
+
+```sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/santosned/dein.vim/master/bin/installer.sh)"
+```
+
+#### Manual inspection
+
+> **Note:** _"It's a good idea to inspect the install script from projects you don't know."_
+
+You can do that by downloading the install script, then looking through it to check if the code is safe:
+
+```sh
+> wget https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
+> less install.sh
+> sh install.sh
+```
+
+The script code is well formated, so you can better understand all the code. The script can take some arguments that are listed in **Additional Notes** section below.
+
+#### Additional Notes
+
+- If you want to overwrite an existent `.vimrc` or `init.vim` config, pass the `--overwrite-config` (or in short `-oWC`) argument to the installation script. By default, if there's one config already, the new config is generated inside the base path.
+- The `installer` script has prompt menus that helps you setup everything. However, if you want install **Dein.vim** into an different path location, pass the location to the end of the script like `sh install.sh ~/.vim/bundle`.
+
+### Powershell (Windows)
+
+> The support for Windows requires Powershell.
+
+Open your Powershell and download the script:
 
 ```powershell
 Invoke-WebRequest https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.ps1 -OutFile installer.ps1
-# Allow to run third-party script
+```
+
+After checking the code, allow it to be executed properly:
+
+```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-# For example, we just use `~/.cache/dein` as installation directory
+```
+
+Lastly, for an installation at the `~/.cache/dein` directory execute:
+
+```powershell
 ./installer.ps1 ~/.cache/dein
 ```
 
-2. Edit your .vimrc like in "Examples" section.
+### Config example
 
-3. Open vim and install dein
-
-```vim
-:call dein#install()
-```
-
-## Examples
+<details>
+<summary>Show a UNIX installation example using <strong>"~/.cache/dein"</strong> as the base path location.</summary>
+<br/>
 
 ```vim
-if &compatible
-  set nocompatible " Be iMproved
-endif
+" Ward off unexpected things that your distro might have made, as
+" well as sanely reset options when re-sourcing .vimrc
+set nocompatible
 
-" Required:
-" Add the dein installation directory into runtimepath
-set runtimepath+={path to dein.vim directory}
+" Set dein runtime path (required)
+set runtimepath+=/home/{Your username goes here}/.cache/dein/repos/github.com/Shougo/dein.vim
 
-" Required:
-call dein#begin({path to plugin base path directory})
+" Call dein initialization (required)
+call dein#begin('/home/{Your username goes here}/.cache/dein/')
 
-" Let dein manage dein
-call dein#add({path to dein.vim directory})
+call dein#add('/home/{Your username goes here}/.cache/dein/repos/github.com/Shougo/dein.vim')
 
-" Add or remove your plugins here like this:
+" Your plugins go here:
 "call dein#add('Shougo/neosnippet.vim')
 "call dein#add('Shougo/neosnippet-snippets')
 
-" Required:
+" Finish dein initialization (required)
 call dein#end()
 
-" Required:
-filetype plugin indent on
-syntax enable
+" Attempt to determine the type of a file based on its name and possibly its
+" contents. Use this to allow intelligent auto-indenting for each filetype,
+" and for plugins that are filetype specific.
+if has('filetype')
+  filetype indent plugin on
+endif
 
-" If you want to install not installed plugins on startup.
+" Enable syntax highlighting
+if has('syntax')
+  syntax on
+endif
+
+" Uncomment if you want to install not-installed plugins on startup.
 "if dein#check_install()
 " call dein#install()
 "endif
 ```
+</details>
 
-## Features
+## Q&A
 
-- Faster than NeoBundle
+#### Dein supports NeoBundle?
+  
+- Dein **does not** bring support for Vundle or NeoBundle.
 
-- Simple
+#### Dein has an user interface like vim-plug?
 
-- No commands, Functions only to simplify the implementation
+- Built-in Dein **does not** have one, but if you want one, we recommend using [github.com/wsdjeg/dein-ui.vim](https://github.com/wsdjeg/dein-ui.vim)
 
-- Easy to test and maintain
 
-- No Vundle/NeoBundle compatibility
+## Feedback
 
-- neovim/Vim8 asynchronous API installation support
+- [Chat with the community](https://gitter.im/Shougo/dein.vim)
+- [Create an issue](https://github.com/Shougo/dein.vim/issues)
 
-- Local plugin support
+## Tasks
 
-- Non github plugins support
-
-- Go like clone directory name ex:"github.com/{user}/{repository}"
-
-- Merge the plugins directories automatically to avoid long 'runtimepath'
-
-## Future works (TODO)
+This is where Dein future plans or TODOS are listed:
 
 - Other types support (zip, svn, hg, ...)
-
 - Metadata repository support
 
-### Options
+## License
 
-Please read `:help dein-options`
+Licensed under the [MIT](LICENSE) license.
