@@ -38,6 +38,7 @@ To learn more details, visit [here](doc/dein.txt).
 <br/>
 </details>
 
+
 ## Features
 
 - **Fast** - Faster than NeoBundle.
@@ -51,7 +52,9 @@ To learn more details, visit [here](doc/dein.txt).
 - **Practical** - Automatically merge plugins directories to avoid long
   **runtimepath**
 
+
 ## Getting started
+
 
 ### Prerequisites
 
@@ -69,17 +72,20 @@ To install dein.vim on **UNIX** systems, you should run the install script. To
 do that, you may either download and run the script manually, or use the
 following **wget** or **curl** command:
 
+
 #### Wget
 
 ```sh
 sh -c "$(wget -O- https://raw.githubusercontent.com/shougo/dein.vim/master/bin/installer.sh)"
 ```
 
+
 #### Curl
 
 ```sh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/santosned/dein.vim/master/bin/installer.sh)"
 ```
+
 
 #### Manual inspection
 
@@ -99,6 +105,7 @@ The script code is well formated, so you can better understand all the code.
 The script can take some arguments that are listed in **Additional Notes**
 section below.
 
+
 #### Additional Notes
 
 - If you want to overwrite an existent `.vimrc` or `init.vim` config, pass the
@@ -110,6 +117,7 @@ section below.
   However, if you want install **Dein.vim** into an different path location,
   pass the location to the end of the script like `sh install.sh
   ~/.vim/bundle`.
+
 
 ### Powershell (Windows)
 
@@ -132,6 +140,7 @@ Lastly, for an installation at the `~/.cache/dein` directory execute:
 ```powershell
 ./installer.ps1 ~/.cache/dein
 ```
+
 
 ### Config example
 
@@ -180,11 +189,9 @@ endif
 ```
 </details>
 
+
 ## Q&A
 
-#### Dein supports NeoBundle?
-  
-- Dein **does not** bring support for Vundle or NeoBundle.
 
 #### Dein has an user interface like vim-plug?
 
@@ -197,12 +204,14 @@ endif
 - [Chat with the community](https://gitter.im/Shougo/dein.vim)
 - [Create an issue](https://github.com/Shougo/dein.vim/issues)
 
+
 ## Tasks
 
 This is where Dein future plans or TODOS are listed:
 
 - Other types support (zip, svn, hg, ...)
 - Metadata repository support
+
 
 ## License
 
