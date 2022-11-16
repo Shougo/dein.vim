@@ -40,11 +40,15 @@ To learn more details, visit [here](doc/dein.txt).
 ## Features
 
 - **Fast** - Faster than NeoBundle.
-- **Simple** - Function API and familiar patterns, without commands or dependecy hell.
+- **Simple** - Function API and familiar patterns, without commands or
+  dependecy hell.
 - **Async** - Clean asynchronous installation supported.
-- **Extendable** - Supports plugins from local or remote sources, and also Non-Github plugins.
-- **Consistent** - Go-like directory structure (eg. github.com/{_author_}/{_repository_})
-- **Practical** - Automatically merge plugins directories to avoid long **runtimepath**
+- **Extendable** - Supports plugins from local or remote sources, and also
+  Non-Github plugins.
+- **Consistent** - Go-like directory structure (eg.
+  github.com/{_author_}/{_repository_})
+- **Practical** - Automatically merge plugins directories to avoid long
+  **runtimepath**
 
 ## Getting started
 
@@ -54,13 +58,15 @@ To learn more details, visit [here](doc/dein.txt).
 - **Git** should be installed (v2.4.11 or higher)
 - **xcopy** installed or **Python3** interface (on Windows)
 
-**Note:** If you use **Vim** (lower than 8.2) or **NeoVim** (lower than 0.5), please use **dein.vim** `v2.2`
-instead.
+**Note:** If you use **Vim** (lower than 8.2) or **NeoVim** (lower than 0.5),
+please use **dein.vim** `v2.2` instead.
 
 
 ### Basic installation
 
-To install dein.vim on **UNIX** systems, you should run the install script. To do that, you may either download and run the script manually, or use the following **wget** or **curl** command:
+To install dein.vim on **UNIX** systems, you should run the install script. To
+do that, you may either download and run the script manually, or use the
+following **wget** or **curl** command:
 
 #### Wget
 
@@ -76,22 +82,33 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/santosned/dein.vim/master/
 
 #### Manual inspection
 
-> **Note:** _"It's a good idea to inspect the install script from projects you don't know."_
+> **Note:** _"It's a good idea to inspect the install script from projects you
+> don't know."_
 
-You can do that by downloading the install script, then looking through it to check if the code is safe:
+You can do that by downloading the install script, then looking through it to
+check if the code is safe:
 
 ```sh
-> wget https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
-> less install.sh
-> sh install.sh
+$ wget https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
+$ less install.sh
+$ sh install.sh
 ```
 
-The script code is well formated, so you can better understand all the code. The script can take some arguments that are listed in **Additional Notes** section below.
+The script code is well formated, so you can better understand all the code.
+The script can take some arguments that are listed in **Additional Notes**
+section below.
 
 #### Additional Notes
 
-- If you want to overwrite an existent `.vimrc` or `init.vim` config, pass the `--overwrite-config` (or in short `-oWC`) argument to the installation script. By default, if there's one config already, the new config is generated inside the base path.
-- The `installer` script has prompt menus that helps you setup everything. However, if you want install **Dein.vim** into an different path location, pass the location to the end of the script like `sh install.sh ~/.vim/bundle`.
+- If you want to overwrite an existent `.vimrc` or `init.vim` config, pass the
+  `--overwrite-config` (or in short `-oWC`) argument to the installation
+  script. By default, if there's one config already, the new config is
+  generated inside the base path.
+
+- The `installer` script has prompt menus that helps you setup everything.
+  However, if you want install **Dein.vim** into an different path location,
+  pass the location to the end of the script like `sh install.sh
+  ~/.vim/bundle`.
 
 ### Powershell (Windows)
 
@@ -118,8 +135,10 @@ Lastly, for an installation at the `~/.cache/dein` directory execute:
 ### Config example
 
 <details>
-<summary>Show a UNIX installation example using <strong>"~/.cache/dein"</strong> as the base path location.</summary>
-<br/>
+  <summary>
+    Show a UNIX installation example using <strong>"~/.cache/dein"</strong> as
+    the base path location.
+  </summary>
 
 ```vim
 " Ward off unexpected things that your distro might have made, as
@@ -127,12 +146,12 @@ Lastly, for an installation at the `~/.cache/dein` directory execute:
 set nocompatible
 
 " Set dein runtime path (required)
-set runtimepath+=/home/{Your username goes here}/.cache/dein/repos/github.com/Shougo/dein.vim
+set runtimepath+=/home/{Your username}/.cache/dein/repos/github.com/Shougo/dein.vim
 
 " Call dein initialization (required)
-call dein#begin('/home/{Your username goes here}/.cache/dein/')
+call dein#begin('/home/{Your username}/.cache/dein/')
 
-call dein#add('/home/{Your username goes here}/.cache/dein/repos/github.com/Shougo/dein.vim')
+call dein#add('/home/{Your username}/.cache/dein/repos/github.com/Shougo/dein.vim')
 
 " Your plugins go here:
 "call dein#add('Shougo/neosnippet.vim')
@@ -168,7 +187,8 @@ endif
 
 #### Dein has an user interface like vim-plug?
 
-- Built-in Dein **does not** have one, but if you want one, we recommend using [github.com/wsdjeg/dein-ui.vim](https://github.com/wsdjeg/dein-ui.vim)
+- Built-in Dein **does not** have one, but if you want one, we recommend using
+  [github.com/wsdjeg/dein-ui.vim](https://github.com/wsdjeg/dein-ui.vim)
 
 
 ## Feedback
