@@ -1,9 +1,9 @@
 import {
   BaseSource,
   Item,
-} from "https://deno.land/x/ddu_vim@v0.8.0/types.ts";
-import { Denops } from "https://deno.land/x/ddu_vim@v0.8.0/deps.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.2.0/file.ts";
+} from "https://deno.land/x/ddu_vim@v2.0.0/types.ts";
+import { Denops } from "https://deno.land/x/ddu_vim@v2.0.0/deps.ts";
+import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.3.1/file.ts";
 
 type Params = Record<string, never>;
 
@@ -13,9 +13,9 @@ type Dein = {
 };
 
 export class Source extends BaseSource<Params> {
-  kind = "file";
+  override kind = "file";
 
-  gather(args: {
+  override gather(args: {
     denops: Denops;
     sourceParams: Params;
   }): ReadableStream<Item<ActionData>[]> {
@@ -40,7 +40,7 @@ export class Source extends BaseSource<Params> {
     });
   }
 
-  params(): Params {
+  override params(): Params {
     return {};
   }
 }
