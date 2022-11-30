@@ -3,7 +3,7 @@ import {
   Item,
 } from "https://deno.land/x/ddu_vim@v2.0.0/types.ts";
 import { Denops } from "https://deno.land/x/ddu_vim@v2.0.0/deps.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.3.1/file.ts";
+import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.3.2/file.ts";
 
 type Params = Record<string, never>;
 
