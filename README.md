@@ -76,14 +76,14 @@ following **wget** or **curl** command:
 #### Wget
 
 ```sh
-sh -c "$(wget -O- https://raw.githubusercontent.com/shougo/dein.vim/master/bin/installer.sh)"
+sh -c "$(wget -O- https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
 ```
 
 
 #### Curl
 
 ```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/shougo/dein.vim/master/bin/installer.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
 ```
 
 
