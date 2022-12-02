@@ -83,7 +83,7 @@ sh -c "$(wget -O- https://raw.githubusercontent.com/shougo/dein.vim/master/bin/i
 #### Curl
 
 ```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/santosned/dein.vim/master/bin/installer.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/shougo/dein.vim/master/bin/installer.sh)"
 ```
 
 
