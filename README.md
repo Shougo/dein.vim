@@ -26,8 +26,7 @@ To learn more details, visit [here](doc/dein.txt).
       - [Additional Notes](#additional-notes)
     - [Powershell (Windows)](#powershell-windows)
     - [Config example](#config-example)
-  - [Q&A](#qa)
-      - [Dein supports NeoBundle?](#dein-supports-neobundle)
+  - [Q\&A](#qa)
       - [Dein has an user interface like vim-plug?](#dein-has-an-user-interface-like-vim-plug)
   - [Feedback](#feedback)
   - [Tasks](#tasks)
@@ -155,13 +154,19 @@ Lastly, for an installation at the `~/.cache/dein` directory execute:
 " well as sanely reset options when re-sourcing .vimrc
 set nocompatible
 
+" Set dein base path (required)
+let s:dein_base = '~/.cache/dein/'
+
+" Set dein source path (required)
+let s:dein_src = '~/.cache/dein/repos/github.com/Shougo/dein.vim'
+
 " Set dein runtime path (required)
-set runtimepath+=/home/{Your username}/.cache/dein/repos/github.com/Shougo/dein.vim
+set runtimepath+=s:dein_src
 
 " Call dein initialization (required)
-call dein#begin('/home/{Your username}/.cache/dein/')
+call dein#begin(s:dein_base)
 
-call dein#add('/home/{Your username}/.cache/dein/repos/github.com/Shougo/dein.vim')
+call dein#add(s:dein_src)
 
 " Your plugins go here:
 "call dein#add('Shougo/neosnippet.vim')
