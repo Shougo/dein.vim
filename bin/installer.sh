@@ -34,11 +34,11 @@ HOME=${HOME:-$(getent passwd $USER 2>/dev/null | cut -d: -f6)}
 HOME=${HOME:-$(eval echo ~$USER)}
 
 # Improve user experience formatting messages with colors.
-# Usage: echo -ne "$(ansi 32)"
+# Usage: printf "$(ansi 32)"
 # 0: reset; 1: bold; 22: no bold; 31: red; 32: green; 33: yellow; 35: magenta; 36: cyan;
 ansi() {
   [ $# -gt 0 ] || return
-  printf "\x1B[%sm" $*
+  printf "\033[%sm" $*
 }
 # If stdout is not a terminal ignore all formatting
 [ -t 1 ] || ansi() { :; }
@@ -46,7 +46,7 @@ ansi() {
 # Reset the terminal. Used to clear the screen in each step of
 # the installation process.
 reset_clb() {
-  printf '\33c\x1B[3J'
+  printf "\33c\033[3J"
 }
 
 # This function handle the format of the script messages.
@@ -54,34 +54,30 @@ typography() {
   case $1 in
   "title")
     reset_clb
-    reset_clb
-    echo -ne "$(ansi 1 32)"
-    echo -e "_______________________________________________________________"
-    echo -e "$(ansi 1 32)"
-    echo -e " #######  ######## ### ###  ###       ###  ### ### ########### "
-    echo -e " ##!  ### ##!      ##! ##!#!###       ##!  ### ##! ##! ##! ##!"
-    echo -e " #!#  !#! #!!!:!   !!# #!##!!#!       #!#  !#! !!# #!! !#! #!#"
-    echo -e " !!:  !!! !!:      !!: !!:  !!!        !:..:!  !!: !!:     !!:"
-    echo -e " ::::::   :::::::: ::: :::   ::   ::     ::    ::: :::     :::"
-    echo -e "\n              $(ansi 0)by $AUTHOR $(ansi 1 32)•$(ansi 0) $LICENSE $(ansi 1 32)•$(ansi 0) v$VERSION$(ansi 1 32)"
-    echo -e "_______________________________________________________________"
-    echo -e "$(ansi 0)\n"
+    printf "$(ansi 1 32)_______________________________________________________________\n\n"
+    printf " #######  ######## ### ###  ###       ###  ### ### ###########\n"
+    printf " ##!  ### ##!      ##! ##!#!###       ##!  ### ##! ##! ##! ##!\n"
+    printf " #!#  !#! #!!!:!   !!# #!##!!#!       #!#  !#! !!# #!! !#! #!#\n"
+    printf " !!:  !!! !!:      !!: !!:  !!!        !:..:!  !!: !!:     !!:\n"
+    printf " ::::::   :::::::: ::: :::   ::   ::     ::    ::: :::     :::\n"
+    printf "\n              $(ansi 0)by $AUTHOR $(ansi 1 32)•$(ansi 0) $LICENSE $(ansi 1 32)•$(ansi 0) v$VERSION$(ansi 1 32)\n"
+    printf "_______________________________________________________________$(ansi 0)\n\n\n"
     ;;
   "header")
     reset_clb
-    echo -e "\n\n$(ansi 1)[ $2 ]$(ansi 1 0)\n"
+    printf "\n\n$(ansi 1)[ $2 ]$(ansi 1 0)\n"
     ;;
-  'end')
-    echo -e "$(ansi 36)➤$(ansi 0) Installation finished.$(ansi 0)"
-    echo -e "$(ansi 36)➤$(ansi 0) Run $(ansi 36)'cat $DEIN/doc/dein.txt'$(ansi 0) for more usage information.$(ansi 0)"
+  "end")
+    printf "$(ansi 36)➤$(ansi 0) Installation finished.$(ansi 0)\n"
+    printf "$(ansi 36)➤$(ansi 0) Run $(ansi 36)'cat $DEIN/doc/dein.txt'$(ansi 0) for more usage information.$(ansi 0)\n"
     ;;
-  "output") echo -e "$(ansi 32)\n$2\n$(ansi 0)" ;;
-  "input_opt") echo -e "$(ansi 1 35)$2$(ansi 0) $(ansi 36)$3$(ansi 0) $(ansi 0 34)$4$(ansi 0) $(ansi 1 35)$5$(ansi 0)" ;;
-  "input") echo -e "\n$(ansi 32)➤$(ansi 0) $2" ;;
-  'action') echo -e "$(ansi 36)➤$(ansi 0) $2 $(ansi 36)$3$(ansi 0)" ;;
-  'error') echo -e "$(ansi 31)Error: $2$(ansi 0)" ;;
-  'warning') echo -e "$(ansi 33)Warning: $2$(ansi 0)" ;;
-  *) echo "" ;;
+  "output") printf "$(ansi 32)\n$2\n$(ansi 0)\n" ;;
+  "input_opt") printf "$(ansi 1 35)$2$(ansi 0) $(ansi 36)$3$(ansi 0) $(ansi 0 34)$4$(ansi 0) $(ansi 1 35)$5$(ansi 0)\n" ;;
+  "input") printf "\n$(ansi 32)➤$(ansi 0) $2\n" ;;
+  "action") printf "$(ansi 36)➤$(ansi 0) $2 $(ansi 36)$3$(ansi 0)\n" ;;
+  "error") printf "$(ansi 31)Error: $2$(ansi 0)\n" ;;
+  "warning") printf "$(ansi 33)Warning: $2$(ansi 0)\n" ;;
+  *) printf "" ;;
   esac
 }
 
