@@ -35,7 +35,7 @@ HOME=${HOME:-$(eval echo ~$USER)}
 
 # Improve user experience formatting messages with colors.
 # Usage: echo -ne "$(ansi 32)"
-# 0: reset; 1: bold; 22: no bold; 30: grey; 31: red; 32: green; 33: yellow; 35: magenta; 36: cyan;
+# 0: reset; 1: bold; 22: no bold; 31: red; 32: green; 33: yellow; 35: magenta; 36: cyan;
 ansi() {
   [ $# -gt 0 ] || return
   printf "\x1B[%sm" $*
@@ -54,18 +54,18 @@ typography() {
   case $1 in
   "title")
     reset_clb
-    echo -e "$(ansi 1 30)"
-    echo -ne "_______________________________________________________________\n"
+    reset_clb
     echo -ne "$(ansi 1 32)"
+    echo -e "_______________________________________________________________"
+    echo -e "$(ansi 1 32)"
     echo -e " #######  ######## ### ###  ###       ###  ### ### ########### "
     echo -e " ##!  ### ##!      ##! ##!#!###       ##!  ### ##! ##! ##! ##!"
     echo -e " #!#  !#! #!!!:!   !!# #!##!!#!       #!#  !#! !!# #!! !#! #!#"
     echo -e " !!:  !!! !!:      !!: !!:  !!!        !:..:!  !!: !!:     !!:"
     echo -e " ::::::   :::::::: ::: :::   ::   ::     ::    ::: :::     :::"
-    echo -ne "$(ansi 1 30)"
-    echo -e "\n              $(ansi 0)by $AUTHOR$(ansi 30) • $(ansi 0)$LICENSE$(ansi 30) • $(ansi 0)v$VERSION$(ansi 30)"
+    echo -e "\n              $(ansi 0)by $AUTHOR $(ansi 1 32)•$(ansi 0) $LICENSE $(ansi 1 32)•$(ansi 0) v$VERSION$(ansi 1 32)"
     echo -e "_______________________________________________________________"
-    echo -ne "$(ansi 0)\n\n"
+    echo -e "$(ansi 0)\n"
     ;;
   "header")
     reset_clb
