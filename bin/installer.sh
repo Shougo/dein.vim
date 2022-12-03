@@ -100,19 +100,25 @@ generate_vimrc() {
 " well as sanely reset options when re-sourcing .vimrc
 set nocompatible
 
-" Set dein runtime path (required)
-set runtimepath+=$DEIN
+" Dein.vim base directory (required)
+let s:dein_base = '$BASE'
 
-" Call dein initialization (required)
-call dein#begin('$BASE')
+" Dein.vim source directory (required)
+let s:dein_src = '$DEIN'
 
-call dein#add('$DEIN')
+" Dein.vim runtime path (required)
+set runtimepath+=s:dein_src
+
+" Dein.vim initialization (required)
+call dein#begin(s:dein_base)
+
+call dein#add(s:dein_src)
 
 " Your plugins go here:
 "call dein#add('Shougo/neosnippet.vim')
 "call dein#add('Shougo/neosnippet-snippets')
 
-" Finish dein initialization (required)
+" Dein.vim finishes initialization (required)
 call dein#end()
 
 " Attempt to determine the type of a file based on its name and possibly its
