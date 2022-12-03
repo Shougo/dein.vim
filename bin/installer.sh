@@ -76,7 +76,7 @@ typography() {
     echo -e "$(ansi 36)➤$(ansi 0) Run $(ansi 36)'cat $DEIN/doc/dein.txt'$(ansi 0) for more usage information.$(ansi 0)"
     ;;
   "output") echo -e "$(ansi 32)\n$2\n$(ansi 0)" ;;
-  "input_opt") echo -e "$(ansi 1 35)$2$(ansi 0) $(ansi 36)$3$(ansi 0) $4" ;;
+  "input_opt") echo -e "$(ansi 1 35)$2$(ansi 0) $(ansi 36)$3$(ansi 0) $(ansi 0 34)$4$(ansi 0) $(ansi 1 35)$5$(ansi 0)" ;;
   "input") echo -e "\n$(ansi 32)➤$(ansi 0) $2" ;;
   'action') echo -e "$(ansi 36)➤$(ansi 0) $2 $(ansi 36)$3$(ansi 0)" ;;
   'error') echo -e "$(ansi 31)Error: $2$(ansi 0)" ;;
@@ -100,25 +100,19 @@ generate_vimrc() {
 " well as sanely reset options when re-sourcing .vimrc
 set nocompatible
 
-" Dein.vim base directory (required)
-let s:dein_base = '$BASE'
+" Set dein runtime path (required)
+set runtimepath+=$DEIN
 
-" Dein.vim source directory (required)
-let s:dein_src = '$DEIN'
+" Call dein initialization (required)
+call dein#begin('$BASE')
 
-" Dein.vim runtime path (required)
-set runtimepath+=s:dein_src
-
-" Dein.vim initialization (required)
-call dein#begin(s:dein_base)
-
-call dein#add(s:dein_src)
+call dein#add('$DEIN')
 
 " Your plugins go here:
 "call dein#add('Shougo/neosnippet.vim')
 "call dein#add('Shougo/neosnippet-snippets')
 
-" Dein.vim finishes initialization (required)
+" Finish dein initialization (required)
 call dein#end()
 
 " Attempt to determine the type of a file based on its name and possibly its
@@ -143,8 +137,8 @@ EOF
 # Prompt the user for the vim config path location.
 config_prompt() {
   while typography header "CONFIG LOCATION" &&
-    typography input_opt "1" "vim" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.vimrc)$(ansi 0)" &&
-    typography input_opt "2" "neovim" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.config/nvim/init.vim)$(ansi 0)" &&
+    typography input_opt "1" "vim" "path" "(~/.vimrc)" &&
+    typography input_opt "2" "neovim" "path" "(~/.config/nvim/init.vim)" &&
     typography input "Select your editor config location (eg. 1 or 2)" && read -p "$(ansi 32)➤$(ansi 0) " OPT_CL; do
     case $OPT_CL in
     1)
@@ -162,8 +156,8 @@ config_prompt() {
 # Prompt the user for the dein.vim base path location.
 base_prompt() {
   while typography header "DEIN.VIM LOCATION" &&
-    typography input_opt "1" "cache" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.cache/dein)$(ansi 0)" &&
-    typography input_opt "2" "local" "$(ansi 0 34)path$(ansi 0) $(ansi 30)(~/.local/share/dein)$(ansi 0)" &&
+    typography input_opt "1" "cache" "path" "(~/.cache/dein)" &&
+    typography input_opt "2" "local" "path" "(~/.local/share/dein)" &&
     typography input "Select dein.vim location to clone with git (eg. 1 or 2)" &&
     read -p "$(ansi 32)➤$(ansi 0) " OPT_DL; do
     case $OPT_DL in
@@ -222,7 +216,7 @@ editor_setup() {
   OUTDIR=${OUTDIR:-$VIMRC}
 
   if command echo "$(generate_vimrc)" >$OUTDIR; then
-    typography action "Config file created successfully! $(ansi 30)" "($OUTDIR)"
+    typography action "Config file created successfully!" "($OUTDIR)"
   else
     typography error "Failed to generate vim config file. ($OUTDIR)"
     exit 1
