@@ -75,14 +75,14 @@ following **wget** or **curl** command:
 #### Wget
 
 ```sh
-sh -c "$(wget -O- https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
+bash -c "$(wget -O- https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
 ```
 
 
 #### Curl
 
 ```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
 ```
 
 
@@ -96,8 +96,8 @@ check if the code is safe:
 
 ```sh
 $ wget https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
-$ less install.sh
-$ sh install.sh
+$ less installer.sh
+$ bash installer.sh
 ```
 
 The script code is well formated, so you can better understand all the code.
@@ -114,7 +114,7 @@ section below.
 
 - The `installer` script has prompt menus that helps you setup everything.
   However, if you want install **Dein.vim** into an different path location,
-  pass the location to the end of the script like `sh install.sh
+  pass the location to the end of the script like `bash installer.sh
   ~/.vim/bundle`.
 
 
