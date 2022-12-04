@@ -5,7 +5,7 @@ set -e
 # Control if the script should overwrite or not an existent config
 KEEP_CONFIG=yes
 
-# Store the dein.bim base path location (eg. '~/.cache/dein')
+# Store the dein.vim base path location (eg. '~/.cache/dein')
 BASE=none
 
 # Store the dein.vim path location (eg. '~/.cache/dein/repos/github.com/Shougo/dein.vim')
@@ -26,7 +26,7 @@ REMOTE="https://github.com/Shougo/dein.vim.git"
 # To handle edge cases and allow the usage with an diversity
 # of systems this script uses the following commands:
 #
-# 1. id - to get most accurrate username.
+# 1. id - to get the most accurate username.
 # 2. getent - to get the home path instead of ~ or pwd
 # 3. eval - to get home path in macOS
 USER=${USER:-$(id -u -n)}

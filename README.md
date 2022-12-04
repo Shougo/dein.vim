@@ -42,7 +42,7 @@ To learn more details, visit [here](doc/dein.txt).
 
 - **Fast** - Faster than NeoBundle.
 - **Simple** - Function API and familiar patterns, without commands or
-  dependecy hell.
+  dependency hell.
 - **Async** - Clean asynchronous installation supported.
 - **Extendable** - Supports plugins from local or remote sources, and also
   Non-Github plugins.
@@ -96,11 +96,11 @@ check if the code is safe:
 
 ```sh
 $ wget https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
-$ less install.sh
-$ sh install.sh
+$ less installer.sh
+$ sh installer.sh
 ```
 
-The script code is well formated, so you can better understand all the code.
+The script code is well formatted, so you can better understand all the code.
 The script can take some arguments that are listed in **Additional Notes**
 section below.
 
@@ -114,7 +114,7 @@ section below.
 
 - The `installer` script has prompt menus that helps you setup everything.
   However, if you want install **Dein.vim** into an different path location,
-  pass the location to the end of the script like `sh install.sh
+  pass the location to the end of the script like `sh installer.sh
   ~/.vim/bundle`.
 
 

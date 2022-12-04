@@ -168,7 +168,7 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort
     return []
   endif
 
-  " NOTE: If the a:old_rev is not the ancestor of two branchs. Then do not use
+  " NOTE: If the a:old_rev is not the ancestor of two branches. Then do not use
   " %s^.  use %s^ will show one commit message which already shown last time.
   let is_not_ancestor = dein#install#_system(
         \ self.command . ' merge-base '
@@ -293,7 +293,7 @@ function! s:join_paths(path1, path2) abort
   else
     " NOTE: I'm assuming here that '/' is always valid as a directory
     " separator on Windows. I know Windows has paths that start with \\?\ that
-    " diasble behavior like that, but I don't know how Vim deals with that.
+    " disable behavior like that, but I don't know how Vim deals with that.
     return a:path1 . '/' . a:path2
   endif
 endfunction
