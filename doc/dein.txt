@@ -564,8 +564,8 @@ g:dein#ftplugin
 
 						*g:dein#inline_vimrcs*
 g:dein#inline_vimrcs
-		The vimrcs are sourced in |dein#end()| or
-		|dein#load_state()|.
+		The vimrcs are sourced in |dein#begin()| or
+		|dein#load_state()| before hooks.
 		Note: It must be set before |dein#begin()|.
 		Note: The files must not be included "<<" pattern(here
 		document).  It breaks the parser.

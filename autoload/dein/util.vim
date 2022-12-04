@@ -314,6 +314,12 @@ function! dein#util#_save_state(is_starting) abort
     endfor
   endfor
 
+  " Add inline vimrcs
+  for vimrc in get(g:, 'dein#inline_vimrcs', [])
+    let lines += filter(readfile(vimrc),
+          \ { _, val -> val !=# '' && val !~# '^\s*"' })
+  endfor
+
   " Add hooks
   if !empty(g:dein#_hook_add)
     let lines += s:skipempty(g:dein#_hook_add)
@@ -343,12 +349,6 @@ function! dein#util#_save_state(is_starting) abort
           \. 'dein#autoload#_on_event("%s", %s)',
           \ (exists('##' . event) ? event . ' *' : 'User ' . event),
           \ event, string(plugins)))
-  endfor
-
-  " Add inline vimrcs
-  for vimrc in get(g:, 'dein#inline_vimrcs', [])
-    let lines += filter(readfile(vimrc),
-          \ { _, val -> val !=# '' && val !~# '^\s*"' })
   endfor
 
   let state = get(g:, 'dein#cache_directory', g:dein#_base_path)
@@ -421,6 +421,10 @@ function! dein#util#_begin(path, vimrcs) abort
   call dein#util#_add_after(rtps, g:dein#_runtime_path.'/after')
   let &runtimepath = dein#util#_join_rtp(rtps,
         \ &runtimepath, g:dein#_runtime_path)
+
+  for vimrc in get(g:, 'dein#inline_vimrcs', [])
+    execute 'source' fnameescape(vimrc)
+  endfor
 endfunction
 function! dein#util#_end() abort
   if g:dein#_block_level != 1
@@ -493,10 +497,6 @@ function! dein#util#_end() abort
           \. 'dein#autoload#_on_event("%s", %s)',
           \ (exists('##' . event) ? event . ' *' : 'User ' . event),
           \ event, string(plugins))
-  endfor
-
-  for vimrc in get(g:, 'dein#inline_vimrcs', [])
-    execute 'source' fnameescape(vimrc)
   endfor
 
   if !has('vim_starting')
