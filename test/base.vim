@@ -1,4 +1,4 @@
-" set verbose=1
+"set verbose=1
 
 let s:suite = themis#suite('base')
 let s:assert = themis#helper('assert')
@@ -75,4 +75,11 @@ function! s:suite.expand() abort
         \ dein#util#_substitute_path(fnamemodify('~', ':p')))
   call s:assert.equals(dein#util#_expand('$HOME'),
         \ dein#util#_substitute_path($HOME))
+endfunction
+
+function! s:suite.lua() abort
+  call dein#begin(s:path)
+  call dein#parse#_add('foo', { 'name': 'bar', 'lua_add': 'foo', 'rtp': 'foo' }, v:true)
+  call dein#end()
+  call s:assert.equals(dein#get('bar').hook_add, "lua <<EOF\nfoo\nEOF\n")
 endfunction

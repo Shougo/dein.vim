@@ -16,8 +16,11 @@ function! s:type.init(repo, options) abort
   let directory = substitute(directory, '^https:/\+\|^git@', '', '')
   let directory = substitute(directory, ':', '/', 'g')
 
-  return { 'name': dein#parse#_name_conversion(a:repo), 'type' : 'raw',
-        \  'path': dein#util#_get_base_path().'/repos/'.directory }
+  return {
+        \ 'name': dein#parse#_name_conversion(a:repo),
+        \ 'type' : 'raw',
+        \ 'path': dein#util#_get_base_path().'/repos/'.directory,
+        \ }
 endfunction
 
 function! s:type.get_sync_command(plugin) abort

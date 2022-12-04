@@ -1086,7 +1086,6 @@ hook_source	(String) or (Function)
 lua_xxx		(String)
 		Lua lauguage string hook instead of Vim script.
 		It is converted to "hook_xxx" key.
-		Note: It is only available in |dein-toml|.
 
 ------------------------------------------------------------------------------
 TOML							*dein-toml*

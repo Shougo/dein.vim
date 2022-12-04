@@ -40,6 +40,14 @@ function! dein#parse#_add(repo, options, overwrite) abort
     if plugin.lazy
       call s:parse_lazy(plugin)
     endif
+
+    " Convert lua_xxx keys
+    for [key, val] in filter(items(plugin), { _, v -> v[0] =~# '^lua_' })
+      let hook_key = substitute(key, '^lua_', 'hook_', '')
+      let plugin[hook_key] = printf(
+            \ "lua <<EOF\n%s\nEOF\n%s", val, get(plugin, hook_key, ''))
+    endfor
+
     if has_key(plugin, 'hook_add')
       call dein#util#_call_hook('add', plugin)
     endif
@@ -209,13 +217,6 @@ function! dein#parse#_load_toml(filename, default) abort
         call dein#util#_error('No repository plugin data: ' . a:filename)
         return 1
       endif
-
-      " Convert lua_xxx keys
-      for [key, val] in filter(items(plugin), { _, v -> v[0] =~# '^lua_' })
-        let hook_key = substitute(key, '^lua_', 'hook_', '')
-        let plugin[hook_key] = printf(
-              \ "lua <<EOF\n%sEOF\n%s", val, get(plugin, hook_key, ''))
-      endfor
 
       let options = extend(plugin, a:default, 'keep')
       call dein#add(plugin.repo, options)
