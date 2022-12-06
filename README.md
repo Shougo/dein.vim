@@ -117,6 +117,10 @@ section below.
   pass the location to the end of the script like `sh installer.sh
   ~/.vim/bundle`.
 
+- If you want to complete the setup without the `installer` script prompting,
+  Select your editor config location and pass the `--use-vim-config` (or in short `-uVC`) or
+  `--use-neovim-config` (or in short `-uNC`) argument to the installation script.
+
 
 ### Powershell (Windows)
 
