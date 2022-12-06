@@ -8,6 +8,9 @@ KEEP_CONFIG=yes
 # Store the dein.vim base path location (eg. '~/.cache/dein')
 BASE=none
 
+# Store the vim config path location (eg. '~/.vimrc')
+VIMRC=none
+
 # Store the dein.vim path location (eg. '~/.cache/dein/repos/github.com/Shougo/dein.vim')
 DEIN=none
 
@@ -231,6 +234,8 @@ dein() {
     case $1 in
     --overwrite-config | -oWC) KEEP_CONFIG=no ;;
     ./* | /home/* | ~/*) BASE=$(echo "$1") ;;
+    --use-vim-config | -uVC) VIMRC="${HOME}/.vimrc" ;;
+    --use-neovim-config | -uNC) VIMRC="${HOME}/.config/nvim/init.vim" ;;
     *)
       typography error "Invalid '$1' command line argument given."
       exit 1
@@ -254,7 +259,9 @@ dein() {
     exit 1
   fi
 
-  config_prompt
+  case $VIMRC in
+  none) config_prompt ;;
+  esac
 
   typography title
   dein_setup
