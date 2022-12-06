@@ -37,7 +37,7 @@ function! s:get_job() abort
   return s:Job
 endfunction
 
-function! dein#install#_update(plugins, update_type, async) abort
+function! dein#install#_do(plugins, update_type, async) abort
   if g:dein#_is_sudo
     call s:error('update/install is disabled in sudo session.')
     return
@@ -66,6 +66,11 @@ function! dein#install#_update(plugins, update_type, async) abort
           \ ' or all of the plugins are already installed.')
     let s:global_context = {}
     return
+  endif
+
+  if has('nvim')
+    " NOTE: Some neovim plugins(ex: nvim-treesitter) needs this
+    silent! filetype plugin indent on
   endif
 
   call s:start()
@@ -271,7 +276,7 @@ function! dein#install#_check_update(plugins, force, async) abort
     return
   endif
 
-  call dein#install#_update(updated, 'update', a:async)
+  call dein#install#_do(updated, 'update', a:async)
 endfunction
 
 function! dein#install#_reinstall(plugins) abort
@@ -301,8 +306,7 @@ function! dein#install#_reinstall(plugins) abort
     endif
   endfor
 
-  call dein#install#_update(dein#util#_convert2list(a:plugins),
-        \ 'install', 0)
+  call dein#install#_do(dein#util#_convert2list(a:plugins), 'install', 0)
 endfunction
 function! dein#install#_direct_install(repo, options) abort
   if g:dein#_is_sudo
@@ -318,7 +322,7 @@ function! dein#install#_direct_install(repo, options) abort
     return
   endif
 
-  call dein#install#_update(plugin.name, 'install', 0)
+  call dein#install#_do(plugin.name, 'install', 0)
   call dein#source(plugin.name)
 
   " Add to direct_install.vim

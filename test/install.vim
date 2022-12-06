@@ -14,11 +14,11 @@ let s:this_script = fnamemodify(expand('<sfile>'), ':p')
 
 
 function! s:dein_install() abort
-  return dein#install#_update([], 'install', 0)
+  return dein#install#_do([], 'install', 0)
 endfunction
 
 function! s:dein_update() abort
-  return dein#install#_update([], 'update', 0)
+  return dein#install#_do([], 'update', 0)
 endfunction
 
 function! s:suite.before_each() abort

@@ -1522,8 +1522,17 @@ A: It is the feature of dein to load ftplugins lazily.
 You should not use `autocmd Filetype` to overwrite ftplugin configuration.
 You need to use "after/ftplugin" instead.
 
+Q: "nvim-treesitter" automatic installation is failed.
+https://github.com/Shougo/dein.vim/issues/484
+
+A: "nvim-treesitter" requires "filetype plugin indent on".  But it is disabled
+in "dein.vim" by performance reason.  So you need to execute it manually.
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
+
+2022.12.06
+* Enable "filetype plugin indent on" when updated in neovim.
 
 2022.04.20
 * Use Vim/neovim standard API for notification instead of commands.

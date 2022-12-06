@@ -48,11 +48,11 @@ function! dein#check_clean() abort
   return dein#util#_check_clean()
 endfunction
 function! dein#install(...) abort
-  return dein#install#_update(get(a:000, 0, []),
+  return dein#install#_do(get(a:000, 0, []),
         \ 'install', dein#install#_is_async())
 endfunction
 function! dein#update(...) abort
-  return dein#install#_update(get(a:000, 0, []),
+  return dein#install#_do(get(a:000, 0, []),
         \ 'update', dein#install#_is_async())
 endfunction
 function! dein#check_update(...) abort
