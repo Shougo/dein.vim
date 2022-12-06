@@ -103,8 +103,8 @@ endfunction
 
 " NOTE:
 " A Null character (\0) is used as a terminator of a string in Vim.
-" Neovim can send \0 by using \n splitted list but in Vim.
-" So replace all \n in \n splitted list to ''
+" Neovim can send \0 by using \n split list but in Vim.
+" So replace all \n in \n split list to ''
 function! s:_job_send(data) abort dict
   let data = type(a:data) == v:t_list
         \ ? join(map(a:data, 'substitute(v:val, "\n", '''', ''g'')'), "\n")

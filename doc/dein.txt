@@ -1084,7 +1084,7 @@ hook_source	(String) or (Function)
 <
 							*dein-options-lua_xxx*
 lua_xxx		(String)
-		Lua lauguage string hook instead of Vim script.
+		Lua language string hook instead of Vim script.
 		It is converted to "hook_xxx" key.
 
 ------------------------------------------------------------------------------
@@ -1120,7 +1120,7 @@ TOML							*dein-toml*
 		It is converted to |dein#add()|.
 		"repo" key is needed.
 
-						*dein-toml-multple_plugins*
+						*dein-toml-multiple_plugins*
 		multiple_plugins	(Dictionary)
 		It is converted to |dein-toml-hook_add|.
 		"plugins" key is needed.
