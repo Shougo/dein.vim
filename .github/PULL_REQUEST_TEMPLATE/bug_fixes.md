@@ -11,6 +11,17 @@ assignees: ''
 
 A clear and concise description of what the pull request does.
 
+### Minimal Config
+
+⚠️ Required when fixing bugs about plugins or the plugin manager.
+
+See a minimal config example at [README#Config Example](https://github.com/Shougo/dein.vim#config-example), you can remove comments unrelated to the pull request.
+
+```vim
+" Add your minimal .vimrc or init.vim here.
+
+```
+
 ## To Reproduce
 
 Steps to reproduce the behavior:
