@@ -9,7 +9,7 @@ assignees: ''
 
 ## Related Issues
 
-Are there any existing issues or PRs that relate to this problem? If so, link them here.
+Are there any existing issues or pull requests related to this problem? If so, link them here.
 
 ## Description
  

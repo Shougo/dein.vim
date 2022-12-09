@@ -9,7 +9,7 @@ assignees: ''
 
 ## Related Issues
 
-Are there any existing issues or PRs that relate to this problem? If so, link them here.
+Are there any existing issues or pull requests related to this problem? If so, link them here.
 
 ## Description
 
@@ -47,11 +47,14 @@ Please complete the following information, when reporting bugs related to the De
 
 ⚠️ Required when reporting bugs about plugins or the plugin manager.
 
-See a minimal config example at [README#Config Example](https://github.com/Shougo/dein.vim#config-example), you can remove comments unrelated to the issue.
+See the minimal config example at [README#Config Example](https://github.com/Shougo/dein.vim#config-example), you can remove comments unrelated to the issue.
 
 ```vim
 " Add your minimal .vimrc or init.vim here.
-
+" Example:
+set runtimepath^=~/path/to/dein.nvim/
+call dein#begin(path)
+call dein#end()
 ```
 
 ## Additional context
