@@ -166,7 +166,7 @@ let s:dein_base = '~/.cache/dein/'
 let s:dein_src = '~/.cache/dein/repos/github.com/Shougo/dein.vim'
 
 " Set dein runtime path (required)
-set runtimepath+=s:dein_src
+execute 'set runtimepath+=' . s:dein_src
 
 " Call dein initialization (required)
 call dein#begin(s:dein_base)

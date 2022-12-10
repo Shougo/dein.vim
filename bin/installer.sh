@@ -106,7 +106,7 @@ let s:dein_base = '$BASE'
 let s:dein_src = '$DEIN'
 
 " Set Dein runtime path (required)
-set runtimepath+=s:dein_src
+execute 'set runtimepath+=' . s:dein_src
 
 " Call Dein initialization (required)
 call dein#begin(s:dein_base)
