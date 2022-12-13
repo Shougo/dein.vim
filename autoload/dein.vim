@@ -36,7 +36,8 @@ function! dein#local(dir, ...) abort
   return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))
 endfunction
 function! dein#get(...) abort
-  return empty(a:000) ? copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
+  return empty(a:000) || a:1 == '' ?
+        \ copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
 endfunction
 function! dein#source(...) abort
   return call('dein#autoload#_source', a:000)
