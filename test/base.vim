@@ -95,7 +95,7 @@ function! s:suite.add_normal_lua() abort
   local dein = require('dein')
 
   dein.begin(vim.g['path'])
-  --dein.add('foo', { on_ft = 'vim' })
+  dein.add('foo', { on_ft = 'vim' })
   dein.add('bar')
   dein.end_()
 END
