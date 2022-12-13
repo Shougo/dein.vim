@@ -1227,9 +1227,10 @@ dein.disable({plugins})
 dein.each({command}[, {plugins}])
 		Same as |dein#each()|.
 
-							*dein.end()*
-dein.end()
+							*dein.end_()*
+dein.end_()
 		Same as |dein#end()|.
+		Note: "end" name is reserved by lua.
 
 							*dein.get()*
 dein.get([{plugin-name}])
@@ -1255,7 +1256,7 @@ dein.get_log()
 dein.get_progress()
 		Same as |dein#get_progress()|.
 
-						*dein.get_updates_log()*
+				    		*dein.get_updates_log()*
 dein.get_updates_log()
 		Same as |dein#get_updates_log()|.
 
@@ -1285,9 +1286,10 @@ dein.load_state({base-path})
 							*dein.load_toml()*
 dein.load_toml({filename}, [{options}])
 		Same as |dein#load_toml()|.
-							*dein.local()*
-dein.local({directory}, [{options}, [{names}]])
+							*dein.local_()*
+dein.local_({directory}, [{options}, [{names}]])
 		Same as |dein#local()|.
+		Note: "local" name is reserved by lua.
 
 							*dein.update()*
 dein.update([{plugins}])

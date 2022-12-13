@@ -45,6 +45,11 @@ endfunction
 function! dein#check_install(...) abort
   return dein#util#_check_install(get(a:000, 0, []))
 endfunction
+function! dein#check_update(...) abort
+  return dein#install#_check_update(
+        \ get(a:000, 1, []), get(a:000, 0, v:false),
+        \ dein#install#_is_async())
+endfunction
 function! dein#check_clean() abort
   return dein#util#_check_clean()
 endfunction
@@ -55,11 +60,6 @@ endfunction
 function! dein#update(...) abort
   return dein#install#_do(get(a:000, 0, []),
         \ 'update', dein#install#_is_async())
-endfunction
-function! dein#check_update(...) abort
-  return dein#install#_check_update(
-        \ get(a:000, 1, []), get(a:000, 0, v:false),
-        \ dein#install#_is_async())
 endfunction
 function! dein#direct_install(repo, ...) abort
   call dein#install#_direct_install(a:repo, (a:0 ? a:1 : {}))
