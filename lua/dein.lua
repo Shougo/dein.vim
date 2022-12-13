@@ -49,17 +49,17 @@ end
 
 M.check_install = function(plugins)
   plugins = plugins or {}
-  return call('dein#check_install', plugins)
+  return call('dein#check_install', plugins) ~= 0
 end
 
 M.check_update = function(plugins)
   plugins = plugins or {}
-  return call('dein#check_update', plugins)
+  return call('dein#check_update', plugins) ~= 0
 end
 
 M.check_clean = function(plugins)
   plugins = plugins or {}
-  return call('dein#check_clean', plugins)
+  return call('dein#check_clean', plugins) ~= 0
 end
 
 M.install = function(plugins)
@@ -112,7 +112,7 @@ M.call_hook = function(name)
 end
 
 M.check_lazy_plugins = function()
-  return call('dein#check_lazy_plugins')
+  return call('dein#check_lazy_plugins') ~= 0
 end
 
 M.load_toml = function(filename, opts)
