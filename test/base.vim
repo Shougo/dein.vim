@@ -94,6 +94,11 @@ function! s:suite.add_normal_lua() abort
   lua <<END
   local dein = require('dein')
 
+  dein.setup {
+    auto_remote_plugins = false,
+    enable_notification = true,
+  }
+
   dein.begin(vim.g['path'])
   dein.add('foo', { on_ft = 'vim' })
   dein.add('bar')
@@ -105,3 +110,12 @@ END
   call s:assert.equals(g:dein#_plugins.bar.name, 'bar')
 endfunction
 
+function! s:suite.options() abort
+  call dein#options(#{
+        \   lazy_plugins: v:true,
+        \   install_progress_type: 'floating',
+        \ })
+
+  call s:assert.equals(g:dein#lazy_plugins, v:true)
+  call s:assert.equals(g:dein#install_progress_type, 'floating')
+endfunction

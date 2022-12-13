@@ -192,4 +192,9 @@ M.get_updated_plugins = function(plugins)
   return call('dein#get_updated_plugins', plugins)
 end
 
+M.setup = function(opts)
+  opts = opts or empty_dict
+  return call('dein#options', opts)
+end
+
 return M

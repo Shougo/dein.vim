@@ -4,7 +4,6 @@ endfunction
 function! dein#load_state(path) abort
   return dein#min#load_state(a:path)
 endfunction
-
 function! dein#tap(name) abort
   if !dein#is_available(a:name) | return 0 | endif
   let g:dein#name = a:name
@@ -135,7 +134,6 @@ function! dein#save_state() abort
 endfunction
 function! dein#clear_state() abort
   call dein#util#_clear_state()
-
   if !get(g:, 'dein#auto_recache', v:false) && !empty(g:dein#ftplugin)
     call dein#util#_notify(
           \ 'call dein#recache_runtimepath() is needed for ftplugin feature')
@@ -150,4 +148,9 @@ endfunction
 function! dein#get_updated_plugins(...) abort
   return dein#install#_get_updated_plugins(
         \ get(a:000, 0, []), dein#install#_is_async())
+endfunction
+function! dein#options(options) abort
+  for [key, val] in items(a:options)
+    let g:dein#{key} = val
+  endfor
 endfunction

@@ -390,6 +390,16 @@ dein#local({directory}, [{options}, [{names}]])
 		call dein#local("~/.vim/bundle", {},
 		\ ['plugin1', 'plugin2', 'vim-*', '*.vim'])
 <
+						*dein#options()*
+dein#options({options})
+		Set |dein-variables| by {options} dictionary.
+		Note: It is just syntax sugar.
+>
+		call dein#options(#{
+		      \   lazy_plugins: v:true,
+		      \   install_progress_type: 'floating',
+		      \ })
+
 							*dein#toml#syntax()*
 dein#toml#syntax()
 		Enable dein specific toml syntax.
@@ -1327,6 +1337,10 @@ dein.save_rollback({rollbackfile}[, {plugins}])
 dein.save_state()
 		Same as |dein#save_state()|.
 
+							*dein.setup()*
+dein.setup({options})
+		Same as |dein#options()|.
+
 							*dein.set_hook()*
 dein.set_hook({plugins}, {hook-name}, {hook})
 		Same as |dein#set_hook()|.
@@ -1339,6 +1353,22 @@ dein.source([{plugins}])
 dein.tap({plugin-name})
 		Same as |dein#tap()|.
 
+							*dein-lua-example*
+
+		Lua samples are here:
+>
+		local dein = require('dein')
+		
+		dein.setup {
+		  auto_remote_plugins = false,
+		  enable_notification = true,
+		}
+		
+		dein.begin(vim.g['dein_dir'])
+		dein.add('Shougo/dein.vim', { on_ft = {'vim'} })
+		dein.add('Shougo/hoge.vim')
+		dein.end_()
+<
 ==============================================================================
 DDU SOURCES						*dein-ddu-sources*
 
