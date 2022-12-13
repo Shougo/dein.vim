@@ -1,8 +1,8 @@
 function! dein#load_cache_raw(vimrcs) abort
   return dein#min#_load_cache_raw(a:vimrcs)
 endfunction
-function! dein#load_state(path, ...) abort
-  return call('dein#min#load_state', [a:path] + a:000)
+function! dein#load_state(path) abort
+  return dein#min#load_state(a:path)
 endfunction
 
 function! dein#tap(name) abort
