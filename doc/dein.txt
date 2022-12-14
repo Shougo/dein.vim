@@ -1321,7 +1321,7 @@ dein.reinstall({plugins})
 dein.remote_plugins()
 		Same as |dein#remote_plugins()|.
 
-							*dein#rollback()*
+							*dein.rollback()*
 dein.rollback({date}[, {plugins}])
 		Same as |dein#rollback()|.
 
