@@ -15,6 +15,7 @@ Interface		|dein-interface|
   Variables		  |dein-variables|
   Options		  |dein-options|
   Toml			  |dein-toml|
+  Lua Functions		  |dein-lua-functions|
 Ddu Sources		|dein-ddu-sources|
 Denite Sources		|dein-denite-sources|
 Unite Sources		|dein-unite-sources|
@@ -389,6 +390,16 @@ dein#local({directory}, [{options}, [{names}]])
 		call dein#local("~/.vim/bundle", {},
 		\ ['plugin1', 'plugin2', 'vim-*', '*.vim'])
 <
+						*dein#options()*
+dein#options({options})
+		Set |dein-variables| by {options} dictionary.
+		Note: It is just syntax sugar.
+>
+		call dein#options(#{
+		      \   lazy_plugins: v:true,
+		      \   install_progress_type: 'floating',
+		      \ })
+
 							*dein#toml#syntax()*
 dein#toml#syntax()
 		Enable dein specific toml syntax.
@@ -1166,6 +1177,198 @@ TOML							*dein-toml*
 		hook_add = ''
 		'''
 
+------------------------------------------------------------------------------
+LUA FUNCTIONS						*dein-lua-functions*
+
+							*dein.add()*
+dein.add({repo}[, {options}])
+		Same as |dein#add()|.
+
+							*dein.begin()*
+dein#begin({base-path}, [{vimrcs}])
+		Same as |dein#begin()|.
+
+							*dein.build()*
+dein.build([{plugins}])
+		Same as |dein#build()|.
+
+							*dein.call_hook()*
+dein.call_hook({hook-name})
+		Same as |dein#call_hook()|.
+
+							*dein.check_install()*
+dein.check_install({plugins})
+		Same as |dein#check_install()|.
+
+						*dein.check_lazy_plugins()*
+dein.check_lazy_plugins()
+		Same as |dein#check_lazy_plugins()|.
+
+							*dein.check_update()*
+dein.check_update([{force}[, {plugins}]])
+		Same as |dein#check_update()|.
+
+							*dein.check_clean()*
+dein.check_clean()
+		Same as |dein#check_clean()|.
+
+							*dein.clear_state()*
+dein.clear_state()
+		Same as |dein#clear_state()|.
+
+							*dein.config()*
+dein.config({plugin-name}, {options})
+dein.config({options})
+		Same as |dein#config()|.
+
+							*dein.deno_cache()*
+dein.deno_cache({plugins})
+		Same as |dein#deno_cache()|.
+
+						*dein.direct_install()*
+dein.direct_install({repo}[, {options}])
+		Same as |dein#direct_install()|.
+
+							*dein.disable()*
+dein.disable({plugins})
+		Same as |dein#disable()|.
+
+							*dein.each()*
+dein.each({command}[, {plugins}])
+		Same as |dein#each()|.
+
+							*dein.end_()*
+dein.end_()
+		Same as |dein#end()|.
+		Note: "end" name is reserved by lua.
+
+							*dein.get()*
+dein.get([{plugin-name}])
+		Same as |dein#get()|.
+
+					*dein.get_direct_plugins_path()*
+dein.get_direct_plugins_path()
+		Same as |dein#get_direct_plugins_path()|.
+
+						*dein.get_failed_plugins()*
+dein.get_failed_plugins()
+		Same as |dein#get_failed_plugins()|.
+
+						*dein.get_updated_plugins()*
+dein.get_updated_plugins([, {plugins}])
+		Same as |dein#get_updated_plugins()|.
+
+							*dein.get_log()*
+dein.get_log()
+		Same as |dein#get_log()|.
+
+							*dein.get_progress()*
+dein.get_progress()
+		Same as |dein#get_progress()|.
+
+				    		*dein.get_updates_log()*
+dein.get_updates_log()
+		Same as |dein#get_updates_log()|.
+
+							*dein.install()*
+dein.install([{plugins}])
+		Same as |dein#install()|.
+
+							*dein.is_available()*
+dein.is_available([{plugin-name}])
+		Same as |dein#is_available()|.
+
+							*dein.is_sourced()*
+dein.is_sourced({plugin-name})
+		Same as |dein#is_sourced()|.
+
+							*dein.load_dict()*
+dein.load_dict({dict}, [{options}])
+		Same as |dein#load_dict()|.
+							*dein.load_rollback()*
+dein.load_rollback({rollbackfile}[, {plugins}])
+		Same as |dein#load_rollback()|.
+
+							*dein.load_state()*
+dein.load_state({base-path})
+		Same as |dein#load_state()|.
+
+							*dein.load_toml()*
+dein.load_toml({filename}, [{options}])
+		Same as |dein#load_toml()|.
+							*dein.local_()*
+dein.local_({directory}, [{options}, [{names}]])
+		Same as |dein#local()|.
+		Note: "local" name is reserved by lua.
+
+							*dein.update()*
+dein.update([{plugins}])
+		Same as |dein#update()|.
+
+							*dein.plugins2toml()*
+dein.plugins2toml({plugins})
+		Same as |dein#plugins2toml()|.
+
+							*dein.post_sync()*
+dein.post_sync({plugins})
+		Same as |dein#post_sync()|.
+
+							*dein.reinstall()*
+dein.reinstall({plugins})
+		Same as |dein#reinstall()|.
+
+						*dein.remote_plugins()*
+dein.remote_plugins()
+		Same as |dein#remote_plugins()|.
+
+							*dein.rollback()*
+dein.rollback({date}[, {plugins}])
+		Same as |dein#rollback()|.
+
+						*dein.recache_runtimepath()*
+dein.recache_runtimepath()
+		Same as |dein#recache_runtimepath()|.
+
+							*dein.save_rollback()*
+dein.save_rollback({rollbackfile}[, {plugins}])
+		Same as |dein#save_rollback()|.
+
+							*dein.save_state()*
+dein.save_state()
+		Same as |dein#save_state()|.
+
+							*dein.setup()*
+dein.setup({options})
+		Same as |dein#options()|.
+
+							*dein.set_hook()*
+dein.set_hook({plugins}, {hook-name}, {hook})
+		Same as |dein#set_hook()|.
+
+							*dein.source()*
+dein.source([{plugins}])
+		Same as |dein#source()|.
+
+							*dein.tap()*
+dein.tap({plugin-name})
+		Same as |dein#tap()|.
+
+							*dein-lua-example*
+
+		Lua samples are here:
+>
+		local dein = require('dein')
+		
+		dein.setup {
+		  auto_remote_plugins = false,
+		  enable_notification = true,
+		}
+		
+		dein.begin(vim.g['dein_dir'])
+		dein.add('Shougo/dein.vim', { on_ft = {'vim'} })
+		dein.add('Shougo/hoge.vim')
+		dein.end_()
+<
 ==============================================================================
 DDU SOURCES						*dein-ddu-sources*
 

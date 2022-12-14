@@ -1,10 +1,9 @@
 function! dein#load_cache_raw(vimrcs) abort
   return dein#min#_load_cache_raw(a:vimrcs)
 endfunction
-function! dein#load_state(path, ...) abort
-  return call('dein#min#load_state', [a:path] + a:000)
+function! dein#load_state(path) abort
+  return dein#min#load_state(a:path)
 endfunction
-
 function! dein#tap(name) abort
   if !dein#is_available(a:name) | return 0 | endif
   let g:dein#name = a:name
@@ -36,13 +35,19 @@ function! dein#local(dir, ...) abort
   return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))
 endfunction
 function! dein#get(...) abort
-  return empty(a:000) ? copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
+  return empty(a:000) || a:1 == '' ?
+        \ copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
 endfunction
 function! dein#source(...) abort
   return call('dein#autoload#_source', a:000)
 endfunction
 function! dein#check_install(...) abort
   return dein#util#_check_install(get(a:000, 0, []))
+endfunction
+function! dein#check_update(...) abort
+  return dein#install#_check_update(
+        \ get(a:000, 1, []), get(a:000, 0, v:false),
+        \ dein#install#_is_async())
 endfunction
 function! dein#check_clean() abort
   return dein#util#_check_clean()
@@ -54,11 +59,6 @@ endfunction
 function! dein#update(...) abort
   return dein#install#_do(get(a:000, 0, []),
         \ 'update', dein#install#_is_async())
-endfunction
-function! dein#check_update(...) abort
-  return dein#install#_check_update(
-        \ get(a:000, 1, []), get(a:000, 0, v:false),
-        \ dein#install#_is_async())
 endfunction
 function! dein#direct_install(repo, ...) abort
   call dein#install#_direct_install(a:repo, (a:0 ? a:1 : {}))
@@ -134,7 +134,6 @@ function! dein#save_state() abort
 endfunction
 function! dein#clear_state() abort
   call dein#util#_clear_state()
-
   if !get(g:, 'dein#auto_recache', v:false) && !empty(g:dein#ftplugin)
     call dein#util#_notify(
           \ 'call dein#recache_runtimepath() is needed for ftplugin feature')
@@ -149,4 +148,9 @@ endfunction
 function! dein#get_updated_plugins(...) abort
   return dein#install#_get_updated_plugins(
         \ get(a:000, 0, []), dein#install#_is_async())
+endfunction
+function! dein#options(options) abort
+  for [key, val] in items(a:options)
+    let g:dein#{key} = val
+  endfor
 endfunction

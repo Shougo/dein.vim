@@ -77,11 +77,11 @@ function! dein#min#_load_cache_raw(vimrcs) abort
   return has('nvim') ? json_decode(readfile(cache))
         \ : js_decode(readfile(cache)[0])
 endfunction
-function! dein#min#load_state(path, ...) abort
+function! dein#min#load_state(path) abort
   if !exists('#dein')
     call dein#min#_init()
   endif
-  let sourced = a:0 > 0 ? a:1 : has('vim_starting') &&
+  let sourced = has('vim_starting') &&
         \  (!exists('&loadplugins') || &loadplugins)
   if (g:dein#_is_sudo || !sourced) | return 1 | endif
   let g:dein#_base_path = expand(a:path)
