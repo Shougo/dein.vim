@@ -1185,7 +1185,7 @@ dein.add({repo}[, {options}])
 		Same as |dein#add()|.
 
 							*dein.begin()*
-dein#begin({base-path}, [{vimrcs}])
+dein.begin({base-path}, [{vimrcs}])
 		Same as |dein#begin()|.
 
 							*dein.build()*
