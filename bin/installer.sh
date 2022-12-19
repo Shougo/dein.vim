@@ -89,7 +89,7 @@ typography() {
 
 # Make sure git is installed and is executable
 command -v git >>/dev/null 2>&1 || {
-  typography error "Couldn't find 'git' command. Make sure 'git' is installed and is executable before continue."
+  typography error "Couldn't find 'git' command. Make sure 'git' is installed and it's executable before continue."
   exit 1
 }
 
