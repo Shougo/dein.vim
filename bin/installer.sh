@@ -271,16 +271,16 @@ dein() {
     ;;
   esac
 
+  case $VIMRC in
+  none) config_prompt ;;
+  esac
+
   DEIN="${BASE}/repos/github.com/Shougo/dein.vim"
 
   if [ -d "$DEIN" ]; then
     typography warning "The DEIN folder already exists ($DEIN).\nYou'll need to move or remove it."
     exit 1
   fi
-
-  case $VIMRC in
-  none) config_prompt ;;
-  esac
 
   typography title
   dein_setup
