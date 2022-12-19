@@ -11,10 +11,10 @@ BASE=none
 # Store the dein.vim path location (eg. '~/.cache/dein/repos/github.com/Shougo/dein.vim')
 DEIN=none
 
-# Store the Vim or Neovim config file (eg. 'init.vim')
+# Store the Vim or Neovim config file (eg. '.vimrc' or 'init.vim')
 CONFIG_FILENAME=none
 
-# Store the path of the Vim or Neovim config file (eg. '~/.config/nvim')
+# Store the path to the Vim or Neovim config file (eg. '~/' or '~/.config/nvim')
 CONFIG_LOCATION=none
 
 AUTHOR="Shougo"
