@@ -191,15 +191,16 @@ base_prompt() {
 dein_setup() {
   typography action "Dein.vim setup initialized..."
 
-  git init -q "$DEIN" && cd "$DEIN" &&
-    git config fsck.zeroPaddedFilemode ignore &&
-    git config fetch.fsck.zeroPaddedFilemode ignore &&
-    git config receive.fsck.zeroPaddedFilemode ignore &&
-    git config core.eol lf &&
-    git config core.autocrlf false &&
-    git remote add origin "$REMOTE" &&
-    git fetch --depth=1 origin -q &&
-    git checkout -b "$BRANCH" "origin/$BRANCH" -q || {
+  command git init -q "$DEIN" &&
+    command cd "$DEIN" >>/dev/null 2>&1 &&
+    command git config fsck.zeroPaddedFilemode ignore &&
+    command git config fetch.fsck.zeroPaddedFilemode ignore &&
+    command git config receive.fsck.zeroPaddedFilemode ignore &&
+    command git config core.eol lf &&
+    command git config core.autocrlf false &&
+    command git remote add origin "$REMOTE" &&
+    command git fetch --depth=1 origin "$BRANCH" &&
+    command git checkout "$BRANCH" -q || {
     cd -
     cleanup
     typography error "Git clone of dein.vim repo failed"
