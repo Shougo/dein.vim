@@ -233,7 +233,7 @@ dein() {
   while [ $# -gt 0 ]; do
     case $1 in
     --overwrite-config | -oWC) KEEP_CONFIG=no ;;
-    *./* | */home/* | *~/*) BASE=$(eval echo "$1") ;;
+    *./* | */home/* | *~/*) BASE=$(eval echo "${1%/}") ;;
     --use-vim-config | -uVC) VIMRC="${HOME}/.vimrc" ;;
     --use-neovim-config | -uNC) VIMRC="${HOME}/.config/nvim/init.vim" ;;
     *)
