@@ -76,10 +76,10 @@ typography() {
     ;;
   "output") printf "%s\n$2\n%s\n" "$(ansi 32)" "$(ansi 0)" ;;
   "input_opt") printf "%s$2%s %s$3%s %s$4%s %s$5%s\n" "$(ansi 1 35)" "$(ansi 0)" "$(ansi 36)" "$(ansi 0)" "$(ansi 0 34)" "$(ansi 0)" "$(ansi 1 35)" "$(ansi 0)" ;;
-  "input") printf "\n%s%s$2\n" "$(ansi 32)" "$(ansi 0)";;
+  "input") printf "\n%s%s$2\n" "$(ansi 32)" "$(ansi 0)" ;;
   "action") printf "%s%s $2 %s$3%s\n" "$(ansi 36)" "$(ansi 0)" "$(ansi 36)" "$(ansi 0)" ;;
   "error") printf "%sError: $2%s\n" "$(ansi 31)" "$(ansi 0)" ;;
-  "warning") printf "%sWarning: $2%s\n" "$(ansi 33)" "$(ansi 0)";;
+  "warning") printf "%sWarning: $2%s\n" "$(ansi 33)" "$(ansi 0)" ;;
   *) printf "" ;;
   esac
 }
@@ -233,7 +233,7 @@ dein() {
   while [ $# -gt 0 ]; do
     case $1 in
     --overwrite-config | -oWC) KEEP_CONFIG=no ;;
-    ./* | /home/* | ~/*) BASE=$(echo "$1") ;;
+    *./* | */home/* | *~/*) BASE=$(eval echo "$1") ;;
     --use-vim-config | -uVC) VIMRC="${HOME}/.vimrc" ;;
     --use-neovim-config | -uNC) VIMRC="${HOME}/.config/nvim/init.vim" ;;
     *)
