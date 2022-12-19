@@ -223,6 +223,17 @@ editor_setup() {
   if [ -e "$VIMRC" ] && [ $KEEP_CONFIG = "yes" ]; then
     typography warning "Found old editor config. Generating config in the base path.\nRun 'cat $BASE/.vimrc' in your terminal to check it out."
     OUTDIR="$BASE/.vimrc"
+  else
+    case $VIMRC in
+    *.config/nvim/init.vim)
+      # Create the Neovim config folder if it doesn't exist already.
+      command mkdir -p "$(dirname -- "$VIMRC")" >>/dev/null 2>&1 || {
+        cleanup
+        typography error "Failed to create Neovim folder, try creating '$VIMRC' folder manually before continue."
+        exit 1
+      }
+      ;;
+    esac
   fi
 
   OUTDIR=${OUTDIR:-$VIMRC}
