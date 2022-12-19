@@ -8,11 +8,14 @@ KEEP_CONFIG=yes
 # Store the dein.vim base path location (eg. '~/.cache/dein')
 BASE=none
 
-# Store the vim config path location (eg. '~/.vimrc')
-VIMRC=none
-
 # Store the dein.vim path location (eg. '~/.cache/dein/repos/github.com/Shougo/dein.vim')
 DEIN=none
+
+# Store the Vim or Neovim config file (eg. 'init.vim')
+CONFIG_FILENAME=none
+
+# Store the path of the Vim or Neovim config file (eg. '~/.config/nvim')
+CONFIG_LOCATION=none
 
 AUTHOR="Shougo"
 VERSION="3.0"
@@ -155,11 +158,13 @@ config_prompt() {
     typography input "Select your editor config location (eg. 1 or 2)" && read -r OPT_CL; do
     case $OPT_CL in
     1)
-      VIMRC="${HOME}/.vimrc"
+      CONFIG_LOCATION="${HOME}"
+      CONFIG_FILENAME=".vimrc"
       break
       ;;
     2)
-      VIMRC="${HOME}/.config/nvim/init.vim"
+      CONFIG_LOCATION="${HOME}/.config/nvim"
+      CONFIG_FILENAME="init.vim"
       break
       ;;
     esac
@@ -220,23 +225,25 @@ dein_setup() {
 editor_setup() {
   typography action "Editor setup initialized..."
 
-  if [ -e "$VIMRC" ] && [ $KEEP_CONFIG = "yes" ]; then
-    typography warning "Found old editor config. Generating config in the base path.\nRun 'cat $BASE/.vimrc' in your terminal to check it out."
-    OUTDIR="$BASE/.vimrc"
+  EDITOR_CONFIG="$CONFIG_LOCATION/$CONFIG_FILENAME"
+
+  if [ -e "$EDITOR_CONFIG" ] && [ $KEEP_CONFIG = "yes" ]; then
+    typography warning "Found old editor config. Generating config in the base path.\nRun 'cat $BASE/$CONFIG_FILENAME' in your terminal to check it out."
+    OUTDIR="$BASE/$CONFIG_FILENAME"
   else
-    case $VIMRC in
+    case $EDITOR_CONFIG in
     *.config/nvim/init.vim)
       # Create the Neovim config folder if it doesn't exist already.
-      command mkdir -p "$(dirname -- "$VIMRC")" >>/dev/null 2>&1 || {
+      command mkdir -p "$CONFIG_LOCATION" >>/dev/null 2>&1 || {
         cleanup
-        typography error "Failed to create Neovim folder, try creating '$VIMRC' folder manually before continue."
+        typography error "Failed to create Neovim folder, try creating '$CONFIG_LOCATION' folder manually before continue."
         exit 1
       }
       ;;
     esac
   fi
 
-  OUTDIR=${OUTDIR:-$VIMRC}
+  OUTDIR=${OUTDIR:-$EDITOR_CONFIG}
 
   if command echo "$(generate_vimrc)" >"$OUTDIR"; then
     typography action "Config file created successfully!" "($OUTDIR)"
@@ -253,8 +260,14 @@ dein() {
     case $1 in
     --overwrite-config | -oWC) KEEP_CONFIG=no ;;
     *./* | */home/* | *~/*) BASE=$(eval echo "${1%/}") ;;
-    --use-vim-config | -uVC) VIMRC="${HOME}/.vimrc" ;;
-    --use-neovim-config | -uNC) VIMRC="${HOME}/.config/nvim/init.vim" ;;
+    --use-vim-config | -uVC)
+      CONFIG_LOCATION="${HOME}"
+      CONFIG_FILENAME=".vimrc"
+      ;;
+    --use-neovim-config | -uNC)
+      CONFIG_LOCATION="${HOME}/.config/nvim"
+      CONFIG_FILENAME="init.vim"
+      ;;
     *)
       typography error "Invalid '$1' command line argument given."
       exit 1
@@ -271,9 +284,9 @@ dein() {
     ;;
   esac
 
-  case $VIMRC in
-  none) config_prompt ;;
-  esac
+  if [ "$CONFIG_FILENAME" = "none" ] || [ "$CONFIG_LOCATION" = "none" ]; then
+    config_prompt
+  fi
 
   DEIN="${BASE}/repos/github.com/Shougo/dein.vim"
 
