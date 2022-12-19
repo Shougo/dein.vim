@@ -222,7 +222,7 @@ base_prompt() {
 dein_setup() {
   typography action "Cloning Dein.vim into '$DEIN'..."
 
-  command git init -q "$DEIN" &&
+  (command git init -q "$DEIN" &&
     command cd "$DEIN" >>/dev/null 2>&1 &&
     command git config fsck.zeroPaddedFilemode ignore &&
     command git config fetch.fsck.zeroPaddedFilemode ignore &&
@@ -231,7 +231,7 @@ dein_setup() {
     command git config core.autocrlf false &&
     command git remote add origin "$REMOTE" &&
     command git fetch --depth=1 origin "$BRANCH" &&
-    command git checkout "$BRANCH" -q ||
+    command git checkout "$BRANCH" -q) ||
     {
       cd -
       cleanup
