@@ -59,37 +59,39 @@ reset_clb() {
 typography() {
   case $1 in
   "title")
-    reset_clb
     printf "%s_______________________________________________________________\n\n" "$(ansi 1 32)"
     printf " #######  ######## ### ###  ###       ###  ### ### ###########\n"
     printf " ##!  ### ##!      ##! ##!#!###       ##!  ### ##! ##! ##! ##!\n"
     printf " #!#  !#! #!!!:!   !!# #!##!!#!       #!#  !#! !!# #!! !#! #!#\n"
     printf " !!:  !!! !!:      !!: !!:  !!!        !:..:!  !!: !!:     !!:\n"
-    printf " ::::::   :::::::: ::: :::   ::   ::     ::    ::: :::     :::\n"
-    printf "\n              %sby $AUTHOR %s•%s $LICENSE %s•%s v$VERSION%s\n" "$(ansi 0)" "$(ansi 1 32)" "$(ansi 0)" "$(ansi 1 32)" "$(ansi 0)" "$(ansi 1 32)"
-    printf "_______________________________________________________________%s\n\n\n" "$(ansi 0)"
+    printf " ::::::   :::::::: ::: :::   ::   ::     ::    ::: :::     :::%s\n" "$(ansi 0)"
+    printf "\n              by $AUTHOR %s•%s $LICENSE %s•%s v$VERSION\n" "$(ansi 1 32)" "$(ansi 0)" "$(ansi 1 32)" "$(ansi 0)"
+    printf "%s_______________________________________________________________%s\n\n" "$(ansi 1 32)" "$(ansi 0)"
     ;;
   "header")
     reset_clb
-    printf "\n\n%s[ $2 ] %s\n" "$(ansi 1)" "$(ansi 1 0)"
+    printf "\n\n%s[ $2 ] %s\n\n" "$(ansi 1)" "$(ansi 0)"
     ;;
   "end")
-    printf "%s➤%s Installation finished.%s\n" "$(ansi 36)" "$(ansi 0)" "$(ansi 0)"
-    printf "%s➤%s Run %s'cat $DEIN/doc/dein.txt'%s for more usage information.%s\n" "$(ansi 36)" "$(ansi 0)" "$(ansi 36)" "$(ansi 0)" "$(ansi 0)"
+    printf "All done. Look at your %s$CONFIG_FILENAME%s file to set plugins, themes, and more.\n\n" "$(ansi 1 34)" "$(ansi 0)"
+    printf "%s●%s Documentation:%s $DEIN/doc/dein.txt %s\n" "$(ansi 32)" "$(ansi 0)" "$(ansi 35)" "$(ansi 0)"
+    printf "%s●%s Chat with the community:%s https://gitter.im/Shougo/dein.vim %s\n" "$(ansi 32)" "$(ansi 0)" "$(ansi 35)" "$(ansi 0)"
+    printf "%s●%s Report issues:%s https://github.com/Shougo/dein.vim/issues %s\n" "$(ansi 32)" "$(ansi 0)" "$(ansi 35)" "$(ansi 0)"
     ;;
-  "output") printf "%s\n$2\n%s\n" "$(ansi 32)" "$(ansi 0)" ;;
   "input_opt") printf "%s$2%s %s$3%s %s$4%s %s$5%s\n" "$(ansi 1 35)" "$(ansi 0)" "$(ansi 36)" "$(ansi 0)" "$(ansi 0 34)" "$(ansi 0)" "$(ansi 1 35)" "$(ansi 0)" ;;
-  "input") printf "\n%s%s$2\n" "$(ansi 32)" "$(ansi 0)" ;;
-  "action") printf "%s%s $2 %s$3%s\n" "$(ansi 36)" "$(ansi 0)" "$(ansi 36)" "$(ansi 0)" ;;
-  "error") printf "%sError: $2%s\n" "$(ansi 31)" "$(ansi 0)" ;;
-  "warning") printf "%sWarning: $2%s\n" "$(ansi 33)" "$(ansi 0)" ;;
+  "input") printf "\n%s\n" "$2" ;;
+  "action") printf "%s$2%s\n" "$(ansi 36)" "$(ansi 0)" ;;
+  "action_warn") printf "%s$2%s %s$3%s\n" "$(ansi 33)" "$(ansi 0)" "$(ansi 36)" "$(ansi 0)" ;;
+  "error")
+    printf "%sError:  $2%s\n" "$(ansi 31)" "$(ansi 0)"
+    ;;
   *) printf "" ;;
   esac
 }
 
 # Make sure git is installed and is executable
 command -v git >>/dev/null 2>&1 || {
-  typography error "Please install git or update your path to include the git executable! Exit error."
+  typography error "Couldn't find 'git' command. Make sure 'git' is installed and is executable before continue."
   exit 1
 }
 
@@ -194,7 +196,7 @@ base_prompt() {
 # To setup dein.vim and support older git versions
 # this function will manually clone the repository.
 dein_setup() {
-  typography action "Dein.vim setup initialized..."
+  typography action "Cloning Dein.vim into '$DEIN'..."
 
   command git init -q "$DEIN" &&
     command cd "$DEIN" >>/dev/null 2>&1 &&
@@ -216,20 +218,18 @@ dein_setup() {
     typography error "Failed to exit installation directory"
     exit 1
   }
-
-  typography action "Git cloned dein.vim successfully!" "($DEIN)"
 }
 
 # This function will generate the initial config for the user.
 # Required for an more conventional user experience.
 editor_setup() {
-  typography action "Editor setup initialized..."
+  typography action "Looking for an existing '$CONFIG_FILENAME' config..."
 
   EDITOR_CONFIG="$CONFIG_LOCATION/$CONFIG_FILENAME"
 
   if [ -e "$EDITOR_CONFIG" ] && [ $KEEP_CONFIG = "yes" ]; then
-    typography warning "Found old editor config. Generating config in the base path.\nRun 'cat $BASE/$CONFIG_FILENAME' in your terminal to check it out."
     OUTDIR="$BASE/$CONFIG_FILENAME"
+    typography action_warn "Found $CONFIG_FILENAME." "Config will be created inside '$BASE'..."
   else
     case $EDITOR_CONFIG in
     *.config/nvim/init.vim)
@@ -245,13 +245,13 @@ editor_setup() {
 
   OUTDIR=${OUTDIR:-$EDITOR_CONFIG}
 
-  if command echo "$(generate_vimrc)" >"$OUTDIR"; then
-    typography action "Config file created successfully!" "($OUTDIR)"
-  else
+  typography action "Using the Dein.vim config example and adding it to '$OUTDIR'..."
+
+  command echo "$(generate_vimrc)" >"$OUTDIR" || {
     cleanup
-    typography error "Failed to generate vim config file. ($OUTDIR)\nMake sure the directory exists and you have access to it."
+    typography error "Failed to generate '$CONFIG_FILENAME' file. Make sure the directory exists and you have access to it.\n     at editor-config ($CONFIG_LOCATION)"
     exit 1
-  fi
+  }
 }
 
 dein() {
@@ -277,27 +277,32 @@ dein() {
   done
 
   case $BASE in
-  none) base_prompt ;;
+  none)
+    base_prompt
+    reset_clb
+    ;;
   *.vim/plugin* | *.config/nvim/plugin*)
-    typography error "The base path cannot be '$BASE'. Please, enter another directory."
+    typography error "Invalid base path location, the '$BASE' directory is restricted and cannot be used."
     exit 1
     ;;
   esac
 
   if [ "$CONFIG_FILENAME" = "none" ] || [ "$CONFIG_LOCATION" = "none" ]; then
     config_prompt
+    reset_clb
   fi
 
   DEIN="${BASE}/repos/github.com/Shougo/dein.vim"
 
   if [ -d "$DEIN" ]; then
-    typography warning "The DEIN folder already exists ($DEIN).\nYou'll need to move or remove it."
+    typography error "Folder already exists. Move or delete the '$DEIN' folder to continue."
     exit 1
   fi
 
-  typography title
   dein_setup
   editor_setup
+
+  typography title
   typography end
 }
 
