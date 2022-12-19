@@ -152,6 +152,27 @@ cleanup() {
   }
 }
 
+# Handle the backup of existing config files.
+config_backup() {
+  CONFIG=$1
+  BACKUP_ID="pre-dein-vim"
+
+  # When an backup already exist, apply timestamp to the filename.
+  if [ -e "$CONFIG.$BACKUP_ID" ]; then
+    BACKUP_FILE="$CONFIG-$(date +%m-%d-%Y-%H-%M-%S).$BACKUP_ID"
+  fi
+
+  BACKUP_FILE=${BACKUP_FILE:-"$CONFIG.$BACKUP_ID"}
+
+  typography action_warn "Found $CONFIG_FILENAME." "Creating backup in '$BACKUP_FILE'..."
+
+  command mv "$CONFIG" "$BACKUP_FILE" >>/dev/null 2>&1 || {
+    cleanup
+    typography error "Failed to create backup of '$CONFIG' in '$BACKUP_FILE'."
+    exit 1
+  }
+}
+
 # Prompt the user for the vim config path location.
 config_prompt() {
   while typography header "CONFIG LOCATION" &&
@@ -228,8 +249,7 @@ editor_setup() {
   EDITOR_CONFIG="$CONFIG_LOCATION/$CONFIG_FILENAME"
 
   if [ -e "$EDITOR_CONFIG" ] && [ $KEEP_CONFIG = "yes" ]; then
-    OUTDIR="$BASE/$CONFIG_FILENAME"
-    typography action_warn "Found $CONFIG_FILENAME." "Config will be created inside '$BASE'..."
+    config_backup "$EDITOR_CONFIG"
   else
     case $EDITOR_CONFIG in
     *.config/nvim/init.vim)
@@ -243,11 +263,9 @@ editor_setup() {
     esac
   fi
 
-  OUTDIR=${OUTDIR:-$EDITOR_CONFIG}
+  typography action "Using the Dein.vim config example and adding it to '$EDITOR_CONFIG'..."
 
-  typography action "Using the Dein.vim config example and adding it to '$OUTDIR'..."
-
-  command echo "$(generate_vimrc)" >"$OUTDIR" || {
+  command echo "$(generate_vimrc)" >"$EDITOR_CONFIG" || {
     cleanup
     typography error "Failed to generate '$CONFIG_FILENAME' file. Make sure the directory exists and you have access to it.\n     at editor-config ($CONFIG_LOCATION)"
     exit 1
