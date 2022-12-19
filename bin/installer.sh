@@ -82,9 +82,7 @@ typography() {
   "input") printf "\n%s\n" "$2" ;;
   "action") printf "%s$2%s\n" "$(ansi 36)" "$(ansi 0)" ;;
   "action_warn") printf "%s$2%s %s$3%s\n" "$(ansi 33)" "$(ansi 0)" "$(ansi 36)" "$(ansi 0)" ;;
-  "error")
-    printf "%sError:  $2%s\n" "$(ansi 31)" "$(ansi 0)"
-    ;;
+  "error") printf "%sError:  $2%s\n" "$(ansi 31)" "$(ansi 0)" ;;
   *) printf "" ;;
   esac
 }
@@ -175,18 +173,21 @@ config_backup() {
 
 # Prompt the user for the vim config path location.
 config_prompt() {
-  while typography header "CONFIG LOCATION" &&
-    typography input_opt "1" "vim" "path" "(~/.vimrc)" &&
-    typography input_opt "2" "neovim" "path" "(~/.config/nvim/init.vim)" &&
-    typography input "Select your editor config location (eg. 1 or 2)" && read -r OPT_CL; do
+  while
+    typography header "CONFIG LOCATION" &&
+      typography input_opt "1" "vim" "path" "(~/.vimrc)" &&
+      typography input_opt "2" "neovim" "path" "(~/.config/nvim/init.vim)" &&
+      typography input "Select your editor config location (eg. 1 or 2)" &&
+      read -r OPT_CL
+  do
     case $OPT_CL in
     1)
-      CONFIG_LOCATION="${HOME}"
+      CONFIG_LOCATION="$HOME"
       CONFIG_FILENAME=".vimrc"
       break
       ;;
     2)
-      CONFIG_LOCATION="${HOME}/.config/nvim"
+      CONFIG_LOCATION="$HOME/.config/nvim"
       CONFIG_FILENAME="init.vim"
       break
       ;;
@@ -196,18 +197,20 @@ config_prompt() {
 
 # Prompt the user for the dein.vim base path location.
 base_prompt() {
-  while typography header "DEIN.VIM LOCATION" &&
-    typography input_opt "1" "cache" "path" "(~/.cache/dein)" &&
-    typography input_opt "2" "local" "path" "(~/.local/share/dein)" &&
-    typography input "Select dein.vim location to clone with git (eg. 1 or 2)" &&
-    read -r OPT_DL; do
+  while
+    typography header "DEIN.VIM LOCATION" &&
+      typography input_opt "1" "cache" "path" "(~/.cache/dein)" &&
+      typography input_opt "2" "local" "path" "(~/.local/share/dein)" &&
+      typography input "Select dein.vim location to clone with git (eg. 1 or 2)" &&
+      read -r OPT_DL
+  do
     case $OPT_DL in
     1)
-      BASE="${HOME}/.cache/dein"
+      BASE="$HOME/.cache/dein"
       break
       ;;
     2)
-      BASE="${HOME}/.local/share/dein"
+      BASE="$HOME/.local/share/dein"
       break
       ;;
     esac
@@ -228,12 +231,13 @@ dein_setup() {
     command git config core.autocrlf false &&
     command git remote add origin "$REMOTE" &&
     command git fetch --depth=1 origin "$BRANCH" &&
-    command git checkout "$BRANCH" -q || {
-    cd -
-    cleanup
-    typography error "Git clone of dein.vim repo failed"
-    exit 1
-  }
+    command git checkout "$BRANCH" -q ||
+    {
+      cd -
+      cleanup
+      typography error "Git clone of dein.vim repo failed"
+      exit 1
+    }
 
   command cd - >>/dev/null 2>&1 || {
     typography error "Failed to exit installation directory"
@@ -279,11 +283,11 @@ dein() {
     --overwrite-config | -oWC) KEEP_CONFIG=no ;;
     *./* | */home/* | *~/*) BASE=$(eval echo "${1%/}") ;;
     --use-vim-config | -uVC)
-      CONFIG_LOCATION="${HOME}"
+      CONFIG_LOCATION="$HOME"
       CONFIG_FILENAME=".vimrc"
       ;;
     --use-neovim-config | -uNC)
-      CONFIG_LOCATION="${HOME}/.config/nvim"
+      CONFIG_LOCATION="$HOME/.config/nvim"
       CONFIG_FILENAME="init.vim"
       ;;
     *)
