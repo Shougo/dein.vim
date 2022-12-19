@@ -139,6 +139,14 @@ endif
 EOF
 }
 
+# Handle the cleanup before exiting error. It should be used with caution.
+cleanup() {
+  # Remove cloned Dein.vim repository, if any.
+  [ ! -d "$DEIN" ] || {
+    rm -rf "$DEIN" >>/dev/null 2>&1
+  }
+}
+
 # Prompt the user for the vim config path location.
 config_prompt() {
   while typography header "CONFIG LOCATION" &&
@@ -192,10 +200,8 @@ dein_setup() {
     git remote add origin "$REMOTE" &&
     git fetch --depth=1 origin -q &&
     git checkout -b "$BRANCH" "origin/$BRANCH" -q || {
-    [ ! -d "$DEIN" ] || {
-      cd -
-      rm -rf "$DEIN" >>/dev/null 2>&1
-    }
+    cd -
+    cleanup
     typography error "Git clone of dein.vim repo failed"
     exit 1
   }
@@ -223,6 +229,7 @@ editor_setup() {
   if command echo "$(generate_vimrc)" >"$OUTDIR"; then
     typography action "Config file created successfully!" "($OUTDIR)"
   else
+    cleanup
     typography error "Failed to generate vim config file. ($OUTDIR)\nMake sure the directory exists and you have access to it."
     exit 1
   fi
