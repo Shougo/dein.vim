@@ -72,6 +72,7 @@ INSTALL							*dein-install*
 Requirements:
 * Vim 8.2+ or NeoVim 0.5+.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
+* "xcopy" installed or |if_python3| interface (on Windows)
 
 Note: If you use below Vim 8.2 or neovim 0.5, please use dein.vim ver.2.2
 instead.
@@ -1733,6 +1734,9 @@ in "dein.vim" by performance reason.  So you need to execute it manually.
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
+
+2022.12.20
+* Split installer script.
 
 2022.12.06
 * Enable "filetype plugin indent on" when updated in neovim.

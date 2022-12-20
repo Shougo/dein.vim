@@ -20,11 +20,7 @@ To learn more details, visit [here](doc/dein.txt).
   - [Getting started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Basic installation](#basic-installation)
-      - [Wget](#wget)
-      - [Curl](#curl)
-      - [Manual inspection](#manual-inspection)
-      - [Additional Notes](#additional-notes)
-    - [Powershell (Windows)](#powershell-windows)
+    - [Command line installation](#command-line-installation)
     - [Config example](#config-example)
   - [Q\&A](#qa)
       - [Dein has an user interface like vim-plug?](#dein-has-an-user-interface-like-vim-plug)
@@ -67,83 +63,30 @@ please use **dein.vim** `v2.2` instead.
 
 ### Basic installation
 
-To install dein.vim on **UNIX** systems, you should run the install script. To
-do that, you may either download and run the script manually, or use the
-following **wget** or **curl** command:
+You can install dein.vim by your vimrc/init.vim.
 
-
-#### Wget
-
-```sh
-sh -c "$(wget -O- https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
+```vim
+let $CACHE = expand('~/.cache')
+if !isdirectory($CACHE)
+  call mkdir($CACHE, 'p')
+endif
+if &runtimepath !~# '/dein.vim'
+  let s:dein_dir = fnamemodify('dein.vim', ':p')
+  if !isdirectory(s:dein_dir)
+    let s:dein_dir = $CACHE . '/dein/repos/github.com/Shougo/dein.vim'
+    if !isdirectory(s:dein_dir)
+      execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
+    endif
+  endif
+  execute 'set runtimepath^=' . substitute(
+        \ fnamemodify(s:dein_dir, ':p') , '[/\\]$', '', '')
+endif
 ```
 
 
-#### Curl
+### Command line installation
 
-```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)"
-```
-
-
-#### Manual inspection
-
-> **Note:** _"It's a good idea to inspect the install script from projects you
-> don't know."_
-
-You can do that by downloading the install script, then looking through it to
-check if the code is safe:
-
-```sh
-$ wget https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
-$ less installer.sh
-$ sh installer.sh
-```
-
-The script code is well formatted, so you can better understand all the code.
-The script can take some arguments that are listed in **Additional Notes**
-section below.
-
-
-#### Additional Notes
-
-- If you want to overwrite an existent `.vimrc` or `init.vim` config, pass the
-  `--overwrite-config` (or in short `-oWC`) argument to the installation
-  script. By default, if there's one config already, the new config is
-  generated inside the base path.
-
-- The `installer` script has prompt menus that helps you setup everything.
-  However, if you want install **Dein.vim** into an different path location,
-  pass the location to the end of the script like `sh installer.sh
-  ~/.vim/bundle`.
-
-- If you want to complete the setup without the `installer` script prompting,
-  Select your editor config location and pass the `--use-vim-config` (or in
-  short `-uVC`) or `--use-neovim-config` (or in short `-uNC`) argument to the
-  installation script.
-
-
-### Powershell (Windows)
-
-> The support for Windows requires Powershell.
-
-Open your Powershell and download the script:
-
-```powershell
-Invoke-WebRequest https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.ps1 -OutFile installer.ps1
-```
-
-After checking the code, allow it to be executed properly:
-
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-Lastly, for an installation at the `~/.cache/dein` directory execute:
-
-```powershell
-./installer.ps1 ~/.cache/dein
-```
+Please use [dein-installer.vim](https://github.com/Shougo/dein-installer.vim).
 
 
 ### Config example
