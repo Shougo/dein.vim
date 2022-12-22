@@ -16,6 +16,8 @@ call dein#util#_set_default(
       \ 'g:dein#types#git#default_protocol', 'https')
 call dein#util#_set_default(
       \ 'g:dein#types#git#pull_command', 'pull --ff --ff-only')
+call dein#util#_set_default(
+      \ 'g:dein#types#git#enable_partial_clone', v:false)
 
 
 function! dein#types#git#define() abort
@@ -122,6 +124,10 @@ function! s:type.get_sync_command(plugin) abort
         call add(commands, '--branch')
         call add(commands, a:plugin.rev)
       endif
+    endif
+
+    if g:dein#types#git#enable_partial_clone
+      call add(commands, '--filter=blob:none')
     endif
 
     call add(commands, self.get_uri(a:plugin.repo, a:plugin))

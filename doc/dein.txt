@@ -726,6 +726,13 @@ g:dein#types#git#default_protocol
 
 		Default: "https"
 
+					*g:dein#types#git#enable_partial_clone*
+g:dein#types#git#enable_partial_clone
+		Enable partial clone when plugin install. It is faster.
+		Note: git 2.19+ is required.
+
+		Default: v:false
+
 					*g:dein#types#git#pull_command*
 g:dein#types#git#pull_command
 		The git command used to pull updates.
