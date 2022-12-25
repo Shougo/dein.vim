@@ -81,9 +81,7 @@ function! dein#min#load_state(path) abort
   if !exists('#dein')
     call dein#min#_init()
   endif
-  let sourced = has('vim_starting') &&
-        \  (!exists('&loadplugins') || &loadplugins)
-  if (g:dein#_is_sudo || !sourced) | return 1 | endif
+  if g:dein#_is_sudo | return 1 | endif
   let g:dein#_base_path = expand(a:path)
 
   let state = get(g:, 'dein#cache_directory', g:dein#_base_path)
