@@ -305,7 +305,8 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   for name in get(a:plugin, 'depends', [])
     if !has_key(g:dein#_plugins, name)
       call dein#util#_error(printf(
-            \ 'Plugin name "%s" is not found.', name))
+            \ 'Plugin "%s" depends "%s" but it is not found.',
+            \ a:plugin.name, name))
       continue
     endif
 
