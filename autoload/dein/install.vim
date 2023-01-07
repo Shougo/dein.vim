@@ -1198,8 +1198,6 @@ function! dein#install#_post_sync(plugins) abort
 
   call dein#install#_deno_cache(a:plugins)
 
-  call dein#source(a:plugins)
-
   " Execute done_update hooks
   let done_update_plugins = filter(dein#util#_get_plugins(a:plugins),
         \ { _, val -> has_key(val, 'hook_done_update') })
@@ -1374,6 +1372,8 @@ endfunction
 function! s:call_done_update_hooks(plugins) abort
   let cwd = getcwd()
   try
+    call dein#source(a:plugins)
+
     for plugin in a:plugins
       call dein#install#_cd(plugin.path)
       call dein#call_hook('done_update', plugin)
