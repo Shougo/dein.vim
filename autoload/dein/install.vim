@@ -1594,7 +1594,7 @@ function! s:check_output(context, process) abort
 
     call s:error((is_timeout ?
           \    strftime('Process timeout: (%Y/%m/%d %H:%M:%S)') :
-          \    split(a:process.output, '\n')
+          \    split(a:process.output, '\r\?\n')
           \ ))
 
     call add(a:context.errored_plugins,
@@ -1606,7 +1606,7 @@ function! s:check_output(context, process) abort
     call s:log(s:get_plugin_message(plugin, num, max, 'Updated'))
 
     let log_messages = split(s:get_updated_log_message(
-          \   plugin, new_rev, a:process.rev), '\n')
+          \   plugin, new_rev, a:process.rev), '\r\?\n')
     let plugin.commit_count = len(log_messages)
     call s:log(map(log_messages,
           \   { _, val -> s:get_short_message(plugin, num, max, val) }))
