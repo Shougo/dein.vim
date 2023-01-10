@@ -120,14 +120,15 @@ dein#add({repo}[, {options}])
 		Initialize a plugin.
 		{repo} is the repository URI or local repository directory
 		path.  If {repo} starts with github user name (ex:
-		"Shougo/dein.vim"), dein will install github plugins.
+		"Shougo/dein.vim"), dein will install github plugins when
+		|dein#install()|.
 		See |dein-options| for what to set in {options}.
+		Note: If you install plugins, you need to call
+		|dein#install()| manually.
 		Note: If plugin is already defined, duplicated calls will be
 		ignored.  If you want to overwrite plugin config, you need to
 		use |dein-options-overwrite| or |dein#config()| instead.
 		Note: You must call it in |dein#begin()| block.
-		Note: If you install plugins, you need to call
-		|dein#install()| manually.
 
 							*dein#begin()*
 dein#begin({base-path}, [{vimrcs}])
