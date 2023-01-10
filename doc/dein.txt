@@ -1739,6 +1739,16 @@ https://github.com/Shougo/dein.vim/issues/484
 A: "nvim-treesitter" requires "filetype plugin indent on".  But it is disabled
 in "dein.vim" by performance reason.  So you need to execute it manually.
 
+Q: "hook_source" is not called in non lazy plugins
+
+A: "hook_source" is not called automatically for performance reason.  If it is
+needed, you need to call it manually. >
+
+		call dein#begin()
+		...
+		call dein#end()
+		call dein#call_hook('source')
+
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
 
