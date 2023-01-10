@@ -509,7 +509,10 @@ function! dein#util#_config(arg, dict) abort
   let dict = type(a:arg) == v:t_dict ?
         \   a:arg : a:dict
   if !has_key(g:dein#_plugins, name)
-        \ || g:dein#_plugins[name].sourced
+    call dein#util#_error('Invalid plugin name: ' . name)
+    return {}
+  endif
+  if g:dein#_plugins[name].sourced
     return {}
   endif
 
