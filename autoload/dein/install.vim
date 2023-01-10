@@ -825,10 +825,6 @@ function! s:lock_revision(process, context) abort
   endif
 endfunction
 function! s:get_updated_message(context, plugins) abort
-  "if empty(a:plugins)
-  "  return ''
-  "endif
-
   " Diff check
   if g:dein#install_check_diff
     call s:check_diff(a:plugins)
@@ -857,6 +853,18 @@ function! s:get_errored_message(plugins) abort
         \ map(copy(a:plugins), { _, val -> '  ' . val.name }), "\n")
   let msg .= "\n"
   let msg .= "Please read the error message log with the :message command.\n"
+
+  return msg
+endfunction
+function! s:get_breaking_message(plugins) abort
+  if empty(a:plugins)
+    return ''
+  endif
+
+  let msg = "Breaking updated plugins:\n".join(
+        \ map(copy(a:plugins), { _, val -> '  ' . val.name }), "\n")
+  let msg .= "\n"
+  let msg .= "Please read the plugins documentation."
 
   return msg
 endfunction
@@ -1285,6 +1293,7 @@ function! s:init_context(plugins, update_type, async) abort
   let context.async = a:async
   let context.synced_plugins = []
   let context.errored_plugins = []
+  let context.breaking_plugins = []
   let context.processes = []
   let context.number = 0
   let context.prev_number = -1
@@ -1348,6 +1357,7 @@ function! s:done(context) abort
   if !has('vim_starting')
     call s:notify(s:get_updated_message(a:context, a:context.synced_plugins))
     call s:notify(s:get_errored_message(a:context.errored_plugins))
+    call s:error(s:get_breaking_message(a:context.breaking_plugins))
   endif
 
   redraw | echo ''
@@ -1605,8 +1615,9 @@ function! s:check_output(context, process) abort
   else
     call s:log(s:get_plugin_message(plugin, num, max, 'Updated'))
 
-    let log_messages = split(s:get_updated_log_message(
-          \   plugin, new_rev, a:process.rev), '\r\?\n')
+    let log_message = s:get_updated_log_message(
+          \ plugin, new_rev, a:process.rev)
+    let log_messages = split(log_message, '\r\?\n')
     let plugin.commit_count = len(log_messages)
     call s:log(map(log_messages,
           \   { _, val -> s:get_short_message(plugin, num, max, val) }))
@@ -1632,6 +1643,12 @@ function! s:check_output(context, process) abort
       call add(a:context.errored_plugins, plugin)
     else
       call add(a:context.synced_plugins, plugin)
+    endif
+
+    " If it has breaking changes commit message
+    " https://www.conventionalcommits.org/en/v1.0.0/
+    if log_message =~# '.*!.*:\|BREAKING CHANGE:'
+      call add(a:context.breaking_plugins, plugin)
     endif
   endif
 
