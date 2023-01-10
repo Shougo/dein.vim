@@ -1,12 +1,11 @@
-function! dein#autoload#_source(...) abort
-  let plugins = empty(a:000) ? values(g:dein#_plugins) :
-        \ dein#util#_convert2list(a:1)
+function! dein#autoload#_source(plugins) abort
+  let plugins = dein#util#_convert2list(a:plugins)
   if empty(plugins)
     return []
   endif
 
   if type(plugins[0]) != v:t_dict
-    let plugins = map(dein#util#_convert2list(a:1),
+    let plugins = map(dein#util#_convert2list(a:plugins),
         \       { _, val -> get(g:dein#_plugins, val, {}) })
   endif
 

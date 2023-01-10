@@ -4,12 +4,9 @@ let s:merged_length = 3
 function! dein#util#_init() abort
 endfunction
 
-function! dein#util#_set_default(var, val, ...) abort
+function! dein#util#_set_default(var, val, alternate_var = '') abort
   if !exists(a:var) || type({a:var}) != type(a:val)
-    let alternate_var = get(a:000, 0, '')
-
-    let {a:var} = exists(alternate_var) ?
-          \ {alternate_var} : a:val
+    let {a:var} = exists(a:alternate_var) ? {a:alternate_var} : a:val
   endif
 endfunction
 
@@ -170,13 +167,13 @@ function! dein#util#_cache_writefile(list, path) abort
   let path = dein#util#_get_cache_path() . '/' . a:path
   return dein#util#_safe_writefile(a:list, path)
 endfunction
-function! dein#util#_safe_writefile(list, path, ...) abort
+function! dein#util#_safe_writefile(list, path, flags = '') abort
   if g:dein#_is_sudo
     return 1
   endif
 
   call dein#util#_safe_mkdir(fnamemodify(a:path, ':h'))
-  return writefile(a:list, a:path, get(a:000, 0, ''))
+  return writefile(a:list, a:path, a:flags)
 endfunction
 function! dein#util#_safe_mkdir(path) abort
   if g:dein#_is_sudo || isdirectory(a:path)
@@ -521,10 +518,9 @@ function! dein#util#_config(arg, dict) abort
   return dein#parse#_add(options.repo, options, v:true)
 endfunction
 
-function! dein#util#_call_hook(hook_name, ...) abort
+function! dein#util#_call_hook(hook_name, plugins = []) abort
   let hook = 'hook_' . a:hook_name
-  let plugins = filter(dein#util#_tsort(
-        \ dein#util#_get_plugins((a:0 ? a:1 : []))),
+  let plugins = filter(dein#util#_tsort(dein#util#_get_plugins(a:plugins)),
         \ { _, val ->
         \    ((a:hook_name !=# 'source'
         \      && a:hook_name !=# 'post_source') || val.sourced)

@@ -22,46 +22,43 @@ function! dein#is_available(names) abort
   endfor
   return 1
 endfunction
-function! dein#begin(path, ...) abort
-  return dein#util#_begin(a:path, (empty(a:000) ? [] : a:1))
+function! dein#begin(path, vimrcs = []) abort
+  return dein#util#_begin(a:path, a:vimrcs)
 endfunction
 function! dein#end() abort
   return dein#util#_end()
 endfunction
-function! dein#add(repo, ...) abort
-  return dein#parse#_add(a:repo, get(a:000, 0, {}), v:false)
+function! dein#add(repo, options = {}) abort
+  return dein#parse#_add(a:repo, a:options, v:false)
 endfunction
-function! dein#local(dir, ...) abort
-  return dein#parse#_local(a:dir, get(a:000, 0, {}), get(a:000, 1, ['*']))
+function! dein#local(dir, options = {}, names = ['*']) abort
+  return dein#parse#_local(a:dir, a:options, a:names)
 endfunction
-function! dein#get(...) abort
-  return empty(a:000) || a:1 == '' ?
-        \ copy(g:dein#_plugins) : get(g:dein#_plugins, a:1, {})
+function! dein#get(name = '') abort
+  return a:name ==# '' ?
+        \ copy(g:dein#_plugins) : get(g:dein#_plugins, a:name, {})
 endfunction
-function! dein#source(...) abort
-  return call('dein#autoload#_source', a:000)
+function! dein#source(plugins = values(g:dein#_plugins)) abort
+  return dein#autoload#_source(a:plugins)
 endfunction
-function! dein#check_install(...) abort
-  return dein#util#_check_install(get(a:000, 0, []))
+function! dein#check_install(plugins = []) abort
+  return dein#util#_check_install(a:plugins)
 endfunction
-function! dein#check_update(...) abort
-  return dein#install#_check_update(
-        \ get(a:000, 1, []), get(a:000, 0, v:false),
+function! dein#check_update(force = v:false, plugins = []) abort
+  return dein#install#_check_update(a:plugins, a:force,
         \ dein#install#_is_async())
 endfunction
 function! dein#check_clean() abort
   return dein#util#_check_clean()
 endfunction
-function! dein#install(...) abort
-  return dein#install#_do(get(a:000, 0, []),
-        \ 'install', dein#install#_is_async())
+function! dein#install(plugins = []) abort
+  return dein#install#_do(a:plugins, 'install', dein#install#_is_async())
 endfunction
-function! dein#update(...) abort
-  return dein#install#_do(get(a:000, 0, []),
-        \ 'update', dein#install#_is_async())
+function! dein#update(plugins = []) abort
+  return dein#install#_do(a:plugins, 'update', dein#install#_is_async())
 endfunction
-function! dein#direct_install(repo, ...) abort
-  call dein#install#_direct_install(a:repo, (a:0 ? a:1 : {}))
+function! dein#direct_install(repo, options = {}) abort
+  call dein#install#_direct_install(a:repo, a:options)
 endfunction
 function! dein#get_direct_plugins_path() abort
   return get(g:, 'dein#cache_directory', g:dein#_base_path)
@@ -70,14 +67,14 @@ endfunction
 function! dein#reinstall(plugins) abort
   call dein#install#_reinstall(a:plugins)
 endfunction
-function! dein#rollback(date, ...) abort
-  call dein#install#_rollback(a:date, (a:0 ? a:1 : []))
+function! dein#rollback(date, plugins = []) abort
+  call dein#install#_rollback(a:date, a:plugins)
 endfunction
-function! dein#save_rollback(rollbackfile, ...) abort
-  call dein#install#_save_rollback(a:rollbackfile, (a:0 ? a:1 : []))
+function! dein#save_rollback(rollbackfile, plugins = []) abort
+  call dein#install#_save_rollback(a:rollbackfile, a:plugins)
 endfunction
-function! dein#load_rollback(rollbackfile, ...) abort
-  call dein#install#_load_rollback(a:rollbackfile, (a:0 ? a:1 : []))
+function! dein#load_rollback(rollbackfile, plugins = []) abort
+  call dein#install#_load_rollback(a:rollbackfile, a:plugins)
 endfunction
 function! dein#remote_plugins() abort
   return dein#install#_remote_plugins()
@@ -85,17 +82,17 @@ endfunction
 function! dein#recache_runtimepath() abort
   call dein#install#_recache_runtimepath()
 endfunction
-function! dein#call_hook(hook_name, ...) abort
-  return call('dein#util#_call_hook', [a:hook_name] + a:000)
+function! dein#call_hook(hook_name, plugins = []) abort
+  return dein#util#_call_hook(a:hook_name, a:plugins)
 endfunction
 function! dein#check_lazy_plugins() abort
   return dein#util#_check_lazy_plugins()
 endfunction
-function! dein#load_toml(filename, ...) abort
-  return dein#parse#_load_toml(a:filename, get(a:000, 0, {}))
+function! dein#load_toml(filename, options = {}) abort
+  return dein#parse#_load_toml(a:filename, a:options)
 endfunction
-function! dein#load_dict(dict, ...) abort
-  return dein#parse#_load_dict(a:dict, get(a:000, 0, {}))
+function! dein#load_dict(dict, options = {}) abort
+  return dein#parse#_load_dict(a:dict, a:options)
 endfunction
 function! dein#get_log() abort
   return join(dein#install#_get_log(), "\n")
@@ -109,11 +106,11 @@ endfunction
 function! dein#get_failed_plugins() abort
   return dein#install#_get_failed_plugins()
 endfunction
-function! dein#each(command, ...) abort
-  return dein#install#_each(a:command, (a:0 ? a:1 : []))
+function! dein#each(command, plugins = []) abort
+  return dein#install#_each(a:command, a:plugins)
 endfunction
-function! dein#build(...) abort
-  return dein#install#_build(a:0 ? a:1 : [])
+function! dein#build(plugins = []) abort
+  return dein#install#_build(a:plugins)
 endfunction
 function! dein#plugins2toml(plugins) abort
   return dein#parse#_plugins2toml(a:plugins)
@@ -121,10 +118,10 @@ endfunction
 function! dein#disable(names) abort
   return dein#util#_disable(a:names)
 endfunction
-function! dein#config(arg, ...) abort
-  return type(a:arg) != v:t_list ?
-        \ dein#util#_config(a:arg, get(a:000, 0, {})) :
-        \ map(copy(a:arg), { _, val -> dein#util#_config(val, a:1) })
+function! dein#config(arg, options = {}) abort
+  return type(a:arg) == v:t_dict ? dein#util#_config(g:dein#name, a:arg) :
+        \ type(a:arg) != v:t_list ? dein#util#_config(a:arg, a:options) :
+        \ map(copy(a:arg), { _, val -> dein#util#_config(val, a:options) })
 endfunction
 function! dein#set_hook(plugins, hook_name, hook) abort
   return dein#util#_set_hook(a:plugins, a:hook_name, a:hook)
@@ -136,18 +133,18 @@ function! dein#clear_state() abort
   call dein#util#_clear_state()
   if !get(g:, 'dein#auto_recache', v:false) && !empty(g:dein#ftplugin)
     call dein#util#_notify(
-          \ 'call dein#recache_runtimepath() is needed for ftplugin feature')
+          \ 'call dein#recache_runtimepath() is needed for ftplugin')
   endif
 endfunction
-function! dein#deno_cache(...) abort
-  call dein#install#_deno_cache(get(a:000, 0, []))
+function! dein#deno_cache(plugins = []) abort
+  call dein#install#_deno_cache(a:plugins)
 endfunction
 function! dein#post_sync(plugins) abort
   call dein#install#_post_sync(a:plugins)
 endfunction
-function! dein#get_updated_plugins(...) abort
+function! dein#get_updated_plugins(plugins = []) abort
   return dein#install#_get_updated_plugins(
-        \ get(a:000, 0, []), dein#install#_is_async())
+        \ a:plugins, dein#install#_is_async())
 endfunction
 function! dein#options(options) abort
   for [key, val] in items(a:options)

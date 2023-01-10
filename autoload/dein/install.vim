@@ -1179,12 +1179,12 @@ function! dein#install#_copy_file_vim(src, dest) abort
   endif
 endfunction
 
-function! dein#install#_deno_cache(...) abort
+function! dein#install#_deno_cache(plugins = []) abort
   if !executable('deno')
     return
   endif
 
-  let plugins = dein#util#_get_plugins(get(a:000, 0, []))
+  let plugins = dein#util#_get_plugins(a:plugins)
 
   for plugin in plugins
     if !isdirectory(plugin.rtp . '/denops')
