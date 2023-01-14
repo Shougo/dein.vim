@@ -862,7 +862,9 @@ function! s:get_breaking_message(plugins) abort
   endif
 
   let msg = "Breaking updated plugins:\n".join(
-        \ map(copy(a:plugins), { _, val -> '  ' . val.name }), "\n")
+        \ map(copy(a:plugins), {
+        \   _, val -> printf("  %s\n%s", val.name, v:val.log_message)
+        \ }), "\n")
   let msg .= "\n"
   let msg .= "Please read the plugins documentation."
 
@@ -1648,7 +1650,10 @@ function! s:check_output(context, process) abort
     " If it has breaking changes commit message
     " https://www.conventionalcommits.org/en/v1.0.0/
     if log_message =~# '.*!.*:\|BREAKING CHANGE:'
-      call add(a:context.breaking_plugins, plugin)
+      call add(a:context.breaking_plugins, {
+            \   'name': plugin.name,
+            \   'log_message': log_message,
+            \ })
     endif
   endif
 
