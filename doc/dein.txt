@@ -1753,7 +1753,7 @@ needed, you need to call it manually. >
 COMPATIBILITY						*dein-compatibility*
 
 2023.01.14
-* Vim 8.2 or nvim 0.8 is required
+* Vim 8.2 or nvim 0.8 is required.
 
 2022.12.20
 * Split installer script.
