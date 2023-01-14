@@ -4,16 +4,6 @@ export THEMIS_ARGS := -e -s --headless
 export THEMIS_HOME := ./vim-themis
 
 
-install:
-	pip install --upgrade -r test/requirements.txt
-
-install-user:
-	pip install --user --upgrade -r test/requirements.txt
-
-lint:
-	vint --version
-	vint autoload
-
 test: vim-themis
 	themis --version
 	themis test/
