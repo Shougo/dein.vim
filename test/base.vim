@@ -60,10 +60,10 @@ function! s:suite.add_overwrite() abort
 endfunction
 
 function! s:suite.get() abort
-  let plugins = { 'foo': {'name': 'bar'} }
+  let plugins = #{ foo: #{ name: 'bar' } }
 
   call dein#begin(s:path)
-  call dein#add('foo', { 'name': 'bar' })
+  call dein#add('foo', #{ name: 'bar' })
   call s:assert.equals(dein#get('bar').name, 'bar')
   call dein#add('foo')
   call s:assert.equals(dein#get('foo').name, 'foo')
@@ -79,7 +79,7 @@ endfunction
 
 function! s:suite.lua() abort
   call dein#begin(s:path)
-  call dein#parse#_add('foo', { 'name': 'bar', 'lua_add': 'foo', 'rtp': 'foo' }, v:true)
+  call dein#parse#_add('foo', #{ name: 'bar', lua_add: 'foo', rtp: 'foo' }, v:true)
   call dein#end()
   call s:assert.equals(dein#get('bar').hook_add, "lua <<EOF\nfoo\nEOF\n")
 endfunction

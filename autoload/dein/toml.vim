@@ -33,10 +33,10 @@ function! dein#toml#syntax() abort
 endfunction
 
 function! dein#toml#parse(text) abort
-  let input = {
-  \   'text': a:text,
-  \   'p': 0,
-  \   'length': strlen(a:text),
+  let input = #{
+  \  text: a:text,
+  \  p: 0,
+  \  length: strlen(a:text),
   \}
   return s:_parse(input)
 endfunction

@@ -29,23 +29,26 @@ endfunction
 function! s:suite.init() abort
   call dein#begin(s:path)
   call s:assert.equals(s:type.init(
-        \ 'https://github.com/Shougo/dein.vim', {}),
-        \ { 'type': 'git',
-        \   'path': s:base.'github.com/Shougo/dein.vim' })
+        \ 'https://github.com/Shougo/dein.vim', {}), #{
+        \   type: 'git',
+        \   path: s:base.'github.com/Shougo/dein.vim',
+        \ })
   call s:assert.equals(s:type.get_uri(
         \ 'https://github.com/Shougo/dein.vim', {}),
         \ 'https://github.com/Shougo/dein.vim')
   call s:assert.equals(s:type.init(
-        \ 'Shougo/dein.vim', {}),
-        \ { 'type': 'git',
-        \   'path': s:base.'github.com/Shougo/dein.vim' })
+        \ 'Shougo/dein.vim', {}), #{
+        \   type: 'git',
+        \   path: s:base.'github.com/Shougo/dein.vim',
+        \ })
   call s:assert.equals(s:type.get_uri(
         \ 'Shougo/dein.vim', {}),
         \ 'https://github.com/Shougo/dein.vim')
   call s:assert.equals(s:type.init(
-        \ 'https://github.com:80/Shougo/dein.vim', {}),
-        \ { 'type': 'git',
-        \   'path': s:base.'github.com/Shougo/dein.vim' })
+        \ 'https://github.com:80/Shougo/dein.vim', {}), #{
+        \   type: 'git',
+        \   path: s:base.'github.com/Shougo/dein.vim',
+        \ })
   call s:assert.equals(s:type.get_uri(
         \ 'https://github.com:80/Shougo/dein.vim', {}),
         \ 'https://github.com/Shougo/dein.vim')
@@ -53,18 +56,20 @@ function! s:suite.init() abort
   call s:assert.equals(s:type.init('L9', {}), {})
 
   call s:assert.equals(s:type.init(
-        \ 'https://bitbucket.org/mortonfox/twitvim.git', {}),
-        \ { 'type': 'git',
-        \   'path': s:base.'bitbucket.org/mortonfox/twitvim' })
+        \ 'https://bitbucket.org/mortonfox/twitvim.git', {}), #{
+        \   type: 'git',
+        \   path: s:base.'bitbucket.org/mortonfox/twitvim',
+        \ })
   call s:assert.equals(s:type.get_uri(
         \ 'https://bitbucket.org/mortonfox/twitvim.git', {}),
         \ 'https://bitbucket.org/mortonfox/twitvim.git')
   call s:assert.equals(s:type.init(
-        \ 'https://git.code.sf.net/p/atp-vim/code', {'type': 'git'}),
-        \ { 'type': 'git',
-        \   'path': s:base.'git.code.sf.net/p/atp-vim/code' })
+        \ 'https://git.code.sf.net/p/atp-vim/code', #{ type: 'git' }), #{
+        \   type: 'git',
+        \   path: s:base.'git.code.sf.net/p/atp-vim/code',
+        \ })
   call s:assert.equals(s:type.get_uri(
-        \ 'https://git.code.sf.net/p/atp-vim/code', {'type': 'git'}),
+        \ 'https://git.code.sf.net/p/atp-vim/code', #{ type: 'git' }),
         \ 'https://git.code.sf.net/p/atp-vim/code')
 
   call s:assert.equals(s:type.get_uri(
@@ -76,9 +81,10 @@ function! s:suite.init() abort
 
   let g:dein#types#git#default_protocol = 'ssh'
 
-  call s:assert.equals(s:type.init('Shougo/dein.vim', {}),
-        \ { 'type': 'git',
-        \   'path': s:base.'github.com/Shougo/dein.vim' })
+  call s:assert.equals(s:type.init('Shougo/dein.vim', {}), #{
+        \   type: 'git',
+        \   path: s:base.'github.com/Shougo/dein.vim',
+        \ })
   call s:assert.equals(s:type.get_uri('Shougo/dein.vim', {}),
         \ 'git@github.com:Shougo/dein.vim')
 

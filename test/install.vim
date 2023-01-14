@@ -92,7 +92,7 @@ function! s:suite.update() abort
 
   call dein#begin(s:path)
 
-  call dein#add('Shougo/neopairs.vim', {'frozen': 1})
+  call dein#add('Shougo/neopairs.vim', #{ frozen: 1 })
 
   call s:assert.equals(s:dein_update(), 0)
 
@@ -125,7 +125,7 @@ endfunction
 function! s:suite.fetch() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deoplete.nvim', { 'rtp': '' })
+  call dein#add('Shougo/deoplete.nvim', #{ rtp: '' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -161,7 +161,7 @@ endfunction
 function! s:suite.if() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deoplete.nvim', {'if': 0, 'on_cmd': 'FooBar'})
+  call dein#add('Shougo/deoplete.nvim', #{ if: 0, on_cmd: 'FooBar' })
   call s:assert.equals(dein#get('deoplete.nvim').if, 0)
 
   call dein#end()
@@ -170,7 +170,7 @@ endfunction
 function! s:suite.lazy_manual() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deoplete.nvim', { 'lazy': 1 })
+  call dein#add('Shougo/deoplete.nvim', #{ lazy: 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -193,7 +193,7 @@ endfunction
 function! s:suite.lazy_on_ft() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deoplete.nvim', { 'on_ft': 'cpp' })
+  call dein#add('Shougo/deoplete.nvim', #{ on_ft: 'cpp' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -222,7 +222,7 @@ endfunction
 function! s:suite.lazy_on_path() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deol.nvim', { 'on_path': '.*' })
+  call dein#add('Shougo/deol.nvim', #{ on_path: '.*' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -247,7 +247,7 @@ function! s:suite.lazy_on_if() abort
 
   let temp = tempname()
   call dein#add('Shougo/deol.nvim',
-        \ { 'on_if': '&l:filetype ==# "foobar"' })
+        \ #{ on_if: '&l:filetype ==# "foobar"' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -271,9 +271,8 @@ endfunction
 function! s:suite.lazy_on_source() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/neopairs.vim',
-        \ { 'on_source': ['deol.nvim'] })
-  call dein#add('Shougo/deol.nvim', { 'lazy': 1 })
+  call dein#add('Shougo/neopairs.vim', #{ on_source: ['deol.nvim'] })
+  call dein#add('Shougo/deol.nvim', #{ lazy: 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -296,9 +295,8 @@ endfunction
 function! s:suite.lazy_on_func() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/neosnippet.vim', { 'lazy': 1 })
-  call dein#add('Shougo/deoplete.nvim',
-        \ { 'on_func': 'deoplete#initialize' })
+  call dein#add('Shougo/neosnippet.vim', #{ lazy: 1 })
+  call dein#add('Shougo/deoplete.nvim', #{ on_func: 'deoplete#initialize' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -334,8 +332,7 @@ endfunction
 function! s:suite.lazy_on_cmd() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deoplete.nvim',
-        \ { 'on_cmd': 'NeoCompleteDisable' })
+  call dein#add('Shougo/deoplete.nvim', #{ on_cmd: 'NeoCompleteDisable' })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -355,8 +352,8 @@ endfunction
 function! s:suite.lazy_on_map() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deol.nvim', { 'on_map': {'n': '<Plug>'} })
-  call dein#add('Shougo/neosnippet.vim', { 'on_map': {'n': '<Plug>'} })
+  call dein#add('Shougo/deol.nvim', #{ on_map: #{ n: '<Plug>' } })
+  call dein#add('Shougo/neosnippet.vim', #{ on_map: #{ n: '<Plug>' } })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -382,7 +379,7 @@ endfunction
 function! s:suite.lazy_on_pre_cmd() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deol.nvim', { 'lazy': 1 })
+  call dein#add('Shougo/deol.nvim', #{ lazy: 1 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -406,8 +403,8 @@ endfunction
 function! s:suite.depends() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/deoplete.nvim', { 'depends': 'deol.nvim' })
-  call dein#add('Shougo/deol.nvim', {'merged': 0})
+  call dein#add('Shougo/deoplete.nvim', #{ depends: 'deol.nvim' })
+  call dein#add('Shougo/deol.nvim', #{ merged: 0 })
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -424,8 +421,8 @@ function! s:suite.depends_lazy() abort
   call dein#begin(s:path)
 
   call dein#add('Shougo/deoplete.nvim',
-        \ { 'depends': 'deol.nvim', 'lazy': 1 })
-  call dein#add('Shougo/deol.nvim', { 'lazy': 1 })
+        \ #{ depends: 'deol.nvim', lazy: 1 })
+  call dein#add('Shougo/deol.nvim', #{ lazy: 1 })
 
   let plugin = dein#get('deol.nvim')
 
@@ -462,7 +459,7 @@ function! s:suite.depends_error_lazy() abort
 
   call dein#begin(s:path)
 
-  call dein#add('Shougo/defx.nvim', { 'lazy': 1 })
+  call dein#add('Shougo/defx.nvim', #{ lazy: 1 })
   call dein#add('Shougo/deoplete.nvim',
         \ { 'depends': 'defx.nvim' })
 
@@ -550,7 +547,7 @@ function! s:suite.normal() abort
         \ "repo = 'Shougo/deoplete.nvim'",
         \ "on_ft = 'all'",
         \ ], g:temp)
-  call s:assert.equals(dein#load_toml(g:temp, {'frozen': 1}), 0)
+  call s:assert.equals(dein#load_toml(g:temp, #{ frozen: 1 }), 0)
 
   let plugin = dein#get('deoplete.nvim')
   call s:assert.equals(plugin.frozen, 1)
@@ -562,8 +559,8 @@ endfunction
 function! s:suite.local() abort
   call dein#begin(s:path)
 
-  call dein#add('Shougo/neopairs.vim', {'frozen': 1})
-  call dein#local(s:path.'repos/github.com/Shougo/', {'timeout': 1})
+  call dein#add('Shougo/neopairs.vim', #{ frozen: 1 })
+  call dein#local(s:path.'repos/github.com/Shougo/', #{ timeout: 1 })
 
   call s:assert.equals(dein#get('neopairs.vim').sourced, 0)
   call s:assert.equals(dein#get('neopairs.vim').timeout, 1)
@@ -601,10 +598,9 @@ endfunction
 function! s:suite.build() abort
   call dein#begin(tempname())
 
-  call dein#add('Shougo/vimproc.vim', {
-        \ 'build': 'make',
-        \ 'hook_post_update':
-        \   'let g:foobar = 4',
+  call dein#add('Shougo/vimproc.vim', #{
+        \   build: 'make',
+        \   hook_post_update: 'let g:foobar = 4',
         \ })
 
   call dein#end()
@@ -657,12 +653,12 @@ function! s:suite.script_type() abort
 
   call dein#add(
         \ 'https://github.com/bronzehedwick/impactjs-colorscheme',
-        \ {'script_type' : 'colors'})
+        \ #{ script_type : 'colors' })
 
   call dein#add(
         \ 'https://raw.githubusercontent.com/Shougo/'
         \ . 'shougo-s-github/master/vim/colors/candy.vim',
-        \ {'script_type' : 'colors'})
+        \ #{ script_type : 'colors' })
   call s:assert.equals(dein#get('candy.vim').type, 'raw')
 
   call s:assert.equals(dein#end(), 0)
@@ -691,9 +687,9 @@ endfunction
 function! s:suite.ftplugin() abort
   call dein#begin(tempname())
 
-  let g:dein#ftplugin = {
-        \ '_': 'echo 5555',
-        \ 'python': 'setlocal foldmethod=indent',
+  let g:dein#ftplugin = #{
+        \   _: 'echo 5555',
+        \   python: 'setlocal foldmethod=indent',
         \ }
 
   call dein#add('Shougo/echodoc.vim')

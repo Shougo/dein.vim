@@ -15,25 +15,25 @@ endfunction
 function! s:suite.parse_dict() abort
   call dein#begin(s:path)
 
-  let plugin = {'name': 'baz'}
+  let plugin = #{ name: 'baz' }
   let parsed_plugin = dein#parse#_dict(dein#parse#_init('', plugin))
   call s:assert.equals(parsed_plugin.name, 'baz')
 
-  let plugin = {'name': 'baz', 'if': '1'}
+  let plugin = #{ name: 'baz', if: '1' }
   let parsed_plugin = dein#parse#_dict(dein#parse#_init('', plugin))
   call s:assert.equals(parsed_plugin.merged, 0)
 
-  let plugin = {'name': 'baz', 'rev': 'foo'}
+  let plugin = #{ name: 'baz', rev: 'foo' }
   let parsed_plugin = dein#parse#_dict(dein#parse#_init('foo', plugin))
   call s:assert.equals(parsed_plugin.path, '_foo')
 
-  let plugin = {'name': 'baz', 'rev': 'foo/bar'}
+  let plugin = #{ name: 'baz', rev: 'foo/bar' }
   let parsed_plugin = dein#parse#_dict(dein#parse#_init('foo', plugin))
   call s:assert.equals(parsed_plugin.path, '_foo_bar')
 
   let $BAZDIR = '/baz'
   let repo = '$BAZDIR/foo'
-  let plugin = {'repo': repo}
+  let plugin = #{ repo: repo }
   let parsed_plugin = dein#parse#_dict(dein#parse#_init(repo, plugin))
   call s:assert.equals(parsed_plugin.repo, '/baz/foo')
 
@@ -44,20 +44,21 @@ function! s:suite.name_conversion() abort
   let g:dein#enable_name_conversion = v:true
 
   let plugin = dein#parse#_dict(
-        \ {'repo': 'https://github.com/Shougo/dein.vim.git'})
+        \ #{ repo: 'https://github.com/Shougo/dein.vim.git' })
   call s:assert.equals(plugin.name, 'dein')
 
   let plugin = dein#parse#_dict(
-        \ {'repo': 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git'})
+        \ #{ repo: 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git' })
   call s:assert.equals(plugin.name, 'qt-syntax')
 
   let plugin = dein#parse#_dict(
-        \ {'repo': 'https://bitbucket.org/kh3phr3n/qt-syntax-vim.git'})
+        \ #{ repo: 'https://bitbucket.org/kh3phr3n/qt-syntax-vim.git' })
   call s:assert.equals(plugin.name, 'qt-syntax')
 
-  let plugin = dein#parse#_dict(
-        \ {'repo': 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git',
-        \  'name': 'vim-qt-syntax'})
+  let plugin = dein#parse#_dict(#{
+        \   repo: 'https://bitbucket.org/kh3phr3n/vim-qt-syntax.git',
+        \   name: 'vim-qt-syntax',
+        \ })
   call s:assert.equals(plugin.name, 'vim-qt-syntax')
 
   let g:dein#enable_name_conversion = v:false
@@ -109,9 +110,9 @@ function! s:suite.load_toml() abort
   call s:assert.equals(g:dein#_hook_add,
         \ "\nlua <<EOF\nfoo\nEOF\nlet g:foo = 0")
   call s:assert.equals(g:dein#ftplugin,
-        \ {'c': "let g:bar = 0\nlet g:bar = 0"})
+        \ #{ c: "let g:bar = 0\nlet g:bar = 0" })
   call s:assert.equals(g:dein#_multiple_plugins, [
-        \ {'plugins': ['foo', 'bar'], 'hook_add': 'foo'},
+        \   #{ plugins: ['foo', 'bar'], hook_add: 'foo' },
         \ ])
   call dein#end()
 
@@ -141,8 +142,8 @@ function! s:suite.load_dict() abort
   call dein#begin(s:path)
   call s:assert.equals(dein#load_dict({
         \ 'Shougo/denite.nvim': {},
-        \ 'Shougo/deoplete.nvim': {'name': 'deoplete'}
-        \ }, {'lazy': 1}), 0)
+        \ 'Shougo/deoplete.nvim': #{ name: 'deoplete' }
+        \ }, #{ lazy: 1 }), 0)
   call dein#end()
 
   call s:assert.not_equals(dein#get('denite.nvim'), {})
@@ -152,7 +153,7 @@ endfunction
 function! s:suite.disable() abort
   call dein#begin(s:path)
   call dein#load_dict({
-        \ 'Shougo/denite.nvim': {'on_cmd': 'Unite'}
+        \ 'Shougo/denite.nvim': #{ on_cmd: 'Unite' }
         \ })
   call s:assert.false(!exists(':Unite'))
   call dein#disable('denite.nvim')
@@ -168,9 +169,9 @@ function! s:suite.config() abort
         \ 'Shougo/denite.nvim': {}
         \ })
   let g:dein#name = 'denite.nvim'
-  call dein#config({'on_event': ['InsertEnter']})
+  call dein#config(#{ on_event: ['InsertEnter'] })
   call dein#end()
-  call dein#config('unite', {'on_event': ['InsertEnter']})
+  call dein#config('unite', #{ on_event: ['InsertEnter'] })
 
   call s:assert.equals(dein#get('denite.nvim').on_event, ['InsertEnter'])
 endfunction
@@ -186,8 +187,11 @@ endfunction
 
 function! s:suite.overwrite() abort
   call dein#begin(s:path)
-  call dein#add('Shougo/denite.nvim', {'on_event': []})
-  call dein#add('Shougo/denite.nvim', {'on_event': ['InsertEnter'], 'overwrite': 1})
+  call dein#add('Shougo/denite.nvim', #{ on_event: [] })
+  call dein#add('Shougo/denite.nvim', #{
+        \   on_event: ['InsertEnter'],
+        \   overwrite: 1,
+        \ })
   call dein#end()
 
   call s:assert.equals(dein#get('denite.nvim').on_event, ['InsertEnter'])
@@ -196,9 +200,9 @@ endfunction
 function! s:suite.plugins2toml() abort
   let parsed_plugin = dein#parse#_init('Shougo/denite.nvim', {})
   let parsed_plugin2 = dein#parse#_init('Shougo/deoplete.nvim',
-        \ {'on_ft': ['vim'], 'hook_add': "hoge\npiyo"})
+        \ #{ on_ft: ['vim'], hook_add: "hoge\npiyo" })
   let parsed_plugin3 = dein#parse#_init('Shougo/deoppet.nvim',
-        \ {'on_map': {'n': ['a', 'b']}})
+        \ #{ on_map: #{ n: ['a', 'b'] } })
   call s:assert.equals(dein#plugins2toml(
         \ [parsed_plugin, parsed_plugin2, parsed_plugin3]), [
         \ "[[plugins]]",
@@ -228,7 +232,7 @@ function! s:suite.trusted() abort
   call s:assert.equals(parsed_plugin.rtp, '')
 
   let parsed_plugin = dein#parse#_add(
-        \ 'Shougo/denite.nvim', {'trusted': 1}, v:false)
+        \ 'Shougo/denite.nvim', #{ trusted: 1 }, v:false)
   call s:assert.not_equals(parsed_plugin.rtp, '')
 
   let g:dein#_is_sudo = sudo

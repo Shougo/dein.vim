@@ -70,12 +70,9 @@ Note: The plugins are not updated automatically.
 INSTALL							*dein-install*
 
 Requirements:
-* Vim 8.2+ or NeoVim 0.5+.
+* Vim 8.2+ or NeoVim 0.8+.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
 * "xcopy" installed or |if_python3| interface (on Windows)
-
-Note: If you use below Vim 8.2 or neovim 0.5, please use dein.vim ver.2.2
-instead.
 
 First of all, git clone the repository.
 
@@ -216,8 +213,9 @@ dein#config({options})
 		block.
 >
 	call dein#add('Shougo/deoplete.nvim')
-	call dein#config('deoplete.nvim', {
-	\ 'lazy' : 1, 'on_event' : 'InsertEnter',
+	call dein#config('deoplete.nvim', #{
+	\   lazy: 1,
+	\   on_event: 'InsertEnter',
 	\ })
 <
 							*dein#deno_cache()*
@@ -324,8 +322,8 @@ dein#load_dict({dict}, [{options}])
 		set in {options}. >
 
 		call dein#load_dict({
-		\ 'Shougo/denite.nvim': {},
-		\ 'Shougo/deoplete.nvim': {'name': 'deoplete'}
+		\   'Shougo/denite.nvim': {},
+		\   'Shougo/deoplete.nvim': #{ name: 'deoplete' },
 		\ })
 <
 							*dein#load_rollback()*
@@ -372,7 +370,7 @@ dein#load_toml({filename}, [{options}])
 	if dein#load_state('~/test_vim/.cache/dein')
 	  call dein#begin('~/test_vim/.cache/dein')
 
-	  call dein#load_toml(s:toml, {'lazy': 1})
+	  call dein#load_toml(s:toml, #{ lazy: 1 })
 
 	  call dein#end()
 	  call dein#save_state()
@@ -471,7 +469,7 @@ dein#set_hook({plugins}, {hook-name}, {hook})
 		Note: If it is |Funcref|, it does not work in
 		|dein#load_state()| / |dein#save_state()| block.
 >
-	call dein#add('Shougo/neosnippet.vim', {'lazy': 1})
+	call dein#add('Shougo/neosnippet.vim', #{ lazy: 1 })
 	function! Foo() abort
 	endfunction
 	" Does not work for dein#load_state()/dein#save_state() block
@@ -568,9 +566,9 @@ g:dein#ftplugin
 		Note: You need to call |dein#recache_runtimepath()| or enable
 		|g:dein#auto_recache| after vimrc is changed.
 >
-		let g:dein#ftplugin = {
-		      \ '_': 'echo 5555',
-		      \ 'python': 'setlocal foldmethod=indent',
+		let g:dein#ftplugin = #{
+		      \   _: 'echo 5555',
+		      \   python: 'setlocal foldmethod=indent',
 		      \ }
 <
 		Default: {}
@@ -760,12 +758,12 @@ build		(String)
 
 		Example:
 >
-		call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+		call dein#add('Shougo/vimproc.vim', #{ build: 'make' })
 <
 		Note: The command is executed in plugin top directory.
 		If you need cd command, you must use "sh -c". >
-		call dein#add('wincent/command-t', {
-		\ 'build':
+		call dein#add('wincent/command-t', #{
+		\   build:
 		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
 		\ })
 <
@@ -879,7 +877,7 @@ on_if		(String)
 
 		For example: >
 		call dein#add('blueyed/vim-diminactive',
-		\ {'on_event': 'WinEnter', 'on_if': 'winnr("$") > 1'})
+		\ #{ on_event: 'WinEnter', on_if: 'winnr("$") > 1' })
 <
 							*dein-options-on_lua*
 on_lua		(List) or (String)
@@ -904,28 +902,29 @@ on_map		(Dictionary) or (List) or (String)
 		"<Plug>(ref-back)" and so on.
 		For example: >
 		call dein#add('Shougo/deol.nvim',
-		\ { 'on_map': {'n': '<Plug>'} })
+		\ #{ on_map: #{ n: '<Plug>' } })
 <
 		Note: You can use "<Plug>" keyword as {mapping}. If
 		{mapping} is "<Plug>", "<Plug>({normalized_name}" is
 		used.
 		For example: >
 		" It is same as "'on_map': '<Plug>(anzu'"
-		call dein#add('osyo-manga/vim-anzu', {'on_map': '<Plug>'})
+		call dein#add('osyo-manga/vim-anzu', #{ on_map: '<Plug>' })
 
 		" It is same as "'on_map': '<Plug>(easy-align'"
 		" But it does not work as expected.  Because the plugin
 		" defines '<Plug>(EasyAlign)' mapping instead.
-		call dein#add('junegunn/vim-easy-align', {'on_map': '<Plug>'})
+		call dein#add('junegunn/vim-easy-align',
+		\ #{ on_map: '<Plug>' })
 
 		" This works as expected
 		call dein#add('junegunn/vim-easy-align',
-		\ {'on_map': '<Plug>(EasyAlign)'})
+		\ #{ on_map: '<Plug>(EasyAlign)' })
 <
 		Note: You cannot use lazy <Plug> mappings twice.
 		For example: >
 		call dein#add('osyo-manga/vim-anzu',
-		\ {'on_map': '<Plug>(anzu-'}
+		\ #{ on_map: '<Plug>(anzu-' }
 		" Not working!!
 		nmap n <Plug>(anzu-jump-n)<Plug>(anzu-echo-search-status)zv
 		nmap N <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
@@ -960,7 +959,7 @@ rev		(String)
 
 		Example:
 >
-		call dein#add('Shougo/deol.nvim', { 'rev': 'a1b5108fd5' })
+		call dein#add('Shougo/deol.nvim', #{ rev: 'a1b5108fd5' })
 <
 							*dein-options-rtp*
 rtp		(String)
@@ -973,7 +972,7 @@ rtp		(String)
 
 		Example:
 >
-		call dein#add('rstacruz/sparkup', {'rtp': 'vim'})
+		call dein#add('rstacruz/sparkup', #{ rtp: 'vim' })
 <
 						*dein-options-script_type*
 script_type	(String)
@@ -986,10 +985,10 @@ script_type	(String)
 		call dein#add(
 		\ 'https://raw.githubusercontent.com/Shougo/'
 		\ . 'shougo-s-github/master/vim/colors/candy.vim',
-		\ {'script_type' : 'colors'})
+		\ #{ script_type: 'colors' })
 		call dein#add(
 		\ 'https://github.com/bronzehedwick/impactjs-colorscheme',
-		\ {'script_type' : 'colors'})
+		\ #{ script_type: 'colors' })
 <
 							*dein-options-timeout*
 timeout		(Number)
@@ -1043,19 +1042,19 @@ hook_add	(String) or (Function)
 		Note: You cannot call plugin function in "hook_add".
 		Because the plugin is not sourced when "hook_add".
 >
-		call dein#add('Shougo/defx.nvim', {
-		\ 'hook_add': 'nnoremap <silent>   <Space>v
+		call dein#add('Shougo/defx.nvim', #{
+		\   hook_add: 'nnoremap <silent>   <Space>v
 		\              :<C-u>Defx<CR>'
 		\ })
-		call dein#add('kana/vim-niceblock', {
-		\ 'hook_add': join(['xmap I  <Plug>(niceblock-I)',
+		call dein#add('kana/vim-niceblock', #{
+		\   hook_add: join(['xmap I  <Plug>(niceblock-I)',
 		                    'xmap A  <Plug>(niceblock-A)'], "\n")
 		\ })
-		call dein#add('godlygeek/csapprox', {
-		\ 'hook_add': "
-		\ let g:CSApprox_konsole = 1\n
-		\ let g:CSApprox_attr_map =
-		\     { 'bold' : 'bold', 'italic' : '', 'sp' : '' }\n
+		call dein#add('godlygeek/csapprox', #{
+		\ hook_add: "
+		\   let g:CSApprox_konsole = 1\n
+		\   let g:CSApprox_attr_map =
+		\     #{ bold: 'bold', italic: '', sp: '' }\n
 		\ "})
 <
 					*dein-options-hook_done_update*
@@ -1084,15 +1083,15 @@ hook_source	(String) or (Function)
 		|VimEnter| or autoloaded.
 >
 		call dein#add('artur-shaik/vim-javacomplete2')
-		call dein#config('artur-shaik/vim-javacomplete2', {
-		\ 'hook_source': 'autocmd FileType java
+		call dein#config('artur-shaik/vim-javacomplete2', #{
+		\   hook_source: 'autocmd FileType java
 		\                 setlocal omnifunc=javacomplete#Complete'
 		\ })
 		function! Func() abort
 		  autocmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
 		endfunction
-		call dein#source('thinca/vim-qfreplace',
-		\ 'hook_source': function('Func'))
+		call dein#add('thinca/vim-qfreplace',
+		\ #{ hook_source: function('Func') })
 <
 		Note: non lazy plugins' |dein-options-hook_source| cannot be
 		called.  You must call it by |dein#call_hook()| if needed.
@@ -1494,7 +1493,7 @@ Q: Where is ":NeoBundleFetch" in dein features?
 
 A: You can use |dein-options-rtp|.
 >
-	call dein#add('Shougo/dein.vim', {'rtp': ''})
+	call dein#add('Shougo/dein.vim', #{ rtp: '' })
 <
 	Note: It does not generate |:helptags| file.
 
@@ -1503,7 +1502,7 @@ https://github.com/Shougo/dein.vim/issues/11
 
 A: You should not build it manually.  Please use |dein-options-build| feature.
 >
-	call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+	call dein#add('Shougo/vimproc.vim', #{ build: 'make' })
 <
 Q: Where is ":NeoBundleCheck" in dein features?
 
@@ -1521,7 +1520,7 @@ Q: Cannot load colorscheme when reloading .vimrc.
 
 A: You must write |:colorscheme| lines after |dein#end()|.
 >
-	call dein#add('tomasr/molokai', {'merged': 0})
+	call dein#add('tomasr/molokai', #{ merged: 0 })
 	...
 
 	call dein#end()
@@ -1529,7 +1528,7 @@ A: You must write |:colorscheme| lines after |dein#end()|.
 <
 Or you can use |dein#source()| for it.
 >
-	call dein#add('tomasr/molokai', {'merged': 0})
+	call dein#add('tomasr/molokai', #{ merged: 0 })
 	call dein#source('molokai')
 	colorscheme molokai
 <
@@ -1559,15 +1558,15 @@ The SID will be changed in the next run.
 	function! s:test()
 	endfunction
 	call dein#add('Shougo/deoplete.nvim',
-	\ {'hook_source': 'call ' . s:SID() . 'test()'})
+	\ #{ hook_source: 'call ' . s:SID() . 'test()' })
 <
 Or you can execute the autocmd manually.
 >
 	autocmd User dein#source#deoplete.nvim call s:test()
-	call dein#add('Shougo/deoplete.nvim', {
-	\ 'hook_source':
-	\  'execute "doautocmd <nomodeline> User" "dein#source#".
-	\   g:dein#plugin.name'
+	call dein#add('Shougo/deoplete.nvim', #{
+	\   hook_source:
+	\    'execute "doautocmd <nomodeline> User" "dein#source#".
+	\     g:dein#plugin.name'
 	\ })
 <
 But you must define the autocmd.
@@ -1610,10 +1609,10 @@ A: dein.vim has |dein-merge| feature.  It copies the plugin files into the
 merge directory.  If you build it manually, it will not be copied
 from time to time.
 You can disable the |dein-options-merged|. >
-	call dein#add('Valloric/YouCompleteMe', {'merged': 0})
+	call dein#add('Valloric/YouCompleteMe', #{ merged: 0 })
 
 or >
-	call dein#add('Valloric/YouCompleteMe', {'build': './install.py'})
+	call dein#add('Valloric/YouCompleteMe', #{ build: './install.py' })
 
 Q: I have got "Invalid range error" when plugin updating.
 
@@ -1624,7 +1623,7 @@ For example, vimtex has the file.
 https://github.com/lervag/vimtex/issues/237
 
 You can disable the |dein-merge| feature to prevent the error. >
-	call dein#add('lervag/vimtex', {'merged': 0})
+	call dein#add('lervag/vimtex', #{ merged: 0 })
 
 
 Q: I have got prompted for my github username and I have to kill the editor...
@@ -1646,7 +1645,7 @@ A: >
 Q: I want to change the environment variable when build.
 A: >
 	call dein#add('nixprime/cpsm',
-	\ {'build': 'sh -c "PY3=ON ./install.sh"'})
+	\ #{ build: 'sh -c "PY3=ON ./install.sh"' })
 
 
 Q: dein.vim does not load plugin in sudo session.
@@ -1698,7 +1697,7 @@ merge directory.  You can disable the feature by setting
 
 Q: I want to load plugins lazily on requiring lua modules
 A: >
-	call dein#add('neovim/nvim-lsp', {'on_lua': 'nvim_lsp'})
+	call dein#add('neovim/nvim-lsp', #{ on_lua: 'nvim_lsp' })
 
 Q: deoplete does not work when I use |dein#load_state()|.
 
@@ -1719,7 +1718,7 @@ dein's state is loaded." >
 Q: I want to enable default merged config in Windows.
 
 A: >
-	let g:dein#default_options = { 'merged': v:true }
+	let g:dein#default_options = #{ merged: v:true }
 
 Q: I want to use "dein.vim" in init.lua.
 
@@ -1752,6 +1751,9 @@ needed, you need to call it manually. >
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
+
+2023.01.14
+* Vim 8.2 or nvim 0.8 is required
 
 2022.12.20
 * Split installer script.

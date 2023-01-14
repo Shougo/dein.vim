@@ -88,7 +88,8 @@ function! dein#install#_do(plugins, update_type, async) abort
     unlet s:timer
   endif
 
-  let s:timer = timer_start(50, {-> dein#install#_polling()}, {'repeat': -1})
+  let s:timer = timer_start(50,
+        \ {-> dein#install#_polling()}, #{ repeat: -1 })
 endfunction
 function! s:update_loop(context) abort
   let errored = 0
@@ -884,8 +885,8 @@ function! s:check_diff(plugins) abort
     try
       call dein#install#_cd(plugin.path)
       call s:get_job().start(
-            \ s:convert_args(cmd), {
-            \   'on_stdout': function('s:check_diff_on_out')
+            \ s:convert_args(cmd), #{
+            \   on_stdout: function('s:check_diff_on_out'),
             \ })
     finally
       call dein#install#_cd(cwd)
@@ -945,9 +946,9 @@ function! s:job_system.system(cmd) abort
   let self.candidates = []
 
   let job = s:get_job().start(
-        \ s:convert_args(a:cmd), {
-        \   'on_stdout': self.on_out,
-        \   'on_stderr': self.on_out,
+        \ s:convert_args(a:cmd), #{
+        \   on_stdout: self.on_out,
+        \   on_stderr: self.on_out,
         \ })
   let s:job_system.status = job.wait(
         \ g:dein#install_process_timeout * 1000)
@@ -997,10 +998,10 @@ endfunction
 function! dein#install#_system_bg(command) abort
   let job = s:get_job().start(
         \ s:convert_args(a:command),
-        \ {
-        \   'on_stderr': {
+        \ #{
+        \   on_stderr: {
         \     v -> map(copy(v), { _, val -> dein#util#_error(val) })
-        \   }
+        \   },
         \ })
   return job
 endfunction
@@ -1452,15 +1453,15 @@ function! s:init_process(plugin, context, cmd) abort
 
     let rev = s:get_revision_number(a:plugin)
 
-    let process = {
-          \ 'number': a:context.number,
-          \ 'max_plugins': a:context.max_plugins,
-          \ 'rev': rev,
-          \ 'plugin': a:plugin,
-          \ 'output': '',
-          \ 'status': -1,
-          \ 'eof': 0,
-          \ 'installed': isdirectory(a:plugin.path),
+    let process = #{
+          \   number: a:context.number,
+          \   max_plugins: a:context.max_plugins,
+          \   rev: rev,
+          \   plugin: a:plugin,
+          \   output: '',
+          \   status: -1,
+          \   eof: 0,
+          \   installed: isdirectory(a:plugin.path),
           \ }
 
     let rev_save = get(a:plugin, 'rev', '')
@@ -1553,10 +1554,10 @@ function! s:init_job(process, context, cmd) abort
   endfunction
 
   let a:process.job = s:get_job().start(
-        \ s:convert_args(a:cmd), {
-        \   'on_stdout': a:process.async.job_handler,
-        \   'on_stderr': a:process.async.job_handler,
-        \   'on_exit': a:process.async.on_exit,
+        \ s:convert_args(a:cmd), #{
+        \   on_stdout: a:process.async.job_handler,
+        \   on_stderr: a:process.async.job_handler,
+        \   on_exit: a:process.async.on_exit,
         \ })
   let a:process.id = a:process.job.pid()
   let a:process.job.candidates = []
@@ -1650,9 +1651,9 @@ function! s:check_output(context, process) abort
     " If it has breaking changes commit message
     " https://www.conventionalcommits.org/en/v1.0.0/
     if log_message =~# '.*!.*:\|BREAKING CHANGE:'
-      call add(a:context.breaking_plugins, {
-            \   'name': plugin.name,
-            \   'log_message': log_message,
+      call add(a:context.breaking_plugins, #{
+            \   name: plugin.name,
+            \   log_message: log_message,
             \ })
     endif
   endif
@@ -1716,24 +1717,24 @@ function! s:new_progress_window() abort
   let winheight = 20
 
   if has('nvim')
-    let winid = nvim_open_win(nvim_create_buf(v:false, v:true), v:true, {
-          \ 'relative': 'editor',
-          \ 'row': winrow,
-          \ 'col': wincol,
-          \ 'focusable': v:false,
-          \ 'noautocmd': v:true,
-          \ 'style': 'minimal',
-          \ 'width': winwidth,
-          \ 'height': winheight,
+    let winid = nvim_open_win(nvim_create_buf(v:false, v:true), v:true, #{
+          \   relative: 'editor',
+          \   row: winrow,
+          \   col: wincol,
+          \   focusable: v:false,
+          \   noautocmd: v:true,
+          \   style: 'minimal',
+          \   width: winwidth,
+          \   height: winheight,
           \})
   else
-    let winid = popup_create([], {
-          \ 'pos': 'topleft',
-          \ 'line': winrow + 1,
-          \ 'col': wincol + 1,
-          \ 'minwidth': winwidth,
-          \ 'minheight': winheight,
-          \ 'wrap': 0,
+    let winid = popup_create([], #{
+          \   pos: 'topleft',
+          \   line: winrow + 1,
+          \   col: wincol + 1,
+          \   minwidth: winwidth,
+          \   minheight: winheight,
+          \   wrap: 0,
           \ })
   endif
 

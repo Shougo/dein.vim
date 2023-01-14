@@ -77,9 +77,9 @@ function! dein#parse#_init(repo, options) abort
   return plugin
 endfunction
 function! dein#parse#_dict(plugin) abort
-  let plugin = {
-        \ 'rtp': '',
-        \ 'sourced': 0,
+  let plugin = #{
+        \   rtp: '',
+        \   sourced: 0,
         \ }
   call extend(plugin, a:plugin)
 
@@ -247,13 +247,13 @@ function! dein#parse#_plugins2toml(plugins) abort
   let default.hook_post_source = ''
   let default.hook_post_update = ''
 
-  let skip_default = {
-        \ 'type': 1,
-        \ 'path': 1,
-        \ 'rtp': 1,
-        \ 'sourced': 1,
-        \ 'orig_opts': 1,
-        \ 'repo': 1,
+  let skip_default = #{
+        \   type: 1,
+        \   path: 1,
+        \   rtp: 1,
+        \   sourced: 1,
+        \   orig_opts: 1,
+        \   repo: 1,
         \ }
 
   for plugin in sort(a:plugins,

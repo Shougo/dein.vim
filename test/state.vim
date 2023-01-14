@@ -24,7 +24,7 @@ function! s:suite.state() abort
   endfunction
 
   call dein#add('Shougo/deoplete.nvim',
-        \ {'hook_source': function('Test')})
+        \ #{ hook_source: function('Test') })
   call s:assert.equals(dein#end(), 0)
 
   let plugins = deepcopy(g:dein#_plugins)

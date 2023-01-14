@@ -21,11 +21,11 @@ function! s:suite.normal() abort
         \ 'name = "Tom Preston-Werner"',
         \ 'dob = 1979 # First class dates',
         \ ], g:temp)
-  call s:assert.equals(dein#toml#parse_file(g:temp), {
-        \ 'title': 'TOML Example',
-        \ 'foo': {'i': 'Plug'},
-        \ 'map': {'i': 'Plug', 'c': 'Plug'},
-        \ 'owner': {'name': 'Tom Preston-Werner', 'dob': 1979}
+  call s:assert.equals(dein#toml#parse_file(g:temp), #{
+        \   title: 'TOML Example',
+        \   foo: #{ i: 'Plug' },
+        \   map: #{ i: 'Plug', c: 'Plug' },
+        \   owner: #{ name: 'Tom Preston-Werner', dob: 1979 },
         \ })
   call writefile([
         \ '[[foo]]',
@@ -33,7 +33,9 @@ function! s:suite.normal() abort
         \ '[foo.ftplugin]',
         \ 'c = "let g:bar = 0"',
         \ ], g:temp)
-  call s:assert.equals(dein#toml#parse_file(g:temp), {
-        \ 'foo': [{}, {'ftplugin': {'c': 'let g:bar = 0'}}]
+  call s:assert.equals(dein#toml#parse_file(g:temp), #{
+        \   foo: [
+        \     {}, #{ ftplugin: #{ c: 'let g:bar = 0' } },
+        \   ],
         \ })
 endfunction

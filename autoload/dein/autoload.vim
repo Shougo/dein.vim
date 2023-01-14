@@ -74,7 +74,7 @@ function! dein#autoload#_source(plugins) abort
 
           if denops#server#status() ==# 'running'
             " NOTE: denops#plugin#register() may be failed
-            silent! call denops#plugin#register(name, { 'mode': 'skip' })
+            silent! call denops#plugin#register(name, #{ mode: 'skip' })
           endif
           call denops#plugin#wait(name)
           redraw

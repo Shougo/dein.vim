@@ -53,12 +53,9 @@ To learn more details, visit [here](doc/dein.txt).
 
 ### Prerequisites
 
-- **Vim** (v8.2 or higher) or **NeoVim** (v0.5.0 or higher)
+- **Vim** (v8.2 or higher) or **NeoVim** (v0.8.0 or higher)
 - **Git** should be installed (v2.4.11 or higher)
 - **xcopy** installed or **Python3** interface (on Windows)
-
-**Note:** If you use **Vim** (lower than 8.2) or **NeoVim** (lower than 0.5),
-please use **dein.vim** `v2.2` instead.
 
 
 ### Basic installation

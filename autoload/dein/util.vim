@@ -81,7 +81,7 @@ function! dein#util#_notify(msg) abort
       call luaeval('require("notify")(_A.msg, "info", {'.
             \ 'timeout=vim.g["dein#notification_time"],'.
             \ 'title=_A.title })',
-            \ { 'msg': a:msg, 'title': title })
+            \ #{ msg: a:msg, title: title })
     else
       call nvim_notify(a:msg, -1, { 'title': title })
     endif
@@ -89,15 +89,15 @@ function! dein#util#_notify(msg) abort
     if dein#is_available('vim-notification') ||
         \ exists('g:loaded_notification')
       " Use vim-notification plugin
-      call notification#show({
-            \ 'text': a:msg,
-            \ 'title': title,
-            \ 'wait': g:dein#notification_time,
+      call notification#show(#{
+            \   text: a:msg,
+            \   title: title,
+            \   wait: g:dein#notification_time,
             \ })
     else
-      call popup_notification(a:msg, {
-            \ 'title': title,
-            \ 'time': g:dein#notification_time,
+      call popup_notification(a:msg, #{
+            \   title: title,
+            \   time: g:dein#notification_time,
             \ })
     endif
   endif
@@ -135,7 +135,8 @@ function! dein#util#_is_fish() abort
   return dein#install#_is_async() && fnamemodify(&shell, ':t:r') ==# 'fish'
 endfunction
 function! dein#util#_is_powershell() abort
-  return dein#install#_is_async() && fnamemodify(&shell, ':t:r') =~? 'powershell\|pwsh'
+  return dein#install#_is_async()
+        \ && fnamemodify(&shell, ':t:r') =~? 'powershell\|pwsh'
 endfunction
 
 function! dein#util#_check_lazy_plugins() abort
@@ -215,7 +216,10 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
       if name =~# '^<lambda>'
         call remove(plugin, hook)
       else
-        let plugin[hook] = {'name': name, 'args': get(plugin[hook], 'args')}
+        let plugin[hook] = #{
+              \   name: name,
+              \   args: get(plugin[hook], 'args'),
+              \ }
       endif
     endfor
   endfor
@@ -517,7 +521,7 @@ function! dein#util#_config(arg, dict) abort
   endif
 
   let plugin = g:dein#_plugins[name]
-  let options = extend({'repo': plugin.repo}, dict)
+  let options = extend(#{ repo: plugin.repo }, dict)
   return dein#parse#_add(options.repo, options, v:true)
 endfunction
 

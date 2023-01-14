@@ -19,9 +19,12 @@ function! s:suite.init() abort
   call s:assert.equals(s:type.init(
         \ 'https://raw.githubusercontent.com/Shougo/'
         \ . 'shougo-s-github/master/vim/colors/candy.vim',
-        \ {'script_type': 'colors'}),
-        \ { 'type': 'raw', 'name': 'candy.vim',
-        \   'path': s:base . 'raw.githubusercontent.com/Shougo/'
-        \ . 'shougo-s-github/master/vim/colors' })
+        \ #{ script_type: 'colors' }),
+        \ #{
+        \   type: 'raw',
+        \   name: 'candy.vim',
+        \   path: s:base . 'raw.githubusercontent.com/Shougo/'
+        \         . 'shougo-s-github/master/vim/colors',
+        \ })
   call dein#end()
 endfunction

@@ -24,10 +24,10 @@ function! dein#types#git#define() abort
   return s:type
 endfunction
 
-let s:type = {
-      \ 'name': 'git',
-      \ 'command': g:dein#types#git#command_path,
-      \ 'executable': executable(g:dein#types#git#command_path),
+let s:type = #{
+      \   name: 'git',
+      \   command: g:dein#types#git#command_path,
+      \   executable: executable(g:dein#types#git#command_path),
       \ }
 
 function! s:type.init(repo, options) abort
@@ -37,7 +37,7 @@ function! s:type.init(repo, options) abort
 
   if a:repo =~# '^/\|^\a:[/\\]' && s:is_git_dir(a:repo.'/.git')
     " Local repository.
-    return { 'type': 'git', 'local': 1 }
+    return #{ type: 'git', local: 1 }
   elseif a:repo =~#
         \ '//\%(raw\|gist\)\.githubusercontent\.com/\|/archive/[^/]\+\.zip$'
     return {}
@@ -52,8 +52,10 @@ function! s:type.init(repo, options) abort
   let directory = substitute(directory, '^https:/\+\|^git@', '', '')
   let directory = substitute(directory, ':', '/', 'g')
 
-  return { 'type': 'git',
-        \  'path': dein#util#_get_base_path().'/repos/'.directory }
+  return #{
+        \  type: 'git',
+        \  path: dein#util#_get_base_path().'/repos/'.directory
+        \ }
 endfunction
 function! s:type.get_uri(repo, options) abort
   if a:repo =~# '^/\|^\a:[/\\]'
