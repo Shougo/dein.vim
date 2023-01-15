@@ -1753,16 +1753,20 @@ endfunction
 function! s:notify(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   let context = s:global_context
-  if empty(msg) || empty(context)
+  if empty(msg)
+    return
+  endif
+
+  call s:updates_log(msg)
+  let s:progress = join(msg, "\n")
+
+  if empty(context)
     return
   endif
 
   if context.message_type ==# 'echo'
     call dein#util#_notify(a:msg)
   endif
-
-  call s:updates_log(msg)
-  let s:progress = join(msg, "\n")
 endfunction
 function! s:updates_log(msg) abort
   let msg = dein#util#_convert2list(a:msg)
