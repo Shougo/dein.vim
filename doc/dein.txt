@@ -767,6 +767,13 @@ build		(String)
 		\      'sh -c "cd ruby/command-t && ruby extconf.rb && make"'
 		\ })
 <
+						*dein-options-denops_wait*
+denops_wait	(Bool)
+		If set to v:false, dein doesn't wait until the denops plugin
+		is loaded.
+
+		Note: It is danger option.  The plugin does not work well.
+
 							*dein-options-depends*
 depends		(List or String)
 		Specify a list of plugins a plugin depends on.

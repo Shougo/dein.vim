@@ -76,8 +76,11 @@ function! dein#autoload#_source(plugins) abort
             " NOTE: denops#plugin#register() may be failed
             silent! call denops#plugin#register(name, #{ mode: 'skip' })
           endif
-          call denops#plugin#wait(name)
-          redraw
+
+          if get(plugin, 'denops_wait', v:true)
+            call denops#plugin#wait(name)
+            redraw
+          endif
         endfor
       endif
     endif
