@@ -952,7 +952,7 @@ function! s:job_system.system(cmd) abort
         \ })
   let s:job_system.status = job.wait(
         \ g:dein#install_process_timeout * 1000)
-  return join(s:job_system.candidates, "\n")
+  return substitute(join(s:job_system.candidates, "\n"), '\r\n', '\n', 'g')
 endfunction
 function! dein#install#_status() abort
   return s:job_system.status
