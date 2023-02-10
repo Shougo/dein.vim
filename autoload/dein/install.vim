@@ -1044,6 +1044,13 @@ function! dein#install#_copy_directories(srcs, dest) abort
       return 1
     endif
 
+    " NOTE: Powershell does not work for robocopy.
+    if dein#util#_is_powershell()
+      call dein#util#_error('powershell is not supported.')
+      call dein#util#_error('Please set "cmd.exe" to shell option.')
+      return 1
+    endif
+
     let status = dein#install#_copy_directories_robocopy(a:srcs, a:dest)
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
