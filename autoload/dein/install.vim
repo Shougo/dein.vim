@@ -1095,11 +1095,16 @@ EOF
   return get(g:, 'dein#_python_version_check', 0)
 endfunction
 function! dein#install#_copy_directories_vim(srcs, dest) abort
+  let dest = dein#util#_substitute_path(a:dest)
+
   for src in a:srcs
+    let src = dein#util#_substitute_path(src)
+
     for srcpath in glob(src . '/**/*', 1, 1)
+      let srcpath = dein#util#_substitute_path(srcpath)
       let destpath = substitute(srcpath,
             \ dein#util#escape_match(src),
-            \ dein#util#escape_match(a:dest), '')
+            \ dein#util#escape_match(dest), '')
       let parent = fnamemodify(destpath, ':p:h')
       if !isdirectory(parent)
         call mkdir(parent, 'p')
