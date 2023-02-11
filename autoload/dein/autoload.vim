@@ -24,7 +24,7 @@ function! dein#autoload#_source(plugins) abort
     call s:source_plugin(rtps, index, plugin, sourced)
   endfor
 
-  let filetype_before = dein#util#_redir('autocmd FileType')
+  let filetype_before = execute('autocmd FileType')
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
   call dein#call_hook('source', sourced)
@@ -86,7 +86,7 @@ function! dein#autoload#_source(plugins) abort
     endif
   endfor
 
-  let filetype_after = dein#util#_redir('autocmd FileType')
+  let filetype_after = execute('autocmd FileType')
 
   let is_reset = s:is_reset_ftplugin(sourced)
   if is_reset
@@ -359,7 +359,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   endif
 endfunction
 function! s:reset_ftplugin() abort
-  let filetype_state = dein#util#_redir('filetype')
+  let filetype_state = execute('filetype')
 
   if exists('b:did_indent') || exists('b:did_ftplugin')
     filetype plugin indent off

@@ -66,11 +66,7 @@ function! s:_skip(input) abort
 endfunction
 
 " XXX: old engine is faster than NFA engine (in this context).
-if exists('+regexpengine')
-  let s:regex_prefix = '\%#=1\C^'
-else
-  let s:regex_prefix = '\C^'
-endif
+let s:regex_prefix = '\%#=1\C^'
 
 function! s:_consume(input, pattern) abort
   call s:_skip(a:input)

@@ -50,7 +50,7 @@ function! dein#util#_get_vimrcs(vimrcs) abort
 endfunction
 function! dein#util#_get_myvimrc() abort
   let vimrc = $MYVIMRC !=# '' ? $MYVIMRC :
-        \ matchstr(split(dein#util#_redir('scriptnames'), '\n')[0],
+        \ matchstr(split(execute('scriptnames'), '\n')[0],
         \  '^\s*\d\+:\s\zs.*')
   return dein#util#_substitute_path(vimrc)
 endfunction
@@ -637,20 +637,6 @@ function! dein#util#_split(expr) abort
         \ split(a:expr, '\r\?\n')
 endfunction
 
-function! dein#util#_redir(cmd) abort
-  if exists('*execute')
-    return execute(a:cmd)
-  else
-    let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
-    set verbose=0 verbosefile=
-    redir => res
-    silent! execute a:cmd
-    redir END
-    let [&verbose, &verbosefile] = [save_verbose, save_verbosefile]
-    return res
-  endif
-endfunction
-
 function! dein#util#_get_lazy_plugins() abort
   return filter(values(g:dein#_plugins),
         \ { _, val -> !val.sourced && val.rtp !=# '' })
@@ -763,16 +749,7 @@ function! dein#util#escape_match(str) abort
 endfunction
 
 function! s:execute(expr) abort
-  if exists('*execute')
-    return execute(split(a:expr, '\n'), '')
-  endif
-
-  let dummy = '_dein_dummy_' .
-        \ substitute(reltimestr(reltime()), '\W', '_', 'g')
-  execute 'function! '.dummy."() abort\n"
-        \ . a:expr . "\nendfunction"
-  call {dummy}()
-  execute 'delfunction' dummy
+  return execute(split(a:expr, '\n'), '')
 endfunction
 
 function! s:neovim_version() abort
