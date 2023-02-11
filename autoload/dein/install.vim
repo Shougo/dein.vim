@@ -27,8 +27,7 @@ let g:dein#install_check_diff =
 let g:dein#install_check_remote_threshold =
       \ get(g:, 'dein#install_check_remote_threshold', 0)
 let g:dein#install_copy_vim =
-      \ get(g:, 'dein#install_copy_vim',
-      \     has('nvim') && !dein#util#_is_windows())
+      \ get(g:, 'dein#install_copy_vim', v:true)
 
 function! s:get_job() abort
   if !exists('s:Job')
@@ -999,6 +998,9 @@ function! dein#install#_system_bg(command) abort
   let job = s:get_job().start(
         \ s:convert_args(a:command),
         \ #{
+        \   on_stdout {
+        \     v -> map(copy(v), { _, val -> s:log(val) })
+        \   },
         \   on_stderr: {
         \     v -> map(copy(v), { _, val -> dein#util#_error(val) })
         \   },
@@ -1026,7 +1028,6 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   if g:dein#install_copy_vim
-    " NOTE: For neovim, vim.loop.fs_{sym}link is faster
     return dein#install#_copy_directories_vim(a:srcs, a:dest)
   endif
 
@@ -1038,20 +1039,11 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   let status = 0
+
   if dein#util#_is_windows()
-    if !executable('robocopy')
-      call dein#util#_error('robocopy command is needed.')
-      return 1
-    endif
-
-    " NOTE: Powershell does not work for robocopy.
-    if dein#util#_is_powershell()
-      call dein#util#_error('powershell is not supported.')
-      call dein#util#_error('Please set "cmd.exe" to shell option.')
-      return 1
-    endif
-
-    let status = dein#install#_copy_directories_robocopy(a:srcs, a:dest)
+    call dein#util#_error('robocopy copy is not supported.')
+    call dein#util#_error('Please enable "g:dein#install_copy_vim".')
+    return 1
   else " Not Windows
     let srcs = map(filter(copy(a:srcs),
           \ { _, val -> len(glob(val . '/*', v:true, v:true)) }),
@@ -1080,59 +1072,6 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   return status
-endfunction
-function! dein#install#_copy_directories_robocopy(srcs, dest) abort
-  let jobs = []
-  let format = 'robocopy.exe %s /E /NJH /NJS '
-        \ . '/NDL /NC /NS /MT:8 /XO /XD ".git"'
-  let srcs = a:srcs
-  let MAX_LINES = 8
-  while !empty(srcs)
-    let temp = tempname() . '.bat'
-    let lines = ['@echo off']
-
-    while len(lines) < MAX_LINES && !empty(srcs)
-      let path = substitute(printf('"%s" "%s"', srcs[0], a:dest),
-            \               '/', '\\', 'g')
-      call add(lines, printf(format, path))
-
-      let srcs = srcs[1:]
-    endwhile
-
-    call dein#util#_safe_writefile(lines, temp)
-
-    let job = dein#install#_system_bg(temp)
-    call add(jobs, { 'commands': lines, 'job': job })
-  endwhile
-
-  " Async check
-  let ret = 0
-  while !empty(jobs)
-    let i = 0
-    for job in jobs
-      let status = job.job.wait(100)
-      if status == -1
-        " Next check
-        let i += 1
-        continue
-      endif
-
-      " Robocopy returns between 0 and 7 upon success
-      let status = (status > 7) ? status : 0
-
-      if status
-        call dein#util#_error('copy command failed.')
-        call dein#util#_error('cmdline: ' . string(job.commands))
-        let ret = 1
-      endif
-
-      call remove(jobs, i)
-
-      break
-    endfor
-  endwhile
-
-  return ret
 endfunction
 function! dein#install#_copy_directories_py(srcs, dest) abort
   py3 << EOF
@@ -1176,8 +1115,9 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
   endfor
 endfunction
 function! dein#install#_copy_file_vim(src, dest) abort
-  " NOTE: In Windows, v:lua.vim.loop.fs_symlink does not work.
+  " NOTE: For neovim, vim.loop.fs_{sym}link is faster
   if has('nvim')
+    " NOTE: In Windows, v:lua.vim.loop.fs_symlink does not work.
     if dein#util#_is_windows()
       call v:lua.vim.loop.fs_link(a:src, a:dest)
     else

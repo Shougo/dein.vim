@@ -606,7 +606,7 @@ g:dein#install_copy_vim
 		It use Vim script copy routine when
 		|dein#recache_runtimepath()|.
 
-		Defaults: v:true if neovim and not Windows
+		Defaults: v:true
 
 					*g:dein#install_github_api_token*
 g:dein#install_github_api_token
