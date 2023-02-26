@@ -1131,6 +1131,9 @@ function! dein#install#_copy_file_vim(src, dest) abort
   else
     let raw = readfile(a:src, 'b')
     call writefile(raw, a:dest, 'b')
+
+    " NOTE: setfperm() is needed.  The file permission may be checked.
+    call setfperm(a:dest, getfperm(a:src))
   endif
 endfunction
 
