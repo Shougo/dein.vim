@@ -1626,7 +1626,8 @@ function! s:iconv(expr, from, to) abort
   endif
 endfunction
 function! s:print_progress_message(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
+  let msg = map(dein#util#_convert2list(a:msg),
+        \ { _, val -> substitute(val, '\r', '\n', 'g') })
   let context = s:global_context
   if empty(msg) || empty(context)
     return
