@@ -1367,13 +1367,13 @@ function! s:sync(plugin, context) abort
         \   a:plugin, a:context.update_type,
         \   a:context.number, a:context.max_plugins)
 
-  if empty(cmd)
+  if cmd->empty()
     " Skip
     call s:log(s:get_plugin_message(a:plugin, num, max, message))
     return
   endif
 
-  if type(cmd) == v:t_string && cmd =~# '^E: '
+  if cmd->type() == v:t_string && cmd =~# '^E: '
     " Errored.
 
     call s:print_progress_message(s:get_plugin_message(
@@ -1389,7 +1389,7 @@ function! s:sync(plugin, context) abort
   endif
 
   let process = s:init_process(a:plugin, a:context, cmd)
-  if !empty(process)
+  if !(process->empty())
     call add(a:context.processes, process)
   endif
 endfunction
@@ -1419,9 +1419,9 @@ function! s:init_process(plugin, context, cmd) abort
           \   installed: isdirectory(a:plugin.path),
           \ }
 
-    let rev_save = get(a:plugin, 'rev', '')
-    if isdirectory(a:plugin.path)
-          \ && !get(a:plugin, 'local', 0)
+    let rev_save = a:plugin->get('rev', '')
+    if a:plugin.path->isdirectory()
+          \ && !(a:plugin->get('local', 0))
           \ && rev_save !=# ''
       try
         " Force checkout HEAD revision.
@@ -1481,8 +1481,8 @@ function! s:init_job(process, context, cmd) abort
       let status = a:process.job.exitval
     endif
 
-    let candidates = get(a:process.job, 'candidates', [])
-    let output = join((self.eof ? candidates : candidates[: -2]), "\n")
+    let candidates = a:process.job->get('candidates', [])
+    let output = (self.eof ? candidates : candidates[: -2])->join("\n")
     if output !=# '' && a:process.output !=# output
       let a:process.output = output
       let a:process.start_time = localtime()
@@ -1490,8 +1490,8 @@ function! s:init_job(process, context, cmd) abort
     let self.candidates = self.eof ? [] : candidates[-1:]
 
     let is_timeout = (localtime() - a:process.start_time)
-          \             >= get(a:process.plugin, 'timeout',
-          \                    g:dein#install_process_timeout)
+          \             >= a:process.plugin->get(
+          \                'timeout', g:dein#install_process_timeout)
 
     if self.eof
       let is_timeout = 0
@@ -1532,9 +1532,9 @@ function! s:check_output(context, process) abort
   let max = a:context.max_plugins
   let plugin = a:process.plugin
 
-  if isdirectory(plugin.path)
-       \ && get(plugin, 'rev', '') !=# ''
-       \ && !get(plugin, 'local', 0)
+  if plugin.path->isdirectory()
+       \ && plugin->get('rev', '') !=# ''
+       \ && !(plugin->get('local', 0))
     " Restore revision.
     let cwd = getcwd()
     try
@@ -1552,9 +1552,9 @@ function! s:check_output(context, process) abort
     call s:log(s:get_plugin_message(plugin, num, max, 'Error'))
     call s:error(plugin.path)
     if !a:process.installed
-      if !isdirectory(plugin.path)
+      if !(plugin.path->isdirectory())
         call s:error('Maybe wrong username or repository.')
-      elseif isdirectory(plugin.path)
+      elseif plugin.path->isdirectory()
         call s:error('Remove the installed directory:' . plugin.path)
         call dein#install#_rm(plugin.path)
       endif
@@ -1575,23 +1575,23 @@ function! s:check_output(context, process) abort
 
     let log_message = s:get_updated_log_message(
           \ plugin, new_rev, a:process.rev)
-    let log_messages = split(log_message, '\r\?\n')
-    let plugin.commit_count = len(log_messages)
-    call s:log(map(log_messages,
+    let log_messages = log_message->split('\r\?\n')
+    let plugin.commit_count = log_messages->len()
+    call s:log(log_messages->map(
           \   { _, val -> s:get_short_message(plugin, num, max, val) }))
 
     let plugin.old_rev = a:process.rev
     let plugin.new_rev = new_rev
 
     " Execute "post_update" before "build"
-    if has_key(plugin, 'hook_post_update')
+    if plugin->has_key('hook_post_update')
       " To load plugin is needed to execute "post_update"
       call dein#source(plugin.name)
       call dein#call_hook('post_update', plugin)
     endif
 
     let type = dein#util#_get_type(plugin.type)
-    let plugin.uri = has_key(type, 'get_uri') ?
+    let plugin.uri = type->has_key('get_uri') ?
           \ type.get_uri(plugin.repo, plugin) : ''
 
     if dein#install#_build([plugin.name])
@@ -1621,25 +1621,25 @@ function! s:iconv(expr, from, to) abort
     return a:expr
   endif
 
-  if type(a:expr) == v:t_list
-    return map(copy(a:expr), { _, val -> iconv(val, a:from, a:to) })
+  if a:expr->type() == v:t_list
+    return a:expr->copy()->map({ _, val -> iconv(val, a:from, a:to) })
   else
-    let result = iconv(a:expr, a:from, a:to)
+    let result = a:expr->iconv(a:from, a:to)
     return result !=# '' ? result : a:expr
   endif
 endfunction
 function! s:print_progress_message(msg) abort
-  let msg = map(dein#util#_convert2list(a:msg),
-        \ { _, val -> substitute(val, '\r', '\n', 'g') })
+  let msg = dein#util#_convert2list(a:msg)->map(
+        \ { _, val -> val->substitute('\r', '\n', 'g') })
   let context = s:global_context
-  if empty(msg) || empty(context)
+  if msg->empty() || context->empty()
     return
   endif
 
   redraw
 
   let progress_type = context.progress_type
-  let lines = join(msg, "\n")
+  let lines = msg->join("\n")
   if progress_type ==# 'tabline'
     set showtabline=2
     let &g:tabline = lines
@@ -1651,8 +1651,8 @@ function! s:print_progress_message(msg) abort
       let s:progress_winid = s:new_progress_window()
     endif
 
-    let bufnr = winbufnr(s:progress_winid)
-    if getbufline(bufnr, 1) ==# ['']
+    let bufnr = s:progress_winid->winbufnr()
+    if bufnr->getbufline(1) ==# ['']
       call setbufline(bufnr, 1, msg)
     else
       call appendbufline(bufnr, '$', msg)
@@ -1698,7 +1698,7 @@ function! s:new_progress_window() abort
 endfunction
 function! s:error(msg) abort
   let msg = dein#util#_convert2list(a:msg)
-  if empty(msg)
+  if msg->empty()
     return
   endif
 
@@ -1709,14 +1709,14 @@ endfunction
 function! s:notify(msg) abort
   let msg = dein#util#_convert2list(a:msg)
   let context = s:global_context
-  if empty(msg)
+  if msg->empty()
     return
   endif
 
   call s:updates_log(msg)
   let s:progress = join(msg, "\n")
 
-  if empty(context)
+  if context->empty()
     return
   endif
 
@@ -1743,8 +1743,8 @@ function! s:append_log_file(msg) abort
 
   let msg = a:msg
   " Appends to log file.
-  if filereadable(logfile)
-    let msg = readfile(logfile) + msg
+  if logfile->filereadable()
+    let msg = logfile->readfile() + msg
   endif
 
   call dein#util#_safe_writefile(msg, logfile)
@@ -1752,9 +1752,9 @@ endfunction
 
 
 function! s:echo(expr, mode) abort
-  let msg = map(filter(dein#util#_convert2list(a:expr),
-        \ { _, val -> val !=# '' }), { _, val -> '[dein] ' .  val })
-  if empty(msg)
+  let msg = dein#util#_convert2list(a:expr)->filter(
+        \ { _, val -> val !=# '' })->map({ _, val -> '[dein] ' .  val })
+  if msg->empty()
     return
   endif
 
@@ -1766,12 +1766,12 @@ function! s:echo(expr, mode) abort
     set noshowcmd
     set noruler
 
-    let height = max([1, &cmdheight])
+    let height = [1, &cmdheight]->max()
     echo ''
-    for i in range(0, len(msg)-1, height)
+    for i in range(0, msg->len() - 1, height)
       redraw
 
-      let m = join(msg[i : i+height-1], "\n")
+      let m = msg[i : i+height-1]->join("\n")
       call s:echo_mode(m, a:mode)
       if has('vim_starting')
         echo ''
@@ -1784,7 +1784,7 @@ function! s:echo(expr, mode) abort
   endtry
 endfunction
 function! s:echo_mode(m, mode) abort
-  for m in split(a:m, '\r\?\n', 1)
+  for m in a:m->split('\r\?\n', 1)
     if !has('vim_starting') && a:mode !=# 'error'
       let m = s:truncate_skipping(m, &columns - 1, &columns/3, '...')
     endif
@@ -1800,11 +1800,11 @@ function! s:echo_mode(m, mode) abort
 endfunction
 
 function! s:truncate_skipping(str, max, footer_width, separator) abort
-  let width = strwidth(a:str)
+  let width = a:str->strwidth()
   if width <= a:max
     let ret = a:str
   else
-    let header_width = a:max - strwidth(a:separator) - a:footer_width
+    let header_width = a:max - a:separator->strwidth() - a:footer_width
     let ret = s:strwidthpart(a:str, header_width) . a:separator
           \ . s:strwidthpart_reverse(a:str, a:footer_width)
   endif
@@ -1816,11 +1816,11 @@ function! s:strwidthpart(str, width) abort
     return ''
   endif
   let ret = a:str
-  let width = strwidth(a:str)
+  let width = a:str->strwidth()
   while width > a:width
-    let char = matchstr(ret, '.$')
-    let ret = ret[: -1 - len(char)]
-    let width -= strwidth(char)
+    let char = ret->matchstr('.$')
+    let ret = ret[: -1 - char->len()]
+    let width -= char->strwidth()
   endwhile
 
   return ret
@@ -1830,11 +1830,11 @@ function! s:strwidthpart_reverse(str, width) abort
     return ''
   endif
   let ret = a:str
-  let width = strwidth(a:str)
+  let width = a:str->strwidth()
   while width > a:width
-    let char = matchstr(ret, '^.')
-    let ret = ret[len(char) :]
-    let width -= strwidth(char)
+    let char = ret->matchstr('^.')
+    let ret = ret[char->len() :]
+    let width -= char->strwidth()
   endwhile
 
   return ret
