@@ -45,10 +45,10 @@ function! dein#install#_do(plugins, update_type, async) abort
   let plugins = dein#util#_get_plugins(a:plugins)
 
   if a:update_type ==# 'install'
-    let plugins = filter(plugins, { _, val -> !isdirectory(val.path) })
+    let plugins = plugins->filter({ _, val -> !(val.path->isdirectory()) })
   endif
 
-  if a:async && !empty(s:global_context) &&
+  if a:async && !(s:global_context->empty()) &&
         \ confirm('The installation has not finished. Cancel now?',
         \         "yes\nNo", 2) != 1
     return
@@ -59,7 +59,7 @@ function! dein#install#_do(plugins, update_type, async) abort
 
   call s:init_variables(context)
 
-  if empty(plugins)
+  if plugins->empty()
     call s:notify('Target plugins are not found.')
     call s:notify('You may have used the wrong plugin name,'.
           \ ' or all of the plugins are already installed.')
@@ -82,7 +82,7 @@ function! dein#install#_do(plugins, update_type, async) abort
     autocmd!
   augroup END
 
-  if exists('s:timer')
+  if 's:timer'->exists()
     call timer_stop(s:timer)
     unlet s:timer
   endif
@@ -94,7 +94,7 @@ function! s:update_loop(context) abort
   let errored = 0
   try
     if has('vim_starting')
-      while !empty(s:global_context)
+      while !(s:global_context->empty())
         let errored = s:install_async(a:context)
         sleep 50ms
         redraw
@@ -117,7 +117,7 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
           \ ' for the feature.')
     return []
   endif
-  if !executable(g:dein#install_curl_command)
+  if !(g:dein#install_curl_command->executable())
     call s:error('curl must be executable for the feature.')
     return []
   endif
@@ -128,15 +128,15 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
   let query_max = 100
   let plugins = dein#util#_get_plugins(a:plugins)
   let processes = []
-  for index in range(0, len(plugins) - 1, query_max)
+  for index in range(0, plugins->len() - 1, query_max)
     call s:print_progress_message(
           \ s:get_progress_message('send query', index, len(plugins)))
 
     let query = ''
     for plug_index in range(index,
-          \ min([index + query_max, len(plugins)]) - 1)
-      let plugin_names = split(plugins[plug_index].repo, '/')
-      if len(plugin_names) < 2
+          \ [index + query_max, len(plugins)]->min() - 1)
+      let plugin_names = plugins[plug_index].repo->split('/')
+      if plugin_names->len() < 2
         " Invalid repository name.
         continue
       endif
@@ -155,10 +155,10 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
          \ 'https://api.github.com/graphql'
          \ ]
 
-    let process = {'candidates': []}
+    let process = #{ candidates: [] }
     function! process.on_out(data) abort
       let candidates = self.candidates
-      if empty(candidates)
+      if candidates->empty()
         call add(candidates, a:data[0])
       else
         let candidates[-1] .= a:data[0]
@@ -168,7 +168,7 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
     endfunction
     let process.job = s:get_job().start(
         \ s:convert_args(commands),
-        \ {'on_stdout': function(process.on_out, [], process)})
+        \ #{ on_stdout: function(process.on_out, [], process) })
 
     call add(processes, process)
   endfor
@@ -178,15 +178,15 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
   for process in processes
     call process.job.wait(g:dein#install_process_timeout * 1000)
 
-    if !empty(process.candidates)
+    if !(process.candidates->empty())
       let result = process.candidates[0]
       try
-        let json = json_decode(result)
-        let results += filter(values(json['data']),
-              \ { _, val -> type(val) == v:t_dict
-              \             && has_key(val, 'pushedAt') })
+        let json = result->json_decode()
+        let results += json['data']->values()->filter(
+              \ { _, val -> val->type() == v:t_dict
+              \             && val->has_key('pushedAt') })
       catch
-        call s:error('json output decode error: ' + string(result))
+        call s:error('json output decode error: ' + result->string())
       endtry
     endif
   endfor
@@ -198,44 +198,44 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
     let format = '%Y-%m-%dT%H:%M:%SZ'
     let pushed_at = node['pushedAt']
     let check_pushed[node['nameWithOwner']] =
-          \ exists('*strptime') ?
-          \  strptime(format, pushed_at) :
+          \ '*strptime'->exists() ?
+          \  format->strptime(pushed_at) :
           \  dein#DateTime#from_format(pushed_at, format).unix_time()
   endfor
 
   " Get the last updated time by rollbackfile timestamp.
   " NOTE: .git timestamp may be changed by git commands.
-  let rollbacks = reverse(sort(glob(
-        \ s:get_rollback_directory() . '/*', v:true, v:true)))
-  let rollback_time = empty(rollbacks) ? -1 : getftime(rollbacks[0])
+  let rollbacks = (s:get_rollback_directory() . '/*')->glob(
+        \ v:true, v:true)->sort()->reverse()
+  let rollback_time = rollbacks->empty() ? -1 : rollbacks[0]->getftime()
 
   " Compare with .git directory updated time.
   let updated = []
   let index = 1
   for plugin in plugins
-    if !has_key(check_pushed, plugin.repo)
+    if !(check_pushed->has_key(plugin.repo))
       let index += 1
       continue
     endif
 
     call s:print_progress_message(
-          \ s:get_progress_message('compare plugin', index, len(plugins)))
+          \ s:get_progress_message('compare plugin', index, plugins->len()))
 
     let git_path = plugin.path . '/.git'
-    let repo_time = isdirectory(plugin.path) ? getftime(git_path) : -1
+    let repo_time = plugin.path->isdirectory() ? git_path->getftime() : -1
 
     call s:log(printf('%s: pushed_time=%d, repo_time=%d, rollback_time=%d',
           \ plugin.name, check_pushed[plugin.repo], repo_time, rollback_time))
 
-    let local_update = min([repo_time, rollback_time])
+    let local_update = [repo_time, rollback_time]->min()
     if local_update < check_pushed[plugin.repo]
       call add(updated, plugin)
     elseif abs(local_update - check_pushed[plugin.repo]) <
           \ g:dein#install_check_remote_threshold
       " NOTE: github Graph QL API may use cached value
       " If the repository is updated recently, use "git ls-remote" instead.
-      let remote = matchstr(s:system_cd(
-            \ ['git', 'ls-remote', 'origin', 'HEAD'], plugin.path), '^\x\+')
+      let remote = s:system_cd(['git', 'ls-remote', 'origin', 'HEAD'],
+            \ plugin.path)->matchstr('^\x\+')
       let local = s:get_revision_number(plugin)
       call s:log(printf('%s: remote=%s, local=%s',
             \ plugin.name, remote, local))
@@ -260,13 +260,13 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
 endfunction
 function! dein#install#_check_update(plugins, force, async) abort
   let updated = dein#install#_get_updated_plugins(a:plugins, a:async)
-  if empty(updated)
+  if updated->empty()
     call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     return
   endif
 
   let updated_msg = 'Updated plugins: ' .
-        \ string(map(copy(updated), { _, val -> val.name }))
+        \ updated->copy()->map({ _, val -> val.name })->string()
   call s:log(updated_msg)
 
   " NOTE: Use echomsg to display it in confirm
