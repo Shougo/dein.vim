@@ -11,11 +11,11 @@ function! s:_init() abort
   let s:ERA_TIME = s:_g2jd(1, 1, 1)
   let s:EPOC_TIME = s:_g2jd(1970, 1, 1)
 
-  let s:MONTHS = map(range(1, 12),
+  let s:MONTHS = range(1, 12)->map(
   \   's:from_date(1970, v:val, 1, 0, 0, 0, 0).unix_time()')
-  let s:WEEKS = map(range(4, 10),
+  let s:WEEKS = range(4, 10)->map(
   \   's:from_date(1970, 1, v:val, 0, 0, 0, 0).unix_time()')
-  let s:AM_PM_TIMES = map([0, 12],
+  let s:AM_PM_TIMES = [0, 12]->map(
   \   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
 
   " default values
@@ -783,7 +783,9 @@ function! s:_split_format(format) abort
   return res
 endfunction
 
-if has('win32') " This means any versions of windows https://github.com/vim-jp/vital.vim/wiki/Coding-Rule#how-to-check-if-the-runtime-os-is-windows
+if has('win32')
+  " This means any versions of windows
+  " https://github.com/vim-jp/vital.vim/wiki/Coding-Rule#how-to-check-if-the-runtime-os-is-windows
   function! s:_default_tz() abort
     let hm = map(split(strftime('%H %M', 0), ' '), 'str2nr(v:val)')
     if str2nr(strftime('%Y', 0)) != 1970

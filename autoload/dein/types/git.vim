@@ -48,13 +48,13 @@ function! s:type.init(repo, options) abort
     return {}
   endif
 
-  let directory = substitute(uri, '\.git$', '', '')
-  let directory = substitute(directory, '^https:/\+\|^git@', '', '')
-  let directory = substitute(directory, ':', '/', 'g')
+  let directory = uri->substitute('\.git$', '', '')
+  let directory = directory->substitute('^https:/\+\|^git@', '', '')
+  let directory = directory->substitute(':', '/', 'g')
 
   return #{
         \  type: 'git',
-        \  path: dein#util#_get_base_path().'/repos/'.directory
+        \  path: dein#util#_get_base_path().'/repos/'.directory,
         \ }
 endfunction
 function! s:type.get_uri(repo, options) abort
@@ -65,14 +65,13 @@ function! s:type.get_uri(repo, options) abort
   if a:repo =~# '^git@'
     " Parse "git@host:name" pattern
     let protocol = 'ssh'
-    let host = matchstr(a:repo[4:], '[^:]*')
+    let host = a:repo[4:]->matchstr('[^:]*')
     let name = a:repo[4 + len(host) + 1 :]
   else
-    let protocol = matchstr(a:repo, '^.\{-}\ze://')
-    let rest = a:repo[len(protocol):]
-    let name = substitute(rest, '^://[^/]*/', '', '')
-    let host = substitute(matchstr(rest, '^://\zs[^/]*\ze/'),
-          \ ':.*$', '', '')
+    let protocol = a:repo->matchstr('^.\{-}\ze://')
+    let rest = a:repo[protocol->len():]
+    let name = rest->substitute('^://[^/]*/', '', '')
+    let host = rest->matchstr('^://\zs[^/]*\ze/')->substitute(':.*$', '', '')
   endif
   if host ==# ''
     let host = g:dein#types#git#default_hub_site
@@ -80,8 +79,8 @@ function! s:type.get_uri(repo, options) abort
 
   if protocol ==# ''
         \ || a:repo =~# '\<\%(gh\|github\|bb\|bitbucket\):\S\+'
-        \ || has_key(a:options, 'type__protocol')
-    let protocol = get(a:options, 'type__protocol',
+        \ || a:options->has_key('type__protocol')
+    let protocol = a:options->get('type__protocol',
           \ g:dein#types#git#default_protocol)
   endif
 
@@ -109,7 +108,7 @@ function! s:type.get_uri(repo, options) abort
 endfunction
 
 function! s:type.get_sync_command(plugin) abort
-  if !isdirectory(a:plugin.path)
+  if !(a:plugin.path->isdirectory())
     let commands = []
 
     call add(commands, self.command)
@@ -118,11 +117,11 @@ function! s:type.get_sync_command(plugin) abort
     call add(commands, 'clone')
     call add(commands, '--recursive')
 
-    let depth = get(a:plugin, 'type__depth', g:dein#types#git#clone_depth)
+    let depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
     if depth > 0 && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
       call add(commands, '--depth=' . depth)
 
-      if get(a:plugin, 'rev', '') !=# ''
+      if a:plugin->get('rev', '') !=# ''
         call add(commands, '--branch')
         call add(commands, a:plugin.rev)
       endif
@@ -145,7 +144,7 @@ function! s:type.get_sync_command(plugin) abort
     let submodule_cmd = git . ' submodule update --init --recursive'
 
     " Note: "remote_origin_cmd" does not work when "depth" is specified.
-    let depth = get(a:plugin, 'type__depth', g:dein#types#git#clone_depth)
+    let depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
 
     if dein#util#_is_powershell()
       let cmd = fetch_cmd
@@ -191,20 +190,20 @@ function! s:type.get_revision_lock_command(plugin) abort
     return []
   endif
 
-  let rev = get(a:plugin, 'rev', '')
+  let rev = a:plugin->get('rev', '')
   if rev =~# '*'
     " Use the released tag (git 1.9.2 or above required)
     let output = dein#install#_system(
           \ [self.command, 'tag', rev,
           \  '--list', '--sort', '-version:refname'])
-    let rev = get(split(output, "\n"), 0, '')
+    let rev = output->split("\n")->get(0, '')
   endif
   if rev ==# ''
     " Fix detach HEAD.
     " Use symbolic-ref feature (git 1.8.7 or above required)
     let output = dein#install#_system(
           \ [self.command, 'symbolic-ref', '--short', 'HEAD'])
-    let rev = get(split(output, "\n"), 0, '')
+    let rev = output->split("\n")->get(0, '')
     if rev =~# 'fatal: '
       " Fix "fatal: ref HEAD is not a symbolic ref" error
       " NOTE: Should specify the default branch?
@@ -231,24 +230,24 @@ function! s:type.get_diff_command(plugin, old_rev, new_rev) abort
 endfunction
 
 function! s:is_git_dir(path) abort
-  if isdirectory(a:path)
+  if a:path->isdirectory()
     let git_dir = a:path
-  elseif filereadable(a:path)
+  elseif a:path->filereadable()
     " check if this is a gitdir file
     " File starts with "gitdir: " and all text after this string is treated
     " as the path. Any CR or NLs are stripped off the end of the file.
-    let buf = join(readfile(a:path, 'b'), "\n")
-    let matches = matchlist(buf, '\C^gitdir: \(\_.*[^\r\n]\)[\r\n]*$')
-    if empty(matches)
+    let buf = a:path->readfile('b')->join("\n")
+    let matches = buf->matchlist('\C^gitdir: \(\_.*[^\r\n]\)[\r\n]*$')
+    if matches->empty()
       return 0
     endif
-    let path = fnamemodify(a:path, ':h')
-    if fnamemodify(a:path, ':t') ==# ''
+    let path = a:path->fnamemodify(':h')
+    if a:path->fnamemodify(':t') ==# ''
       " if there's no tail, the path probably ends in a directory separator
-      let path = fnamemodify(path, ':h')
+      let path = path->fnamemodify(':h')
     endif
     let git_dir = s:join_paths(path, matches[1])
-    if !isdirectory(git_dir)
+    if !(git_dir->isdirectory())
       return 0
     endif
   else
@@ -265,7 +264,7 @@ function! s:is_git_dir(path) abort
   " NOTE: Git also accepts having the GIT_OBJECT_DIRECTORY env var set instead
   " of using .git/objects, but we don't care about that.
   for name in ['objects', 'refs']
-    if !isdirectory(s:join_paths(git_dir, name))
+    if !(s:join_paths(git_dir, name)->isdirectory())
       return 0
     endif
   endfor
@@ -276,7 +275,7 @@ function! s:is_git_dir(path) abort
   " NOTE: It may also be a symlink, which can point to a path that doesn't
   " necessarily exist yet.
   let head = s:join_paths(git_dir, 'HEAD')
-  if !filereadable(head) && getftype(head) !=# 'link'
+  if !(head->filereadable()) && head->getftype() !=# 'link'
     return 0
   endif
 
@@ -325,17 +324,17 @@ endfunction
 
 function! s:get_gitdir(dir) abort
   let gitdir = a:dir . '/.git'
-  if isdirectory(gitdir)
+  if gitdir->isdirectory()
     return gitdir
   endif
   try
-    let line = readfile(gitdir)[0]
+    let line = gitdir->readfile()[0]
     if line =~# '^gitdir: '
       let gitdir = line[8:]
       if !s:isabsolute(gitdir)
         let gitdir = a:dir . '/' . gitdir
       endif
-      if isdirectory(gitdir)
+      if gitdir->isdirectory()
         return gitdir
       endif
     endif
@@ -350,22 +349,22 @@ function! s:git_get_remote_origin_url(dir) abort
     return ''
   endif
   try
-    let lines = readfile(gitdir . '/config')
-    let [n, ll, url] = [0, len(lines), '']
+    let lines = (gitdir . '/config')->readfile()
+    let [n, ll, url] = [0, lines->len(), '']
     while n < ll
-      let line = trim(lines[n])
-      if stridx(line, '[remote "origin"]') != 0
+      let line = lines[n]->trim()
+      if line->stridx('[remote "origin"]') != 0
         let n += 1
         continue
       endif
       let n += 1
       while n < ll
-        let line = trim(lines[n])
+        let line = lines[n]->trim()
         if line ==# '['
           break
         endif
-        let url = matchstr(line, '^url\s*=\s*\zs[^ #]\+')
-        if !empty(url)
+        let url = line->matchstr('^url\s*=\s*\zs[^ #]\+')
+        if !(url->empty())
           break
         endif
         let n += 1
@@ -384,15 +383,15 @@ function! s:git_get_revision(dir) abort
     return ''
   endif
   try
-    let line = readfile(gitdir . '/HEAD')[0]
+    let line = (gitdir . '/HEAD')->readfile()[0]
     if line =~# '^ref: '
       let ref = line[5:]
-      if filereadable(gitdir . '/' . ref)
-        return readfile(gitdir . '/' . ref)[0]
+      if (gitdir . '/' . ref)->filereadable()
+        return (gitdir . '/' . ref)->readfile()[0]
       endif
-      for line in readfile(gitdir . '/packed-refs')
+      for line in (gitdir . '/packed-refs')->readfile()
         if line =~# ' ' . ref
-          return substitute(line, '^\([0-9a-f]*\) ', '\1', '')
+          return line->substitute('^\([0-9a-f]*\) ', '\1', '')
         endif
       endfor
     endif
@@ -408,7 +407,7 @@ function! s:git_get_branch(dir) abort
     return ''
   endif
   try
-    let line = readfile(gitdir . '/HEAD')[0]
+    let line = (gitdir . '/HEAD')->readfile()[0]
     if line =~# '^ref: refs/heads/'
       return line[16:]
     endif

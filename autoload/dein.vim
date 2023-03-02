@@ -11,14 +11,14 @@ function! dein#tap(name) abort
   return 1
 endfunction
 function! dein#is_sourced(name) abort
-  return has_key(g:dein#_plugins, a:name) && g:dein#_plugins[a:name].sourced
+  return g:dein#_plugins->has_key(a:name) && g:dein#_plugins[a:name].sourced
 endfunction
 function! dein#is_available(names) abort
   for name in type(a:names) ==# v:t_list ? a:names : [a:names]
-    if !has_key(g:dein#_plugins, name) | return 0 | endif
+    if !(g:dein#_plugins->has_key(name)) | return 0 | endif
     let plugin = g:dein#_plugins[name]
-    if !isdirectory(plugin.path)
-          \ || (has_key(plugin, 'if') && !eval(plugin.if)) | return 0 | endif
+    if !(plugin.path->isdirectory()) || (plugin->has_key('if') &&
+          \ !(plugin.if->eval())) | return 0 | endif
   endfor
   return 1
 endfunction
@@ -36,9 +36,9 @@ function! dein#local(dir, options = {}, names = ['*']) abort
 endfunction
 function! dein#get(name = '') abort
   return a:name ==# '' ?
-        \ copy(g:dein#_plugins) : get(g:dein#_plugins, a:name, {})
+        \ g:dein#_plugins->copy() : g:dein#_plugins->get(a:name, {})
 endfunction
-function! dein#source(plugins = values(g:dein#_plugins)) abort
+function! dein#source(plugins = g:dein#_plugins->values()) abort
   return dein#autoload#_source(a:plugins)
 endfunction
 function! dein#check_install(plugins = []) abort
@@ -61,7 +61,7 @@ function! dein#direct_install(repo, options = {}) abort
   call dein#install#_direct_install(a:repo, a:options)
 endfunction
 function! dein#get_direct_plugins_path() abort
-  return get(g:, 'dein#cache_directory', g:dein#_base_path)
+  return g:->get('dein#cache_directory', g:dein#_base_path)
         \ .'/direct_install.vim'
 endfunction
 function! dein#reinstall(plugins) abort
@@ -95,10 +95,10 @@ function! dein#load_dict(dict, options = {}) abort
   return dein#parse#_load_dict(a:dict, a:options)
 endfunction
 function! dein#get_log() abort
-  return join(dein#install#_get_log(), "\n")
+  return dein#install#_get_log()->join("\n")
 endfunction
 function! dein#get_updates_log() abort
-  return join(dein#install#_get_updates_log(), "\n")
+  return dein#install#_get_updates_log()->join("\n")
 endfunction
 function! dein#get_progress() abort
   return dein#install#_get_progress()
@@ -119,9 +119,9 @@ function! dein#disable(names) abort
   return dein#util#_disable(a:names)
 endfunction
 function! dein#config(arg, options = {}) abort
-  return type(a:arg) == v:t_dict ? dein#util#_config(g:dein#name, a:arg) :
-        \ type(a:arg) != v:t_list ? dein#util#_config(a:arg, a:options) :
-        \ map(copy(a:arg), { _, val -> dein#util#_config(val, a:options) })
+  return a:arg->type() == v:t_dict ? dein#util#_config(g:dein#name, a:arg) :
+        \ a:arg->type() != v:t_list ? dein#util#_config(a:arg, a:options) :
+        \ a:arg->copy()->map({ _, val -> dein#util#_config(val, a:options) })
 endfunction
 function! dein#set_hook(plugins, hook_name, hook) abort
   return dein#util#_set_hook(a:plugins, a:hook_name, a:hook)
@@ -131,7 +131,7 @@ function! dein#save_state() abort
 endfunction
 function! dein#clear_state() abort
   call dein#util#_clear_state()
-  if !get(g:, 'dein#auto_recache', v:false) && !empty(g:dein#ftplugin)
+  if !(g:->get('dein#auto_recache', v:false)) && !(g:dein#ftplugin->empty())
     call dein#util#_notify(
           \ 'call dein#recache_runtimepath() is needed for ftplugin')
   endif
@@ -147,7 +147,7 @@ function! dein#get_updated_plugins(plugins = []) abort
         \ a:plugins, dein#install#_is_async())
 endfunction
 function! dein#options(options) abort
-  for [key, val] in items(a:options)
+  for [key, val] in a:options->items()
     let g:dein#{key} = val
   endfor
 endfunction

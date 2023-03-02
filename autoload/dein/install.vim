@@ -8,26 +8,26 @@ let s:progress_winid = -1
 
 " Global options definition.
 let g:dein#install_max_processes =
-      \ get(g:, 'dein#install_max_processes',
+      \ g:->get('dein#install_max_processes',
       \     dein#util#_is_windows() ? 16 : 8)
 let g:dein#install_progress_type =
-      \ get(g:, 'dein#install_progress_type', 'echo')
+      \ g:->get('dein#install_progress_type', 'echo')
 let g:dein#install_message_type =
-      \ get(g:, 'dein#install_message_type', 'echo')
+      \ g:->get('dein#install_message_type', 'echo')
 let g:dein#install_process_timeout =
-      \ get(g:, 'dein#install_process_timeout', 120)
+      \ g:->get('dein#install_process_timeout', 120)
 let g:dein#install_log_filename =
-      \ get(g:, 'dein#install_log_filename', '')
+      \ g:->get('dein#install_log_filename', '')
 let g:dein#install_github_api_token =
-      \ get(g:, 'dein#install_github_api_token', '')
+      \ g:->get('dein#install_github_api_token', '')
 let g:dein#install_curl_command =
-      \ get(g:, 'dein#install_curl_command', 'curl')
+      \ g:->get('dein#install_curl_command', 'curl')
 let g:dein#install_check_diff =
-      \ get(g:, 'dein#install_check_diff', v:false)
+      \ g:->get('dein#install_check_diff', v:false)
 let g:dein#install_check_remote_threshold =
-      \ get(g:, 'dein#install_check_remote_threshold', 0)
+      \ g:->get('dein#install_check_remote_threshold', 0)
 let g:dein#install_copy_vim =
-      \ get(g:, 'dein#install_copy_vim', v:true)
+      \ g:->get('dein#install_copy_vim', v:true)
 
 function! s:get_job() abort
   if !exists('s:Job')

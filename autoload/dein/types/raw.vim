@@ -8,13 +8,13 @@ let s:type = #{
 
 function! s:type.init(repo, options) abort
   " No auto detect.
-  if a:repo !~# '^https://.*\.vim$' || !has_key(a:options, 'script_type')
+  if a:repo !~# '^https://.*\.vim$' || !(a:options->has_key('script_type'))
     return {}
   endif
 
-  let directory = substitute(fnamemodify(a:repo, ':h'), '\.git$', '', '')
-  let directory = substitute(directory, '^https:/\+\|^git@', '', '')
-  let directory = substitute(directory, ':', '/', 'g')
+  let directory = a:repo->fnamemodify(':h')->substitute('\.git$', '', '')
+  let directory = directory->substitute('^https:/\+\|^git@', '', '')
+  let directory = directory->substitute(':', '/', 'g')
 
   return #{
         \   name: dein#parse#_name_conversion(a:repo),
@@ -26,6 +26,6 @@ endfunction
 function! s:type.get_sync_command(plugin) abort
   call dein#util#_safe_mkdir(a:plugin.path)
 
-  let outpath = a:plugin.path . '/' . fnamemodify(a:plugin.repo, ':t')
+  let outpath = a:plugin.path . '/' . a:plugin.repo->fnamemodify(':t')
   return dein#util#_download(a:plugin.repo, outpath)
 endfunction

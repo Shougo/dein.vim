@@ -17,13 +17,13 @@ function! dein#min#_init() abort
   let g:dein#_event_plugins = {}
   let g:dein#_on_lua_plugins = {}
   let g:dein#_is_sudo = $SUDO_USER !=# '' && $USER !=# $SUDO_USER
-        \ && $HOME !=# expand('~'.$USER)
-        \ && $HOME ==# expand('~'.$SUDO_USER)
-  let g:dein#_progname = fnamemodify(v:progname, ':r')
+        \ && $HOME !=# ('~'.$USER)->expand()
+        \ && $HOME ==# ('~'.$SUDO_USER)->expand()
+  let g:dein#_progname = v:progname->fnamemodify(':r')
   let g:dein#_init_runtimepath = &runtimepath
   let g:dein#_loaded_rplugins = v:false
 
-  if get(g:, 'dein#lazy_rplugins', v:false)
+  if g:->get('dein#lazy_rplugins', v:false)
     " Disable remote plugin loading
     let g:loaded_remote_plugins = 1
   endif
@@ -31,8 +31,8 @@ function! dein#min#_init() abort
   augroup dein
     autocmd!
     autocmd FuncUndefined *
-          \ if stridx(expand('<afile>'), 'remote#') != 0 |
-          \   call dein#autoload#_on_func(expand('<afile>')) |
+          \ if '<afile>'->expand()->stridx('remote#') != 0 |
+          \   call dein#autoload#_on_func('<afile>'->expand()) |
           \ endif
     autocmd BufRead *? call dein#autoload#_on_default_event('BufRead')
     autocmd BufNew,BufNewFile *? call dein#autoload#_on_default_event('BufNew')
@@ -40,7 +40,7 @@ function! dein#min#_init() abort
     autocmd FileType *? call dein#autoload#_on_default_event('FileType')
     autocmd BufWritePost *.lua,*.vim,*.toml,vimrc,.vimrc
           \ call dein#util#_check_vimrcs()
-    autocmd CmdUndefined * call dein#autoload#_on_pre_cmd(expand('<afile>'))
+    autocmd CmdUndefined * call dein#autoload#_on_pre_cmd('<afile>'->expand())
   augroup END
   augroup dein-events | augroup END
 
@@ -67,28 +67,29 @@ END
 endfunction
 function! dein#min#_load_cache_raw(vimrcs) abort
   let g:dein#_vimrcs = a:vimrcs
-  let cache = get(g:, 'dein#cache_directory', g:dein#_base_path)
+  let cache = g:->get('dein#cache_directory', g:dein#_base_path)
         \ .'/cache_' . g:dein#_progname
-  let time = getftime(cache)
-  if !empty(filter(map(copy(g:dein#_vimrcs),
-        \ { _, val -> getftime(expand(val)) }), { _, val -> time < val }))
+  let time = cache->getftime()
+  if !(g:dein#_vimrcs->copy()->map(
+        \ { _, val -> getftime(expand(val)) })->filter(
+        \ { _, val -> time < val })->empty())
     return [{}, {}]
   endif
-  return has('nvim') ? json_decode(readfile(cache))
-        \ : js_decode(readfile(cache)[0])
+  return has('nvim') ? cache->readfile()->json_decode()
+        \ : cache->readfile()[0]->js_decode()
 endfunction
 function! dein#min#load_state(path) abort
-  if !exists('#dein')
+  if !('#dein'->exists())
     call dein#min#_init()
   endif
   if g:dein#_is_sudo | return 1 | endif
-  let g:dein#_base_path = expand(a:path)
+  let g:dein#_base_path = a:path->expand()
 
-  let state = get(g:, 'dein#cache_directory', g:dein#_base_path)
+  let state = g:->get('dein#cache_directory', g:dein#_base_path)
         \ . '/state_' . g:dein#_progname . '.vim'
-  if !filereadable(state) | return 1 | endif
+  if !(state->filereadable()) | return 1 | endif
   try
-    execute 'source' fnameescape(state)
+    execute 'source' state->fnameescape()
   catch
     if v:exception !=# 'Cache loading error'
       call dein#util#_error('Loading state error: ' . v:exception)

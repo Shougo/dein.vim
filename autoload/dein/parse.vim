@@ -1,23 +1,23 @@
 " Global options definition."
 let g:dein#enable_name_conversion =
-      \ get(g:, 'dein#enable_name_conversion', v:false)
+      \ g:->get('dein#enable_name_conversion', v:false)
 let g:dein#default_options =
-      \ get(g:, 'dein#default_options', {})
+      \ g:->get('dein#default_options', {})
 
 
 let s:git = dein#types#git#define()
 
 function! dein#parse#_add(repo, options, overwrite) abort
   let plugin = dein#parse#_dict(dein#parse#_init(a:repo, a:options))
-  let plugin_check = get(g:dein#_plugins, plugin.name, {})
-  let overwrite = get(a:options, 'overwrite', a:overwrite)
-  if get(plugin_check, 'sourced', 0)
+  let plugin_check = g:dein#_plugins->get(plugin.name, {})
+  let overwrite = a:options->get('overwrite', a:overwrite)
+  if plugin_check->get('sourced', 0)
     " Skip already loaded plugin.
     return {}
   endif
 
   " Duplicated plugins check
-  if !empty(plugin_check)
+  if !(plugin_check->empty())
     if !overwrite
       if has('vim_starting')
         " Only warning when starting
@@ -29,8 +29,8 @@ function! dein#parse#_add(repo, options, overwrite) abort
 
     " Overwrite
     " NOTE: reparse is needed.
-    let options = extend(a:options,
-          \ get(g:dein#_plugins[plugin.name], 'orig_opts', {}), 'keep')
+    let options = a:options->extend(
+          \ g:dein#_plugins[plugin.name]->get('orig_opts', {}), 'keep')
     let plugin = dein#parse#_dict(dein#parse#_init(a:repo, options))
   endif
 
@@ -42,16 +42,16 @@ function! dein#parse#_add(repo, options, overwrite) abort
     endif
 
     " Convert lua_xxx keys
-    for [key, val] in filter(items(plugin), { _, v -> v[0] =~# '^lua_' })
-      let hook_key = substitute(key, '^lua_', 'hook_', '')
+    for [key, val] in plugin->items()->filter({ _, v -> v[0] =~# '^lua_' })
+      let hook_key = key->substitute('^lua_', 'hook_', '')
       let plugin[hook_key] = printf(
-            \ "lua <<EOF\n%s\nEOF\n%s", val, get(plugin, hook_key, ''))
+            \ "lua <<EOF\n%s\nEOF\n%s", val, plugin->get(hook_key, ''))
     endfor
 
-    if has_key(plugin, 'hook_add')
+    if plugin->has_key('hook_add')
       call dein#util#_call_hook('add', plugin)
     endif
-    if has_key(plugin, 'ftplugin')
+    if plugin->has_key('ftplugin')
       call s:merge_ftplugin(plugin.ftplugin)
     endif
   endif
@@ -60,19 +60,19 @@ function! dein#parse#_add(repo, options, overwrite) abort
 endfunction
 function! dein#parse#_init(repo, options) abort
   let repo = dein#util#_expand(a:repo)
-  let plugin = has_key(a:options, 'type') ?
+  let plugin = a:options->has_key('type') ?
         \ dein#util#_get_type(a:options.type).init(repo, a:options) :
         \ s:git.init(repo, a:options)
-  if empty(plugin)
+  if plugin->empty()
     let plugin = s:check_type(repo, a:options)
   endif
   call extend(plugin, a:options)
-  if !empty(g:dein#default_options)
+  if !(g:dein#default_options->empty())
     call extend(plugin, g:dein#default_options, 'keep')
   endif
   let plugin.repo = repo
-  if !empty(a:options)
-    let plugin.orig_opts = deepcopy(a:options)
+  if !(a:options->empty())
+    let plugin.orig_opts = a:options->deepcopy()
   endif
   return plugin
 endfunction
@@ -83,35 +83,34 @@ function! dein#parse#_dict(plugin) abort
         \ }
   call extend(plugin, a:plugin)
 
-  if !has_key(plugin, 'name')
+  if !(plugin->has_key('name'))
     let plugin.name = dein#parse#_name_conversion(plugin.repo)
   endif
 
-  if !has_key(plugin, 'normalized_name')
-    let plugin.normalized_name = substitute(
-          \ fnamemodify(plugin.name, ':r'),
+  if !(plugin->has_key('normalized_name'))
+    let plugin.normalized_name = plugin.name->fnamemodify(':r')->substitute(
           \ '\c^\%(n\?vim\|dps\|denops\)[_-]\|[_-]n\?vim$', '', 'g')
   endif
 
-  if !has_key(a:plugin, 'name') && g:dein#enable_name_conversion
+  if !(a:plugin->has_key('name')) && g:dein#enable_name_conversion
     " Use normalized name.
     let plugin.name = plugin.normalized_name
   endif
 
-  if !has_key(plugin, 'path')
+  if !(plugin->has_key('path'))
     let plugin.path = (plugin.repo =~# '^/\|^\a:[/\\]') ?
           \ plugin.repo : dein#util#_get_base_path().'/repos/'.plugin.name
   endif
 
   let plugin.path = dein#util#_chomp(dein#util#_expand(plugin.path))
-  if get(plugin, 'rev', '') !=# ''
+  if plugin->get('rev', '') !=# ''
     " Add revision path
-    let plugin.path .= '_' . substitute(
-          \ plugin.rev, '[^[:alnum:].-]', '_', 'g')
+    let plugin.path .= '_' . plugin.rev->substitute(
+          \ '[^[:alnum:].-]', '_', 'g')
   endif
 
   " Check relative path
-  if (!has_key(a:plugin, 'rtp') || a:plugin.rtp !=# '')
+  if (!(a:plugin->has_key('rtp')) || a:plugin.rtp !=# '')
         \ && plugin.rtp !~# '^\%([~/]\|\a\+:\)'
     let plugin.rtp = plugin.path.'/'.plugin.rtp
   endif
@@ -119,56 +118,56 @@ function! dein#parse#_dict(plugin) abort
     let plugin.rtp = dein#util#_expand(plugin.rtp)
   endif
   let plugin.rtp = dein#util#_chomp(plugin.rtp)
-  if g:dein#_is_sudo && !get(plugin, 'trusted', 0)
+  if g:dein#_is_sudo && !(plugin->get('trusted', 0))
     let plugin.rtp = ''
   endif
 
-  if has_key(plugin, 'script_type')
+  if plugin->has_key('script_type')
     " Add script_type.
     let plugin.path .= '/' . plugin.script_type
   endif
 
-  if has_key(plugin, 'depends') && type(plugin.depends) != v:t_list
+  if plugin->has_key('depends') && plugin.depends->type() != v:t_list
     let plugin.depends = [plugin.depends]
   endif
 
   " Deprecated check.
-  for key in filter(['directory', 'base'],
-        \ { _, val -> has_key(plugin, val) })
+  for key in ['directory', 'base']->filter(
+        \ { _, val -> plugin->has_key(val) })
     call dein#util#_error('plugin name = ' . plugin.name)
-    call dein#util#_error(string(key) . ' is deprecated.')
+    call dein#util#_error(key->string() . ' is deprecated.')
   endfor
 
-  if !has_key(plugin, 'lazy')
+  if !(plugin->has_key('lazy'))
     let plugin.lazy =
-          \    has_key(plugin, 'on_ft')
-          \ || has_key(plugin, 'on_cmd')
-          \ || has_key(plugin, 'on_func')
-          \ || has_key(plugin, 'on_lua')
-          \ || has_key(plugin, 'on_map')
-          \ || has_key(plugin, 'on_path')
-          \ || has_key(plugin, 'on_if')
-          \ || has_key(plugin, 'on_event')
-          \ || has_key(plugin, 'on_source')
+          \    plugin->has_key('on_ft')
+          \ || plugin->has_key('on_cmd')
+          \ || plugin->has_key('on_func')
+          \ || plugin->has_key('on_lua')
+          \ || plugin->has_key('on_map')
+          \ || plugin->has_key('on_path')
+          \ || plugin->has_key('on_if')
+          \ || plugin->has_key('on_event')
+          \ || plugin->has_key('on_source')
   endif
 
-  if !has_key(a:plugin, 'merged')
+  if !(a:plugin->has_key('merged'))
     let plugin.merged = !plugin.lazy
           \ && plugin.normalized_name !=# 'dein'
-          \ && !has_key(plugin, 'local')
-          \ && !has_key(plugin, 'build')
-          \ && !has_key(plugin, 'if')
-          \ && !has_key(plugin, 'hook_post_update')
-          \ && stridx(plugin.rtp, dein#util#_get_base_path()) == 0
+          \ && !(plugin->has_key('local'))
+          \ && !(plugin->has_key('build'))
+          \ && !(plugin->has_key('if'))
+          \ && !(plugin->has_key('hook_post_update'))
+          \ && plugin.rtp->stridx(dein#util#_get_base_path()) == 0
   endif
 
   " Hooks
-  for hook in filter([
+  for hook in [
         \ 'hook_add', 'hook_source',
         \ 'hook_post_source', 'hook_post_update',
-        \ ], { _, val -> has_key(plugin, val)
-        \                && type(plugin[val]) == v:t_string })
-    let plugin[hook] = substitute(plugin[hook], '\n\s*\\', '', 'g')
+        \ ]->filter({ _, val -> plugin->has_key(val)
+        \                && plugin[val]->type() == v:t_string })
+    let plugin[hook] = plugin[hook]->substitute('\n\s*\\', '', 'g')
   endfor
 
   return plugin
@@ -181,28 +180,28 @@ function! dein#parse#_load_toml(filename, default) abort
     call dein#util#_error(v:exception)
     return 1
   endtry
-  if type(toml) != v:t_dict
+  if toml->type() != v:t_dict
     call dein#util#_error('Invalid toml file: ' . a:filename)
     return 1
   endif
 
   " Parse.
-  if has_key(toml, 'lua_add')
+  if toml->has_key('lua_add')
     let g:dein#_hook_add .= printf("\nlua <<EOF\n%s\nEOF",
-          \ substitute(toml.lua_add, '\n\s*\\', '', 'g'),
+          \   toml.lua_add->substitute('\n\s*\\', '', 'g'),
           \ )
   endif
-  if has_key(toml, 'hook_add')
+  if toml->has_key('hook_add')
     let g:dein#_hook_add .= printf("\n%s",
-          \ substitute(toml.hook_add, '\n\s*\\', '', 'g'),
+          \   toml.hook_add->substitute('\n\s*\\', '', 'g'),
           \ )
   endif
-  if has_key(toml, 'ftplugin')
+  if toml->has_key('ftplugin')
     call s:merge_ftplugin(toml.ftplugin)
   endif
-  if has_key(toml, 'multiple_plugins')
+  if toml->has_key('multiple_plugins')
     for multi in toml.multiple_plugins
-      if !has_key(multi, 'plugins')
+      if !(multi->has_key('plugins'))
         call dein#util#_error('Invalid multiple_plugins: ' . a:filename)
         return 1
       endif
@@ -211,9 +210,9 @@ function! dein#parse#_load_toml(filename, default) abort
     endfor
   endif
 
-  if has_key(toml, 'plugins')
+  if toml->has_key('plugins')
     for plugin in toml.plugins
-      if !has_key(plugin, 'repo')
+      if !(plugin->has_key('repo'))
         call dein#util#_error('No repository plugin data: ' . a:filename)
         return 1
       endif
@@ -256,23 +255,23 @@ function! dein#parse#_plugins2toml(plugins) abort
         \   repo: 1,
         \ }
 
-  for plugin in sort(a:plugins,
+  for plugin in a:plugins->sort(
         \ { a, b -> a.repo ==# b.repo ? 0 : a.repo ># b.repo ? 1 : -1 })
     let toml += ['[[plugins]]',
-          \ 'repo = ' . string(plugin.repo)]
+          \ 'repo = ' . plugin.repo->string()]
 
-    for key in filter(sort(keys(default)),
-          \ { _, val -> !has_key(skip_default, val) && has_key(plugin, val)
-          \  && (type(plugin[val]) !=# type(default[val])
+    for key in default->keys()->sort()->filter(
+          \ { _, val -> !(skip_default->has_key(val)) && plugin->has_key(val)
+          \  && (plugin[val]->type() !=# default[val]->type()
           \      || plugin[val] !=# default[val]) })
       let val = plugin[key]
       if key =~# '^hook_'
         call add(toml, key . " = '''")
-        let toml += split(val, '\n')
+        let toml += val->split('\n')
         call add(toml, "'''")
       else
-        call add(toml, key . ' = ' . string(
-              \ (type(val) == v:t_list && len(val) == 1) ? val[0] : val))
+        call add(toml, key . ' = ' . (val->type() == v:t_list &&
+              \ val->len() == 1 ? val[0] : val)->string())
       endif
       unlet! val
     endfor
@@ -283,27 +282,27 @@ function! dein#parse#_plugins2toml(plugins) abort
   return toml
 endfunction
 function! dein#parse#_load_dict(dict, default) abort
-  for [repo, options] in items(a:dict)
-    call dein#add(repo, extend(copy(options), a:default, 'keep'))
+  for [repo, options] in a:dict->items()
+    call dein#add(repo, options->copy()->extend(a:default, 'keep'))
   endfor
 endfunction
 function! dein#parse#_local(localdir, options, includes) abort
   let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
-    let directories += map(filter(glob(base . glob, v:true, v:true),
-          \ { _, val -> isdirectory(val) }),
-          \ { _, val -> substitute(dein#util#_substitute_path(
-          \   fnamemodify(val, ':p')), '/$', '', '') })
+    let directories += (base . glob)->glob(v:true, v:true)->filter(
+          \ { _, val -> val->isdirectory() })->map(
+          \ { _, val -> dein#util#_substitute_path(
+          \   val->fnamemodify(':p'))->substitute('/$', '', '') })
   endfor
 
   for dir in dein#util#_uniq(directories)
     let options = extend({
           \ 'repo': dir, 'local': 1, 'path': dir,
-          \ 'name': fnamemodify(dir, ':t')
+          \ 'name': dir->fnamemodify(':t')
           \ }, a:options)
 
-    if has_key(g:dein#_plugins, options.name)
+    if g:dein#_plugins->has_key(options.name)
       call dein#config(options.name, options)
     else
       call dein#parse#_add(dir, options, v:true)
@@ -312,18 +311,18 @@ function! dein#parse#_local(localdir, options, includes) abort
 endfunction
 function! s:parse_lazy(plugin) abort
   " Auto convert2list.
-  for key in filter([
+  for key in [
         \ 'on_ft', 'on_path', 'on_cmd', 'on_func', 'on_map',
         \ 'on_lua', 'on_source', 'on_event',
-        \ ], { _, val -> has_key(a:plugin, val)
-        \     && type(a:plugin[val]) != v:t_list
-        \     && type(a:plugin[val]) != v:t_dict })
+        \ ]->filter({ _, val -> a:plugin->has_key(val)
+        \     && a:plugin[val]->type() != v:t_list
+        \     && a:plugin[val]->type() != v:t_dict })
     let a:plugin[key] = [a:plugin[key]]
   endfor
 
-  if has_key(a:plugin, 'on_event')
+  if a:plugin->has_key('on_event')
     for event in a:plugin.on_event
-      if !has_key(g:dein#_event_plugins, event)
+      if !(g:dein#_event_plugins->has_key(event))
         let g:dein#_event_plugins[event] = [a:plugin.name]
       else
         call add(g:dein#_event_plugins[event], a:plugin.name)
@@ -333,16 +332,16 @@ function! s:parse_lazy(plugin) abort
     endfor
   endif
 
-  if has_key(a:plugin, 'on_cmd')
+  if a:plugin->has_key('on_cmd')
     call s:generate_dummy_commands(a:plugin)
   endif
-  if has_key(a:plugin, 'on_map')
+  if a:plugin->has_key('on_map')
     call s:generate_dummy_mappings(a:plugin)
   endif
 
-  if has_key(a:plugin, 'on_lua')
+  if a:plugin->has_key('on_lua')
     " NOTE: Use module root
-    for mod in map(a:plugin.on_lua, { _, val -> matchstr(val, '^[^./]\+') })
+    for mod in a:plugin.on_lua->map({ _, val -> val->matchstr('^[^./]\+') })
       let g:dein#_on_lua_plugins[mod] = v:true
     endfor
   endif
@@ -355,8 +354,8 @@ function! s:generate_dummy_commands(plugin) abort
           \ . '-complete=customlist,dein#autoload#_dummy_complete'
           \ . ' -bang -bar -range -nargs=* '. name
           \ . printf(" call dein#autoload#_on_cmd(%s, %s, <q-args>,
-          \  expand('<bang>'), expand('<line1>'), expand('<line2>'))",
-          \   string(name), string(a:plugin.name))
+          \  '<bang>'->expand(), '<line1>'->expand(), '<line2>'->expand())",
+          \   name->string(), a:plugin.name->string())
 
     call add(a:plugin.dummy_commands, [name, raw_cmd])
     silent! execute raw_cmd
@@ -364,36 +363,36 @@ function! s:generate_dummy_commands(plugin) abort
 endfunction
 function! s:generate_dummy_mappings(plugin) abort
   let a:plugin.dummy_mappings = []
-  let items = type(a:plugin.on_map) == v:t_dict ?
-        \ map(items(a:plugin.on_map),
-        \   { _, val -> [split(val[0], '\zs'),
+  let items = a:plugin.on_map->type() == v:t_dict ?
+        \ a:plugin.on_map->items()->map(
+        \   { _, val -> [val[0]->split('\zs'),
         \                dein#util#_convert2list(val[1])]}) :
-        \ map(copy(a:plugin.on_map),
+        \ a:plugin.on_map->copy()->map(
         \  { _, val -> type(val) == v:t_list ?
-        \     [split(val[0], '\zs'), val[1:]] :
+        \     [val[0]->split('\zs'), val[1:]] :
         \     [['n', 'x', 'o'], [val]]
         \  })
   for [modes, mappings] in items
     if mappings ==# ['<Plug>']
       " Use plugin name.
       let mappings = ['<Plug>(' . a:plugin.normalized_name]
-      if stridx(a:plugin.normalized_name, '-') >= 0
+      if a:plugin.normalized_name->stridx('-') >= 0
         " The plugin mappings may use "_" instead of "-".
         call add(mappings, '<Plug>(' .
-              \ substitute(a:plugin.normalized_name, '-', '_', 'g'))
+              \ a:plugin.normalized_name->substitute('-', '_', 'g'))
       endif
     endif
 
     for mapping in mappings
       " Define dummy mappings.
       let prefix = printf('dein#autoload#_on_map(%s, %s,',
-            \ string(substitute(mapping, '<', '<lt>', 'g')),
-            \ string(a:plugin.name))
+            \ mapping->substitute('<', '<lt>', 'g')->string(),
+            \ a:plugin.name->string())
       for mode in modes
         let raw_map = mode.'noremap <unique><silent> '.mapping
               \ . (mode ==# 'c' ? " \<C-r>=" :
               \    mode ==# 'i' ? " \<C-o>:call " : " :\<C-u>call ")
-              \ . prefix . string(mode) . ')<CR>'
+              \ . prefix . mode->string() . ')<CR>'
         call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
         silent! execute raw_map
       endfor
@@ -402,24 +401,24 @@ function! s:generate_dummy_mappings(plugin) abort
 endfunction
 function! s:merge_ftplugin(ftplugin) abort
   let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
-  for [ft, val] in items(a:ftplugin)
-    if !has_key(g:dein#ftplugin, ft)
+  for [ft, val] in a:ftplugin->items()
+    if !(g:dein#ftplugin->has_key(ft))
       let g:dein#ftplugin[ft] = val
     else
       let g:dein#ftplugin[ft] .= "\n" . val
     endif
   endfor
-  call map(g:dein#ftplugin, { _, val -> substitute(val, pattern, '', 'g') })
+  call map(g:dein#ftplugin, { _, val -> val->substitute(pattern, '', 'g') })
 endfunction
 
 function! dein#parse#_get_types() abort
-  if !exists('s:types')
+  if !('s:types'->exists())
     " Load types.
     let s:types = {}
-    for type in filter(map(globpath(&runtimepath,
-          \ 'autoload/dein/types/*.vim', v:true, v:true),
-          \ { _, val -> dein#types#{fnamemodify(val, ':t:r')}#define() }),
-          \ { _, val -> !empty(val) })
+    for type in globpath(&runtimepath,
+          \ 'autoload/dein/types/*.vim', v:true, v:true)->map(
+          \ { _, val -> dein#types#{val->fnamemodify(':t:r')}#define()
+          \ })->filter({ _, val -> !(val->empty()) })
       let s:types[type.name] = type
     endfor
   endif
@@ -427,23 +426,23 @@ function! dein#parse#_get_types() abort
 endfunction
 function! s:check_type(repo, options) abort
   let plugin = {}
-  for type in values(dein#parse#_get_types())
+  for type in dein#parse#_get_types()->values()
     let plugin = type.init(a:repo, a:options)
-    if !empty(plugin)
+    if !(plugin->empty())
       break
     endif
   endfor
 
-  if empty(plugin)
+  if plugin->empty()
     let plugin.type = 'none'
     let plugin.local = 1
-    let plugin.path = isdirectory(a:repo) ? a:repo : ''
+    let plugin.path = a:repo->isdirectory() ? a:repo : ''
   endif
 
   return plugin
 endfunction
 
 function! dein#parse#_name_conversion(path) abort
-  return fnamemodify(get(split(a:path, ':'), -1, ''),
+  return a:path->split(':')->get(-1, '')->fnamemodify(
         \ ':s?/$??:t:s?\c\.git\s*$??')
 endfunction

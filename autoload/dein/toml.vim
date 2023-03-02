@@ -4,7 +4,7 @@
 " public api
 "
 function! dein#toml#syntax() abort
-  if has('nvim') && exists(':TSBufDisable')
+  if has('nvim') && ':TSBufDisable'->exists()
     TSBufDisable highlight
   endif
 
@@ -36,19 +36,19 @@ function! dein#toml#parse(text) abort
   let input = #{
   \  text: a:text,
   \  p: 0,
-  \  length: strlen(a:text),
+  \  length: a:text->strlen(),
   \}
   return s:_parse(input)
 endfunction
 
 function! dein#toml#parse_file(filename) abort
-  if !filereadable(a:filename)
+  if !(a:filename->filereadable())
     throw printf("Text.TOML: No such file `%s'.", a:filename)
   endif
 
-  let text = join(readfile(a:filename), "\n")
+  let text = a:filename->readfile()->join("\n")
   " fileencoding is always utf8
-  return dein#toml#parse(iconv(text, 'utf8', &encoding))
+  return dein#toml#parse(text->iconv('utf8', &encoding))
 endfunction
 
 "
@@ -61,7 +61,7 @@ let s:table_key_pattern = s:table_name_pattern
 
 function! s:_skip(input) abort
   while s:_match(a:input, '\%(\_s\|#\)')
-    let a:input.p = matchend(a:input.text, s:skip_pattern, a:input.p)
+    let a:input.p = a:input.text->matchend(s:skip_pattern, a:input.p)
   endwhile
 endfunction
 
@@ -70,7 +70,7 @@ let s:regex_prefix = '\%#=1\C^'
 
 function! s:_consume(input, pattern) abort
   call s:_skip(a:input)
-  let end = matchend(a:input.text, s:regex_prefix . a:pattern, a:input.p)
+  let end = a:input.text->matchend(s:regex_prefix . a:pattern, a:input.p)
 
   if end == -1
     call s:_error(a:input)
@@ -78,13 +78,13 @@ function! s:_consume(input, pattern) abort
     return ''
   endif
 
-  let matched = strpart(a:input.text, a:input.p, end - a:input.p)
+  let matched = a:input.text->strpart(a:input.p, end - a:input.p)
   let a:input.p = end
   return matched
 endfunction
 
 function! s:_match(input, pattern) abort
-  return match(a:input.text, s:regex_prefix . a:pattern, a:input.p) != -1
+  return a:input.text->match(s:regex_prefix . a:pattern, a:input.p) != -1
 endfunction
 
 function! s:_eof(input) abort
@@ -101,8 +101,8 @@ function! s:_error(input) abort
   endwhile
 
   throw printf("Text.TOML: Illegal toml format at L%d:`%s':%d.",
-      \ len(split(a:input.text[: a:input.p], "\n", 1)),
-      \ join(buf, ''), a:input.p)
+      \ a:input.text[: a:input.p]->split("\n", 1)->len(),
+      \ buf->join(''), a:input.p)
 endfunction
 
 function! s:_parse(input) abort
@@ -187,8 +187,8 @@ endfunction
 function! s:_multiline_basic_string(input) abort
   let s = s:_consume(a:input, '"\{3}\_.\{-}"\{3}')
   let s = s[3 : -4]
-  let s = substitute(s, "^\n", '', '')
-  let s = substitute(s, '\\' . "\n" . '\_s*', '', 'g')
+  let s = s->substitute("^\n", '', '')
+  let s = s->substitute('\\' . "\n" . '\_s*', '', 'g')
   return s:_unescape(s)
 endfunction
 
@@ -200,7 +200,7 @@ endfunction
 function! s:_multiline_literal(input) abort
   let s = s:_consume(a:input, "'\\{3}.\\{-}'\\{3}")
   let s = s[3 : -4]
-  let s = substitute(s, "^\n", '', '')
+  let s = s->substitute("^\n", '', '')
   return s
 endfunction
 
@@ -209,7 +209,7 @@ endfunction
 "
 function! s:_integer(input) abort
   let s = s:_consume(a:input, '[+-]\?\d\+')
-  return str2nr(s)
+  return s->str2nr()
 endfunction
 
 "
@@ -225,12 +225,12 @@ endfunction
 
 function! s:_fractional(input) abort
   let s = s:_consume(a:input, '[+-]\?[0-9.]\+')
-  return str2float(s)
+  return s->str2float()
 endfunction
 
 function! s:_exponent(input) abort
   let s = s:_consume(a:input, '[+-]\?[0-9.]\+[eE][+-]\?\d\+')
-  return str2float(s)
+  return s->str2float()
 endfunction
 
 "
@@ -333,33 +333,33 @@ endfunction
 
 function! s:_unescape(text) abort
   let text = a:text
-  let text = substitute(text, '\\"', '"', 'g')
-  let text = substitute(text, '\\b', "\b", 'g')
-  let text = substitute(text, '\\t', "\t", 'g')
-  let text = substitute(text, '\\n', "\n", 'g')
-  let text = substitute(text, '\\f', "\f", 'g')
-  let text = substitute(text, '\\r', "\r", 'g')
-  let text = substitute(text, '\\/', '/', 'g')
-  let text = substitute(text, '\\\\', '\', 'g')
-  let text = substitute(text, '\C\\u\(\x\{4}\)',
+  let text = text->substitute('\\"', '"', 'g')
+  let text = text->substitute('\\b', "\b", 'g')
+  let text = text->substitute('\\t', "\t", 'g')
+  let text = text->substitute('\\n', "\n", 'g')
+  let text = text->substitute('\\f', "\f", 'g')
+  let text = text->substitute('\\r', "\r", 'g')
+  let text = text->substitute('\\/', '/', 'g')
+  let text = text->substitute('\\\\', '\', 'g')
+  let text = text->substitute('\C\\u\(\x\{4}\)',
         \ '\=s:_nr2char("0x" . submatch(1))', 'g')
-  let text = substitute(text, '\C\\U\(\x\{8}\)',
+  let text = text->substitute('\C\\U\(\x\{8}\)',
         \ '\=s:_nr2char("0x" . submatch(1))', 'g')
   return text
 endfunction
 
 function! s:_nr2char(nr) abort
-  return iconv(nr2char(a:nr), &encoding, 'utf8')
+  return a:nr->nr2char()->iconv(&encoding, 'utf8')
 endfunction
 
 function! s:_put_dict(dict, key, value) abort
-  let keys = split(a:key, '\.')
+  let keys = a:key->split('\.')
 
   let ref = a:dict
   for key in keys[ : -2]
-    if has_key(ref, key) && type(ref[key]) == v:t_dict
+    if ref->has_key(key) && ref[key]->type() == v:t_dict
       let ref = ref[key]
-    elseif has_key(ref, key) && type(ref[key]) == v:t_list
+    elseif ref->has_key(key) && ref[key]->type() == v:t_list
       let ref = ref[key][-1]
     else
       let ref[key] = {}
@@ -371,20 +371,18 @@ function! s:_put_dict(dict, key, value) abort
 endfunction
 
 function! s:_put_array(dict, key, value) abort
-  let keys = split(a:key, '\.')
+  let keys = a:key->split('\.')
 
   let ref = a:dict
   for key in keys[ : -2]
-    let ref[key] = get(ref, key, {})
+    let ref[key] = ref->get(key, {})
 
-    if type(ref[key]) == v:t_list
+    if ref[key]->type() == v:t_list
       let ref = ref[key][-1]
     else
       let ref = ref[key]
     endif
   endfor
 
-  let ref[keys[-1]] = get(ref, keys[-1], []) + a:value
+  let ref[keys[-1]] = ref->get(keys[-1], []) + a:value
 endfunction
-
-" vim:set et ts=2 sts=2 sw=2 tw=0:
