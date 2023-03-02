@@ -1012,7 +1012,7 @@ function! dein#install#_system_bg(command) abort
 endfunction
 
 function! dein#install#_rm(path) abort
-  if !isdirectory(a:path) && !filereadable(a:path)
+  if !(a:path->isdirectory()) && !(a:path->filereadable())
     return
   endif
 
@@ -1026,7 +1026,7 @@ function! dein#install#_rm(path) abort
 endfunction
 
 function! dein#install#_copy_directories(srcs, dest) abort
-  if empty(a:srcs)
+  if a:srcs->empty()
     return 0
   endif
 
@@ -1048,18 +1048,18 @@ function! dein#install#_copy_directories(srcs, dest) abort
     call dein#util#_error('Please enable "g:dein#install_copy_vim".')
     return 1
   else " Not Windows
-    let srcs = map(filter(copy(a:srcs),
-          \ { _, val -> len(glob(val . '/*', v:true, v:true)) }),
+    let srcs = a:srcs->copy()->filter(
+          \ { _, val -> len(glob(val . '/*', v:true, v:true)) })->map(
           \ { _, val -> shellescape(val . '/') })
-    let is_rsync = executable('rsync')
+    let is_rsync = 'rsync'->executable()
     if is_rsync
       let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
-            \ join(srcs), shellescape(a:dest))
+            \ srcs->join(), a:dest->shellescape())
       let result = dein#install#_system(cmdline)
       let status = dein#install#_status()
     else
       for src in srcs
-        let cmdline = printf('cp -Ra %s* %s', src, shellescape(a:dest))
+        let cmdline = printf('cp -Ra %s* %s', src, a:dest->shellescape())
         let result = dein#install#_system(cmdline)
         let status = dein#install#_status()
         if status
@@ -1103,17 +1103,17 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
   for src in a:srcs
     let src = dein#util#_substitute_path(src)
 
-    for srcpath in glob(src . '/**/*', 1, 1)
+    for srcpath in (src . '/**/*')->glob(1, 1)
       let srcpath = dein#util#_substitute_path(srcpath)
-      let destpath = substitute(srcpath,
+      let destpath = srcpath->substitute(
             \ dein#util#escape_match(src),
             \ dein#util#escape_match(dest), '')
-      let parent = fnamemodify(destpath, ':p:h')
-      if !isdirectory(parent)
+      let parent = destpath->fnamemodify(':p:h')
+      if !(parent->isdirectory())
         call mkdir(parent, 'p')
       endif
 
-      if isdirectory(srcpath)
+      if srcpath->isdirectory()
         call mkdir(destpath, 'p')
       elseif srcpath !~# 'tags\%(-\w*\)\?$'
         " Ignore tags
@@ -1132,7 +1132,7 @@ function! dein#install#_copy_file_vim(src, dest) abort
       call v:lua.vim.loop.fs_symlink(a:src, a:dest)
     endif
   else
-    let raw = readfile(a:src, 'b')
+    let raw = a:src->readfile('b')
     call writefile(raw, a:dest, 'b')
 
     " NOTE: setfperm() is needed.  The file permission may be checked.
@@ -1141,25 +1141,25 @@ function! dein#install#_copy_file_vim(src, dest) abort
 endfunction
 
 function! dein#install#_deno_cache(plugins = []) abort
-  if !executable('deno')
+  if !('deno'->executable())
     return
   endif
 
   let plugins = dein#util#_get_plugins(a:plugins)
 
   for plugin in plugins
-    if !isdirectory(plugin.rtp . '/denops')
+    if !((plugin.rtp . '/denops')->isdirectory())
       continue
     endif
 
     call dein#install#_system(
           \ ['deno', 'cache', '--no-check'] +
-          \ glob(plugin.rtp . '/denops/**/*.ts', 1, 1))
+          \ (plugin.rtp . '/denops/**/*.ts')->glob(1, 1))
   endfor
 endfunction
 
 function! dein#install#_post_sync(plugins) abort
-  if empty(a:plugins)
+  if a:plugins->empty()
     return
   endif
 
@@ -1168,9 +1168,9 @@ function! dein#install#_post_sync(plugins) abort
   call dein#install#_deno_cache(a:plugins)
 
   " Execute done_update hooks
-  let done_update_plugins = filter(dein#util#_get_plugins(a:plugins),
-        \ { _, val -> has_key(val, 'hook_done_update') })
-  if !empty(done_update_plugins)
+  let done_update_plugins = dein#util#_get_plugins(a:plugins)->filter(
+        \ { _, val -> val->has_key('hook_done_update') })
+  if !(done_update_plugins->empty())
     if has('vim_starting')
       let s:done_updated_plugins = done_update_plugins
       autocmd dein VimEnter * call s:call_done_update_hooks(
@@ -1186,7 +1186,7 @@ function! s:install_blocking(context) abort
     while 1
       call s:check_loop(a:context)
 
-      if empty(a:context.processes)
+      if a:context.processes->empty()
             \ && a:context.number == a:context.max_plugins
         break
       endif
@@ -1195,20 +1195,20 @@ function! s:install_blocking(context) abort
     call s:done(a:context)
   endtry
 
-  return len(a:context.errored_plugins)
+  return a:context.errored_plugins->len()
 endfunction
 function! s:install_async(context) abort
-  if empty(a:context)
+  if a:context->empty()
     return
   endif
 
   call s:check_loop(a:context)
 
-  if empty(a:context.processes)
+  if a:context.processes->empty()
         \ && a:context.number == a:context.max_plugins
     call s:done(a:context)
   elseif a:context.number != a:context.prev_number
-        \ && a:context.number < len(a:context.plugins)
+        \ && a:context.number < a:context.plugins->len()
     let plugin = a:context.plugins[a:context.number]
     call s:print_progress_message(
           \ s:get_progress_message(plugin.name,
@@ -1216,11 +1216,11 @@ function! s:install_async(context) abort
     let a:context.prev_number = a:context.number
   endif
 
-  return len(a:context.errored_plugins)
+  return a:context.errored_plugins->len()
 endfunction
 function! s:check_loop(context) abort
   while a:context.number < a:context.max_plugins
-        \ && len(a:context.processes) < g:dein#install_max_processes
+        \ && a:context.processes->len() < g:dein#install_max_processes
 
     let plugin = a:context.plugins[a:context.number]
     call s:sync(plugin, a:context)
@@ -1259,7 +1259,7 @@ function! s:init_context(plugins, update_type, async) abort
   let context.number = 0
   let context.prev_number = -1
   let context.plugins = a:plugins
-  let context.max_plugins = len(context.plugins)
+  let context.max_plugins = context.plugins->len()
   let context.progress_type = (has('vim_starting')
         \ && g:dein#install_progress_type !=# 'none') ?
         \ 'echo' : g:dein#install_progress_type
@@ -1284,16 +1284,16 @@ function! s:init_variables(context) abort
 endfunction
 function! s:convert_args(args) abort
   let args = s:iconv(a:args, &encoding, 'char')
-  if type(args) != v:t_list
-    let args = split(&shell) + split(&shellcmdflag) + [args]
+  if args->type() != v:t_list
+    let args = &shell->split() + &shellcmdflag->split() + [args]
   endif
   return args
 endfunction
 function! s:start() abort
-  call s:notify(strftime('Update started: (%Y/%m/%d %H:%M:%S)'))
+  call s:notify('Update started: (%Y/%m/%d %H:%M:%S)'->strftime())
 endfunction
 function! s:close_progress_popup() abort
-  if winbufnr(s:progress_winid) < 0
+  if s:progress_winid->winbufnr() < 0
     return
   endif
 
@@ -1307,11 +1307,11 @@ endfunction
 function! s:done(context) abort
   call s:restore_view(a:context)
 
-  let s:failed_plugins = map(copy(a:context.errored_plugins),
+  let s:failed_plugins = a:context.errored_plugins->copy()->map(
         \ { _, val -> val.name })
 
   if !empty(a:context.synced_plugins)
-    let names = map(copy(a:context.synced_plugins), { _, val -> val.name })
+    let names = a:context.synced_plugins->copy()->map({ _, val -> val.name })
     call dein#install#_post_sync(names)
   endif
 
@@ -1327,7 +1327,7 @@ function! s:done(context) abort
     call timer_start(1000, { -> s:close_progress_popup() })
   endif
 
-  call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
+  call s:notify('Done: (%Y/%m/%d %H:%M:%S)'->strftime())
 
   " Disable installation handler
   let s:global_context = {}
@@ -1335,7 +1335,7 @@ function! s:done(context) abort
   augroup dein-install
     autocmd!
   augroup END
-  if exists('s:timer')
+  if 's:timer'->exists()
     call timer_stop(s:timer)
     unlet s:timer
   endif
@@ -1360,7 +1360,7 @@ function! s:sync(plugin, context) abort
   let num = a:context.number
   let max = a:context.max_plugins
 
-  if isdirectory(a:plugin.path) && get(a:plugin, 'frozen', 0)
+  if a:plugin.path->isdirectory() && a:plugin->get('frozen', 0)
     " Skip frozen plugin
     call s:log(s:get_plugin_message(a:plugin, num, max, 'is frozen.'))
     return
@@ -1419,7 +1419,7 @@ function! s:init_process(plugin, context, cmd) abort
           \   output: '',
           \   status: -1,
           \   eof: 0,
-          \   installed: isdirectory(a:plugin.path),
+          \   installed: a:plugin.path->isdirectory(),
           \ }
 
     let rev_save = a:plugin->get('rev', '')
@@ -1455,13 +1455,13 @@ function! s:init_job(process, context, cmd) abort
     return
   endif
 
-  let a:process.async = {'eof': 0}
+  let a:process.async = #{ eof: 0 }
   function! a:process.async.job_handler(data) abort
-    if !has_key(self, 'candidates')
+    if !(self->has_key('candidates'))
       let self.candidates = []
     endif
     let candidates = self.candidates
-    if empty(candidates)
+    if candidates->empty()
       call add(candidates, a:data[0])
     else
       let candidates[-1] .= a:data[0]
@@ -1479,7 +1479,7 @@ function! s:init_job(process, context, cmd) abort
   function! a:process.async.get(process) abort
     " Check job status
     let status = -1
-    if has_key(a:process.job, 'exitval')
+    if a:process.job->has_key('exitval')
       let self.eof = 1
       let status = a:process.job.exitval
     endif
@@ -1564,12 +1564,11 @@ function! s:check_output(context, process) abort
     endif
 
     call s:error((is_timeout ?
-          \    strftime('Process timeout: (%Y/%m/%d %H:%M:%S)') :
-          \    split(a:process.output, '\r\?\n')
+          \    'Process timeout: (%Y/%m/%d %H:%M:%S)'->strftime() :
+          \    a:process.output->split('\r\?\n')
           \ ))
 
-    call add(a:context.errored_plugins,
-          \ plugin)
+    call add(a:context.errored_plugins, plugin)
   elseif a:process.rev ==# new_rev
     call s:log(s:get_plugin_message(
           \ plugin, num, max, 'Same revision'))

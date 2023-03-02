@@ -212,11 +212,11 @@ dein#config({options})
 		Note: You must call it within |dein#begin()| / |dein#end()|
 		block.
 >
-	call dein#add('Shougo/deoplete.nvim')
-	call dein#config('deoplete.nvim', #{
-	\   lazy: 1,
-	\   on_event: 'InsertEnter',
-	\ })
+		call dein#add('Shougo/deoplete.nvim')
+		call dein#config('deoplete.nvim', #{
+		\   lazy: 1,
+		\   on_event: 'InsertEnter',
+		\ })
 <
 							*dein#deno_cache()*
 dein#deno_cache({plugins})
@@ -347,13 +347,13 @@ dein#min#load_state({base-path})
 		It returns 1, if the cache script is old or invalid or not
 		found.
 >
-	if dein#min#load_state(path)
-	  call dein#begin(path)
-	  " My plugins here:
-	  " ...
-	  call dein#end()
-	  call dein#save_state()
-	endif
+		if dein#min#load_state(path)
+		  call dein#begin(path)
+		  " My plugins here:
+		  " ...
+		  call dein#end()
+		  call dein#save_state()
+		endif
 <
 							*dein#load_toml()*
 dein#load_toml({filename}, [{options}])
@@ -366,15 +366,15 @@ dein#load_toml({filename}, [{options}])
 
 		For toml file formats: |dein-toml|
 >
-	let s:toml = '~/test_vim/lazy.toml'
-	if dein#load_state('~/test_vim/.cache/dein')
-	  call dein#begin('~/test_vim/.cache/dein')
+		let s:toml = '~/test_vim/lazy.toml'
+		if dein#load_state('~/test_vim/.cache/dein')
+		  call dein#begin('~/test_vim/.cache/dein')
 
-	  call dein#load_toml(s:toml, #{ lazy: 1 })
+		  call dein#load_toml(s:toml, #{ lazy: 1 })
 
-	  call dein#end()
-	  call dein#save_state()
-	endif
+		  call dein#end()
+		  call dein#save_state()
+		endif
 <
 							*dein#local()*
 dein#local({directory}, [{options}, [{names}]])
@@ -469,13 +469,15 @@ dein#set_hook({plugins}, {hook-name}, {hook})
 		Note: If it is |Funcref|, it does not work in
 		|dein#load_state()| / |dein#save_state()| block.
 >
-	call dein#add('Shougo/neosnippet.vim', #{ lazy: 1 })
-	function! Foo() abort
-	endfunction
-	" Does not work for dein#load_state()/dein#save_state() block
-	call dein#set_hook('neosnippet.vim', 'hook_source', function('Foo'))
-	" Does work for dein#load_state()/dein#save_state() block
-	call dein#set_hook('neosnippet.vim', 'hook_source', 'echomsg "foo"')
+		call dein#add('Shougo/neosnippet.vim', #{ lazy: 1 })
+		function! Foo() abort
+		endfunction
+		" Does not work for dein#load_state()/dein#save_state() block
+		call dein#set_hook('neosnippet.vim',
+		\ 'hook_source', function('Foo'))
+		" Does work for dein#load_state()/dein#save_state() block
+		call dein#set_hook('neosnippet.vim',
+		\ 'hook_source', 'echomsg "foo"')
 <
 							*dein#source()*
 dein#source([{plugins}])
@@ -907,14 +909,18 @@ on_map		(Dictionary) or (List) or (String)
 		Note: You can use plugin prefix mappings.
 		For example, you can use "<Plug>(ref-" instead of
 		"<Plug>(ref-back)" and so on.
+
 		For example: >
+
 		call dein#add('Shougo/deol.nvim',
 		\ #{ on_map: #{ n: '<Plug>' } })
 <
 		Note: You can use "<Plug>" keyword as {mapping}. If
 		{mapping} is "<Plug>", "<Plug>({normalized_name}" is
 		used.
+
 		For example: >
+
 		" It is same as "'on_map': '<Plug>(anzu'"
 		call dein#add('osyo-manga/vim-anzu', #{ on_map: '<Plug>' })
 
@@ -929,7 +935,9 @@ on_map		(Dictionary) or (List) or (String)
 		\ #{ on_map: '<Plug>(EasyAlign)' })
 <
 		Note: You cannot use lazy <Plug> mappings twice.
+
 		For example: >
+
 		call dein#add('osyo-manga/vim-anzu',
 		\ #{ on_map: '<Plug>(anzu-' }
 		" Not working!!
@@ -987,6 +995,7 @@ script_type	(String)
 		categorized plugins.
 		For example: "indent", "plugin", "ftplugin", ...
 		Note: You must not specify it for categorized plugins.
+
 		Example:
 >
 		call dein#add(
@@ -1075,7 +1084,7 @@ hook_post_source (String) or (Function)
 		Note: In Vim initializing, you must call the
 		"hook_post_source" hooks manually in |VimEnter| if needed.
 >
-	autocmd VimEnter * call dein#call_hook('post_source')
+		autocmd VimEnter * call dein#call_hook('post_source')
 <
 					*dein-options-hook_post_update*
 hook_post_update (String) or (Function)
@@ -1164,7 +1173,7 @@ TOML							*dein-toml*
 		  setl formatoptions-=ro | setl formatoptions+=mMBl
 		'''
 		html = '''
-		setlocal includeexpr=substitute(v:fname,'^\\/','','')
+		setlocal includeexpr=v:fname->substitute('^\\/','','')
 		setlocal path+=./;/
 		'''
 
@@ -1582,7 +1591,7 @@ Q: I don't want to call |dein#recache_runtimepath()| manually.
 A: Please specify your vimrc path to |dein#begin()| 2nd argument.
 It detects the vimrc changes.
 >
-	call dein#begin(path, [expand('<sfile>')])
+	call dein#begin(path, ['<sfile>'->expand()])
 <
 Q: I need the wrapper commands for dein.vim.
 
