@@ -290,9 +290,9 @@ function! dein#install#_reinstall(plugins) abort
   for plugin in plugins
     " Remove the plugin
     if plugin.type ==# 'none'
-          \ || get(plugin, 'local', 0)
+          \ || plugin->get('local', 0)
           \ || (plugin.sourced &&
-          \     index(['dein'], plugin.normalized_name) >= 0)
+          \     ['dein']->index(plugin.normalized_name) >= 0)
       call dein#util#_error(
             \ printf('|%s| Cannot reinstall the plugin!', plugin.name))
       continue
@@ -301,7 +301,7 @@ function! dein#install#_reinstall(plugins) abort
     " Reinstall.
     call s:print_progress_message(printf('|%s| Reinstalling...', plugin.name))
 
-    if isdirectory(plugin.path)
+    if plugin.path->isdirectory()
       call dein#install#_rm(plugin.path)
     endif
   endfor
@@ -314,11 +314,11 @@ function! dein#install#_direct_install(repo, options) abort
     return
   endif
 
-  let options = copy(a:options)
+  let options = a:options->copy()
   let options.merged = 0
 
   let plugin = dein#add(a:repo, options)
-  if empty(plugin)
+  if plugin->empty()
     return
   endif
 
@@ -328,11 +328,11 @@ function! dein#install#_direct_install(repo, options) abort
   " Add to direct_install.vim
   let file = dein#get_direct_plugins_path()
   let line = printf('call dein#add(%s, %s)',
-        \ string(a:repo), string(options))
-  if !filereadable(file)
+        \ a:repo->string(), options->string())
+  if !(file->filereadable())
     call dein#util#_safe_writefile([line], file)
   else
-    call dein#util#_safe_writefile(add(readfile(file), line), file)
+    call dein#util#_safe_writefile(file->readfile()->add(line), file)
   endif
 endfunction
 function! dein#install#_rollback(date, plugins) abort
@@ -342,8 +342,8 @@ function! dein#install#_rollback(date, plugins) abort
   endif
 
   let glob = s:get_rollback_directory() . '/' . a:date . '*'
-  let rollbacks = reverse(sort(glob(glob, v:true, v:true)))
-  if empty(rollbacks)
+  let rollbacks = glob->glob(v:true, v:true)->sort()->reverse()
+  if rollbacks->empty()
     return
   endif
 
@@ -360,15 +360,15 @@ function! dein#install#_recache_runtimepath() abort
   " Clear runtime path.
   call s:clear_runtimepath()
 
-  let plugins = values(dein#get())
+  let plugins = dein#get()->values()
 
-  let merged_plugins = filter(copy(plugins), { _, val -> val.merged })
-  let lazy_merged_plugins = filter(copy(merged_plugins),
+  let merged_plugins = plugins->copy()->filter({ _, val -> val.merged })
+  let lazy_merged_plugins = merged_plugins->copy()->filter(
         \ { _, val -> val.lazy })
-  let nolazy_merged_plugins = filter(copy(merged_plugins),
+  let nolazy_merged_plugins = merged_plugins->copy()->filter(
         \ { _, val -> !val.lazy })
-  let merge_ftdetect_plugins = filter(copy(plugins),
-        \ { _, val -> get(val, 'merge_ftdetect', 0)
+  let merge_ftdetect_plugins = plugins->copy()->filter(
+        \ { _, val -> val->get('merge_ftdetect', 0)
         \             || (val.merged && !val.lazy) })
 
   call s:copy_files(lazy_merged_plugins, '')
@@ -392,19 +392,20 @@ function! dein#install#_recache_runtimepath() abort
   call s:merge_files(merge_ftdetect_plugins, 'ftdetect')
   call s:merge_files(merge_ftdetect_plugins, 'after/ftdetect')
 
-  if get(g:, 'dein#auto_remote_plugins', v:true)
+  if g:->get('dein#auto_remote_plugins', v:true)
     silent call dein#remote_plugins()
   endif
 
   call dein#call_hook('post_source')
 
   call dein#install#_save_rollback(
-        \ s:get_rollback_directory() . '/' . strftime('%Y%m%d%H%M%S'), [])
+        \ s:get_rollback_directory() . '/' . '%Y%m%d%H%M%S'->strftime(), [])
 
   call dein#util#_clear_state()
 
-  call s:log(strftime('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'))
-  call s:log('recache_runtimepath: ' . split(reltimestr(reltime(start)))[0])
+  call s:log('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'->strftime())
+  call s:log('recache_runtimepath: ' .
+        \ start->reltime()->reltimestr()->split()[0])
 endfunction
 function! s:clear_runtimepath() abort
   if dein#util#_get_cache_path() ==# ''
@@ -430,9 +431,10 @@ function! s:helptags() abort
   try
     let tags = dein#util#_get_runtime_path() . '/doc'
     call dein#util#_safe_mkdir(tags)
-    call s:copy_files(filter(values(dein#get()),
-          \ { _, val -> !val.merged && !get(val, 'local', v:false) }), 'doc')
-    silent execute 'helptags' fnameescape(tags)
+    call s:copy_files(dein#get()->values()->filter(
+          \ { _, val -> !val.merged &&
+          \      !(val->get('local', v:false)) }), 'doc')
+    silent execute 'helptags' tags->fnameescape()
   catch /^Vim(helptags):E151:/
     " Ignore an error that occurs when there is no help file
   catch
@@ -443,10 +445,11 @@ function! s:helptags() abort
 endfunction
 function! s:copy_files(plugins, directory) abort
   let directory = (a:directory ==# '' ? '' : '/' . a:directory)
-  let srcs = filter(map(copy(a:plugins), { _, val -> val.rtp . directory }),
-        \ { _, val -> isdirectory(val) })
+  let srcs = a:plugins->copy()->map(
+        \ { _, val -> val.rtp . directory })->filter(
+        \ { _, val -> val->isdirectory() })
   let stride = 50
-  for start in range(0, len(srcs), stride)
+  for start in range(0, srcs->len(), stride)
     call dein#install#_copy_directories(srcs[start : start + stride-1],
           \ dein#util#_get_runtime_path() . directory)
   endfor
@@ -455,29 +458,29 @@ function! s:merge_files(plugins, directory) abort
   let vimfiles = []
   let luafiles = []
   for plugin in a:plugins
-    for file in filter(globpath(
-          \ plugin.rtp, a:directory.'/**/*', v:true, v:true),
-          \ { _, val -> !isdirectory(val) })
-      if fnamemodify(file, ':e') ==# 'vim'
-        let vimfiles += readfile(file, ':t')
-      elseif fnamemodify(file, ':e') ==# 'lua'
-        let luafiles += readfile(file, ':t')
+    for file in plugin.rtp->globpath(
+          \ a:directory.'/**/*', v:true, v:true)->filter(
+          \ { _, val -> !(val->isdirectory()) })
+      if file->fnamemodify(':e') ==# 'vim'
+        let vimfiles += file->readfile(':t')
+      elseif file->fnamemodify(':e') ==# 'lua'
+        let luafiles += file->readfile(':t')
       endif
     endfor
   endfor
 
-  if !empty(vimfiles)
+  if !(vimfiles->empty())
     call dein#util#_cache_writefile(vimfiles,
           \ printf('.dein/%s/%s.vim', a:directory, a:directory))
   endif
-  if !empty(luafiles)
+  if !(luafiles->empty())
     call dein#util#_cache_writefile(luafiles,
           \ printf('.dein/%s/%s.lua', a:directory, a:directory))
   endif
 endfunction
 function! dein#install#_save_rollback(rollbackfile, plugins) abort
   let revisions = {}
-  for plugin in filter(dein#util#_get_plugins(a:plugins),
+  for plugin in dein#util#_get_plugins(a:plugins)->filter(
         \ { _, val -> s:check_rollback(val) })
     let rev = s:get_revision_number(plugin)
     if rev !=# ''
@@ -486,19 +489,18 @@ function! dein#install#_save_rollback(rollbackfile, plugins) abort
   endfor
 
   call dein#util#_safe_writefile(
-        \ [json_encode(revisions)], expand(a:rollbackfile))
+        \ [revisions->json_encode()], a:rollbackfile->expand())
 endfunction
 function! dein#install#_load_rollback(rollbackfile, plugins) abort
-  let revisions = json_decode(readfile(a:rollbackfile)[0])
+  let revisions = a:rollbackfile->readfile()[0]->json_decode()
 
   let plugins = dein#util#_get_plugins(a:plugins)
-  call filter(plugins, { _, val -> has_key(revisions, val.name)
-        \ && has_key(dein#util#_get_type(val.type),
-        \            'get_rollback_command')
+  call filter(plugins, { _, val -> revisions->has_key(val.name)
+        \ && dein#util#_get_type(val.type)->has_key('get_rollback_command')
         \ && s:check_rollback(val)
         \ && s:get_revision_number(val) !=# revisions[val.name]
         \ })
-  if empty(plugins)
+  if plugins->empty()
     return
   endif
 
@@ -510,7 +512,8 @@ function! dein#install#_load_rollback(rollbackfile, plugins) abort
   endfor
 
   call dein#recache_runtimepath()
-  call s:error('Rollback to '.fnamemodify(a:rollbackfile, ':t').' version.')
+  call s:error('Rollback to ' .
+        \ a:rollbackfile->fnamemodify(':t') . ' version.')
 endfunction
 function! s:get_rollback_directory() abort
   let parent = printf('%s/rollbacks/%s',
@@ -520,7 +523,7 @@ function! s:get_rollback_directory() abort
   return parent
 endfunction
 function! s:check_rollback(plugin) abort
-  return !has_key(a:plugin, 'local') && !get(a:plugin, 'frozen', 0)
+  return !(a:plugin->has_key('local')) && !(a:plugin->get('frozen', 0))
 endfunction
 
 function! dein#install#_get_default_ftplugin() abort
@@ -536,17 +539,17 @@ function! dein#install#_get_default_ftplugin() abort
         \ 'augroup END',
         \ '',
         \ 'function! s:ftplugin()',
-        \ '  if exists("b:undo_ftplugin")',
+        \ '  if "b:undo_ftplugin"->exists()',
         \ '    silent! execute b:undo_ftplugin',
         \ '    unlet! b:undo_ftplugin b:did_ftplugin',
         \ '  endif',
         \ '',
-        \ '  let filetype = expand("<amatch>")',
+        \ '  let filetype = "<amatch>"->expand()',
         \ '  if filetype !=# ""',
-        \ '    if &cpoptions =~# "S" && exists("b:did_ftplugin")',
+        \ '    if &cpoptions =~# "S" && "b:did_ftplugin"->exists()',
         \ '      unlet b:did_ftplugin',
         \ '    endif',
-        \ '    for ft in split(filetype, ''\.'')',
+        \ '    for ft in filetype->split(''\.'')',
         \ '      execute "runtime! ftplugin/" . ft . ".vim"',
         \ '      \ "ftplugin/" . ft . "_*.vim"',
         \ '      \ "ftplugin/" . ft . "/*.vim"',
@@ -563,7 +566,7 @@ function! dein#install#_get_default_ftplugin() abort
         \]
 endfunction
 function! s:generate_ftplugin() abort
-  if empty(g:dein#ftplugin)
+  if g:dein#ftplugin->empty()
     return
   endif
 
@@ -573,18 +576,18 @@ function! s:generate_ftplugin() abort
 
   " Merge g:dein#ftplugin
   let ftplugin = {}
-  for [key, string] in items(g:dein#ftplugin)
-    for ft in (key ==# '_' ? ['_'] : split(key, '_'))
-      if !has_key(ftplugin, ft)
+  for [key, string] in g:dein#ftplugin->items()
+    for ft in (key ==# '_' ? ['_'] : key->split('_'))
+      if !(ftplugin->has_key(ft))
         let ftplugin[ft] = (ft ==# '_') ? [] : [
-              \ "if exists('b:undo_ftplugin')",
+              \ "if 'b:undo_ftplugin'->exists()",
               \ "  let b:undo_ftplugin .= '|'",
               \ 'else',
               \ "  let b:undo_ftplugin = ''",
               \ 'endif',
               \ ]
       endif
-      let ftplugin[ft] += split(string, '\n')
+      let ftplugin[ft] += string->split('\n')
     endfor
   endfor
 
@@ -592,11 +595,11 @@ function! s:generate_ftplugin() abort
   call dein#util#_safe_writefile(
         \ dein#install#_get_default_ftplugin() + [
         \ 'function! s:after_ftplugin()',
-        \ ] + get(ftplugin, '_', []) + ['endfunction'],
+        \ ] + ftplugin->get('_', []) + ['endfunction'],
         \ dein#util#_get_runtime_path() . '/after/ftplugin.vim')
 
   " Generate after/ftplugin
-  for [filetype, list] in filter(items(ftplugin),
+  for [filetype, list] in ftplugin->items()->filter(
         \ { _, val -> val[0] !=# '_' })
     call dein#util#_safe_writefile(
           \ list, printf('%s/%s.vim', after, filetype))
@@ -608,7 +611,7 @@ function! dein#install#_is_async() abort
 endfunction
 
 function! dein#install#_polling() abort
-  if exists('+guioptions')
+  if '+guioptions'->exists()
     " NOTE: guioptions-! does not work in async state
     let save_guioptions = &guioptions
     set guioptions-=!
@@ -616,7 +619,7 @@ function! dein#install#_polling() abort
 
   call s:install_async(s:global_context)
 
-  if exists('+guioptions')
+  if '+guioptions'->exists()
     let &guioptions = save_guioptions
   endif
 endfunction
@@ -632,34 +635,34 @@ function! dein#install#_remote_plugins() abort
     return
   endif
 
-  if exists(':UpdateRemotePlugins') != 2
+  if ':UpdateRemotePlugins'->exists() != 2
     return
   endif
 
   " Load not loaded neovim remote plugins
-  let remote_plugins = filter(values(dein#get()), { _, val ->
-        \  isdirectory(val.rtp . '/rplugin') && !val.sourced &&
-        \  !empty(glob(val.rtp . '/rplugin/*/*/__init__.py', 1, 1))
+  let remote_plugins = dein#get()->values()->filter({ _, val ->
+        \  (val.rtp . '/rplugin')->isdirectory() && !val.sourced &&
+        \  !((val.rtp . '/rplugin/*/*/__init__.py')->glob(1, 1)->empty())
         \ })
-  if empty(remote_plugins)
+  if remote_plugins->empty()
     return
   endif
 
   call dein#autoload#_source(remote_plugins)
 
   call s:log('loaded remote plugins: ' .
-        \ string(map(copy(remote_plugins), { _, val -> val.name })))
+        \ remote_plugins->copy()->map({ _, val -> val.name }))->string()
 
   let &runtimepath = dein#util#_join_rtp(dein#util#_uniq(
         \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
 
-  let result = execute('UpdateRemotePlugins', '')
+  let result = 'UpdateRemotePlugins'->execute('')
   call s:log(result)
 endfunction
 
 function! dein#install#_each(cmd, plugins) abort
   let plugins = filter(dein#util#_get_plugins(a:plugins),
-        \ { _, val -> isdirectory(val.path) })
+        \ { _, val -> val.path->isdirectory() })
 
   let global_context_save = s:global_context
 
@@ -688,8 +691,8 @@ function! dein#install#_each(cmd, plugins) abort
 endfunction
 function! dein#install#_build(plugins) abort
   let error = 0
-  for plugin in filter(dein#util#_get_plugins(a:plugins),
-        \ { _, val -> isdirectory(val.path) && has_key(val, 'build') })
+  for plugin in dein#util#_get_plugins(a:plugins)->filter(
+        \ { _, val -> val.path->isdirectory() && val->has_key('build') })
     call s:print_progress_message('Building: ' . plugin.name)
     if dein#install#_each(plugin.build, plugin)
       let error = 1
@@ -715,53 +718,53 @@ function! dein#install#_get_failed_plugins() abort
 endfunction
 
 function! s:get_progress_message(name, number, max) abort
-  return printf('(%'.len(a:max).'d/%'.len(a:max).'d) [%s%s] %s',
+  return printf('(%' . a:max->len() . 'd/%' . a:max->len() . 'd) [%s%s] %s',
         \ a:number, a:max,
-        \ repeat('+', (a:number*20/a:max)),
-        \ repeat('-', 20 - (a:number*20/a:max)),
+        \ '+'->repeat(a:number * 20 / a:max),
+        \ '-'->repeat(20 - (a:number * 20 / a:max)),
         \ a:name)
 endfunction
 function! s:get_plugin_message(plugin, number, max, message) abort
-  return printf('(%'.len(a:max).'d/%d) |%-20s| %s',
+  return printf('(%' . a:max->len() . 'd/%d) |%-20s| %s',
         \ a:number, a:max, a:plugin.name, a:message)
 endfunction
 function! s:get_short_message(plugin, number, max, message) abort
-  return printf('(%'.len(a:max).'d/%d) %s', a:number, a:max, a:message)
+  return printf('(%' . a:max->len() . 'd/%d) %s', a:number, a:max, a:message)
 endfunction
 function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
   let type = dein#util#_get_type(a:plugin.type)
 
-  if has_key(type, 'get_sync_command')
+  if type->has_key('get_sync_command')
     let cmd = type.get_sync_command(a:plugin)
   else
     return ['', '']
   endif
 
-  if empty(cmd)
+  if cmd->empty()
     return ['', '']
   endif
 
-  let message = s:get_plugin_message(a:plugin, a:number, a:max, string(cmd))
+  let message = s:get_plugin_message(a:plugin, a:number, a:max, cmd->string())
 
   return [cmd, message]
 endfunction
 function! s:get_revision_number(plugin) abort
-  if !isdirectory(a:plugin.path)
+  if !(a:plugin.path->isdirectory())
     return ''
   endif
 
   let type = dein#util#_get_type(a:plugin.type)
 
-  if has_key(type, 'get_revision_number')
+  if type->has_key('get_revision_number')
     return type.get_revision_number(a:plugin)
   endif
 
-  if !has_key(type, 'get_revision_number_command')
+  if !(type->has_key('get_revision_number_command'))
     return ''
   endif
 
   let cmd = type.get_revision_number_command(a:plugin)
-  if empty(cmd)
+  if cmd->empty()
     return ''
   endif
 
@@ -782,9 +785,9 @@ endfunction
 function! s:get_updated_log_message(plugin, new_rev, old_rev) abort
   let type = dein#util#_get_type(a:plugin.type)
 
-  let cmd = has_key(type, 'get_log_command') ?
+  let cmd = type->has_key('get_log_command') ?
         \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
-  let log = empty(cmd) ? '' : s:system_cd(cmd, a:plugin.path)
+  let log = cmd->empty() ? '' : s:system_cd(cmd, a:plugin.path)
   return log !=# '' ? log :
         \            (a:old_rev  == a:new_rev) ? ''
         \            : printf('%s -> %s', a:old_rev, a:new_rev)
@@ -795,23 +798,23 @@ function! s:lock_revision(process, context) abort
   let plugin = a:process.plugin
 
   let type = dein#util#_get_type(plugin.type)
-  if !has_key(type, 'get_revision_lock_command')
+  if !(type->has_key('get_revision_lock_command'))
     return 0
   endif
 
   let cmd = type.get_revision_lock_command(plugin)
 
-  if empty(cmd)
+  if cmd->empty()
     " Skipped.
     return 0
-  elseif type(cmd) == v:t_string && cmd =~# '^E: '
+  elseif cmd->type() == v:t_string && cmd =~# '^E: '
     " Errored.
     call s:error(plugin.path)
     call s:error(cmd[3:])
     return -1
   endif
 
-  if get(plugin, 'rev', '') !=# ''
+  if plugin->get('rev', '') !=# ''
     call s:log(s:get_plugin_message(plugin, num, max, 'Locked'))
   endif
 
@@ -831,7 +834,7 @@ function! s:get_updated_message(context, plugins) abort
   endif
 
   return "Updated plugins:\n".
-        \ join(map(copy(a:plugins),
+        \ a:plugins->copy()->map(
         \ { _, val -> '  ' . val.name . (val.commit_count == 0 ? ''
         \                     : printf('(%d change%s)',
         \                              val.commit_count,
@@ -839,30 +842,30 @@ function! s:get_updated_message(context, plugins) abort
         \    . ((val.old_rev !=# ''
         \        && val.uri =~# '^\h\w*://github.com/') ? "\n"
         \      . printf('    %s/compare/%s...%s',
-        \        substitute(substitute(val.uri, '\.git$', '', ''),
+        \        val.uri->substitute('\.git$', '', '')->substitute(
         \          '^\h\w*:', 'https:', ''),
         \        val.old_rev, val.new_rev) : '')
-        \ }) , "\n")
+        \ })->join("\n")
 endfunction
 function! s:get_errored_message(plugins) abort
-  if empty(a:plugins)
+  if a:plugins->empty()
     return ''
   endif
 
-  let msg = "Error installing plugins:\n".join(
-        \ map(copy(a:plugins), { _, val -> '  ' . val.name }), "\n")
+  let msg = "Error installing plugins:\n".
+        \ a:plugins->copy()->map({ _, val -> '  ' . val.name })->join("\n")
   let msg .= "\n"
   let msg .= "Please read the error message log with the :message command.\n"
 
   return msg
 endfunction
 function! s:get_breaking_message(plugins) abort
-  if empty(a:plugins)
+  if a:plugins->empty()
     return ''
   endif
 
   let msg = "Breaking updated plugins:\n".join(
-        \ map(copy(a:plugins), {
+        \ a:plugins->copy()->map({
         \   _, val -> printf("  %s\n%s", val.name, v:val.log_message)
         \ }), "\n")
   let msg .= "\n"
@@ -874,7 +877,7 @@ endfunction
 function! s:check_diff(plugins) abort
   for plugin in a:plugins
     let type = dein#util#_get_type(plugin.type)
-    if !has_key(type, 'get_diff_command') || plugin.old_rev ==# ''
+    if !(type->has_key('get_diff_command')) || plugin.old_rev ==# ''
       continue
     endif
 
@@ -894,19 +897,19 @@ function! s:check_diff(plugins) abort
 endfunction
 function! s:check_diff_on_out(data) abort
   let bufname = 'dein-diff'
-  if !bufexists(bufname)
-    let bufnr = bufadd(bufname)
+  if !(bufname->bufexists())
+    let bufnr = bufname->bufadd()
   else
-    let bufnr = bufnr(bufname)
+    let bufnr = bufname->bufnr()
   endif
 
-  if bufwinnr(bufnr) < 0
+  if bufnr->bufwinnr() < 0
     let cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile nolist'
           \ . '| syntax enable'
-    execute printf('sbuffer +%s', escape(cmd, ' ')) bufnr
+    execute printf('sbuffer +%s', cmd->escape(' ')) bufnr
   endif
 
-  let current = getbufline(bufnr, '$')[0]
+  let current = bufnr->getbufline('$')[0]
   call setbufline(bufnr, '$', current . a:data[0])
   call appendbufline(bufnr, '$', a:data[1:])
 endfunction
@@ -914,12 +917,12 @@ endfunction
 
 " Helper functions
 function! dein#install#_cd(path) abort
-  if !isdirectory(a:path)
+  if !(a:path->isdirectory())
     return
   endif
 
   try
-    noautocmd execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(a:path)
+    noautocmd execute (haslocaldir() ? 'lcd' : 'cd') a:path->fnameescape()
   catch
     call s:error('Error cd to: ' . a:path)
     call s:error('Current directory: ' . getcwd())
@@ -934,7 +937,7 @@ endfunction
 let s:job_system = {}
 function! s:job_system.on_out(data) abort
   let candidates = s:job_system.candidates
-  if empty(candidates)
+  if candidates->empty()
     call add(candidates, a:data[0])
   else
     let candidates[-1] .= a:data[0]
@@ -951,7 +954,7 @@ function! s:job_system.system(cmd) abort
         \ })
   let s:job_system.status = job.wait(
         \ g:dein#install_process_timeout * 1000)
-  return substitute(join(s:job_system.candidates, "\n"), '\r\n', '\n', 'g')
+  return s:job_system.candidates->join("\n")->substitute('\r\n', '\n', 'g')
 endfunction
 function! dein#install#_status() abort
   return s:job_system.status
@@ -977,7 +980,7 @@ function! s:job_execute.on_out(data) abort
   endfor
 
   let candidates = s:job_execute.candidates
-  if empty(candidates)
+  if candidates->empty()
     call add(candidates, a:data[0])
   else
     let candidates[-1] .= a:data[0]
@@ -989,7 +992,7 @@ function! s:job_execute.execute(cmd) abort
 
   let job = s:get_job().start(
         \ s:convert_args(a:cmd),
-        \ {'on_stdout': self.on_out})
+        \ #{ on_stdout: self.on_out} )
 
   return job.wait(g:dein#install_process_timeout * 1000)
 endfunction
@@ -999,10 +1002,10 @@ function! dein#install#_system_bg(command) abort
         \ s:convert_args(a:command),
         \ #{
         \   on_stdout {
-        \     v -> map(copy(v), { _, val -> s:log(val) })
+        \     v -> v->copy()->map({ _, val -> s:log(val) })
         \   },
         \   on_stderr: {
-        \     v -> map(copy(v), { _, val -> dein#util#_error(val) })
+        \     v -> v->copy()->map({ _, val -> dein#util#_error(val) })
         \   },
         \ })
   return job
