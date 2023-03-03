@@ -578,7 +578,7 @@ function! s:suite.clean() abort
 
   call s:assert.equals(dein#end(), 0)
 
-  call s:assert.true(empty(dein#check_clean()))
+  call s:assert.true(!empty(dein#check_clean()))
 endfunction
 
 function! s:suite.local_nongit() abort

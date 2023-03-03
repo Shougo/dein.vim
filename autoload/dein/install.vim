@@ -182,9 +182,9 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
       let result = process.candidates[0]
       try
         let json = result->json_decode()
-        let results += json['data']->values()->filter(
-              \ { _, val -> val->type() == v:t_dict
-              \             && val->has_key('pushedAt') })
+        let results += json['data']->values()
+              \ ->filter({ _, val -> val->type() == v:t_dict
+              \          && val->has_key('pushedAt') })
       catch
         call s:error('json output decode error: ' + result->string())
       endtry
@@ -363,13 +363,13 @@ function! dein#install#_recache_runtimepath() abort
   let plugins = dein#get()->values()
 
   let merged_plugins = plugins->copy()->filter({ _, val -> val.merged })
-  let lazy_merged_plugins = merged_plugins->copy()->filter(
-        \ { _, val -> val.lazy })
-  let nolazy_merged_plugins = merged_plugins->copy()->filter(
-        \ { _, val -> !val.lazy })
-  let merge_ftdetect_plugins = plugins->copy()->filter(
-        \ { _, val -> val->get('merge_ftdetect', 0)
-        \             || (val.merged && !val.lazy) })
+  let lazy_merged_plugins = merged_plugins->copy()
+        \ ->filter({ _, val -> val.lazy })
+  let nolazy_merged_plugins = merged_plugins->copy()
+        \ ->filter({ _, val -> !val.lazy })
+  let merge_ftdetect_plugins = plugins->copy()
+        \ ->filter({ _, val -> val->get('merge_ftdetect', 0)
+        \          || (val.merged && !val.lazy) })
 
   call s:copy_files(lazy_merged_plugins, '')
 
@@ -431,8 +431,8 @@ function! s:helptags() abort
   try
     let tags = dein#util#_get_runtime_path() . '/doc'
     call dein#util#_safe_mkdir(tags)
-    call s:copy_files(dein#get()->values()->filter(
-          \ { _, val -> !val.merged &&
+    call s:copy_files(dein#get()->values()
+          \ ->filter({ _, val -> !val.merged &&
           \      !(val->get('local', v:false)) }), 'doc')
     silent execute 'helptags' tags->fnameescape()
   catch /^Vim(helptags):E151:/
@@ -445,9 +445,9 @@ function! s:helptags() abort
 endfunction
 function! s:copy_files(plugins, directory) abort
   let directory = (a:directory ==# '' ? '' : '/' . a:directory)
-  let srcs = a:plugins->copy()->map(
-        \ { _, val -> val.rtp . directory })->filter(
-        \ { _, val -> val->isdirectory() })
+  let srcs = a:plugins->copy()
+        \ ->map({ _, val -> val.rtp . directory })
+        \ ->filter({ _, val -> val->isdirectory() })
   let stride = 50
   for start in range(0, srcs->len(), stride)
     call dein#install#_copy_directories(srcs[start : start + stride-1],
@@ -458,9 +458,9 @@ function! s:merge_files(plugins, directory) abort
   let vimfiles = []
   let luafiles = []
   for plugin in a:plugins
-    for file in plugin.rtp->globpath(
-          \ a:directory.'/**/*', v:true, v:true)->filter(
-          \ { _, val -> !(val->isdirectory()) })
+    for file in (a:directory.'/**/*')
+          \ ->globpath(plugin.rtp, v:true, v:true)
+          \ ->filter({ _, val -> !(val->isdirectory()) })
       if file->fnamemodify(':e') ==# 'vim'
         let vimfiles += file->readfile(':t')
       elseif file->fnamemodify(':e') ==# 'lua'
@@ -480,8 +480,8 @@ function! s:merge_files(plugins, directory) abort
 endfunction
 function! dein#install#_save_rollback(rollbackfile, plugins) abort
   let revisions = {}
-  for plugin in dein#util#_get_plugins(a:plugins)->filter(
-        \ { _, val -> s:check_rollback(val) })
+  for plugin in dein#util#_get_plugins(a:plugins)
+        \ ->filter({ _, val -> s:check_rollback(val) })
     let rev = s:get_revision_number(plugin)
     if rev !=# ''
       let revisions[plugin.name] = rev
@@ -599,8 +599,8 @@ function! s:generate_ftplugin() abort
         \ dein#util#_get_runtime_path() . '/after/ftplugin.vim')
 
   " Generate after/ftplugin
-  for [filetype, list] in ftplugin->items()->filter(
-        \ { _, val -> val[0] !=# '_' })
+  for [filetype, list] in ftplugin->items()
+        \ ->filter({ _, val -> val[0] !=# '_' })
     call dein#util#_safe_writefile(
           \ list, printf('%s/%s.vim', after, filetype))
   endfor
@@ -640,9 +640,10 @@ function! dein#install#_remote_plugins() abort
   endif
 
   " Load not loaded neovim remote plugins
-  let remote_plugins = dein#get()->values()->filter({ _, val ->
-        \  (val.rtp . '/rplugin')->isdirectory() && !val.sourced &&
-        \  !((val.rtp . '/rplugin/*/*/__init__.py')->glob(1, 1)->empty())
+  let remote_plugins = dein#get()->values()
+        \ ->filter({ _, val ->
+        \  (val.rtp . '/rplugin')->isdirectory() && !val.sourced
+        \  && !((val.rtp . '/rplugin/*/*/__init__.py')->glob(1, 1)->empty())
         \ })
   if remote_plugins->empty()
     return
@@ -651,7 +652,7 @@ function! dein#install#_remote_plugins() abort
   call dein#autoload#_source(remote_plugins)
 
   call s:log('loaded remote plugins: ' .
-        \ remote_plugins->copy()->map({ _, val -> val.name }))->string()
+        \ remote_plugins->copy()->map({ _, val -> val.name })->string())
 
   let &runtimepath = dein#util#_join_rtp(dein#util#_uniq(
         \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
@@ -691,8 +692,9 @@ function! dein#install#_each(cmd, plugins) abort
 endfunction
 function! dein#install#_build(plugins) abort
   let error = 0
-  for plugin in dein#util#_get_plugins(a:plugins)->filter(
-        \ { _, val -> val.path->isdirectory() && val->has_key('build') })
+  for plugin in dein#util#_get_plugins(a:plugins)
+        \ ->filter({ _, val ->
+        \          val.path->isdirectory() && val->has_key('build') })
     call s:print_progress_message('Building: ' . plugin.name)
     if dein#install#_each(plugin.build, plugin)
       let error = 1
@@ -834,16 +836,16 @@ function! s:get_updated_message(context, plugins) abort
   endif
 
   return "Updated plugins:\n".
-        \ a:plugins->copy()->map(
-        \ { _, val -> '  ' . val.name . (val.commit_count == 0 ? ''
+        \ a:plugins->copy()
+        \ ->map({ _, val -> '  ' . val.name . (val.commit_count == 0 ? ''
         \                     : printf('(%d change%s)',
         \                              val.commit_count,
         \                              (val.commit_count == 1 ? '' : 's')))
         \    . ((val.old_rev !=# ''
         \        && val.uri =~# '^\h\w*://github.com/') ? "\n"
         \      . printf('    %s/compare/%s...%s',
-        \        val.uri->substitute('\.git$', '', '')->substitute(
-        \          '^\h\w*:', 'https:', ''),
+        \        val.uri->substitute('\.git$', '', '')
+        \        ->substitute('^\h\w*:', 'https:', ''),
         \        val.old_rev, val.new_rev) : '')
         \ })->join("\n")
 endfunction
@@ -865,8 +867,8 @@ function! s:get_breaking_message(plugins) abort
   endif
 
   let msg = "Breaking updated plugins:\n".join(
-        \ a:plugins->copy()->map({
-        \   _, val -> printf("  %s\n%s", val.name, v:val.log_message)
+        \ a:plugins->copy()
+        \ ->map({ _, val -> printf("  %s\n%s", val.name, v:val.log_message)
         \ }), "\n")
   let msg .= "\n"
   let msg .= "Please read the plugins documentation."
@@ -1048,9 +1050,9 @@ function! dein#install#_copy_directories(srcs, dest) abort
     call dein#util#_error('Please enable "g:dein#install_copy_vim".')
     return 1
   else " Not Windows
-    let srcs = a:srcs->copy()->filter(
-          \ { _, val -> len(glob(val . '/*', v:true, v:true)) })->map(
-          \ { _, val -> shellescape(val . '/') })
+    let srcs = a:srcs->copy()
+          \ ->filter({ _, val -> len(glob(val . '/*', v:true, v:true)) })
+          \ ->map({ _, val -> shellescape(val . '/') })
     let is_rsync = 'rsync'->executable()
     if is_rsync
       let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
@@ -1168,8 +1170,8 @@ function! dein#install#_post_sync(plugins) abort
   call dein#install#_deno_cache(a:plugins)
 
   " Execute done_update hooks
-  let done_update_plugins = dein#util#_get_plugins(a:plugins)->filter(
-        \ { _, val -> val->has_key('hook_done_update') })
+  let done_update_plugins = dein#util#_get_plugins(a:plugins)
+        \ ->filter({ _, val -> val->has_key('hook_done_update') })
   if !(done_update_plugins->empty())
     if has('vim_starting')
       let s:done_updated_plugins = done_update_plugins
@@ -1307,8 +1309,8 @@ endfunction
 function! s:done(context) abort
   call s:restore_view(a:context)
 
-  let s:failed_plugins = a:context.errored_plugins->copy()->map(
-        \ { _, val -> val.name })
+  let s:failed_plugins = a:context.errored_plugins->copy()
+        \ ->map({ _, val -> val.name })
 
   if !empty(a:context.synced_plugins)
     let names = a:context.synced_plugins->copy()->map({ _, val -> val.name })
@@ -1579,8 +1581,8 @@ function! s:check_output(context, process) abort
           \ plugin, new_rev, a:process.rev)
     let log_messages = log_message->split('\r\?\n')
     let plugin.commit_count = log_messages->len()
-    call s:log(log_messages->map(
-          \   { _, val -> s:get_short_message(plugin, num, max, val) }))
+    call s:log(log_messages
+          \ ->map({ _, val -> s:get_short_message(plugin, num, max, val) }))
 
     let plugin.old_rev = a:process.rev
     let plugin.new_rev = new_rev
@@ -1631,8 +1633,8 @@ function! s:iconv(expr, from, to) abort
   endif
 endfunction
 function! s:print_progress_message(msg) abort
-  let msg = dein#util#_convert2list(a:msg)->map(
-        \ { _, val -> val->substitute('\r', '\n', 'g') })
+  let msg = dein#util#_convert2list(a:msg)
+        \ ->map({ _, val -> val->substitute('\r', '\n', 'g') })
   let context = s:global_context
   if msg->empty() || context->empty()
     return
@@ -1754,8 +1756,9 @@ endfunction
 
 
 function! s:echo(expr, mode) abort
-  let msg = dein#util#_convert2list(a:expr)->filter(
-        \ { _, val -> val !=# '' })->map({ _, val -> '[dein] ' .  val })
+  let msg = dein#util#_convert2list(a:expr)
+        \ ->filter({ _, val -> val !=# '' })
+        \ ->map({ _, val -> '[dein] ' .  val })
   if msg->empty()
     return
   endif

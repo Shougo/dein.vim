@@ -70,9 +70,9 @@ function! dein#min#_load_cache_raw(vimrcs) abort
   let cache = g:->get('dein#cache_directory', g:dein#_base_path)
         \ .'/cache_' . g:dein#_progname
   let time = cache->getftime()
-  if !(g:dein#_vimrcs->copy()->map(
-        \ { _, val -> getftime(expand(val)) })->filter(
-        \ { _, val -> time < val })->empty())
+  if !(g:dein#_vimrcs->copy()
+        \ ->map({ _, val -> getftime(expand(val)) })
+        \ ->filter({ _, val -> time < val })->empty())
     return [{}, {}]
   endif
   return has('nvim') ? cache->readfile()->json_decode()

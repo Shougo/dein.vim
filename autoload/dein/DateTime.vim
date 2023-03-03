@@ -11,27 +11,27 @@ function! s:_init() abort
   let s:ERA_TIME = s:_g2jd(1, 1, 1)
   let s:EPOC_TIME = s:_g2jd(1970, 1, 1)
 
-  let s:MONTHS = range(1, 12)->map(
-  \   's:from_date(1970, v:val, 1, 0, 0, 0, 0).unix_time()')
-  let s:WEEKS = range(4, 10)->map(
-  \   's:from_date(1970, 1, v:val, 0, 0, 0, 0).unix_time()')
-  let s:AM_PM_TIMES = [0, 12]->map(
-  \   's:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
+  let s:MONTHS = range(1, 12)
+        \ ->map('s:from_date(1970, v:val, 1, 0, 0, 0, 0).unix_time()')
+  let s:WEEKS = range(4, 10)
+        \ ->map('s:from_date(1970, 1, v:val, 0, 0, 0, 0).unix_time()')
+  let s:AM_PM_TIMES = [0, 12]
+        \ ->map('s:from_date(1970, 1, 1, v:val, 0, 0, 0).unix_time()')
 
   " default values
-  call extend(s:DateTime, {
-  \   '_year': 0,
-  \   '_month': 1,
-  \   '_day': 1,
-  \   '_hour': 0,
-  \   '_minute': 0,
-  \   '_second': 0,
-  \   '_timezone': s:timezone(),
-  \ })
-  call extend(s:TimeDelta, {
-  \   '_days': 0,
-  \   '_seconds': 0,
-  \ })
+  call extend(s:DateTime, #{
+        \   _year: 0,
+        \   _month: 1,
+        \   _day: 1,
+        \   _hour: 0,
+        \   _minute: 0,
+        \   _second: 0,
+        \   _timezone: s:timezone(),
+        \ })
+  call extend(s:TimeDelta, #{
+        \   _days: 0,
+        \   _seconds: 0,
+        \ })
   let s:tz_default_offset = s:timezone().offset()
 endfunction
 

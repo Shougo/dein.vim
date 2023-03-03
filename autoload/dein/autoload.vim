@@ -5,8 +5,8 @@ function! dein#autoload#_source(plugins) abort
   endif
 
   if plugins[0]->type() != v:t_dict
-    let plugins = dein#util#_convert2list(a:plugins)->map(
-        \       { _, val -> g:dein#_plugins->get(val, {}) })
+    let plugins = dein#util#_convert2list(a:plugins)
+          \ ->map({ _, val -> g:dein#_plugins->get(val, {}) })
   endif
 
   let rtps = dein#util#_split_rtp(&runtimepath)
@@ -16,10 +16,11 @@ function! dein#autoload#_source(plugins) abort
   endif
 
   let sourced = []
-  for plugin in plugins->filter(
-        \ { _, val -> !(val->empty()) && !val.sourced && val.rtp !=# ''
-        \             && (!(v:val->has_key('if')) || v:val.if->eval())
-        \             && v:val.path->isdirectory()
+  for plugin in plugins
+        \ ->filter({ _, val ->
+        \  !(val->empty()) && !val.sourced && val.rtp !=# ''
+        \  && (!(v:val->has_key('if')) || v:val.if->eval())
+        \  && v:val.path->isdirectory()
         \ })
     call s:source_plugin(rtps, index, plugin, sourced)
   endfor
@@ -31,10 +32,9 @@ function! dein#autoload#_source(plugins) abort
 
   " Reload script files.
   for plugin in sourced
-    for directory in ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin'
-          \ ]->filter(
-          \ { _, val -> (plugin.rtp . '/' . val)->isdirectory() })->map(
-          \ { _, val -> plugin.rtp . '/' . val })
+    for directory in ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin']
+          \ ->filter({ _, val -> (plugin.rtp . '/' . val)->isdirectory() })
+          \ ->map({ _, val -> plugin.rtp . '/' . val })
       if directory =~# 'ftdetect'
         if !(plugin->get('merge_ftdetect'))
           execute 'augroup filetypedetect'
@@ -67,10 +67,10 @@ function! dein#autoload#_source(plugins) abort
 
       " Register for lazy loaded denops plugin
       if (plugin.rtp . '/denops')->isdirectory()
-        for name in plugin.rtp->globpath(
-              \ 'denops/*/main.ts', v:true, v:true)->map(
-              \ { _, val -> val->fnamemodify(':h:t')})->filter(
-              \ { _, val -> !denops#plugin#is_loaded(val) })
+        for name in 'denops/*/main.ts'
+              \ ->globpath(plugin.rtp, v:true, v:true)
+              \ ->map({ _, val -> val->fnamemodify(':h:t')})
+              \ ->filter({ _, val -> !denops#plugin#is_loaded(val) })
 
           if denops#server#status() ==# 'running'
             " NOTE: denops#plugin#register() may be failed
@@ -118,29 +118,32 @@ function! dein#autoload#_on_default_event(event) abort
   let path = dein#util#_expand(path)
 
   for filetype in &l:filetype->split('\.')
-    let plugins += lazy_plugins->copy()->filter(
-          \ { _, val -> val->get('on_ft', [])->index(filetype) >= 0 })
+    let plugins += lazy_plugins->copy()
+          \ ->filter({ _, val -> val->get('on_ft', [])
+          \ ->index(filetype) >= 0 })
   endfor
 
-  let plugins += lazy_plugins->copy()->filter(
-        \ { _, val -> !(val->get('on_path', [])->copy()->filter(
-        \                { _, val -> path =~? val })->empty()) })
-  let plugins += lazy_plugins->copy()->filter(
-        \ { _, val -> !(val->has_key('on_event')) && val->has_key('on_if')
-        \             && val.on_if->eval() })
+  let plugins += lazy_plugins->copy()
+        \ ->filter({ _, val -> !(val->get('on_path', [])->copy()
+        \ ->filter({ _, val -> path =~? val })->empty()) })
+  let plugins += lazy_plugins->copy()
+        \ ->filter({ _, val ->
+        \   !(val->has_key('on_event')) && val->has_key('on_if')
+        \   && val.on_if->eval() })
 
   call s:source_events(a:event, plugins)
 endfunction
 function! dein#autoload#_on_event(event, plugins) abort
-  let lazy_plugins = dein#util#_get_plugins(a:plugins)->filter(
-        \ { _, val -> !val.sourced })
+  let lazy_plugins = dein#util#_get_plugins(a:plugins)
+        \ ->filter({ _, val -> !val.sourced })
   if lazy_plugins->empty()
     execute 'autocmd! dein-events' a:event
     return
   endif
 
-  let plugins = lazy_plugins->copy()->filter(
-        \ { _, val -> !(val->has_key('on_if')) || val.on_if->eval() })
+  let plugins = lazy_plugins->copy()
+        \ ->filter({ _, val ->
+        \          !(val->has_key('on_if')) || val.on_if->eval() })
   call s:source_events(a:event, plugins)
 endfunction
 function! s:source_events(event, plugins) abort
@@ -179,9 +182,10 @@ function! dein#autoload#_on_func(name) abort
     return
   endif
 
-  call dein#autoload#_source(dein#util#_get_lazy_plugins()->filter(
-        \  { _, val -> function_prefix->stridx(val.normalized_name.'#') == 0
-        \   || val->get('on_func', [])->index(a:name) >= 0 }))
+  call dein#autoload#_source(dein#util#_get_lazy_plugins()
+        \ ->filter({ _, val ->
+        \          function_prefix->stridx(val.normalized_name.'#') == 0
+        \          || val->get('on_func', [])->index(a:name) >= 0 }))
 endfunction
 
 function! dein#autoload#_on_lua(name) abort
@@ -195,18 +199,19 @@ function! dein#autoload#_on_lua(name) abort
   " Prevent infinite loop
   let g:dein#_called_lua[a:name] = v:true
 
-  call dein#autoload#_source(dein#util#_get_lazy_plugins()->filter(
-        \  { _, val -> val->get('on_lua', [])->index(mod_root) >= 0 }))
+  call dein#autoload#_source(dein#util#_get_lazy_plugins()
+        \ ->filter({ _, val -> val->get('on_lua', [])->index(mod_root) >= 0 }))
 endfunction
 
 function! dein#autoload#_on_pre_cmd(name) abort
   call dein#autoload#_source(
-        \ dein#util#_get_lazy_plugins()->filter(
-        \ { _, val -> copy(val->get('on_cmd', []))->map(
-        \            { _, val2 -> tolower(val2) })->index(a:name) >= 0
-        \  || a:name->tolower()->stridx(
-        \            val.normalized_name->tolower()->substitute(
-        \            '[_-]', '', 'g')) == 0 }))
+        \ dein#util#_get_lazy_plugins()
+        \  ->filter({ _, val -> copy(val->get('on_cmd', []))
+        \  ->map({ _, val2 -> tolower(val2) })
+        \  ->index(a:name) >= 0
+        \  || a:name->tolower()
+        \     ->stridx(val.normalized_name->tolower()
+        \     ->substitute('[_-]', '', 'g')) == 0 }))
 endfunction
 
 function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
@@ -297,8 +302,10 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   let index = a:index
 
   " NOTE: on_source must sourced after depends
-  for on_source in dein#util#_get_lazy_plugins()->filter(
-        \ { _, val -> val->get('on_source', [])->index(a:plugin.name) >= 0 })
+  for on_source in dein#util#_get_lazy_plugins()
+        \ ->filter({ _, val ->
+        \          val->get('on_source', []) ->index(a:plugin.name) >= 0
+        \ })
     if s:source_plugin(a:rtps, index, on_source, a:sourced)
       let index += 1
     endif
@@ -405,11 +412,11 @@ function! s:is_reset_ftplugin(plugins) abort
     let ftplugin = plugin.rtp . '/ftplugin/' . &l:filetype
     let after = plugin.rtp . '/after/ftplugin/' . &l:filetype
     let check_ftplugin = !(['ftplugin', 'indent',
-        \ 'after/ftplugin', 'after/indent',]->filter(
-        \ { _, val -> printf('%s/%s/%s.vim',
-        \                    plugin.rtp, val, &l:filetype)->filereadable()
-        \          || printf('%s/%s/%s.lua',
-        \                    plugin.rtp, val, &l:filetype)->filereadable()
+          \ 'after/ftplugin', 'after/indent',]
+          \ ->filter({ _, val -> printf('%s/%s/%s.vim',
+          \          plugin.rtp, val, &l:filetype)->filereadable()
+          \          || printf('%s/%s/%s.lua',
+          \          plugin.rtp, val, &l:filetype)->filereadable()
         \ })->empty())
     if check_ftplugin
           \ || ftplugin->isdirectory() || after->isdirectory()

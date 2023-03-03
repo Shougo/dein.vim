@@ -132,8 +132,8 @@ function! dein#parse#_dict(plugin) abort
   endif
 
   " Deprecated check.
-  for key in ['directory', 'base']->filter(
-        \ { _, val -> plugin->has_key(val) })
+  for key in ['directory', 'base']
+        \ ->filter({ _, val -> plugin->has_key(val) })
     call dein#util#_error('plugin name = ' . plugin.name)
     call dein#util#_error(key->string() . ' is deprecated.')
   endfor
@@ -260,10 +260,12 @@ function! dein#parse#_plugins2toml(plugins) abort
     let toml += ['[[plugins]]',
           \ 'repo = ' . plugin.repo->string()]
 
-    for key in default->keys()->sort()->filter(
-          \ { _, val -> !(skip_default->has_key(val)) && plugin->has_key(val)
-          \  && (plugin[val]->type() !=# default[val]->type()
-          \      || plugin[val] !=# default[val]) })
+    for key in default->keys()->sort()
+          \ ->filter({ _, val ->
+          \          !(skip_default->has_key(val)) && plugin->has_key(val)
+          \          && (plugin[val]->type() !=# default[val]->type()
+          \              || plugin[val] !=# default[val])
+          \ })
       let val = plugin[key]
       if key =~# '^hook_'
         call add(toml, key . " = '''")
@@ -290,10 +292,11 @@ function! dein#parse#_local(localdir, options, includes) abort
   let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
-    let directories += (base . glob)->glob(v:true, v:true)->filter(
-          \ { _, val -> val->isdirectory() })->map(
-          \ { _, val -> dein#util#_substitute_path(
-          \   val->fnamemodify(':p'))->substitute('/$', '', '') })
+    let directories += (base . glob)->glob(v:true, v:true)
+          \ ->filter({ _, val -> val->isdirectory() })
+          \ ->map({ _, val -> dein#util#_substitute_path(
+          \       val->fnamemodify(':p'))->substitute('/$', '', '')
+          \ })
   endfor
 
   for dir in dein#util#_uniq(directories)
@@ -364,13 +367,13 @@ endfunction
 function! s:generate_dummy_mappings(plugin) abort
   let a:plugin.dummy_mappings = []
   let items = a:plugin.on_map->type() == v:t_dict ?
-        \ a:plugin.on_map->items()->map(
-        \   { _, val -> [val[0]->split('\zs'),
-        \                dein#util#_convert2list(val[1])]}) :
-        \ a:plugin.on_map->copy()->map(
-        \  { _, val -> type(val) == v:t_list ?
-        \     [val[0]->split('\zs'), val[1:]] :
-        \     [['n', 'x', 'o'], [val]]
+        \ a:plugin.on_map->items()
+        \ ->map({ _, val -> [val[0]->split('\zs'),
+        \       dein#util#_convert2list(val[1])]}) :
+        \ a:plugin.on_map->copy()
+        \ ->map({ _, val -> type(val) == v:t_list ?
+        \       [val[0]->split('\zs'), val[1:]] :
+        \       [['n', 'x', 'o'], [val]]
         \  })
   for [modes, mappings] in items
     if mappings ==# ['<Plug>']
@@ -415,10 +418,10 @@ function! dein#parse#_get_types() abort
   if !('s:types'->exists())
     " Load types.
     let s:types = {}
-    for type in globpath(&runtimepath,
-          \ 'autoload/dein/types/*.vim', v:true, v:true)->map(
-          \ { _, val -> dein#types#{val->fnamemodify(':t:r')}#define()
-          \ })->filter({ _, val -> !(val->empty()) })
+    for type in 'autoload/dein/types/*.vim'
+          \ ->globpath(&runtimepath, v:true, v:true)
+          \ ->map({ _, val -> dein#types#{val->fnamemodify(':t:r')}#define()})
+          \ ->filter({ _, val -> !(val->empty()) })
       let s:types[type.name] = type
     endfor
   endif
