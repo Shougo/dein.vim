@@ -36,7 +36,8 @@ def _build_candidate(plugin_context):
     rev = revision if branch is None else '%s (%s)' % (branch, revision[:7])
     return {
         'word': name.strip(),
-        'abbr': name.strip() if not rev else '%s -- %s' % (name.strip(), rev.strip()),
+        'abbr': name.strip() if not rev else '%s -- %s' % (
+            name.strip(), rev.strip()),
         'action__path': path,
     }
 
