@@ -18,7 +18,6 @@ Interface		|dein-interface|
   Lua Functions		  |dein-lua-functions|
 Ddu Sources		|dein-ddu-sources|
 Denite Sources		|dein-denite-sources|
-Unite Sources		|dein-unite-sources|
 Configuration Examples	|dein-examples|
 Plugins merged feature	|dein-merge|
 FAQ			|dein-faq|
@@ -1420,28 +1419,6 @@ dein/log
 		1. "!"
 
 ==============================================================================
-UNITE SOURCES						*dein-unite-sources*
-
-Here let me explain about a source for unite plugin provided in dein.
-
-						*dein-unite-source-dein*
-dein
-		Nominates dein plugins as candidates.
-
-		Note:
-		If argument is bang(!), print plugins status.
-
-						*dein-unite-source-dein_log*
-dein_log
-		Print previous dein install logs.
-		And you can jump the diff URI in github.
-
-		If argument 1 is "!", the updated logs are displayed.
-
-		Source arguments:
-		1. "!"
-
-==============================================================================
 EXAMPLES						*dein-examples*
 >
 	if &compatible
@@ -1767,6 +1744,10 @@ needed, you need to call it manually. >
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
+
+2023.03.03
+* Remove unite.vim sources.  Please use "unite-dein" if needed.
+  https://github.com/Shougo/unite-dein
 
 2023.01.14
 * Vim 8.2 or nvim 0.8 is required.
