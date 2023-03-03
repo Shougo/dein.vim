@@ -9,7 +9,7 @@ function! s:suite.rm() abort
 
   call dein#install#_rm(temp)
 
-  call s:assert.equals(filereadable(temp), 0)
+  call s:assert.equals(temp->filereadable(), 0)
 endfunction
 
 function! s:suite.copy_directories() abort
@@ -22,12 +22,12 @@ function! s:suite.copy_directories() abort
   call mkdir(temp3)
   call writefile([], temp.'/foo')
   call writefile([], temp3.'/bar')
-  call s:assert.true(filereadable(temp.'/foo'))
-  call s:assert.true(filereadable(temp3.'/bar'))
+  call s:assert.true((temp.'/foo')->filereadable())
+  call s:assert.true((temp3.'/bar')->filereadable())
 
   call dein#install#_copy_directories([temp, temp3], temp2)
 
-  call s:assert.true(isdirectory(temp2))
-  call s:assert.true(filereadable(temp2.'/foo'))
-  call s:assert.true(filereadable(temp2.'/bar'))
+  call s:assert.true(temp2->isdirectory())
+  call s:assert.true((temp2.'/foo')->filereadable())
+  call s:assert.true((temp2.'/bar')->filereadable())
 endfunction

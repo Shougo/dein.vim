@@ -178,8 +178,8 @@ endfunction
 
 function! s:suite.skip_overwrite() abort
   call dein#begin(s:path)
-  call dein#add('Shougo/denite.nvim', {'on_event': []})
-  call dein#add('Shougo/denite.nvim', {'on_event': ['InsertEnter']})
+  call dein#add('Shougo/denite.nvim', #{ on_event: [] })
+  call dein#add('Shougo/denite.nvim', #{ on_event: ['InsertEnter'] })
   call dein#end()
 
   call s:assert.equals(dein#get('denite.nvim').on_event, [])

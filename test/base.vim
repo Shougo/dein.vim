@@ -50,10 +50,10 @@ function! s:suite.add_overwrite() abort
   call dein#parse#_add('foo', {}, v:true)
   call s:assert.equals(g:dein#_plugins.foo.sourced, 0)
 
-  call dein#parse#_add('foo', { 'sourced': 1 }, v:true)
+  call dein#parse#_add('foo', #{ sourced: 1 }, v:true)
   call s:assert.equals(g:dein#_plugins.foo.sourced, 1)
 
-  call dein#parse#_add('foo', { 'sourced': 2 }, v:false)
+  call dein#parse#_add('foo', #{ sourced: 2 }, v:false)
   call s:assert.equals(g:dein#_plugins.foo.sourced, 1)
 
   call s:assert.equals(dein#end(), 0)
@@ -72,14 +72,15 @@ endfunction
 
 function! s:suite.expand() abort
   call s:assert.equals(dein#util#_expand('~'),
-        \ dein#util#_substitute_path(fnamemodify('~', ':p')))
+        \ dein#util#_substitute_path('~'->fnamemodify(':p')))
   call s:assert.equals(dein#util#_expand('$HOME'),
         \ dein#util#_substitute_path($HOME))
 endfunction
 
 function! s:suite.lua() abort
   call dein#begin(s:path)
-  call dein#parse#_add('foo', #{ name: 'bar', lua_add: 'foo', rtp: 'foo' }, v:true)
+  call dein#parse#_add('foo',
+        \ #{ name: 'bar', lua_add: 'foo', rtp: 'foo' }, v:true)
   call dein#end()
   call s:assert.equals(dein#get('bar').hook_add, "lua <<EOF\nfoo\nEOF\n")
 endfunction
