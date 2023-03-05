@@ -1749,10 +1749,10 @@ Q: "hook_source" is not called in non lazy plugins
 A: "hook_source" is not called automatically for performance reason.  If it is
 needed, you need to call it manually. >
 
-		call dein#begin()
-		...
-		call dein#end()
-		call dein#call_hook('source')
+	call dein#begin()
+	...
+	call dein#end()
+	call dein#call_hook('source')
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
