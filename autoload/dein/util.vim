@@ -555,7 +555,7 @@ function! dein#util#_execute_hook(plugin, hook) abort
     let g:dein#plugin = a:plugin
 
     if a:hook->type() == v:t_string
-      call s:execute(a:hook)
+      call execute(a:hook->split('\n'))
     else
       call call(a:hook, [])
     endif
@@ -748,10 +748,6 @@ function! s:escape(path) abort
 endfunction
 function! dein#util#escape_match(str) abort
   return a:str->escape('~\.^$[]')
-endfunction
-
-function! s:execute(expr) abort
-  return a:expr->split('\n')->execute('')
 endfunction
 
 function! s:neovim_version() abort
