@@ -726,7 +726,7 @@ g:dein#types#git#default_protocol
 
 		Default: "https"
 
-					*g:dein#types#git#enable_partial_clone*
+				*g:dein#types#git#enable_partial_clone*
 g:dein#types#git#enable_partial_clone
 		Enable partial clone when plugin install. It is faster.
 		Note: git 2.19+ is required.
@@ -1050,6 +1050,18 @@ HOOKS							*dein-hooks*
 		Note: You can use |g:dein#plugin| in the hooks.
 		Note: The loading order is not guaranteed in non lazy plugins.
 		Note: The string is executed as Ex commands.
+
+		You can use |Vim9| script for hooks.  But you cannot use
+		|Vim9| script in |dein-options-hook_add|.  Because it may be
+		merged for optimize.
+
+		To use |Vim9| script, you need to use |:vim9script|. >
+
+		call dein#add('Shougo/defx.nvim', #{
+		\   hook_source: "
+		\     vim9script\n
+		\     echo "hello " .. "shougo" .. ", how are you?"\n
+		\ "})
 
 						*dein-options-hook_add*
 hook_add	(String) or (Function)
