@@ -1060,9 +1060,9 @@ HOOKS							*dein-hooks*
 		call dein#add('Shougo/defx.nvim', #{
 		\   hook_source: "
 		\     vim9script\n
-		\     echo "hello " .. "shougo" .. ", how are you?"\n
-		\ "})
-
+		\     echo 'hello ' .. 'shougo' .. ', how are you?'\n",
+		\ })
+<
 						*dein-options-hook_add*
 hook_add	(String) or (Function)
 		It is executed after the line is parsed.
@@ -1071,18 +1071,18 @@ hook_add	(String) or (Function)
 >
 		call dein#add('Shougo/defx.nvim', #{
 		\   hook_add: 'nnoremap <silent>   <Space>v
-		\              :<C-u>Defx<CR>'
+		\              :<C-u>Defx<CR>',
 		\ })
 		call dein#add('kana/vim-niceblock', #{
 		\   hook_add: join(['xmap I  <Plug>(niceblock-I)',
-		                    'xmap A  <Plug>(niceblock-A)'], "\n")
+		                    'xmap A  <Plug>(niceblock-A)'], "\n"),
 		\ })
 		call dein#add('godlygeek/csapprox', #{
 		\ hook_add: "
 		\   let g:CSApprox_konsole = 1\n
 		\   let g:CSApprox_attr_map =
-		\     #{ bold: 'bold', italic: '', sp: '' }\n
-		\ "})
+		\     #{ bold: 'bold', italic: '', sp: '' }\n",
+		\ })
 <
 					*dein-options-hook_done_update*
 hook_done_update (String) or (Function)
@@ -1112,7 +1112,7 @@ hook_source	(String) or (Function)
 		call dein#add('artur-shaik/vim-javacomplete2')
 		call dein#config('artur-shaik/vim-javacomplete2', #{
 		\   hook_source: 'autocmd FileType java
-		\                 setlocal omnifunc=javacomplete#Complete'
+		\                 setlocal omnifunc=javacomplete#Complete',
 		\ })
 		function! Func() abort
 		  autocmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
