@@ -3,7 +3,7 @@ let s:assert = themis#helper('assert')
 
 let s:type = dein#types#git#define()
 let s:path = tempname()
-let s:base = s:path . '/repos/'
+let s:base = s:path .. '/repos/'
 
 function! s:suite.protocol() abort
   call dein#begin(s:path)

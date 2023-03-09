@@ -618,7 +618,7 @@ function! s:suite.rollback() abort
   let cwd = getcwd()
   try
     call dein#install#_cd(plugin.path)
-    call system('git reset --hard ' . new_rev)
+    call system('git reset --hard ' .. new_rev)
   finally
     call dein#install#_cd(cwd)
   endtry
@@ -639,7 +639,7 @@ function! s:suite.script_type() abort
 
   call dein#add(
         \ 'https://raw.githubusercontent.com/Shougo/'
-        \ . 'shougo-s-github/master/vim/colors/candy.vim',
+        \ .. 'shougo-s-github/master/vim/colors/candy.vim',
         \ #{ script_type : 'colors' })
   call s:assert.equals(dein#get('candy.vim').type, 'raw')
 
@@ -648,10 +648,10 @@ function! s:suite.script_type() abort
   call s:assert.equals(s:dein_update(), 0)
 
   call s:assert.true(
-        \ (dein#get('impactjs-colorscheme').rtp . '/colors/impactjs.vim')
+        \ (dein#get('impactjs-colorscheme').rtp .. '/colors/impactjs.vim')
         \ ->filereadable())
   call s:assert.true(
-        \ (dein#get('candy.vim').rtp . '/colors/candy.vim') ->filereadable())
+        \ (dein#get('candy.vim').rtp .. '/colors/candy.vim') ->filereadable())
 endfunction
 
 function! s:get_revision(plugin) abort
@@ -681,15 +681,15 @@ function! s:suite.ftplugin() abort
   call dein#recache_runtimepath()
 
   call s:assert.equals(
-        \ readfile(dein#util#_get_runtime_path() . '/after/ftplugin.vim'),
+        \ readfile(dein#util#_get_runtime_path() .. '/after/ftplugin.vim'),
         \ dein#install#_get_default_ftplugin() + [
         \ 'function! s:after_ftplugin()',
         \ ] + g:dein#ftplugin->get('_', [])->split('\n') + ['endfunction'])
 
-  let python = (dein#util#_get_runtime_path() . '/after/ftplugin/python.vim')
+  let python = (dein#util#_get_runtime_path() .. '/after/ftplugin/python.vim')
         \ ->readfile()
   call s:assert.equals(python[-1], g:dein#ftplugin['python'])
   call s:assert.false(
-        \ (dein#util#_get_runtime_path() . '/after/ftplugin/_.vim')
+        \ (dein#util#_get_runtime_path() .. '/after/ftplugin/_.vim')
         \ ->filereadable())
 endfunction

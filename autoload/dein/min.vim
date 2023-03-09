@@ -69,7 +69,7 @@ endfunction
 function! dein#min#_load_cache_raw(vimrcs) abort
   let g:dein#_vimrcs = a:vimrcs
   let cache = g:->get('dein#cache_directory', g:dein#_base_path)
-        \ .'/cache_' . g:dein#_progname
+        \ .. '/cache_' .. g:dein#_progname
   let time = cache->getftime()
   if !(g:dein#_vimrcs->copy()
         \ ->map({ _, val -> getftime(expand(val)) })
@@ -87,13 +87,13 @@ function! dein#min#load_state(path) abort
   let g:dein#_base_path = a:path->expand()
 
   let state = g:->get('dein#cache_directory', g:dein#_base_path)
-        \ . '/state_' . g:dein#_progname . '.vim'
+        \ .. '/state_' .. g:dein#_progname .. '.vim'
   if !(state->filereadable()) | return 1 | endif
   try
     execute 'source' state->fnameescape()
   catch
     if v:exception !=# 'Cache loading error'
-      call dein#util#_error('Loading state error: ' . v:exception)
+      call dein#util#_error('Loading state error: ' .. v:exception)
     endif
     call dein#clear_state()
     return 1

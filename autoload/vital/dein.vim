@@ -96,7 +96,7 @@ let s:Vital.unload = function('s:unload')
 
 function! s:exists(name) abort dict
   if a:name !~# '\v^\u\w*%(\.\u\w*)*$'
-    throw 'vital: Invalid module name: ' . a:name
+    throw 'vital: Invalid module name: ' .. a:name
   endif
   return s:_module_path(a:name) isnot# ''
 endfunction
@@ -117,7 +117,7 @@ let s:Vital.plugin_name = function('s:plugin_name')
 function! s:_self_vital_files() abort
   let builtin = printf('%s/__%s__/', s:vital_base_dir, s:plugin_name)
   let installed = printf('%s/_%s/', s:vital_base_dir, s:plugin_name)
-  let base = builtin . ',' . installed
+  let base = builtin .. ',' .. installed
   return globpath(base, '**/*.vim', v:true, v:true)
 endfunction
 
@@ -158,7 +158,8 @@ function! s:_import(name) abort dict
       call module._vital_loaded(vital#{s:plugin_name}#new())
     catch
       unlet s:loaded[a:name]
-      throw 'vital: fail to call ._vital_loaded(): ' . v:exception . " from:\n" . s:_format_throwpoint(v:throwpoint)
+      throw 'vital: fail to call ._vital_loaded(): '
+            \ .. v:exception .. " from:\n" .. s:_format_throwpoint(v:throwpoint)
     endtry
   endif
   return copy(s:loaded[a:name])
@@ -197,7 +198,7 @@ function! s:_get_func_info(name) abort
   elseif a:name =~# '^<lambda>\d\+$'  " is lambda-function
     let name = printf("{'%s'}", a:name)
   endif
-  if !exists('*' . name)
+  if !exists('*' .. name)
     return {}
   endif
   let body = execute(printf('verbose function %s', name))
@@ -210,7 +211,7 @@ function! s:_get_func_info(name) abort
   \   'lnum': 0 + lnum,
   \   'funcname': a:name,
   \   'arguments': split(matchstr(signature, '(\zs.*\ze)'), '\s*,\s*'),
-  \   'attrs': filter(['dict', 'abort', 'range', 'closure'], 'signature =~# (").*" . v:val)'),
+  \   'attrs': filter(['dict', 'abort', 'range', 'closure'], 'signature =~# (").*" .. v:val)'),
   \ }
 endfunction
 

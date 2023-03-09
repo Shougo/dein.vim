@@ -4,7 +4,7 @@ let s:suite = themis#suite('state')
 let s:assert = themis#helper('assert')
 
 let s:runtimepath_save = &runtimepath
-let s:path = '.cache'->fnamemodify(':p') . '/'
+let s:path = '.cache'->fnamemodify(':p') .. '/'
 let s:filetype_save = &l:filetype
 
 function! s:suite.before_each() abort

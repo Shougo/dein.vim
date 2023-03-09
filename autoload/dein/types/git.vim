@@ -94,14 +94,14 @@ function! s:type.get_uri(repo, options) abort
   if a:repo !~# '/'
     call dein#util#_error(
           \ printf('vim-scripts.org is deprecated.'
-          \ . ' You can use "vim-scripts/%s" instead.', a:repo))
+          \ .. ' You can use "vim-scripts/%s" instead.', a:repo))
     return ''
   else
     let uri = (protocol ==# 'ssh' &&
           \    (host ==# 'github.com' || host ==# 'bitbucket.com' ||
           \     host ==# 'bitbucket.org')) ?
-          \ 'git@' . host . ':' . name :
-          \ protocol . '://' . host . '/' . name
+          \ 'git@' .. host .. ':' .. name :
+          \ protocol .. '://' .. host .. '/' .. name
   endif
 
   return uri
@@ -119,7 +119,7 @@ function! s:type.get_sync_command(plugin) abort
 
     let depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
     if depth > 0 && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
-      call add(commands, '--depth=' . depth)
+      call add(commands, '--depth=' .. depth)
 
       if a:plugin->get('rev', '') !=# ''
         call add(commands, '--branch')
@@ -138,10 +138,10 @@ function! s:type.get_sync_command(plugin) abort
   else
     let git = self.command
 
-    let fetch_cmd = git . ' -c credential.helper= fetch '
-    let remote_origin_cmd = git . ' remote set-head origin -a'
-    let pull_cmd = git . ' ' . g:dein#types#git#pull_command
-    let submodule_cmd = git . ' submodule update --init --recursive'
+    let fetch_cmd = git .. ' -c credential.helper= fetch '
+    let remote_origin_cmd = git .. ' remote set-head origin -a'
+    let pull_cmd = git .. ' ' .. g:dein#types#git#pull_command
+    let submodule_cmd = git .. ' submodule update --init --recursive'
 
     " Note: "remote_origin_cmd" does not work when "depth" is specified.
     let depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
@@ -149,10 +149,10 @@ function! s:type.get_sync_command(plugin) abort
     if dein#util#_is_powershell()
       let cmd = fetch_cmd
       if depth <= 0
-        let cmd .= '; if ($?) { ' . remote_origin_cmd . ' }'
+        let cmd .= '; if ($?) { ' .. remote_origin_cmd .. ' }'
       endif
-      let cmd .= '; if ($?) { ' . pull_cmd . ' }'
-      let cmd .= '; if ($?) { ' . submodule_cmd . ' }'
+      let cmd .= '; if ($?) { ' .. pull_cmd .. ' }'
+      let cmd .= '; if ($?) { ' .. submodule_cmd .. ' }'
     else
       let and = dein#util#_is_fish() ? '; and ' : ' && '
       let cmds = [fetch_cmd]
@@ -178,10 +178,10 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   " NOTE: If the a:old_rev is not the ancestor of two branches. Then do not use
   " %s^.  use %s^ will show one commit message which already shown last time.
   let is_not_ancestor = dein#install#_system(
-        \ self.command . ' merge-base '
-        \ . a:old_rev . ' ' . a:new_rev) ==# a:old_rev
-  return printf(self.command .
-        \ ' log %s%s..%s --graph --no-show-signature' .
+        \ self.command .. ' merge-base '
+        \ .. a:old_rev .. ' ' .. a:new_rev) ==# a:old_rev
+  return printf(self.command ..
+        \ ' log %s%s..%s --graph --no-show-signature' ..
         \ ' --pretty=format:"%%h [%%cr] %%s"',
         \ a:old_rev, (is_not_ancestor ? '' : '^'), a:new_rev)
 endfunction
@@ -225,7 +225,7 @@ function! s:type.get_diff_command(plugin, old_rev, new_rev) abort
     return []
   endif
 
-  return [self.command, 'diff', a:old_rev . '..'. a:new_rev,
+  return [self.command, 'diff', a:old_rev .. '..' .. a:new_rev,
         \ '--', 'doc', 'README', 'README.md']
 endfunction
 
@@ -296,12 +296,12 @@ function! s:join_paths(path1, path2) abort
   if a:path1 =~ (s:is_windows ? '[\\/]$' : '/$') ||
         \ a:path2 =~ (s:is_windows ? '^[\\/]' : '^/')
     " the appropriate separator already exists
-    return a:path1 . a:path2
+    return a:path1 .. a:path2
   else
     " NOTE: I'm assuming here that '/' is always valid as a directory
     " separator on Windows. I know Windows has paths that start with \\?\ that
     " disable behavior like that, but I don't know how Vim deals with that.
-    return a:path1 . '/' . a:path2
+    return a:path1 .. '/' .. a:path2
   endif
 endfunction
 
@@ -323,7 +323,7 @@ function! s:isabsolute(dir) abort
 endfunction
 
 function! s:get_gitdir(dir) abort
-  let gitdir = a:dir . '/.git'
+  let gitdir = a:dir .. '/.git'
   if gitdir->isdirectory()
     return gitdir
   endif
@@ -332,7 +332,7 @@ function! s:get_gitdir(dir) abort
     if line =~# '^gitdir: '
       let gitdir = line[8:]
       if !s:isabsolute(gitdir)
-        let gitdir = a:dir . '/' . gitdir
+        let gitdir = a:dir .. '/' .. gitdir
       endif
       if gitdir->isdirectory()
         return gitdir
@@ -349,7 +349,7 @@ function! s:git_get_remote_origin_url(dir) abort
     return ''
   endif
   try
-    let lines = (gitdir . '/config')->readfile()
+    let lines = (gitdir .. '/config')->readfile()
     let [n, ll, url] = [0, lines->len(), '']
     while n < ll
       let line = lines[n]->trim()
@@ -383,14 +383,14 @@ function! s:git_get_revision(dir) abort
     return ''
   endif
   try
-    let line = (gitdir . '/HEAD')->readfile()[0]
+    let line = (gitdir .. '/HEAD')->readfile()[0]
     if line =~# '^ref: '
       let ref = line[5:]
-      if (gitdir . '/' . ref)->filereadable()
-        return (gitdir . '/' . ref)->readfile()[0]
+      if (gitdir .. '/' .. ref)->filereadable()
+        return (gitdir .. '/' .. ref)->readfile()[0]
       endif
-      for line in (gitdir . '/packed-refs')->readfile()
-        if line =~# ' ' . ref
+      for line in (gitdir .. '/packed-refs')->readfile()
+        if line =~# ' ' .. ref
           return line->substitute('^\([0-9a-f]*\) ', '\1', '')
         endif
       endfor
@@ -407,7 +407,7 @@ function! s:git_get_branch(dir) abort
     return ''
   endif
   try
-    let line = (gitdir . '/HEAD')->readfile()[0]
+    let line = (gitdir .. '/HEAD')->readfile()[0]
     if line =~# '^ref: refs/heads/'
       return line[16:]
     endif

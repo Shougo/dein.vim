@@ -27,7 +27,7 @@ function! dein#util#_get_runtime_path() abort
     return g:dein#_runtime_path
   endif
 
-  let g:dein#_runtime_path = dein#util#_get_cache_path() . '/.dein'
+  let g:dein#_runtime_path = dein#util#_get_cache_path() .. '/.dein'
   call dein#util#_safe_mkdir(g:dein#_runtime_path)
   return g:dein#_runtime_path
 endfunction
@@ -41,7 +41,7 @@ function! dein#util#_get_cache_path() abort
         \ dein#util#_get_myvimrc()->fnamemodify(':t')
   let g:dein#_cache_path = dein#util#_substitute_path(
         \ g:->get('dein#cache_directory', g:dein#_base_path)
-        \ . '/.cache/' . vimrc_path)
+        \ .. '/.cache/' .. vimrc_path)
   call dein#util#_safe_mkdir(g:dein#_cache_path)
   return g:dein#_cache_path
 endfunction
@@ -60,7 +60,7 @@ endfunction
 
 function! dein#util#_error(msg) abort
   for mes in s:msg2list(a:msg)
-    echohl WarningMsg | echomsg '[dein] ' . mes | echohl None
+    echohl WarningMsg | echomsg '[dein] ' .. mes | echohl None
   endfor
 endfunction
 function! dein#util#_notify(msg) abort
@@ -148,8 +148,8 @@ function! dein#util#_check_lazy_plugins() abort
         \    && !(val->get('local', 0))
         \    && val->get('hook_source', '') ==# ''
         \    && val->get('hook_add', '') ==# ''
-        \    && !((val.rtp . '/plugin')->isdirectory())
-        \    && !((val.rtp . '/after/plugin')->isdirectory())
+        \    && !((val.rtp .. '/plugin')->isdirectory())
+        \    && !((val.rtp .. '/after/plugin')->isdirectory())
         \ })->map({ _, val -> val.name })
 endfunction
 function! dein#util#_check_clean() abort
@@ -167,7 +167,7 @@ function! dein#util#_cache_writefile(list, path) abort
     return 1
   endif
 
-  let path = dein#util#_get_cache_path() . '/' . a:path
+  let path = dein#util#_get_cache_path() .. '/' .. a:path
   return dein#util#_safe_writefile(a:list, path)
 endfunction
 function! dein#util#_safe_writefile(list, path, flags = '') abort
@@ -232,7 +232,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
   call dein#util#_safe_writefile(
         \ has('nvim') ? [src->json_encode()] : [src->js_encode()],
         \ g:->get('dein#cache_directory', g:dein#_base_path)
-        \ .'/cache_' . g:dein#_progname)
+        \ .'/cache_' .. g:dein#_progname)
 endfunction
 function! dein#util#_check_vimrcs() abort
   let time = dein#util#_get_runtime_path()->getftime()
@@ -273,31 +273,32 @@ function! dein#util#_save_state(is_starting) abort
   " Version check
 
   let lines = [
-        \ 'if g:dein#_cache_version !=# ' . g:dein#_cache_version . ' || ' .
-        \ 'g:dein#_init_runtimepath !=# ' .
-        \      g:dein#_init_runtimepath->string() .
+        \ 'if g:dein#_cache_version !=# ' ..
+        \     g:dein#_cache_version .. ' || ' ..
+        \ 'g:dein#_init_runtimepath !=# ' ..
+        \      g:dein#_init_runtimepath->string() ..
         \      ' | throw ''Cache loading error'' | endif',
         \ 'let [s:plugins, s:ftplugin] = dein#min#_load_cache_raw('.
-        \      g:dein#_vimrcs->string() .')',
+        \      g:dein#_vimrcs->string() .. ')',
         \ "if s:plugins->empty() | throw 'Cache loading error' | endif",
         \ 'let g:dein#_plugins = s:plugins',
         \ 'let g:dein#ftplugin = s:ftplugin',
-        \ 'let g:dein#_base_path = ' . g:dein#_base_path->string(),
-        \ 'let g:dein#_runtime_path = ' . g:dein#_runtime_path->string(),
-        \ 'let g:dein#_cache_path = ' . g:dein#_cache_path->string(),
-        \ 'let g:dein#_on_lua_plugins = ' . g:dein#_on_lua_plugins->string(),
-        \ 'let &runtimepath = ' . &runtimepath->string(),
+        \ 'let g:dein#_base_path = ' .. g:dein#_base_path->string(),
+        \ 'let g:dein#_runtime_path = ' .. g:dein#_runtime_path->string(),
+        \ 'let g:dein#_cache_path = ' .. g:dein#_cache_path->string(),
+        \ 'let g:dein#_on_lua_plugins = ' .. g:dein#_on_lua_plugins->string(),
+        \ 'let &runtimepath = ' .. &runtimepath->string(),
         \ ]
 
   if g:->get('dein#enable_hook_function_cache', v:false)
     let lines += [
-          \ 'call map(g:dein#_plugins, {' .
-          \ 'k,v -> empty(map(filter(["hook_add", "hook_source",' .
-          \ '"hook_post_source", "hook_post_update", "hook_done_source"],' .
-          \ '{ _, h -> v->has_key(h)}),' .
-          \ '{ _, h -> v[h]->type() == v:t_dict ? ' .
-          \ ' execute("let v[h] = function(''".get(v[h], "name")' .
-          \ ' ."'',".string(get(v[h], "args")).")") : v:null' .
+          \ 'call map(g:dein#_plugins, {' ..
+          \ 'k,v -> empty(map(filter(["hook_add", "hook_source",' ..
+          \ '"hook_post_source", "hook_post_update", "hook_done_source"],' ..
+          \ '{ _, h -> v->has_key(h)}),' ..
+          \ '{ _, h -> v[h]->type() == v:t_dict ? ' ..
+          \ ' execute("let v[h] = function(''".get(v[h], "name")' ..
+          \ ' .."'',"..string(get(v[h], "args"))..")") : v:null' ..
           \ '})) ? v : v })'
           \ ]
   endif
@@ -312,10 +313,10 @@ function! dein#util#_save_state(is_starting) abort
   " Add dummy mappings/commands
   for plugin in dein#util#_get_lazy_plugins()
     for command in plugin->get('dummy_commands', [])
-      call add(lines, 'silent! ' . command[1])
+      call add(lines, 'silent! ' .. command[1])
     endfor
     for mapping in plugin->get('dummy_mappings', [])
-      call add(lines, 'silent! ' . mapping[2])
+      call add(lines, 'silent! ' .. mapping[2])
     endfor
   endfor
 
@@ -352,21 +353,21 @@ function! dein#util#_save_state(is_starting) abort
 
   " Add events
   for [event, plugins] in g:dein#_event_plugins->items()
-        \ ->filter({ _, val -> ('##' . val[0])->exists() })
+        \ ->filter({ _, val -> ('##' .. val[0])->exists() })
     call add(lines, printf('autocmd dein-events %s call '
-          \. 'dein#autoload#_on_event("%s", %s)',
-          \ (('##' . event)->exists() ? event . ' *' : 'User ' . event),
+          \ .. 'dein#autoload#_on_event("%s", %s)',
+          \ (('##' .. event)->exists() ? event .. ' *' : 'User ' .. event),
           \ event, plugins->string()))
   endfor
 
   let state = g:->get('dein#cache_directory', g:dein#_base_path)
-        \ . '/state_' . g:dein#_progname . '.vim'
+        \ .. '/state_' .. g:dein#_progname .. '.vim'
   call dein#util#_safe_writefile(lines, state)
 endfunction
 function! dein#util#_clear_state() abort
   let base = g:->get('dein#cache_directory', g:dein#_base_path)
-  for cache in (base . '/state_*.vim')->glob(v:true, v:true)
-        \ + (base . '/cache_*')->glob(v:true, v:true)
+  for cache in (base .. '/state_*.vim')->glob(v:true, v:true)
+        \ + (base .. '/cache_*')->glob(v:true, v:true)
     call delete(cache)
   endfor
 endfunction
@@ -406,8 +407,8 @@ function! dein#util#_begin(path, vimrcs) abort
       execute g:dein#_off2
     endif
   else
-    execute 'set rtp-=' . g:dein#_runtime_path->fnameescape()
-    execute 'set rtp-=' . (g:dein#_runtime_path . '/after')->fnameescape()
+    execute 'set rtp-=' .. g:dein#_runtime_path->fnameescape()
+    execute 'set rtp-=' .. (g:dein#_runtime_path .. '/after')->fnameescape()
   endif
 
   " Insert dein runtimepath to the head in 'runtimepath'.
@@ -422,7 +423,7 @@ function! dein#util#_begin(path, vimrcs) abort
   if a:path->fnamemodify(':t') ==# 'plugin'
         \ && rtps->index(a:path->fnamemodify(':h')) >= 0
     call dein#util#_error('You must not set the installation directory'
-          \ .' under "&runtimepath/plugin"')
+          \ .. ' under "&runtimepath/plugin"')
     return 1
   endif
   call insert(rtps, g:dein#_runtime_path, idx)
@@ -475,8 +476,8 @@ function! dein#util#_end() abort
 
     if !plugin.merged
       call insert(rtps, plugin.rtp, index)
-      if (plugin.rtp . '/after')->isdirectory()
-        call dein#util#_add_after(rtps, plugin.rtp . '/after')
+      if (plugin.rtp .. '/after')->isdirectory()
+        call dein#util#_add_after(rtps, plugin.rtp .. '/after')
       endif
     endif
 
@@ -491,7 +492,7 @@ function! dein#util#_end() abort
   for multi in g:dein#_multiple_plugins->copy()
         \ ->filter({ _, val -> dein#is_available(val.plugins) })
     if multi->has_key('hook_add')
-      let g:dein#_hook_add .= "\n" . multi.hook_add->substitute(
+      let g:dein#_hook_add .= "\n" .. multi.hook_add->substitute(
             \ '\n\s*\\', '', 'g')
     endif
   endfor
@@ -501,10 +502,10 @@ function! dein#util#_end() abort
   endif
 
   for [event, plugins] in g:dein#_event_plugins->items()
-        \ ->filter({ _, val -> ('##' . val[0])->exists() })
+        \ ->filter({ _, val -> ('##' .. val[0])->exists() })
     execute printf('autocmd dein-events %s call '
-          \. 'dein#autoload#_on_event("%s", %s)',
-          \ (('##' . event)->exists() ? event . ' *' : 'User ' . event),
+          \ .. 'dein#autoload#_on_event("%s", %s)',
+          \ (('##' .. event)->exists() ? event .. ' *' : 'User ' .. event),
           \ event, plugins->string())
   endfor
 
@@ -520,7 +521,7 @@ function! dein#util#_config(arg, dict) abort
   let dict = a:arg->type() == v:t_dict ?
         \   a:arg : a:dict
   if !(g:dein#_plugins->has_key(name))
-    call dein#util#_error('Invalid plugin name: ' . name)
+    call dein#util#_error('Invalid plugin name: ' .. name)
     return {}
   endif
   if g:dein#_plugins[name].sourced
@@ -533,7 +534,7 @@ function! dein#util#_config(arg, dict) abort
 endfunction
 
 function! dein#util#_call_hook(hook_name, plugins = []) abort
-  let hook = 'hook_' . a:hook_name
+  let hook = 'hook_' .. a:hook_name
   let plugins = dein#util#_tsort(dein#util#_get_plugins(a:plugins))
         \ ->filter({ _, val ->
         \    ((a:hook_name !=# 'source'
@@ -581,7 +582,7 @@ function! dein#util#_set_hook(plugins, hook_name, hook) abort
         \ dein#util#_convert2list(a:plugins)
   for name in names
     if !(g:dein#_plugins->has_key(name))
-      call dein#util#_error(name . ' is not found.')
+      call dein#util#_error(name .. ' is not found.')
       return 1
     endif
     let plugin = g:dein#_plugins[name]
@@ -729,7 +730,7 @@ function! dein#util#_check_install(plugins) abort
     let invalids = dein#util#_convert2list(a:plugins)
           \ ->filter({ _, val -> dein#get(val)->empty() })
     if !(invalids->empty())
-      call dein#util#_error('Invalid plugins: ' . invalids->string())
+      call dein#util#_error('Invalid plugins: ' .. invalids->string())
       return -1
     endif
   endif

@@ -105,7 +105,7 @@ function! dein#parse#_dict(plugin) abort
   let plugin.path = dein#util#_chomp(dein#util#_expand(plugin.path))
   if plugin->get('rev', '') !=# ''
     " Add revision path
-    let plugin.path .= '_' . plugin.rev->substitute(
+    let plugin.path .= '_' .. plugin.rev->substitute(
           \ '[^[:alnum:].-]', '_', 'g')
   endif
 
@@ -124,7 +124,7 @@ function! dein#parse#_dict(plugin) abort
 
   if plugin->has_key('script_type')
     " Add script_type.
-    let plugin.path .= '/' . plugin.script_type
+    let plugin.path .= '/' .. plugin.script_type
   endif
 
   if plugin->has_key('depends') && plugin.depends->type() != v:t_list
@@ -134,8 +134,8 @@ function! dein#parse#_dict(plugin) abort
   " Deprecated check.
   for key in ['directory', 'base']
         \ ->filter({ _, val -> plugin->has_key(val) })
-    call dein#util#_error('plugin name = ' . plugin.name)
-    call dein#util#_error(key->string() . ' is deprecated.')
+    call dein#util#_error('plugin name = ' .. plugin.name)
+    call dein#util#_error(key->string() .. ' is deprecated.')
   endfor
 
   if !(plugin->has_key('lazy'))
@@ -176,12 +176,12 @@ function! dein#parse#_load_toml(filename, default) abort
   try
     let toml = dein#toml#parse_file(dein#util#_expand(a:filename))
   catch /Text.TOML:/
-    call dein#util#_error('Invalid toml format: ' . a:filename)
+    call dein#util#_error('Invalid toml format: ' .. a:filename)
     call dein#util#_error(v:exception)
     return 1
   endtry
   if toml->type() != v:t_dict
-    call dein#util#_error('Invalid toml file: ' . a:filename)
+    call dein#util#_error('Invalid toml file: ' .. a:filename)
     return 1
   endif
 
@@ -202,7 +202,7 @@ function! dein#parse#_load_toml(filename, default) abort
   if toml->has_key('multiple_plugins')
     for multi in toml.multiple_plugins
       if !(multi->has_key('plugins'))
-        call dein#util#_error('Invalid multiple_plugins: ' . a:filename)
+        call dein#util#_error('Invalid multiple_plugins: ' .. a:filename)
         return 1
       endif
 
@@ -213,7 +213,7 @@ function! dein#parse#_load_toml(filename, default) abort
   if toml->has_key('plugins')
     for plugin in toml.plugins
       if !(plugin->has_key('repo'))
-        call dein#util#_error('No repository plugin data: ' . a:filename)
+        call dein#util#_error('No repository plugin data: ' .. a:filename)
         return 1
       endif
 
@@ -258,7 +258,7 @@ function! dein#parse#_plugins2toml(plugins) abort
   for plugin in a:plugins->sort(
         \ { a, b -> a.repo ==# b.repo ? 0 : a.repo ># b.repo ? 1 : -1 })
     let toml += ['[[plugins]]',
-          \ 'repo = ' . plugin.repo->string()]
+          \ 'repo = ' .. plugin.repo->string()]
 
     for key in default->keys()->sort()
           \ ->filter({ _, val ->
@@ -268,11 +268,11 @@ function! dein#parse#_plugins2toml(plugins) abort
           \ })
       let val = plugin[key]
       if key =~# '^hook_'
-        call add(toml, key . " = '''")
+        call add(toml, key .. " = '''")
         let toml += val->split('\n')
         call add(toml, "'''")
       else
-        call add(toml, key . ' = ' . (val->type() == v:t_list &&
+        call add(toml, key .. ' = ' .. (val->type() == v:t_list &&
               \ val->len() == 1 ? val[0] : val)->string())
       endif
       unlet! val
@@ -292,7 +292,7 @@ function! dein#parse#_local(localdir, options, includes) abort
   let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
-    let directories += (base . glob)->glob(v:true, v:true)
+    let directories += (base .. glob)->glob(v:true, v:true)
           \ ->filter({ _, val -> val->isdirectory() })
           \ ->map({ _, val -> dein#util#_substitute_path(
           \       val->fnamemodify(':p'))->substitute('/$', '', '')
@@ -354,9 +354,9 @@ function! s:generate_dummy_commands(plugin) abort
   for name in a:plugin.on_cmd
     " Define dummy commands.
     let raw_cmd = 'command '
-          \ . '-complete=customlist,dein#autoload#_dummy_complete'
-          \ . ' -bang -bar -range -nargs=* '. name
-          \ . printf(" call dein#autoload#_on_cmd(%s, %s, <q-args>,
+          \ .. '-complete=customlist,dein#autoload#_dummy_complete'
+          \ .. ' -bang -bar -range -nargs=* '. name
+          \ .. printf(" call dein#autoload#_on_cmd(%s, %s, <q-args>,
           \  '<bang>'->expand(), '<line1>'->expand(), '<line2>'->expand())",
           \   name->string(), a:plugin.name->string())
 
@@ -378,10 +378,10 @@ function! s:generate_dummy_mappings(plugin) abort
   for [modes, mappings] in items
     if mappings ==# ['<Plug>']
       " Use plugin name.
-      let mappings = ['<Plug>(' . a:plugin.normalized_name]
+      let mappings = ['<Plug>(' .. a:plugin.normalized_name]
       if a:plugin.normalized_name->stridx('-') >= 0
         " The plugin mappings may use "_" instead of "-".
-        call add(mappings, '<Plug>(' .
+        call add(mappings, '<Plug>(' ..
               \ a:plugin.normalized_name->substitute('-', '_', 'g'))
       endif
     endif
@@ -393,9 +393,9 @@ function! s:generate_dummy_mappings(plugin) abort
             \ a:plugin.name->string())
       for mode in modes
         let raw_map = mode.'noremap <unique><silent> '.mapping
-              \ . (mode ==# 'c' ? " \<C-r>=" :
+              \ .. (mode ==# 'c' ? " \<C-r>=" :
               \    mode ==# 'i' ? " \<C-o>:call " : " :\<C-u>call ")
-              \ . prefix . mode->string() . ')<CR>'
+              \ .. prefix .. mode->string() .. ')<CR>'
         call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
         silent! execute raw_map
       endfor
@@ -408,7 +408,7 @@ function! s:merge_ftplugin(ftplugin) abort
     if !(g:dein#ftplugin->has_key(ft))
       let g:dein#ftplugin[ft] = val
     else
-      let g:dein#ftplugin[ft] .= "\n" . val
+      let g:dein#ftplugin[ft] .= "\n" .. val
     endif
   endfor
   call map(g:dein#ftplugin, { _, val -> val->substitute(pattern, '', 'g') })

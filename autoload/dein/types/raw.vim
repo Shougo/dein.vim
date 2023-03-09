@@ -26,6 +26,6 @@ endfunction
 function! s:type.get_sync_command(plugin) abort
   call dein#util#_safe_mkdir(a:plugin.path)
 
-  let outpath = a:plugin.path . '/' . a:plugin.repo->fnamemodify(':t')
+  let outpath = a:plugin.path .. '/' .. a:plugin.repo->fnamemodify(':t')
   return dein#util#_download(a:plugin.repo, outpath)
 endfunction

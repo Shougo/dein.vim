@@ -999,7 +999,7 @@ script_type	(String)
 >
 		call dein#add(
 		\ 'https://raw.githubusercontent.com/Shougo/'
-		\ . 'shougo-s-github/master/vim/colors/candy.vim',
+		\ .. 'shougo-s-github/master/vim/colors/candy.vim',
 		\ #{ script_type: 'colors' })
 		call dein#add(
 		\ 'https://github.com/bronzehedwick/impactjs-colorscheme',
@@ -1563,7 +1563,7 @@ The SID will be changed in the next run.
 	function! s:test()
 	endfunction
 	call dein#add('Shougo/deoplete.nvim',
-	\ #{ hook_source: 'call ' . s:SID() . 'test()' })
+	\ #{ hook_source: 'call ' .. s:SID() .. 'test()' })
 <
 Or you can execute the autocmd manually.
 >

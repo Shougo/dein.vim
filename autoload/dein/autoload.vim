@@ -33,16 +33,16 @@ function! dein#autoload#_source(plugins) abort
   " Reload script files.
   for plugin in sourced
     for directory in ['ftdetect', 'after/ftdetect', 'plugin', 'after/plugin']
-          \ ->filter({ _, val -> (plugin.rtp . '/' . val)->isdirectory() })
-          \ ->map({ _, val -> plugin.rtp . '/' . val })
+          \ ->filter({ _, val -> (plugin.rtp .. '/' .. val)->isdirectory() })
+          \ ->map({ _, val -> plugin.rtp .. '/' .. val })
       if directory =~# 'ftdetect'
         if !(plugin->get('merge_ftdetect'))
           execute 'augroup filetypedetect'
         endif
       endif
-      let files = (directory . '/**/*.vim')->glob(v:true, v:true)
+      let files = (directory .. '/**/*.vim')->glob(v:true, v:true)
       if has('nvim')
-        let files += (directory . '/**/*.lua')->glob(v:true, v:true)
+        let files += (directory .. '/**/*.lua')->glob(v:true, v:true)
       endif
       for file in files
         execute 'source' file->fnameescape()
@@ -60,13 +60,13 @@ function! dein#autoload#_source(plugins) abort
         call add(events, 'GUIEnter')
       endif
       for event in events
-        if ('#' . augroup . '#' . event)->exists()
+        if ('#' .. augroup .. '#' .. event)->exists()
           silent execute 'doautocmd' augroup event
         endif
       endfor
 
       " Register for lazy loaded denops plugin
-      if (plugin.rtp . '/denops')->isdirectory()
+      if (plugin.rtp .. '/denops')->isdirectory()
         for name in 'denops/*/main.ts'
               \ ->globpath(plugin.rtp, v:true, v:true)
               \ ->map({ _, val -> val->fnamemodify(':h:t')})
@@ -151,11 +151,11 @@ function! s:source_events(event, plugins) abort
     return
   endif
 
-  let prev_autocmd = ('autocmd ' . a:event)->execute()
+  let prev_autocmd = ('autocmd ' .. a:event)->execute()
 
   call dein#autoload#_source(a:plugins)
 
-  let new_autocmd = ('autocmd ' . a:event)->execute()
+  let new_autocmd = ('autocmd ' .. a:event)->execute()
 
   if a:event ==# 'InsertCharPre'
     " Queue this key again
@@ -166,9 +166,9 @@ function! s:source_events(event, plugins) abort
       " For BufReadCmd plugins
       silent doautocmd <nomodeline> BufReadCmd
     endif
-    if ('#' . a:event)->exists() && prev_autocmd !=# new_autocmd
+    if ('#' .. a:event)->exists() && prev_autocmd !=# new_autocmd
       execute 'doautocmd <nomodeline>' a:event
-    elseif ('#User#' . a:event)->exists()
+    elseif ('#User#' .. a:event)->exists()
       execute 'doautocmd <nomodeline> User' a:event
     endif
   endif
@@ -217,14 +217,14 @@ endfunction
 function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
   call dein#source(a:name)
 
-  if (':' . a:command)->exists() != 2
+  if (':' .. a:command)->exists() != 2
     call dein#util#_error(printf('command %s is not found.', a:command))
     return
   endif
 
   let range = (a:line1 == a:line2) ? '' :
         \ (a:line1 == "'<"->line() && a:line2 == "'>"->line()) ?
-        \ "'<,'>" : a:line1.','.a:line2
+        \ "'<,'>" : a:line1 .. ',' .. a:line2
 
   try
     execute range.a:command.a:bang a:args
@@ -259,7 +259,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
 
   if a:mode ==# 'o' && v:operator ==# 'c'
     " NOTE: This is the dirty hack.
-    execute s:mapargrec(a:mapping . input, a:mode)->matchstr(
+    execute s:mapargrec(a:mapping .. input, a:mode)->matchstr(
           \ ':<C-u>\zs.*\ze<CR>')
   else
     let mapping = a:mapping
@@ -270,9 +270,9 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
             \ g:->get('maplocalleader', '\'), 'g')
       let ctrl = mapping->matchstr('<\zs[[:alnum:]_-]\+\ze>')
       execute 'let mapping = mapping->substitute(
-            \ "<' . ctrl . '>", "\<' . ctrl . '>", "")'
+            \ "<' .. ctrl .. '>", "\<' .. ctrl .. '>", "")'
     endwhile
-    call feedkeys(mapping . input, 'm')
+    call feedkeys(mapping .. input, 'm')
   endif
 
   return ''
@@ -280,7 +280,7 @@ endfunction
 
 function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
   let command = a:cmdline->matchstr('\h\w*')
-  if (':'.command)->exists() == 2
+  if (':' .. command)->exists() == 2
     " Remove the dummy command.
     silent! execute 'delcommand' command
   endif
@@ -350,13 +350,13 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
 
   if !a:plugin.merged || a:plugin->get('local', 0)
     call insert(a:rtps, a:plugin.rtp, index)
-    if (a:plugin.rtp . '/after')->isdirectory()
-      call dein#util#_add_after(a:rtps, a:plugin.rtp.'/after')
+    if (a:plugin.rtp .. '/after')->isdirectory()
+      call dein#util#_add_after(a:rtps, a:plugin.rtp .. '/after')
     endif
   endif
 
   if g:->get('dein#lazy_rplugins', v:false) && !g:dein#_loaded_rplugins
-        \ && (a:plugin.rtp . '/rplugin')->isdirectory()
+        \ && (a:plugin.rtp .. '/rplugin')->isdirectory()
     " Enable remote plugin
     unlet! g:loaded_remote_plugins
 
@@ -409,8 +409,8 @@ function! s:is_reset_ftplugin(plugins) abort
   endif
 
   for plugin in a:plugins
-    let ftplugin = plugin.rtp . '/ftplugin/' . &l:filetype
-    let after = plugin.rtp . '/after/ftplugin/' . &l:filetype
+    let ftplugin = plugin.rtp .. '/ftplugin/' .. &l:filetype
+    let after = plugin.rtp .. '/after/ftplugin/' .. &l:filetype
     let check_ftplugin = !(['ftplugin', 'indent',
           \ 'after/ftplugin', 'after/indent',]
           \ ->filter({ _, val -> printf('%s/%s/%s.vim',
@@ -420,10 +420,10 @@ function! s:is_reset_ftplugin(plugins) abort
         \ })->empty())
     if check_ftplugin
           \ || ftplugin->isdirectory() || after->isdirectory()
-          \ || (ftplugin . '_*.vim')->glob(v:true) !=# ''
-          \ || (after . '_*.vim')->glob(v:true) !=# ''
-          \ || (ftplugin. '_*.lua')->glob(v:true) !=# ''
-          \ || (after . '_*.lua')->glob(v:true) !=# ''
+          \ || (ftplugin .. '_*.vim')->glob(v:true) !=# ''
+          \ || (after .. '_*.vim')->glob(v:true) !=# ''
+          \ || (ftplugin .. '_*.lua')->glob(v:true) !=# ''
+          \ || (after .. '_*.lua')->glob(v:true) !=# ''
       return 1
     endif
   endfor

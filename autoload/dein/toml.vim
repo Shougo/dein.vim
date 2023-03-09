@@ -55,7 +55,7 @@ endfunction
 " private api
 "
 " NOTE: '[^\r\n]*' doesn't work well in old-vim, but "[^\r\n]*" works well
-let s:skip_pattern = '\C^\%(\_s\+\|' . "#[^\r\n]*" . '\)'
+let s:skip_pattern = '\C^\%(\_s\+\|' .. "#[^\r\n]*" .. '\)'
 let s:table_name_pattern = '\%([^ [:tab:]#.[\]=]\+\)'
 let s:table_key_pattern = s:table_name_pattern
 
@@ -70,7 +70,7 @@ let s:regex_prefix = '\%#=1\C^'
 
 function! s:_consume(input, pattern) abort
   call s:_skip(a:input)
-  let end = a:input.text->matchend(s:regex_prefix . a:pattern, a:input.p)
+  let end = a:input.text->matchend(s:regex_prefix .. a:pattern, a:input.p)
 
   if end == -1
     call s:_error(a:input)
@@ -84,7 +84,7 @@ function! s:_consume(input, pattern) abort
 endfunction
 
 function! s:_match(input, pattern) abort
-  return a:input.text->match(s:regex_prefix . a:pattern, a:input.p) != -1
+  return a:input.text->match(s:regex_prefix .. a:pattern, a:input.p) != -1
 endfunction
 
 function! s:_eof(input) abort
@@ -188,7 +188,7 @@ function! s:_multiline_basic_string(input) abort
   let s = s:_consume(a:input, '"\{3}\_.\{-}"\{3}')
   let s = s[3 : -4]
   let s = s->substitute("^\n", '', '')
-  let s = s->substitute('\\' . "\n" . '\_s*', '', 'g')
+  let s = s->substitute('\\' .. "\n" .. '\_s*', '', 'g')
   return s:_unescape(s)
 endfunction
 
@@ -273,8 +273,8 @@ endfunction
 function! s:_table(input) abort
   let tbl = {}
   let name = s:_consume(a:input,
-        \ '\[\s*' . s:table_name_pattern . '\%(\s*\.\s*'
-        \ . s:table_name_pattern . '\)*\s*\]')
+        \ '\[\s*' .. s:table_name_pattern .. '\%(\s*\.\s*'
+        \ .. s:table_name_pattern .. '\)*\s*\]')
   let name = name[1 : -2]
   call s:_skip(a:input)
   while !s:_eof(a:input) && !s:_match(a:input, '\[')
@@ -314,8 +314,8 @@ endfunction
 function! s:_array_of_tables(input) abort
   let tbl = {}
   let name = s:_consume(a:input,
-        \ '\[\[\s*' . s:table_name_pattern .
-        \ '\%(\s*\.\s*' . s:table_name_pattern . '\)*\s*\]\]')
+        \ '\[\[\s*' .. s:table_name_pattern ..
+        \ '\%(\s*\.\s*' .. s:table_name_pattern .. '\)*\s*\]\]')
   let name = name[2 : -3]
   call s:_skip(a:input)
   while !s:_eof(a:input) && !s:_match(a:input, '\[')
@@ -342,9 +342,9 @@ function! s:_unescape(text) abort
   let text = text->substitute('\\/', '/', 'g')
   let text = text->substitute('\\\\', '\', 'g')
   let text = text->substitute('\C\\u\(\x\{4}\)',
-        \ '\=s:_nr2char("0x" . submatch(1))', 'g')
+        \ '\=s:_nr2char("0x" .. submatch(1))', 'g')
   let text = text->substitute('\C\\U\(\x\{8}\)',
-        \ '\=s:_nr2char("0x" . submatch(1))', 'g')
+        \ '\=s:_nr2char("0x" .. submatch(1))', 'g')
   return text
 endfunction
 

@@ -76,7 +76,7 @@ function! dein#DateTime#from_format(string, format, ...) abort
   let skip_pattern = ''
   for f in s:_split_format(a:format)
     if type(f) == v:t_string
-      let pat = '^' . skip_pattern . '\V' . escape(f, '\')
+      let pat = '^' .. skip_pattern .. '\V' .. escape(f, '\')
       let matched_len = len(matchstr(remain, pat))
       if matched_len == 0
         throw join([
