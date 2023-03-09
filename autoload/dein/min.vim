@@ -19,7 +19,8 @@ function! dein#min#_init() abort
   let g:dein#_is_sudo = $SUDO_USER !=# '' && $USER !=# $SUDO_USER
         \ && $HOME !=# ('~'.$USER)->expand()
         \ && $HOME ==# ('~'.$SUDO_USER)->expand()
-  let g:dein#_progname = v:progname->fnamemodify(':r')
+  let g:dein#_progname = has('nvim') && exists('$NVIM_APPNAME') ?
+        \ $NVIM_APPNAME : v:progname->fnamemodify(':r')
   let g:dein#_init_runtimepath = &runtimepath
   let g:dein#_loaded_rplugins = v:false
 

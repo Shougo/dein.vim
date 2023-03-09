@@ -36,9 +36,12 @@ function! dein#util#_get_cache_path() abort
     return g:dein#_cache_path
   endif
 
+  let vimrc_path = has('nvim') && exists('$NVIM_APPNAME') ?
+        \ $NVIM_APPNAME :
+        \ dein#util#_get_myvimrc()->fnamemodify(':t')
   let g:dein#_cache_path = dein#util#_substitute_path(
         \ g:->get('dein#cache_directory', g:dein#_base_path)
-        \ . '/.cache/' . dein#util#_get_myvimrc()->fnamemodify(':t'))
+        \ . '/.cache/' . vimrc_path)
   call dein#util#_safe_mkdir(g:dein#_cache_path)
   return g:dein#_cache_path
 endfunction
