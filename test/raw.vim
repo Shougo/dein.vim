@@ -1,10 +1,10 @@
 " set verbose=1
-let s:suite = themis#suite('raw')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('raw')
+const s:assert = themis#helper('assert')
 
-let s:type = dein#types#raw#define()
-let s:path = tempname()
-let s:base = s:path .. '/repos/'
+const s:type = dein#types#raw#define()
+const s:path = tempname()
+const s:base = s:path .. '/repos/'
 
 function! s:suite.protocol() abort
   " Protocol errors

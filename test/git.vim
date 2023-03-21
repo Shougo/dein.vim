@@ -1,9 +1,9 @@
-let s:suite = themis#suite('git')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('git')
+const s:assert = themis#helper('assert')
 
-let s:type = dein#types#git#define()
-let s:path = tempname()
-let s:base = s:path .. '/repos/'
+const s:type = dein#types#git#define()
+const s:path = tempname()
+const s:base = s:path .. '/repos/'
 
 function! s:suite.protocol() abort
   call dein#begin(s:path)

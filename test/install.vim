@@ -1,16 +1,16 @@
 "set verbose=1
 
-let s:suite = themis#suite('install')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('install')
+const s:assert = themis#helper('assert')
 
 let s:path = '.cache'->fnamemodify(':p')
 if s:path !~ '/$'
   let s:path .= '/'
 endif
-let s:runtimepath_save = &runtimepath
-let s:filetype_save = &l:filetype
+const s:runtimepath_save = &runtimepath
+const s:filetype_save = &l:filetype
 
-let s:this_script = '<sfile>'->expand()->fnamemodify(':p')
+const s:this_script = '<sfile>'->expand()->fnamemodify(':p')
 
 
 function! s:dein_install() abort
@@ -48,7 +48,7 @@ function! s:suite.install() abort
 
   call s:assert.equals(s:dein_install(), 0)
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
   call s:assert.true(plugin.rtp->isdirectory())
   call s:assert.equals(dein#each('git gc'), 0)
 endfunction
@@ -96,8 +96,8 @@ function! s:suite.update() abort
 
   call s:assert.equals(s:dein_update(), 0)
 
-  let plugin = dein#get('neopairs.vim')
-  let plugin2 = dein#get('neobundle.vim')
+  const plugin = dein#get('neopairs.vim')
+  const plugin2 = dein#get('neobundle.vim')
 
   call s:assert.equals(plugin.rtp,
         \ s:path.'repos/github.com/Shougo/neopairs.vim')
@@ -129,7 +129,7 @@ function! s:suite.fetch() abort
 
   call s:assert.equals(s:dein_install(), 0)
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
 
   call s:assert.equals(plugin.rtp, '')
 
@@ -155,7 +155,7 @@ function! s:suite.reload() abort
 
   call dein#end()
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
 endfunction
 
 function! s:suite.if() abort
@@ -176,7 +176,7 @@ function! s:suite.lazy_manual() abort
 
   call dein#end()
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
 
   call s:assert.equals(
         \ dein#util#_split_rtp(&runtimepath)
@@ -199,7 +199,7 @@ function! s:suite.lazy_on_ft() abort
 
   call dein#end()
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
 
   call s:assert.equals(
         \ dein#util#_split_rtp(&runtimepath)
@@ -228,7 +228,7 @@ function! s:suite.lazy_on_path() abort
 
   call dein#end()
 
-  let plugin = dein#get('deol.nvim')
+  const plugin = dein#get('deol.nvim')
 
   call s:assert.equals(
         \ dein#util#_split_rtp(&runtimepath)
@@ -245,7 +245,7 @@ endfunction
 function! s:suite.lazy_on_if() abort
   call dein#begin(s:path)
 
-  let temp = tempname()
+  const temp = tempname()
   call dein#add('Shougo/deol.nvim',
         \ #{ on_if: '&l:filetype ==# "foobar"' })
 
@@ -253,7 +253,7 @@ function! s:suite.lazy_on_if() abort
 
   call dein#end()
 
-  let plugin = dein#get('deol.nvim')
+  const plugin = dein#get('deol.nvim')
 
   call s:assert.equals(
         \ dein#util#_split_rtp(&runtimepath)
@@ -277,7 +277,7 @@ function! s:suite.lazy_on_source() abort
 
   call dein#end()
 
-  let plugin = dein#get('neopairs.vim')
+  const plugin = dein#get('neopairs.vim')
 
   call s:assert.equals(dein#util#_split_rtp(&runtimepath)->filter(
         \     { _, val -> val ==# plugin.rtp })->len(), 0)
@@ -299,8 +299,8 @@ function! s:suite.lazy_on_func() abort
 
   call dein#end()
 
-  let plugin = dein#get('deoplete.nvim')
-  let plugin2 = dein#get('neosnippet.vim')
+  const plugin = dein#get('deoplete.nvim')
+  const plugin2 = dein#get('neosnippet.vim')
 
   call s:assert.equals(dein#util#_split_rtp(&runtimepath)->filter(
         \     { _, val -> val ==# plugin.rtp })->len(), 0)
@@ -330,7 +330,7 @@ function! s:suite.lazy_on_cmd() abort
 
   call dein#end()
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
 
   call s:assert.equals(dein#util#_split_rtp(&runtimepath)->filter(
         \     { _, val -> val ==# plugin.rtp })->len(), 0)
@@ -350,8 +350,8 @@ function! s:suite.lazy_on_map() abort
 
   call dein#end()
 
-  let plugin1 = dein#get('deol.nvim')
-  let plugin2 = dein#get('neosnippet.vim')
+  const plugin1 = dein#get('deol.nvim')
+  const plugin2 = dein#get('neosnippet.vim')
 
   call s:assert.equals(dein#util#_split_rtp(&runtimepath)->filter(
         \     { _, val -> val ==# plugin1.rtp })->len(), 0)
@@ -374,7 +374,7 @@ function! s:suite.lazy_on_pre_cmd() abort
 
   call dein#end()
 
-  let plugin = dein#get('deol.nvim')
+  const plugin = dein#get('deol.nvim')
 
   call s:assert.equals(dein#util#_split_rtp(&runtimepath)->filter(
         \     { _, val -> val ==# plugin.rtp })->len(), 0)
@@ -397,7 +397,7 @@ function! s:suite.depends() abort
 
   call dein#end()
 
-  let plugin = dein#get('deol.nvim')
+  const plugin = dein#get('deol.nvim')
 
   call s:assert.equals(dein#util#_split_rtp(&runtimepath)->filter(
         \     { _, val -> val ==# plugin.rtp })->len(), 1)
@@ -410,7 +410,7 @@ function! s:suite.depends_lazy() abort
         \ #{ depends: 'deol.nvim', lazy: 1 })
   call dein#add('Shougo/deol.nvim', #{ lazy: 1 })
 
-  let plugin = dein#get('deol.nvim')
+  const plugin = dein#get('deol.nvim')
 
   call s:assert.equals(s:dein_install(), 0)
 
@@ -531,7 +531,7 @@ function! s:suite.normal() abort
         \ ], g:temp)
   call s:assert.equals(dein#load_toml(g:temp, #{ frozen: 1 }), 0)
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
   call s:assert.equals(plugin.frozen, 1)
   call s:assert.equals(plugin.on_ft, ['all'])
 
@@ -549,7 +549,7 @@ function! s:suite.local() abort
 
   call s:assert.equals(dein#end(), 0)
 
-  let plugin2 = dein#get('neopairs.vim')
+  const plugin2 = dein#get('neopairs.vim')
 
   call s:assert.equals(plugin2.rtp,
         \ s:path.'repos/github.com/Shougo/neopairs.vim')
@@ -564,7 +564,7 @@ function! s:suite.clean() abort
 endfunction
 
 function! s:suite.local_nongit() abort
-  let temp = tempname()
+  const temp = tempname()
   call mkdir(temp.'/plugin', 'p')
   call dein#begin(s:path)
 
@@ -609,13 +609,13 @@ function! s:suite.rollback() abort
 
   call s:assert.equals(s:dein_install(), 0)
 
-  let plugin = dein#get('deoplete.nvim')
+  const plugin = dein#get('deoplete.nvim')
 
-  let old_rev = s:get_revision(plugin)
+  const old_rev = s:get_revision(plugin)
 
   " Change the revision manually
-  let new_rev = 'bc7e8124d9c412fb3b0a6112baabde75a854d7b5'
-  let cwd = getcwd()
+  const new_rev = 'bc7e8124d9c412fb3b0a6112baabde75a854d7b5'
+  const cwd = getcwd()
   try
     call dein#install#_cd(plugin.path)
     call system('git reset --hard ' .. new_rev)
@@ -655,11 +655,11 @@ function! s:suite.script_type() abort
 endfunction
 
 function! s:get_revision(plugin) abort
-  let cwd = getcwd()
+  const cwd = getcwd()
   try
     execute 'lcd' a:plugin.path->fnameescape()
 
-    let rev = 'git rev-parse HEAD'->system()->substitute('\n$', '', '')
+    const rev = 'git rev-parse HEAD'->system()->substitute('\n$', '', '')
 
     return (rev !~ '\s') ? rev : ''
   finally
@@ -686,7 +686,8 @@ function! s:suite.ftplugin() abort
         \ 'function! s:after_ftplugin()',
         \ ] + g:dein#ftplugin->get('_', [])->split('\n') + ['endfunction'])
 
-  let python = (dein#util#_get_runtime_path() .. '/after/ftplugin/python.vim')
+  const python =
+        \ (dein#util#_get_runtime_path() .. '/after/ftplugin/python.vim')
         \ ->readfile()
   call s:assert.equals(python[-1], g:dein#ftplugin['python'])
   call s:assert.false(

@@ -1,10 +1,10 @@
 " set verbose=1
 
-let s:suite = themis#suite('install_base')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('install_base')
+const s:assert = themis#helper('assert')
 
 function! s:suite.rm() abort
-  let temp = tempname()
+  const temp = tempname()
   call writefile([], temp)
 
   call dein#install#_rm(temp)
@@ -13,9 +13,9 @@ function! s:suite.rm() abort
 endfunction
 
 function! s:suite.copy_directories() abort
-  let temp = tempname()
-  let temp2 = tempname()
-  let temp3 = tempname()
+  const temp = tempname()
+  const temp2 = tempname()
+  const temp3 = tempname()
 
   call mkdir(temp)
   call mkdir(temp2)

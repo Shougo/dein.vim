@@ -1,11 +1,11 @@
 " set verbose=1
 
-let s:suite = themis#suite('state')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('state')
+const s:assert = themis#helper('assert')
 
-let s:runtimepath_save = &runtimepath
-let s:path = '.cache'->fnamemodify(':p') .. '/'
-let s:filetype_save = &l:filetype
+const s:runtimepath_save = &runtimepath
+const s:path = '.cache'->fnamemodify(':p') .. '/'
+const s:filetype_save = &l:filetype
 
 function! s:suite.before_each() abort
   call dein#min#_init()
@@ -27,11 +27,11 @@ function! s:suite.state() abort
         \ #{ hook_source: function('Test') })
   call s:assert.equals(dein#end(), 0)
 
-  let plugins = deepcopy(g:dein#_plugins)
+  const plugins = deepcopy(g:dein#_plugins)
 
   call s:assert.equals(dein#util#_save_state(1), 0)
 
-  let runtimepath = &runtimepath
+  const runtimepath = &runtimepath
 
   let &runtimepath = s:runtimepath_save
 

@@ -1,9 +1,9 @@
 "set verbose=1
 
-let s:suite = themis#suite('base')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('base')
+const s:assert = themis#helper('assert')
 
-let s:path = tempname()
+const s:path = tempname()
 
 function! s:suite.before_each() abort
   call dein#min#_init()
@@ -60,7 +60,7 @@ function! s:suite.add_overwrite() abort
 endfunction
 
 function! s:suite.get() abort
-  let plugins = #{ foo: #{ name: 'bar' } }
+  const plugins = #{ foo: #{ name: 'bar' } }
 
   call dein#begin(s:path)
   call dein#add('foo', #{ name: 'bar' })

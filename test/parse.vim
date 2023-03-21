@@ -1,9 +1,9 @@
 " set verbose=1
 
-let s:suite = themis#suite('parse')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('parse')
+const s:assert = themis#helper('assert')
 
-let s:path = tempname()
+const s:path = tempname()
 
 function! s:suite.before_each() abort
   call dein#min#_init()
@@ -32,7 +32,7 @@ function! s:suite.parse_dict() abort
   call s:assert.equals(parsed_plugin.path, '_foo_bar')
 
   let $BAZDIR = '/baz'
-  let repo = '$BAZDIR/foo'
+  const repo = '$BAZDIR/foo'
   let plugin = #{ repo: repo }
   let parsed_plugin = dein#parse#_dict(dein#parse#_init(repo, plugin))
   call s:assert.equals(parsed_plugin.repo, '/baz/foo')
@@ -65,7 +65,7 @@ function! s:suite.name_conversion() abort
 endfunction
 
 function! s:suite.load_toml() abort
-  let toml = tempname()
+  const toml = tempname()
   call writefile([
         \ '# TOML sample',
         \ 'lua_add = "foo"',
@@ -123,7 +123,7 @@ function! s:suite.load_toml() abort
 endfunction
 
 function! s:suite.error_toml() abort
-  let toml = tempname()
+  const toml = tempname()
   call writefile([
         \ '# TOML sample',
         \ '[[plugins]]',
@@ -198,10 +198,10 @@ function! s:suite.overwrite() abort
 endfunction
 
 function! s:suite.plugins2toml() abort
-  let parsed_plugin = dein#parse#_init('Shougo/denite.nvim', {})
-  let parsed_plugin2 = dein#parse#_init('Shougo/deoplete.nvim',
+  const parsed_plugin = dein#parse#_init('Shougo/denite.nvim', {})
+  const parsed_plugin2 = dein#parse#_init('Shougo/deoplete.nvim',
         \ #{ on_ft: ['vim'], hook_add: "hoge\npiyo" })
-  let parsed_plugin3 = dein#parse#_init('Shougo/deoppet.nvim',
+  const parsed_plugin3 = dein#parse#_init('Shougo/deoppet.nvim',
         \ #{ on_map: #{ n: ['a', 'b'] } })
   call s:assert.equals(dein#plugins2toml(
         \ [parsed_plugin, parsed_plugin2, parsed_plugin3]), [
@@ -224,7 +224,7 @@ function! s:suite.plugins2toml() abort
 endfunction
 
 function! s:suite.trusted() abort
-  let sudo = g:dein#_is_sudo
+  const sudo = g:dein#_is_sudo
   let g:dein#_is_sudo = 1
 
   let parsed_plugin = dein#parse#_add(

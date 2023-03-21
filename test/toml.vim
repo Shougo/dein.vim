@@ -1,5 +1,5 @@
-let s:suite = themis#suite('toml')
-let s:assert = themis#helper('assert')
+const s:suite = themis#suite('toml')
+const s:assert = themis#helper('assert')
 
 function! s:suite.before_each() abort
   let g:temp = tempname()
