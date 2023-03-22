@@ -43,14 +43,14 @@ function! s:type.init(repo, options) abort
     return {}
   endif
 
-  let uri = self.get_uri(a:repo, a:options)
+  const uri = self.get_uri(a:repo, a:options)
   if uri ==# ''
     return {}
   endif
 
-  let directory = uri->substitute('\.git$', '', '')
-  let directory = directory->substitute('^https:/\+\|^git@', '', '')
-  let directory = directory->substitute(':', '/', 'g')
+  const directory = uri->substitute('\.git$', '', '')
+        \ ->substitute('^https:/\+\|^git@', '', '')
+        \ ->substitute(':', '/', 'g')
 
   return #{
         \  type: 'git',
@@ -117,7 +117,7 @@ function! s:type.get_sync_command(plugin) abort
     call add(commands, 'clone')
     call add(commands, '--recursive')
 
-    let depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
+    const depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
     if depth > 0 && self.get_uri(a:plugin.repo, a:plugin) !~# '^git@'
       call add(commands, '--depth=' .. depth)
 
@@ -136,15 +136,15 @@ function! s:type.get_sync_command(plugin) abort
 
     return commands
   else
-    let git = self.command
+    const git = self.command
 
-    let fetch_cmd = git .. ' -c credential.helper= fetch '
-    let remote_origin_cmd = git .. ' remote set-head origin -a'
-    let pull_cmd = git .. ' ' .. g:dein#types#git#pull_command
-    let submodule_cmd = git .. ' submodule update --init --recursive'
+    const fetch_cmd = git .. ' -c credential.helper= fetch '
+    const remote_origin_cmd = git .. ' remote set-head origin -a'
+    const pull_cmd = git .. ' ' .. g:dein#types#git#pull_command
+    const submodule_cmd = git .. ' submodule update --init --recursive'
 
     " Note: "remote_origin_cmd" does not work when "depth" is specified.
-    let depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
+    const depth = a:plugin->get('type__depth', g:dein#types#git#clone_depth)
 
     if dein#util#_is_powershell()
       let cmd = fetch_cmd
@@ -154,7 +154,7 @@ function! s:type.get_sync_command(plugin) abort
       let cmd .= '; if ($?) { ' .. pull_cmd .. ' }'
       let cmd .= '; if ($?) { ' .. submodule_cmd .. ' }'
     else
-      let and = dein#util#_is_fish() ? '; and ' : ' && '
+      const and = dein#util#_is_fish() ? '; and ' : ' && '
       let cmds = [fetch_cmd]
       if depth <= 0
         call add(cmds, remote_origin_cmd)
@@ -177,7 +177,7 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort
 
   " NOTE: If the a:old_rev is not the ancestor of two branches. Then do not use
   " %s^.  use %s^ will show one commit message which already shown last time.
-  let is_not_ancestor = dein#install#_system(
+  const is_not_ancestor = dein#install#_system(
         \ self.command .. ' merge-base '
         \ .. a:old_rev .. ' ' .. a:new_rev) ==# a:old_rev
   return printf(self.command ..
@@ -193,7 +193,7 @@ function! s:type.get_revision_lock_command(plugin) abort
   let rev = a:plugin->get('rev', '')
   if rev =~# '*'
     " Use the released tag (git 1.9.2 or above required)
-    let output = dein#install#_system(
+    const output = dein#install#_system(
           \ [self.command, 'tag', rev,
           \  '--list', '--sort', '-version:refname'])
     let rev = output->split("\n")->get(0, '')
@@ -201,7 +201,7 @@ function! s:type.get_revision_lock_command(plugin) abort
   if rev ==# ''
     " Fix detach HEAD.
     " Use symbolic-ref feature (git 1.8.7 or above required)
-    let output = dein#install#_system(
+    const output = dein#install#_system(
           \ [self.command, 'symbolic-ref', '--short', 'HEAD'])
     let rev = output->split("\n")->get(0, '')
     if rev =~# 'fatal: '
@@ -231,13 +231,13 @@ endfunction
 
 function! s:is_git_dir(path) abort
   if a:path->isdirectory()
-    let git_dir = a:path
+    const git_dir = a:path
   elseif a:path->filereadable()
     " check if this is a gitdir file
     " File starts with "gitdir: " and all text after this string is treated
     " as the path. Any CR or NLs are stripped off the end of the file.
-    let buf = a:path->readfile('b')->join("\n")
-    let matches = buf->matchlist('\C^gitdir: \(\_.*[^\r\n]\)[\r\n]*$')
+    const buf = a:path->readfile('b')->join("\n")
+    const matches = buf->matchlist('\C^gitdir: \(\_.*[^\r\n]\)[\r\n]*$')
     if matches->empty()
       return 0
     endif
@@ -246,7 +246,7 @@ function! s:is_git_dir(path) abort
       " if there's no tail, the path probably ends in a directory separator
       let path = path->fnamemodify(':h')
     endif
-    let git_dir = s:join_paths(path, matches[1])
+    const git_dir = s:join_paths(path, matches[1])
     if !(git_dir->isdirectory())
       return 0
     endif
@@ -274,7 +274,7 @@ function! s:is_git_dir(path) abort
   " sure the file exists and is readable.
   " NOTE: It may also be a symlink, which can point to a path that doesn't
   " necessarily exist yet.
-  let head = s:join_paths(git_dir, 'HEAD')
+  const head = s:join_paths(git_dir, 'HEAD')
   if !(head->filereadable()) && head->getftype() !=# 'link'
     return 0
   endif
@@ -328,7 +328,7 @@ function! s:get_gitdir(dir) abort
     return gitdir
   endif
   try
-    let line = gitdir->readfile()[0]
+    const line = gitdir->readfile()[0]
     if line =~# '^gitdir: '
       let gitdir = line[8:]
       if !s:isabsolute(gitdir)
@@ -407,7 +407,7 @@ function! s:git_get_branch(dir) abort
     return ''
   endif
   try
-    let line = (gitdir .. '/HEAD')->readfile()[0]
+    const line = (gitdir .. '/HEAD')->readfile()[0]
     if line =~# '^ref: refs/heads/'
       return line[16:]
     endif

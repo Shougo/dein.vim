@@ -46,7 +46,7 @@ endfunction
 
 " Creates a DateTime object from given unix time.
 function! s:from_unix_time(unix_time, ...) abort
-  let tz = call('s:timezone', a:000)
+  const tz = call('s:timezone', a:000)
   return call('s:from_date',
   \   map(split(strftime('%Y %m %d %H %M %S', a:unix_time)),
   \       'str2nr(v:val, 10)')).to(tz)
@@ -71,7 +71,7 @@ endfunction
 " Creates a DateTime object from format.
 function! dein#DateTime#from_format(string, format, ...) abort
   let o = copy(s:DateTime)
-  let locale = a:0 ? a:1 : ''
+  const locale = a:0 ? a:1 : ''
   let remain = a:string
   let skip_pattern = ''
   for f in s:_split_format(a:format)
@@ -103,13 +103,13 @@ endfunction
 function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale) abort
   " "o", "key", "value" and "locale" are used by parse_conv
   let o = a:datetime
-  let locale = a:locale " for parse_conv
+  const locale = a:locale " for parse_conv
   let [info, flag, width] = a:descriptor
   let key = '_' . info[0]
   if !has_key(o, key)
     let key = '_'
   endif
-  let Captor = info[1]
+  const Captor = info[1]
   if type(Captor) == v:t_func
     let pattern = call(Captor, [a:locale], {})
     if type(pattern) == v:t_list
@@ -130,7 +130,7 @@ function! s:_read_format(datetime, descriptor, remain, skip_pattern, locale) abo
   endif
 
   let value = matchstr(a:remain, '^' . a:skip_pattern . pattern)
-  let matched_len = len(value)
+  const matched_len = len(value)
 
   if exists('candidates')
     let value = index(candidates, value)
@@ -150,7 +150,7 @@ endfunction
 
 " Creates a DateTime object from Julian day.
 function! s:from_julian_day(jd, ...) abort
-  let tz = call('s:timezone', a:000)
+  const tz = call('s:timezone', a:000)
   let second = 0
   if type(a:jd) == v:t_float
     let jd = float2nr(floor(a:jd))
@@ -158,7 +158,7 @@ function! s:from_julian_day(jd, ...) abort
   else
     let jd = a:jd
   endif
-  let [year, month, day] = s:_jd2g(jd)
+  const [year, month, day] = s:_jd2g(jd)
   return s:from_date(year, month, day, 12, 0, second, '+0000').to(tz)
 endfunction
 
@@ -331,7 +331,7 @@ function! s:DateTime.days_from_era() abort
   return self.__day_from_era
 endfunction
 function! s:DateTime.julian_day(...) abort
-  let utc = self.to(0)
+  const utc = self.to(0)
   let jd = s:_g2jd(utc._year, utc._month, utc._day)
   if a:0 && a:1
     if has('float')
@@ -375,8 +375,8 @@ function! s:DateTime.compare(dt) abort
   return self.delta(a:dt).sign()
 endfunction
 function! s:DateTime.delta(dt) abort
-  let left = self.to(0)
-  let right = a:dt.to(0)
+  const left = self.to(0)
+  const right = a:dt.to(0)
   return s:delta(left.days_from_era() - right.days_from_era(),
   \              (left.seconds_of_day() + left.timezone().offset()) -
   \              (right.seconds_of_day() + right.timezone().offset()))
@@ -396,7 +396,7 @@ function! s:DateTime.to(...) abort
 endfunction
 " @vimlint(EVL102, 1, l:locale)
 function! s:DateTime.format(format, ...) abort
-  let locale = a:0 ? a:1 : ''
+  const locale = a:0 ? a:1 : ''
   let result = ''
   for f in s:_split_format(a:format)
     if type(f) == v:t_string
@@ -438,16 +438,16 @@ function! s:DateTime.format(format, ...) abort
 endfunction
 " @vimlint(EVL102, 0, l:locale)
 function! s:DateTime.strftime(format, ...) abort
-  let tz = self.timezone()
-  let ts = self.unix_time() + tz.offset() - s:tz_default_offset
-  let locale = get(a:000, 0, '')
+  const tz = self.timezone()
+  const ts = self.unix_time() + tz.offset() - s:tz_default_offset
+  const locale = get(a:000, 0, '')
   let format = a:format =~? '%z'
         \ ? substitute(a:format, '%z', tz.offset_string(), 'g')
         \ : a:format
   if empty(locale)
     return strftime(format, ts)
   else
-    let expr = printf('strftime(%s, %d)', string(format), ts)
+    const expr = printf('strftime(%s, %d)', string(format), ts)
     return s:_with_locale(expr, locale)
   endif
 endfunction
@@ -491,8 +491,8 @@ function! s:TimeZone.offset_string() abort
   return substitute(self.w3c(), ':', '', '')
 endfunction
 function! s:TimeZone.w3c() abort
-  let sign = self._offset < 0 ? '-' : '+'
-  let minutes = abs(self._offset) / s:NUM_SECONDS
+  const sign = self._offset < 0 ? '-' : '+'
+  const minutes = abs(self._offset) / s:NUM_SECONDS
   return printf('%s%02d:%02d', sign,
   \             minutes / s:NUM_MINUTES, minutes % s:NUM_MINUTES)
 endfunction
@@ -545,20 +545,20 @@ function! s:TimeDelta.duration() abort
 endfunction
 function! s:TimeDelta.add(...) abort
   let n = self._clone()
-  let other = call('s:delta', a:000)
+  const other = call('s:delta', a:000)
   let n._days += other._days
   let n._seconds += other._seconds
   return n._normalize()
 endfunction
 function! s:TimeDelta.subtract(...) abort
-  let other = call('s:delta', a:000)
+  const other = call('s:delta', a:000)
   return self.add(other.negate())
 endfunction
 function! s:TimeDelta.about() abort
   if self.sign() == 0
     return 'now'
   endif
-  let dir = self.sign() < 0 ? 'ago' : 'later'
+  const dir = self.sign() < 0 ? 'ago' : 'later'
   let d = self.duration()
   if d._days == 0
     if d._seconds < s:NUM_SECONDS
@@ -665,7 +665,7 @@ function! s:_mod(n, d) abort
   return s:_divmod(a:n, a:d)[1]
 endfunction
 function! s:_divmod(n, d) abort
-  let [q, mod] = [a:n / a:d, a:n % a:d]
+  const [q, mod] = [a:n / a:d, a:n % a:d]
   return mod != 0 && (a:d < 0) != (mod < 0) ? [q - 1, mod + a:d] : [q, mod]
 endfunction
 
