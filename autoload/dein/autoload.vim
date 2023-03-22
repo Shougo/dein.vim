@@ -10,7 +10,7 @@ function! dein#autoload#_source(plugins) abort
   endif
 
   let rtps = dein#util#_split_rtp(&runtimepath)
-  let index = rtps->index(dein#util#_get_runtime_path())
+  const index = rtps->index(dein#util#_get_runtime_path())
   if index < 0
     return []
   endif
@@ -25,7 +25,7 @@ function! dein#autoload#_source(plugins) abort
     call s:source_plugin(rtps, index, plugin, sourced)
   endfor
 
-  let filetype_before = 'autocmd FileType'->execute()
+  const filetype_before = 'autocmd FileType'->execute()
   let &runtimepath = dein#util#_join_rtp(rtps, &runtimepath, '')
 
   call dein#call_hook('source', sourced)
@@ -86,9 +86,9 @@ function! dein#autoload#_source(plugins) abort
     endif
   endfor
 
-  let filetype_after = 'autocmd FileType'->execute()
+  const filetype_after = 'autocmd FileType'->execute()
 
-  let is_reset = s:is_reset_ftplugin(sourced)
+  const is_reset = s:is_reset_ftplugin(sourced)
   if is_reset
     " NOTE: filetype plugins must be reset to load new ftplugins
     call s:reset_ftplugin()
@@ -151,11 +151,11 @@ function! s:source_events(event, plugins) abort
     return
   endif
 
-  let prev_autocmd = ('autocmd ' .. a:event)->execute()
+  const prev_autocmd = ('autocmd ' .. a:event)->execute()
 
   call dein#autoload#_source(a:plugins)
 
-  let new_autocmd = ('autocmd ' .. a:event)->execute()
+  const new_autocmd = ('autocmd ' .. a:event)->execute()
 
   if a:event ==# 'InsertCharPre'
     " Queue this key again
@@ -175,7 +175,7 @@ function! s:source_events(event, plugins) abort
 endfunction
 
 function! dein#autoload#_on_func(name) abort
-  let function_prefix = a:name->substitute('[^#]*$', '', '')
+  const function_prefix = a:name->substitute('[^#]*$', '', '')
   if function_prefix =~# '^dein#'
         \ || (function_prefix =~# '^vital#' &&
         \     function_prefix !~# '^vital#vital#')
@@ -194,7 +194,7 @@ function! dein#autoload#_on_lua(name) abort
   endif
 
   " Only use the root of module name.
-  let mod_root = a:name->matchstr('^[^./]\+')
+  const mod_root = a:name->matchstr('^[^./]\+')
 
   " Prevent infinite loop
   let g:dein#_called_lua[a:name] = v:true
@@ -222,7 +222,7 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
     return
   endif
 
-  let range = (a:line1 == a:line2) ? '' :
+  const range = (a:line1 == a:line2) ? '' :
         \ (a:line1 == "'<"->line() && a:line2 == "'>"->line()) ?
         \ "'<,'>" : a:line1 .. ',' .. a:line2
 
@@ -235,11 +235,11 @@ function! dein#autoload#_on_cmd(command, name, args, bang, line1, line2) abort
 endfunction
 
 function! dein#autoload#_on_map(mapping, name, mode) abort
-  let cnt = v:count > 0 ? v:count : ''
+  const cnt = v:count > 0 ? v:count : ''
 
-  let input = s:get_input()
+  const input = s:get_input()
 
-  let sourced = dein#source(a:name)
+  const sourced = dein#source(a:name)
   if sourced->empty()
     " Prevent infinite loop
     silent! execute a:mode.'unmap' a:mapping
@@ -248,7 +248,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
   if a:mode ==# 'v' || a:mode ==# 'x'
     call feedkeys('gv', 'n')
   elseif a:mode ==# 'o' && v:operator !=# 'c'
-    let save_operator = v:operator
+    const save_operator = v:operator
     call feedkeys("\<Esc>", 'in')
 
     " Cancel waiting operator mode.
@@ -279,7 +279,7 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
 endfunction
 
 function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
-  let command = a:cmdline->matchstr('\h\w*')
+  const command = a:cmdline->matchstr('\h\w*')
   if (':' .. command)->exists() == 2
     " Remove the dummy command.
     silent! execute 'delcommand' command
@@ -366,7 +366,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
   endif
 endfunction
 function! s:reset_ftplugin() abort
-  let filetype_state = 'filetype'->execute()
+  const filetype_state = 'filetype'->execute()
 
   if 'b:did_indent'->exists() || 'b:did_ftplugin'->exists()
     filetype plugin indent off
@@ -382,7 +382,7 @@ function! s:reset_ftplugin() abort
 endfunction
 function! s:get_input() abort
   let input = ''
-  let termstr = '<M-_>'
+  const termstr = '<M-_>'
 
   call feedkeys(termstr, 'n')
 
