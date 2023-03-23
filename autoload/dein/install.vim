@@ -113,8 +113,8 @@ endfunction
 
 function! dein#install#_get_updated_plugins(plugins, async) abort
   if g:dein#install_github_api_token ==# ''
-    call s:error('You need to set g:dein#install_github_api_token' ..
-          \ ' for the feature.')
+    call s:error('You need to set g:dein#install_github_api_token'
+          \ .. ' for the feature.')
     return []
   endif
   if !(g:dein#install_curl_command->executable())
@@ -142,14 +142,14 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
       endif
 
       " NOTE: "repository" API is faster than "search" API
-      let query ..= printf('a%d:repository(owner:\"%s\", name: \"%s\")' ..
-            \ '{ pushedAt nameWithOwner }',
+      let query ..= printf('a%d:repository(owner:\"%s\", name: \"%s\")'
+            \ .. '{ pushedAt nameWithOwner }',
             \ plug_index, plugin_names[-2], plugin_names[-1])
     endfor
 
     let commands = [
-         \ g:dein#install_curl_command, '-H', 'Authorization: bearer ' ..
-         \ g:dein#install_github_api_token,
+         \ g:dein#install_curl_command, '-H', 'Authorization: bearer '
+          \ .. g:dein#install_github_api_token,
          \ '-X', 'POST', '-d',
          \ '{ "query": "query {' .. query .. '}" }',
          \ 'https://api.github.com/graphql'
@@ -197,10 +197,10 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
   for node in results
     let format = '%Y-%m-%dT%H:%M:%SZ'
     let pushed_at = node['pushedAt']
-    let check_pushed[node['nameWithOwner']] =
-          \ '*strptime'->exists() ?
-          \  format->strptime(pushed_at) :
-          \  dein#DateTime#from_format(pushed_at, format).unix_time()
+    let check_pushed[node['nameWithOwner']]
+          \ = '*strptime'->exists() ?
+          \   format->strptime(pushed_at) :
+          \   dein#DateTime#from_format(pushed_at, format).unix_time()
   endfor
 
   " Get the last updated time by rollbackfile timestamp.
@@ -230,8 +230,8 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
     let local_update = [repo_time, rollback_time]->min()
     if local_update < check_pushed[plugin.repo]
       call add(updated, plugin)
-    elseif abs(local_update - check_pushed[plugin.repo]) <
-          \ g:dein#install_check_remote_threshold
+    elseif abs(local_update - check_pushed[plugin.repo])
+          \ < g:dein#install_check_remote_threshold
       " NOTE: github Graph QL API may use cached value
       " If the repository is updated recently, use "git ls-remote" instead.
       let remote = s:system_cd(['git', 'ls-remote', 'origin', 'HEAD'],
@@ -265,8 +265,8 @@ function! dein#install#_check_update(plugins, force, async) abort
     return
   endif
 
-  const updated_msg = 'Updated plugins: ' ..
-        \ updated->copy()->map({ _, val -> val.name })->string()
+  const updated_msg = 'Updated plugins: '
+        \ .. updated->copy()->map({ _, val -> val.name })->string()
   call s:log(updated_msg)
 
   " NOTE: Use echomsg to display it in confirm

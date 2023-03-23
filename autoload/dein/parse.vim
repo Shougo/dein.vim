@@ -272,8 +272,9 @@ function! dein#parse#_plugins2toml(plugins) abort
         let toml += val->split('\n')
         call add(toml, "'''")
       else
-        call add(toml, key .. ' = ' .. (val->type() == v:t_list &&
-              \ val->len() == 1 ? val[0] : val)->string())
+        call add(toml, key .. ' = '
+              \ .. (val->type() == v:t_list
+              \     && val->len() == 1 ? val[0] : val)->string())
       endif
       unlet! val
     endfor
@@ -381,8 +382,8 @@ function! s:generate_dummy_mappings(plugin) abort
       let mappings = ['<Plug>(' .. a:plugin.normalized_name]
       if a:plugin.normalized_name->stridx('-') >= 0
         " The plugin mappings may use "_" instead of "-".
-        call add(mappings, '<Plug>(' ..
-              \ a:plugin.normalized_name->substitute('-', '_', 'g'))
+        call add(mappings, '<Plug>('
+              \ .. a:plugin.normalized_name->substitute('-', '_', 'g'))
       endif
     endif
 

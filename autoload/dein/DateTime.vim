@@ -62,8 +62,8 @@ endfunction
 " @param timezone = ''
 function! s:from_date(...) abort
   let o = copy(s:DateTime)
-  let [o._year, o._month, o._day, o._hour, o._minute, o._second, tz] =
-  \   a:000 + [1970, 1, 1, 0, 0, 0, ''][a:0 :]
+  let [o._year, o._month, o._day, o._hour, o._minute, o._second, tz]
+        \ = a:000 + [1970, 1, 1, 0, 0, 0, ''][a:0 :]
   let o._timezone = s:timezone(tz)
   return o._normalize()
 endfunction
@@ -178,8 +178,8 @@ function! s:timezone(...) abort
   elseif type(info) == v:t_string
     let list = matchlist(info, '\v^([+-])?(\d{1,2}):?(\d{1,2})?$')
     if !empty(list)
-      let tz._offset = str2nr(list[1] . s:NUM_SECONDS) *
-      \                (str2nr(list[2]) * s:NUM_MINUTES + str2nr(list[3]))
+      let tz._offset = str2nr(list[1] . s:NUM_SECONDS)
+            \ * (str2nr(list[2]) * s:NUM_MINUTES + str2nr(list[3]))
     else
       " TODO: TimeZone names
       throw 'vital: DateTime: Unknown timezone: ' . string(info)
@@ -319,8 +319,8 @@ function! s:DateTime.day_of_week() abort
 endfunction
 function! s:DateTime.day_of_year() abort
   if !has_key(self, '__day_of_year')
-    let self.__day_of_year = self.timezone(0).julian_day() -
-    \                       s:_g2jd(self._year, 1, 1) + 1
+    let self.__day_of_year = self.timezone(0).julian_day()
+          \ - s:_g2jd(self._year, 1, 1) + 1
   endif
   return self.__day_of_year
 endfunction
@@ -356,8 +356,8 @@ function! s:DateTime.unix_time() abort
       let self.__unix_time = -1
     else
       let utc = self.to(0)
-      let self.__unix_time = (utc.julian_day() - s:EPOC_TIME) *
-      \  s:SECONDS_OF_DAY + utc.seconds_of_day()
+      let self.__unix_time = (utc.julian_day() - s:EPOC_TIME)
+            \ * s:SECONDS_OF_DAY + utc.seconds_of_day()
       if self.__unix_time < 0
         let self.__unix_time = -1
       endif
@@ -378,8 +378,8 @@ function! s:DateTime.delta(dt) abort
   const left = self.to(0)
   const right = a:dt.to(0)
   return s:delta(left.days_from_era() - right.days_from_era(),
-  \              (left.seconds_of_day() + left.timezone().offset()) -
-  \              (right.seconds_of_day() + right.timezone().offset()))
+        \        (left.seconds_of_day() + left.timezone().offset())
+        \        - (right.seconds_of_day() + right.timezone().offset()))
 endfunction
 function! s:DateTime.to(...) abort
   let dt = self._clone()

@@ -15,8 +15,8 @@ function! dein#util#_is_windows() abort
 endfunction
 function! dein#util#_is_mac() abort
   return !s:is_windows && !has('win32unix')
-      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
-      \   (!('/proc'->isdirectory()) && 'sw_vers'->executable()))
+        \ && (has('mac') || has('macunix') || has('gui_macvim')
+        \   || (!('/proc'->isdirectory()) && 'sw_vers'->executable()))
 endfunction
 
 function! dein#util#_get_base_path() abort
@@ -89,8 +89,8 @@ function! dein#util#_notify(msg) abort
       call nvim_notify(a:msg, -1, #{ title: title })
     endif
   else
-    if dein#is_available('vim-notification') ||
-        \ 'g:loaded_notification'->exists()
+    if dein#is_available('vim-notification')
+          \ || 'g:loaded_notification'->exists()
       " Use vim-notification plugin
       call notification#show(#{
             \   text: a:msg,
@@ -279,7 +279,7 @@ function! dein#util#_save_state(is_starting) abort
         \ 'g:dein#_init_runtimepath !=# ' ..
         \      g:dein#_init_runtimepath->string() ..
         \      ' | throw ''Cache loading error'' | endif',
-        \ 'let [s:plugins, s:ftplugin] = dein#min#_load_cache_raw('.
+        \ 'let [s:plugins, s:ftplugin] = dein#min#_load_cache_raw(' ..
         \      g:dein#_vimrcs->string() .. ')',
         \ "if s:plugins->empty() | throw 'Cache loading error' | endif",
         \ 'let g:dein#_plugins = s:plugins',
@@ -573,8 +573,8 @@ function! dein#util#_execute_hook(plugin, hook) abort
     let a:plugin.called[string(a:hook)] = v:true
   catch
     call dein#util#_error(
-          \ 'Error occurred while executing hook: ' ..
-          \ a:plugin->get('name', ''))
+          \ 'Error occurred while executing hook: '
+          \ .. a:plugin->get('name', ''))
     call dein#util#_error(v:exception)
   endtry
 endfunction

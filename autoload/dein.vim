@@ -17,8 +17,8 @@ function! dein#is_available(names) abort
   for name in type(a:names) ==# v:t_list ? a:names : [a:names]
     if !(g:dein#_plugins->has_key(name)) | return 0 | endif
     let plugin = g:dein#_plugins[name]
-    if !(plugin.path->isdirectory()) || (plugin->has_key('if') &&
-          \ !(plugin.if->eval())) | return 0 | endif
+    if !(plugin.path->isdirectory()) || (plugin->has_key('if')
+          \ && !(plugin.if->eval())) | return 0 | endif
   endfor
   return 1
 endfunction

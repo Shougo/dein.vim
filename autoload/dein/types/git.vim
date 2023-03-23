@@ -98,8 +98,8 @@ function! s:type.get_uri(repo, options) abort
     return ''
   else
     let uri = (protocol ==# 'ssh' &&
-          \    (host ==# 'github.com' || host ==# 'bitbucket.com' ||
-          \     host ==# 'bitbucket.org')) ?
+          \    (host ==# 'github.com' || host ==# 'bitbucket.com'
+          \     || host ==# 'bitbucket.org')) ?
           \ 'git@' .. host .. ':' .. name :
           \ protocol .. '://' .. host .. '/' .. name
   endif
@@ -180,9 +180,9 @@ function! s:type.get_log_command(plugin, new_rev, old_rev) abort
   const is_not_ancestor = dein#install#_system(
         \ self.command .. ' merge-base '
         \ .. a:old_rev .. ' ' .. a:new_rev) ==# a:old_rev
-  return printf(self.command ..
-        \ ' log %s%s..%s --graph --no-show-signature' ..
-        \ ' --pretty=format:"%%h [%%cr] %%s"',
+  return printf(self.command
+        \ .. ' log %s%s..%s --graph --no-show-signature'
+        \ .. ' --pretty=format:"%%h [%%cr] %%s"',
         \ a:old_rev, (is_not_ancestor ? '' : '^'), a:new_rev)
 endfunction
 function! s:type.get_revision_lock_command(plugin) abort
@@ -293,8 +293,8 @@ function! s:join_paths(path1, path2) abort
   if s:is_absolute(a:path2)
     return a:path2
   endif
-  if a:path1 =~ (s:is_windows ? '[\\/]$' : '/$') ||
-        \ a:path2 =~ (s:is_windows ? '^[\\/]' : '^/')
+  if a:path1 =~ (s:is_windows ? '[\\/]$' : '/$')
+        \ || a:path2 =~ (s:is_windows ? '^[\\/]' : '^/')
     " the appropriate separator already exists
     return a:path1 .. a:path2
   else
