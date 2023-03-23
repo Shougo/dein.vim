@@ -12,9 +12,10 @@ function! s:type.init(repo, options) abort
     return {}
   endif
 
-  let directory = a:repo->fnamemodify(':h')->substitute('\.git$', '', '')
-  let directory = directory->substitute('^https:/\+\|^git@', '', '')
-  let directory = directory->substitute(':', '/', 'g')
+  const directory = a:repo->fnamemodify(':h')
+        \ ->substitute('\.git$', '', '')
+        \ ->substitute('^https:/\+\|^git@', '', '')
+        \ ->substitute(':', '/', 'g')
 
   return #{
         \   name: dein#parse#_name_conversion(a:repo),
@@ -26,6 +27,6 @@ endfunction
 function! s:type.get_sync_command(plugin) abort
   call dein#util#_safe_mkdir(a:plugin.path)
 
-  let outpath = a:plugin.path .. '/' .. a:plugin.repo->fnamemodify(':t')
+  const outpath = a:plugin.path .. '/' .. a:plugin.repo->fnamemodify(':t')
   return dein#util#_download(a:plugin.repo, outpath)
 endfunction

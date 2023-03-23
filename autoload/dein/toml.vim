@@ -46,7 +46,7 @@ function! dein#toml#parse_file(filename) abort
     throw printf("Text.TOML: No such file `%s'.", a:filename)
   endif
 
-  let text = a:filename->readfile()->join("\n")
+  const text = a:filename->readfile()->join("\n")
   " fileencoding is always utf8
   return dein#toml#parse(text->iconv('utf8', &encoding))
 endfunction
@@ -70,7 +70,7 @@ let s:regex_prefix = '\%#=1\C^'
 
 function! s:_consume(input, pattern) abort
   call s:_skip(a:input)
-  let end = a:input.text->matchend(s:regex_prefix .. a:pattern, a:input.p)
+  const end = a:input.text->matchend(s:regex_prefix .. a:pattern, a:input.p)
 
   if end == -1
     call s:_error(a:input)
@@ -78,7 +78,7 @@ function! s:_consume(input, pattern) abort
     return ''
   endif
 
-  let matched = a:input.text->strpart(a:input.p, end - a:input.p)
+  const matched = a:input.text->strpart(a:input.p, end - a:input.p)
   let a:input.p = end
   return matched
 endfunction
@@ -140,8 +140,7 @@ function! s:_parse(input) abort
 endfunction
 
 function! s:_key(input) abort
-  let s = s:_consume(a:input, s:table_key_pattern)
-  return s
+  return s:_consume(a:input, s:table_key_pattern)
 endfunction
 
 function! s:_equals(input) abort
@@ -179,28 +178,24 @@ endfunction
 " String
 "
 function! s:_basic_string(input) abort
-  let s = s:_consume(a:input, '"\%(\\"\|[^"]\)*"')
-  let s = s[1 : -2]
+  const s = s:_consume(a:input, '"\%(\\"\|[^"]\)*"')[1 : -2]
   return s:_unescape(s)
 endfunction
 
 function! s:_multiline_basic_string(input) abort
-  let s = s:_consume(a:input, '"\{3}\_.\{-}"\{3}')
-  let s = s[3 : -4]
-  let s = s->substitute("^\n", '', '')
-  let s = s->substitute('\\' .. "\n" .. '\_s*', '', 'g')
+  const s = s:_consume(a:input, '"\{3}\_.\{-}"\{3}')[3 : -4]
+        \ ->substitute("^\n", '', '')
+        \ ->substitute('\\' .. "\n" .. '\_s*', '', 'g')
   return s:_unescape(s)
 endfunction
 
 function! s:_literal(input) abort
-  let s = s:_consume(a:input, "'[^']*'")
-  return s[1 : -2]
+  return s:_consume(a:input, "'[^']*'")[1 : -2]
 endfunction
 
 function! s:_multiline_literal(input) abort
-  let s = s:_consume(a:input, "'\\{3}.\\{-}'\\{3}")
-  let s = s[3 : -4]
-  let s = s->substitute("^\n", '', '')
+  const s = s:_consume(a:input, "'\\{3}.\\{-}'\\{3}")[3 : -4]
+        \ ->substitute("^\n", '', '')
   return s
 endfunction
 
@@ -208,8 +203,7 @@ endfunction
 " Integer
 "
 function! s:_integer(input) abort
-  let s = s:_consume(a:input, '[+-]\?\d\+')
-  return s->str2nr()
+  return s:_consume(a:input, '[+-]\?\d\+')->str2nr()
 endfunction
 
 "
@@ -224,28 +218,26 @@ function! s:_float(input) abort
 endfunction
 
 function! s:_fractional(input) abort
-  let s = s:_consume(a:input, '[+-]\?[0-9.]\+')
-  return s->str2float()
+  return s:_consume(a:input, '[+-]\?[0-9.]\+')->str2float()
 endfunction
 
 function! s:_exponent(input) abort
-  let s = s:_consume(a:input, '[+-]\?[0-9.]\+[eE][+-]\?\d\+')
-  return s->str2float()
+  return s:_consume(a:input, '[+-]\?[0-9.]\+[eE][+-]\?\d\+')->str2float()
 endfunction
 
 "
 " Boolean
 "
 function! s:_boolean(input) abort
-  let s = s:_consume(a:input, '\%(true\|false\)')
-  return (s ==# 'true') ? v:true : v:false
+  return (s:_consume(a:input, '\%(true\|false\)') ==# 'true') ?
+        \ v:true : v:false
 endfunction
 
 "
 " Datetime
 "
 function! s:_datetime(input) abort
-  let s = s:_consume(a:input,
+  const s = s:_consume(a:input,
         \ '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(Z\|' .
         \ '-\?\d\{2}:\d\{2}\|\.\d\+-\d\{2}:\d\{2}\)')
   return s
@@ -332,19 +324,19 @@ function! s:_array_of_tables(input) abort
 endfunction
 
 function! s:_unescape(text) abort
-  let text = a:text
-  let text = text->substitute('\\"', '"', 'g')
-  let text = text->substitute('\\b', "\b", 'g')
-  let text = text->substitute('\\t', "\t", 'g')
-  let text = text->substitute('\\n', "\n", 'g')
-  let text = text->substitute('\\f', "\f", 'g')
-  let text = text->substitute('\\r', "\r", 'g')
-  let text = text->substitute('\\/', '/', 'g')
-  let text = text->substitute('\\\\', '\', 'g')
-  let text = text->substitute('\C\\u\(\x\{4}\)',
-        \ '\=s:_nr2char("0x" .. submatch(1))', 'g')
-  let text = text->substitute('\C\\U\(\x\{8}\)',
-        \ '\=s:_nr2char("0x" .. submatch(1))', 'g')
+  const text = a:text
+        \ ->substitute('\\"', '"', 'g')
+        \ ->substitute('\\b', "\b", 'g')
+        \ ->substitute('\\t', "\t", 'g')
+        \ ->substitute('\\n', "\n", 'g')
+        \ ->substitute('\\f', "\f", 'g')
+        \ ->substitute('\\r', "\r", 'g')
+        \ ->substitute('\\/', '/', 'g')
+        \ ->substitute('\\\\', '\', 'g')
+        \ ->substitute('\C\\u\(\x\{4}\)',
+        \              '\=s:_nr2char("0x" .. submatch(1))', 'g')
+        \ ->substitute('\C\\U\(\x\{8}\)',
+        \            '\=s:_nr2char("0x" .. submatch(1))', 'g')
   return text
 endfunction
 
