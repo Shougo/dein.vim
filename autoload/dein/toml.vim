@@ -238,7 +238,7 @@ endfunction
 "
 function! s:_datetime(input) abort
   const s = s:_consume(a:input,
-        \ '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(Z\|' .
+        \ '\d\{4}-\d\{2}-\d\{2}T\d\{2}:\d\{2}:\d\{2}\%(Z\|' ..
         \ '-\?\d\{2}:\d\{2}\|\.\d\+-\d\{2}:\d\{2}\)')
   return s
 endfunction

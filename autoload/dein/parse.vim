@@ -9,8 +9,8 @@ let s:git = dein#types#git#define()
 
 function! dein#parse#_add(repo, options, overwrite) abort
   let plugin = dein#parse#_dict(dein#parse#_init(a:repo, a:options))
-  let plugin_check = g:dein#_plugins->get(plugin.name, {})
-  let overwrite = a:options->get('overwrite', a:overwrite)
+  const plugin_check = g:dein#_plugins->get(plugin.name, {})
+  const overwrite = a:options->get('overwrite', a:overwrite)
   if plugin_check->get('sourced', 0)
     " Skip already loaded plugin.
     return {}
@@ -59,7 +59,7 @@ function! dein#parse#_add(repo, options, overwrite) abort
   return plugin
 endfunction
 function! dein#parse#_init(repo, options) abort
-  let repo = dein#util#_expand(a:repo)
+  const repo = dein#util#_expand(a:repo)
   let plugin = a:options->has_key('type') ?
         \ dein#util#_get_type(a:options.type).init(repo, a:options) :
         \ s:git.init(repo, a:options)
@@ -105,7 +105,7 @@ function! dein#parse#_dict(plugin) abort
   let plugin.path = dein#util#_chomp(dein#util#_expand(plugin.path))
   if plugin->get('rev', '') !=# ''
     " Add revision path
-    let plugin.path .= '_' .. plugin.rev->substitute(
+    let plugin.path ..= '_' .. plugin.rev->substitute(
           \ '[^[:alnum:].-]', '_', 'g')
   endif
 
@@ -124,7 +124,7 @@ function! dein#parse#_dict(plugin) abort
 
   if plugin->has_key('script_type')
     " Add script_type.
-    let plugin.path .= '/' .. plugin.script_type
+    let plugin.path ..= '/' .. plugin.script_type
   endif
 
   if plugin->has_key('depends') && plugin.depends->type() != v:t_list
@@ -187,12 +187,12 @@ function! dein#parse#_load_toml(filename, default) abort
 
   " Parse.
   if toml->has_key('lua_add')
-    let g:dein#_hook_add .= printf("\nlua <<EOF\n%s\nEOF",
+    let g:dein#_hook_add ..= printf("\nlua <<EOF\n%s\nEOF",
           \   toml.lua_add->substitute('\n\s*\\', '', 'g'),
           \ )
   endif
   if toml->has_key('hook_add')
-    let g:dein#_hook_add .= printf("\n%s",
+    let g:dein#_hook_add ..= printf("\n%s",
           \   toml.hook_add->substitute('\n\s*\\', '', 'g'),
           \ )
   endif
@@ -289,7 +289,7 @@ function! dein#parse#_load_dict(dict, default) abort
   endfor
 endfunction
 function! dein#parse#_local(localdir, options, includes) abort
-  let base = fnamemodify(dein#util#_expand(a:localdir), ':p')
+  const base = fnamemodify(dein#util#_expand(a:localdir), ':p')
   let directories = []
   for glob in a:includes
     let directories += (base .. glob)->glob(v:true, v:true)
@@ -403,12 +403,12 @@ function! s:generate_dummy_mappings(plugin) abort
   endfor
 endfunction
 function! s:merge_ftplugin(ftplugin) abort
-  let pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
+  const pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
   for [ft, val] in a:ftplugin->items()
     if !(g:dein#ftplugin->has_key(ft))
       let g:dein#ftplugin[ft] = val
     else
-      let g:dein#ftplugin[ft] .= "\n" .. val
+      let g:dein#ftplugin[ft] ..= "\n" .. val
     endif
   endfor
   call map(g:dein#ftplugin, { _, val -> val->substitute(pattern, '', 'g') })
@@ -446,6 +446,6 @@ function! s:check_type(repo, options) abort
 endfunction
 
 function! dein#parse#_name_conversion(path) abort
-  return a:path->split(':')->get(-1, '')->fnamemodify(
-        \ ':s?/$??:t:s?\c\.git\s*$??')
+  return a:path->split(':')->get(-1, '')
+        \ ->fnamemodify(':s?/$??:t:s?\c\.git\s*$??')
 endfunction

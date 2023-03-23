@@ -5,7 +5,7 @@ const s:assert = themis#helper('assert')
 
 let s:path = '.cache'->fnamemodify(':p')
 if s:path !~ '/$'
-  let s:path .= '/'
+  let s:path ..= '/'
 endif
 const s:runtimepath_save = &runtimepath
 const s:filetype_save = &l:filetype

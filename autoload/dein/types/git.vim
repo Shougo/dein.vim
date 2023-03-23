@@ -149,10 +149,10 @@ function! s:type.get_sync_command(plugin) abort
     if dein#util#_is_powershell()
       let cmd = fetch_cmd
       if depth <= 0
-        let cmd .= '; if ($?) { ' .. remote_origin_cmd .. ' }'
+        let cmd ..= '; if ($?) { ' .. remote_origin_cmd .. ' }'
       endif
-      let cmd .= '; if ($?) { ' .. pull_cmd .. ' }'
-      let cmd .= '; if ($?) { ' .. submodule_cmd .. ' }'
+      let cmd ..= '; if ($?) { ' .. pull_cmd .. ' }'
+      let cmd ..= '; if ($?) { ' .. submodule_cmd .. ' }'
     else
       const and = dein#util#_is_fish() ? '; and ' : ' && '
       let cmds = [fetch_cmd]

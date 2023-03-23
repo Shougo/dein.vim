@@ -400,7 +400,7 @@ function! s:DateTime.format(format, ...) abort
   let result = ''
   for f in s:_split_format(a:format)
     if type(f) == v:t_string
-      let result .= f
+      let result ..= f
     elseif type(f) == v:t_list
       let [info, flag, width] = f
       let padding = ''
@@ -429,7 +429,7 @@ function! s:DateTime.format(format, ...) abort
       elseif flag ==# '0'
         let padding = '0'
       endif
-      let result .= printf('%' . padding . width . 's', value)
+      let result ..= printf('%' . padding . width . 's', value)
       unlet value
     endif
     unlet f
@@ -592,9 +592,9 @@ function! s:TimeDelta.to_string() abort
   let str = self.sign() < 0 ? '-' : ''
   let d = self.duration()
   if d._days != 0
-    let str .= d._days . (d._days == 1 ? 'day' : 'days') . ', '
+    let str ..= d._days .. (d._days == 1 ? 'day' : 'days') .. ', '
   endif
-  let str .= printf('%02d:%02d:%02d', d.hours(), d.minutes(), d.seconds())
+  let str ..= printf('%02d:%02d:%02d', d.hours(), d.minutes(), d.seconds())
   return str
 endfunction
 function! s:TimeDelta._normalize() abort

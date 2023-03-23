@@ -388,7 +388,7 @@ function! s:get_input() abort
 
   while 1
     let char = getchar()
-    let input .= (char->type() == v:t_number) ? char->nr2char() : char
+    let input ..= (char->type() == v:t_number) ? char->nr2char() : char
 
     let idx = input->stridx(termstr)
     if idx >= 1

@@ -36,7 +36,7 @@ function! dein#util#_get_cache_path() abort
     return g:dein#_cache_path
   endif
 
-  let vimrc_path = has('nvim') && exists('$NVIM_APPNAME') ?
+  const vimrc_path = has('nvim') && exists('$NVIM_APPNAME') ?
         \ $NVIM_APPNAME :
         \ dein#util#_get_myvimrc()->fnamemodify(':t')
   let g:dein#_cache_path = dein#util#_substitute_path(
@@ -52,7 +52,7 @@ function! dein#util#_get_vimrcs(vimrcs) abort
         \ [dein#util#_get_myvimrc()]
 endfunction
 function! dein#util#_get_myvimrc() abort
-  let vimrc = $MYVIMRC !=# '' ? $MYVIMRC :
+  const vimrc = $MYVIMRC !=# '' ? $MYVIMRC :
         \ 'scriptnames'->execute()->split('\n')[0]
         \  ->matchstr('^\s*\d\+:\s\zs.*')
   return dein#util#_substitute_path(vimrc)
@@ -76,7 +76,7 @@ function! dein#util#_notify(msg) abort
     return
   endif
 
-  let title = '[dein]'
+  const title = '[dein]'
 
   if has('nvim')
     if dein#util#_luacheck('notify')
@@ -153,8 +153,9 @@ function! dein#util#_check_lazy_plugins() abort
         \ })->map({ _, val -> val.name })
 endfunction
 function! dein#util#_check_clean() abort
-  let plugins_directories = dein#get()->values()->map({ _, val -> val.path })
-  let path = dein#util#_substitute_path(
+  const plugins_directories = dein#get()->values()
+        \ ->map({ _, val -> val.path })
+  const path = dein#util#_substitute_path(
         \ 'repos/*/*/*'->globpath(dein#util#_get_base_path(), v:true))
   return path->split("\n")->filter( { _, val ->
         \  val->isdirectory() && val->fnamemodify(':t') !=# 'dein.vim'
@@ -167,7 +168,7 @@ function! dein#util#_cache_writefile(list, path) abort
     return 1
   endif
 
-  let path = dein#util#_get_cache_path() .. '/' .. a:path
+  const path = dein#util#_get_cache_path() .. '/' .. a:path
   return dein#util#_safe_writefile(a:list, path)
 endfunction
 function! dein#util#_safe_writefile(list, path, flags = '') abort
@@ -228,15 +229,15 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
 
   call dein#util#_safe_mkdir(g:dein#_base_path)
 
-  let src = [plugins, g:dein#ftplugin]
+  const src = [plugins, g:dein#ftplugin]
   call dein#util#_safe_writefile(
         \ has('nvim') ? [src->json_encode()] : [src->js_encode()],
         \ g:->get('dein#cache_directory', g:dein#_base_path)
         \ .'/cache_' .. g:dein#_progname)
 endfunction
 function! dein#util#_check_vimrcs() abort
-  let time = dein#util#_get_runtime_path()->getftime()
-  let ret = !(g:dein#_vimrcs->copy()
+  const time = dein#util#_get_runtime_path()->getftime()
+  const ret = !(g:dein#_vimrcs->copy()
         \ ->map({ _, val -> val->expand()->getftime() })
         \ ->filter({ _, val -> time < val })->empty())
   if !ret
@@ -360,12 +361,12 @@ function! dein#util#_save_state(is_starting) abort
           \ event, plugins->string()))
   endfor
 
-  let state = g:->get('dein#cache_directory', g:dein#_base_path)
+  const state = g:->get('dein#cache_directory', g:dein#_base_path)
         \ .. '/state_' .. g:dein#_progname .. '.vim'
   call dein#util#_safe_writefile(lines, state)
 endfunction
 function! dein#util#_clear_state() abort
-  let base = g:->get('dein#cache_directory', g:dein#_base_path)
+  const base = g:->get('dein#cache_directory', g:dein#_base_path)
   for cache in (base .. '/state_*.vim')->glob(v:true, v:true)
         \ + (base .. '/cache_*')->glob(v:true, v:true)
     call delete(cache)
@@ -413,7 +414,7 @@ function! dein#util#_begin(path, vimrcs) abort
 
   " Insert dein runtimepath to the head in 'runtimepath'.
   let rtps = dein#util#_split_rtp(&runtimepath)
-  let idx = rtps->index(dein#util#_substitute_path($VIMRUNTIME))
+  const idx = rtps->index(dein#util#_substitute_path($VIMRUNTIME))
   if idx < 0
     call dein#util#_error(printf(
           \ '%s is not contained in "runtimepath".', $VIMRUNTIME))
@@ -451,7 +452,7 @@ function! dein#util#_end() abort
 
   " Add runtimepath
   let rtps = dein#util#_split_rtp(&runtimepath)
-  let index = rtps->index(g:dein#_runtime_path)
+  const index = rtps->index(g:dein#_runtime_path)
   if index < 0
     call dein#util#_error(printf(
           \ '%s is not contained in "runtimepath".', $VIMRUNTIME))
@@ -492,7 +493,7 @@ function! dein#util#_end() abort
   for multi in g:dein#_multiple_plugins->copy()
         \ ->filter({ _, val -> dein#is_available(val.plugins) })
     if multi->has_key('hook_add')
-      let g:dein#_hook_add .= "\n" .. multi.hook_add->substitute(
+      let g:dein#_hook_add ..= "\n" .. multi.hook_add->substitute(
             \ '\n\s*\\', '', 'g')
     endif
   endfor
@@ -516,7 +517,7 @@ function! dein#util#_end() abort
   endif
 endfunction
 function! dein#util#_config(arg, dict) abort
-  let name = a:arg->type() == v:t_dict ?
+  const name = a:arg->type() == v:t_dict ?
         \   g:dein#name : a:arg
   let dict = a:arg->type() == v:t_dict ?
         \   a:arg : a:dict
@@ -534,7 +535,7 @@ function! dein#util#_config(arg, dict) abort
 endfunction
 
 function! dein#util#_call_hook(hook_name, plugins = []) abort
-  let hook = 'hook_' .. a:hook_name
+  const hook = 'hook_' .. a:hook_name
   let plugins = dein#util#_tsort(dein#util#_get_plugins(a:plugins))
         \ ->filter({ _, val ->
         \    ((a:hook_name !=# 'source'
@@ -572,7 +573,7 @@ function! dein#util#_execute_hook(plugin, hook) abort
     let a:plugin.called[string(a:hook)] = v:true
   catch
     call dein#util#_error(
-          \ 'Error occurred while executing hook: ' .
+          \ 'Error occurred while executing hook: ' ..
           \ a:plugin->get('name', ''))
     call dein#util#_error(v:exception)
   endtry
@@ -609,7 +610,7 @@ function! dein#util#_split_rtp(runtimepath) abort
   if a:runtimepath->stridx('\,') < 0
     let rtps = a:runtimepath->split(',')
   else
-    let split = a:runtimepath->split('\\\@<!\%(\\\\\)*\zs,')
+    const split = a:runtimepath->split('\\\@<!\%(\\\\\)*\zs,')
     let rtps = split
           \ ->map({ _, val -> val->substitute('\\\([\\,]\)', '\1', 'g') })
   endif
@@ -622,14 +623,14 @@ function! dein#util#_join_rtp(list, runtimepath, rtp) abort
 endfunction
 
 function! dein#util#_add_after(rtps, path) abort
-  let idx = a:rtps->index(dein#util#_substitute_path($VIMRUNTIME))
+  const idx = a:rtps->index(dein#util#_substitute_path($VIMRUNTIME))
   call insert(a:rtps, a:path, (idx <= 0 ? -1 : idx + 1))
 endfunction
 
 function! dein#util#_expand(path) abort
-  let path = (a:path =~# '^\~') ? a:path->fnamemodify(':p') :
-        \ (a:path =~# '^\$\h\w*') ? a:path->substitute(
-        \               '^\$\h\w*', '\=eval(submatch(0))', '') :
+  const path = (a:path =~# '^\~') ? a:path->fnamemodify(':p') :
+        \ (a:path =~# '^\$\h\w*') ? a:path
+        \ ->substitute('^\$\h\w*', '\=eval(submatch(0))', '') :
         \ a:path
   return (s:is_windows && path =~# '\\') ?
         \ dein#util#_substitute_path(path) : path
@@ -698,7 +699,8 @@ function! dein#util#_download(uri, outpath) abort
   elseif dein#util#_is_windows()
     " Use powershell
     " Todo: Proxy support
-    let pscmd = printf("(New-Object Net.WebClient).DownloadFile('%s', '%s')",
+    const pscmd = printf(
+          \ "(New-Object Net.WebClient).DownloadFile('%s', '%s')",
           \ a:uri, a:outpath)
     return printf('powershell -Command "%s"', pscmd)
   else
@@ -727,7 +729,7 @@ function! dein#util#_check_install(plugins) abort
   endif
 
   if !(a:plugins->empty())
-    let invalids = dein#util#_convert2list(a:plugins)
+    const invalids = dein#util#_convert2list(a:plugins)
           \ ->filter({ _, val -> dein#get(val)->empty() })
     if !(invalids->empty())
       call dein#util#_error('Invalid plugins: ' .. invalids->string())
@@ -739,7 +741,7 @@ function! dein#util#_check_install(plugins) abort
         \ ->map({ _, val -> dein#get(val) })
   let plugins = plugins->filter({ _, val -> !(val.path->isdirectory()) })
   if empty(plugins) | return 0 | endif
-  call dein#util#_notify('Not installed plugins: ' .
+  call dein#util#_notify('Not installed plugins: ' ..
         \ plugins->map({ _, val -> val.name })->string())
   return 1
 endfunction

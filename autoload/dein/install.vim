@@ -113,7 +113,7 @@ endfunction
 
 function! dein#install#_get_updated_plugins(plugins, async) abort
   if g:dein#install_github_api_token ==# ''
-    call s:error('You need to set g:dein#install_github_api_token' .
+    call s:error('You need to set g:dein#install_github_api_token' ..
           \ ' for the feature.')
     return []
   endif
@@ -125,7 +125,7 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
   let context = s:init_context(a:plugins, 'check_update', 0)
   call s:init_variables(context)
 
-  let query_max = 100
+  const query_max = 100
   let plugins = dein#util#_get_plugins(a:plugins)
   let processes = []
   for index in range(0, plugins->len() - 1, query_max)
@@ -142,13 +142,13 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
       endif
 
       " NOTE: "repository" API is faster than "search" API
-      let query .= printf('a%d:repository(owner:\"%s\", name: \"%s\")' .
+      let query ..= printf('a%d:repository(owner:\"%s\", name: \"%s\")' ..
             \ '{ pushedAt nameWithOwner }',
             \ plug_index, plugin_names[-2], plugin_names[-1])
     endfor
 
     let commands = [
-         \ g:dein#install_curl_command, '-H', 'Authorization: bearer ' .
+         \ g:dein#install_curl_command, '-H', 'Authorization: bearer ' ..
          \ g:dein#install_github_api_token,
          \ '-X', 'POST', '-d',
          \ '{ "query": "query {' .. query .. '}" }',
@@ -161,7 +161,7 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
       if candidates->empty()
         call add(candidates, a:data[0])
       else
-        let candidates[-1] .= a:data[0]
+        let candidates[-1] ..= a:data[0]
       endif
 
       let candidates += a:data[1:]
@@ -205,9 +205,9 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
 
   " Get the last updated time by rollbackfile timestamp.
   " NOTE: .git timestamp may be changed by git commands.
-  let rollbacks = (s:get_rollback_directory() .. '/*')->glob(
+  const rollbacks = (s:get_rollback_directory() .. '/*')->glob(
         \ v:true, v:true)->sort()->reverse()
-  let rollback_time = rollbacks->empty() ? -1 : rollbacks[0]->getftime()
+  const rollback_time = rollbacks->empty() ? -1 : rollbacks[0]->getftime()
 
   " Compare with .git directory updated time.
   let updated = []
@@ -259,13 +259,13 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
   return updated
 endfunction
 function! dein#install#_check_update(plugins, force, async) abort
-  let updated = dein#install#_get_updated_plugins(a:plugins, a:async)
+  const updated = dein#install#_get_updated_plugins(a:plugins, a:async)
   if updated->empty()
     call s:notify(strftime('Done: (%Y/%m/%d %H:%M:%S)'))
     return
   endif
 
-  let updated_msg = 'Updated plugins: ' .
+  const updated_msg = 'Updated plugins: ' ..
         \ updated->copy()->map({ _, val -> val.name })->string()
   call s:log(updated_msg)
 
@@ -326,8 +326,8 @@ function! dein#install#_direct_install(repo, options) abort
   call dein#source(plugin.name)
 
   " Add to direct_install.vim
-  let file = dein#get_direct_plugins_path()
-  let line = printf('call dein#add(%s, %s)',
+  const file = dein#get_direct_plugins_path()
+  const line = printf('call dein#add(%s, %s)',
         \ a:repo->string(), options->string())
   if !(file->filereadable())
     call dein#util#_safe_writefile([line], file)
@@ -341,8 +341,8 @@ function! dein#install#_rollback(date, plugins) abort
     return
   endif
 
-  let glob = s:get_rollback_directory() .. '/' .. a:date .. '*'
-  let rollbacks = glob->glob(v:true, v:true)->sort()->reverse()
+  const glob = s:get_rollback_directory() .. '/' .. a:date .. '*'
+  const rollbacks = glob->glob(v:true, v:true)->sort()->reverse()
   if rollbacks->empty()
     return
   endif
@@ -355,7 +355,7 @@ function! dein#install#_recache_runtimepath() abort
     return
   endif
 
-  let start = reltime()
+  const start = reltime()
 
   " Clear runtime path.
   call s:clear_runtimepath()
@@ -373,7 +373,7 @@ function! dein#install#_recache_runtimepath() abort
 
   call s:copy_files(lazy_merged_plugins, '')
 
-  let runtime = dein#util#_get_runtime_path()
+  const runtime = dein#util#_get_runtime_path()
 
   " Remove plugin directory
   call dein#install#_rm(runtime .. '/plugin')
@@ -405,7 +405,7 @@ function! dein#install#_recache_runtimepath() abort
   call dein#util#_clear_state()
 
   call s:log('Runtimepath updated: (%Y/%m/%d %H:%M:%S)'->strftime())
-  call s:log('recache_runtimepath: ' .
+  call s:log('recache_runtimepath: ' ..
         \ start->reltime()->reltimestr()->split()[0])
 endfunction
 function! s:clear_runtimepath() abort
@@ -414,7 +414,7 @@ function! s:clear_runtimepath() abort
     return
   endif
 
-  let runtimepath = dein#util#_get_runtime_path()
+  const runtimepath = dein#util#_get_runtime_path()
 
   " Remove runtime path
   call dein#install#_rm(runtimepath)
@@ -430,7 +430,7 @@ function! s:helptags() abort
   endif
 
   try
-    let tags = dein#util#_get_runtime_path() .. '/doc'
+    const tags = dein#util#_get_runtime_path() .. '/doc'
     call dein#util#_safe_mkdir(tags)
     call s:copy_files(dein#get()->values()
           \ ->filter({ _, val -> !val.merged &&
@@ -445,11 +445,11 @@ function! s:helptags() abort
   endtry
 endfunction
 function! s:copy_files(plugins, directory) abort
-  let directory = (a:directory ==# '' ? '' : '/' .. a:directory)
-  let srcs = a:plugins->copy()
+  const directory = (a:directory ==# '' ? '' : '/' .. a:directory)
+  const srcs = a:plugins->copy()
         \ ->map({ _, val -> val.rtp .. directory })
         \ ->filter({ _, val -> val->isdirectory() })
-  let stride = 50
+  const stride = 50
   for start in range(0, srcs->len(), stride)
     call dein#install#_copy_directories(srcs[start : start + stride-1],
           \ dein#util#_get_runtime_path() .. directory)
@@ -513,11 +513,11 @@ function! dein#install#_load_rollback(rollbackfile, plugins) abort
   endfor
 
   call dein#recache_runtimepath()
-  call s:error('Rollback to ' .
+  call s:error('Rollback to ' ..
         \ a:rollbackfile->fnamemodify(':t') .. ' version.')
 endfunction
 function! s:get_rollback_directory() abort
-  let parent = printf('%s/rollbacks/%s',
+  const parent = printf('%s/rollbacks/%s',
         \ dein#util#_get_cache_path(), g:dein#_progname)
   call dein#util#_safe_mkdir(parent)
 
@@ -572,7 +572,7 @@ function! s:generate_ftplugin() abort
   endif
 
   " Create after/ftplugin
-  let after = dein#util#_get_runtime_path() .. '/after/ftplugin'
+  const after = dein#util#_get_runtime_path() .. '/after/ftplugin'
   call dein#util#_safe_mkdir(after)
 
   " Merge g:dein#ftplugin
@@ -582,7 +582,7 @@ function! s:generate_ftplugin() abort
       if !(ftplugin->has_key(ft))
         let ftplugin[ft] = (ft ==# '_') ? [] : [
               \ "if 'b:undo_ftplugin'->exists()",
-              \ "  let b:undo_ftplugin .= '|'",
+              \ "  let b:undo_ftplugin ..= '|'",
               \ 'else',
               \ "  let b:undo_ftplugin = ''",
               \ 'endif',
@@ -614,7 +614,7 @@ endfunction
 function! dein#install#_polling() abort
   if '+guioptions'->exists()
     " NOTE: guioptions-! does not work in async state
-    let save_guioptions = &guioptions
+    const save_guioptions = &guioptions
     set guioptions-=!
   endif
 
@@ -671,7 +671,7 @@ function! dein#install#_each(cmd, plugins) abort
   let context = s:init_context(plugins, 'each', 0)
   call s:init_variables(context)
 
-  let cwd = getcwd()
+  const cwd = getcwd()
   let error = 0
   try
     for plugin in plugins
@@ -721,7 +721,7 @@ function! dein#install#_get_failed_plugins() abort
 endfunction
 
 function! s:get_progress_message(name, number, max) abort
-  let len = a:max->len()
+  const len = a:max->len()
   return printf('(%' .. len .. 'd/%' .. len .. 'd) [%s%s] %s',
         \ a:number, a:max,
         \ '+'->repeat(a:number * 20 / a:max),
@@ -736,10 +736,10 @@ function! s:get_short_message(plugin, number, max, message) abort
   return printf('(%' .. a:max->len() .. 'd/%d) %s', a:number, a:max, a:message)
 endfunction
 function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
-  let type = dein#util#_get_type(a:plugin.type)
+  const type = dein#util#_get_type(a:plugin.type)
 
   if type->has_key('get_sync_command')
-    let cmd = type.get_sync_command(a:plugin)
+    const cmd = type.get_sync_command(a:plugin)
   else
     return ['', '']
   endif
@@ -748,7 +748,8 @@ function! s:get_sync_command(plugin, update_type, number, max) abort "{{{i
     return ['', '']
   endif
 
-  let message = s:get_plugin_message(a:plugin, a:number, a:max, cmd->string())
+  const message = s:get_plugin_message(
+        \ a:plugin, a:number, a:max, cmd->string())
 
   return [cmd, message]
 endfunction
@@ -757,7 +758,7 @@ function! s:get_revision_number(plugin) abort
     return ''
   endif
 
-  let type = dein#util#_get_type(a:plugin.type)
+  const type = dein#util#_get_type(a:plugin.type)
 
   if type->has_key('get_revision_number')
     return type.get_revision_number(a:plugin)
@@ -767,12 +768,12 @@ function! s:get_revision_number(plugin) abort
     return ''
   endif
 
-  let cmd = type.get_revision_number_command(a:plugin)
+  const cmd = type.get_revision_number_command(a:plugin)
   if cmd->empty()
     return ''
   endif
 
-  let rev = s:system_cd(cmd, a:plugin.path)
+  const rev = s:system_cd(cmd, a:plugin.path)
 
   " If rev contains spaces, it is error message
   if rev =~# '\s'
@@ -787,26 +788,26 @@ function! s:get_revision_number(plugin) abort
   return rev
 endfunction
 function! s:get_updated_log_message(plugin, new_rev, old_rev) abort
-  let type = dein#util#_get_type(a:plugin.type)
+  const type = dein#util#_get_type(a:plugin.type)
 
-  let cmd = type->has_key('get_log_command') ?
+  const cmd = type->has_key('get_log_command') ?
         \ type.get_log_command(a:plugin, a:new_rev, a:old_rev) : ''
-  let log = cmd->empty() ? '' : s:system_cd(cmd, a:plugin.path)
+  const log = cmd->empty() ? '' : s:system_cd(cmd, a:plugin.path)
   return log !=# '' ? log :
         \            (a:old_rev  == a:new_rev) ? ''
         \            : printf('%s -> %s', a:old_rev, a:new_rev)
 endfunction
 function! s:lock_revision(process, context) abort
-  let num = a:process.number
-  let max = a:context.max_plugins
+  const num = a:process.number
+  const max = a:context.max_plugins
   let plugin = a:process.plugin
 
-  let type = dein#util#_get_type(plugin.type)
+  const type = dein#util#_get_type(plugin.type)
   if !(type->has_key('get_revision_lock_command'))
     return 0
   endif
 
-  let cmd = type.get_revision_lock_command(plugin)
+  const cmd = type.get_revision_lock_command(plugin)
 
   if cmd->empty()
     " Skipped.
@@ -822,8 +823,8 @@ function! s:lock_revision(process, context) abort
     call s:log(s:get_plugin_message(plugin, num, max, 'Locked'))
   endif
 
-  let result = s:system_cd(cmd, plugin.path)
-  let status = dein#install#_status()
+  const result = s:system_cd(cmd, plugin.path)
+  const status = dein#install#_status()
 
   if status
     call s:error(plugin.path)
@@ -858,8 +859,8 @@ function! s:get_errored_message(plugins) abort
 
   let msg = "Error installing plugins:\n".
         \ a:plugins->copy()->map({ _, val -> '  ' .. val.name })->join("\n")
-  let msg .= "\n"
-  let msg .= "Please read the error message log with the :message command.\n"
+  let msg ..= "\n"
+  let msg ..= "Please read the error message log with the :message command.\n"
 
   return msg
 endfunction
@@ -872,8 +873,8 @@ function! s:get_breaking_message(plugins) abort
         \ a:plugins->copy()
         \ ->map({ _, val -> printf("  %s\n%s", val.name, v:val.log_message)
         \ }), "\n")
-  let msg .= "\n"
-  let msg .= "Please read the plugins documentation."
+  let msg ..= "\n"
+  let msg ..= "Please read the plugins documentation."
 
   return msg
 endfunction
@@ -900,7 +901,7 @@ function! s:check_diff(plugins) abort
   endfor
 endfunction
 function! s:check_diff_on_out(data) abort
-  let bufname = 'dein-diff'
+  const bufname = 'dein-diff'
   if !(bufname->bufexists())
     let bufnr = bufname->bufadd()
   else
@@ -908,12 +909,12 @@ function! s:check_diff_on_out(data) abort
   endif
 
   if bufnr->bufwinnr() < 0
-    let cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile nolist'
+    const cmd = 'setlocal bufhidden=wipe filetype=diff buftype=nofile nolist'
           \ .. '| syntax enable'
     execute printf('sbuffer +%s', cmd->escape(' ')) bufnr
   endif
 
-  let current = bufnr->getbufline('$')[0]
+  const current = bufnr->getbufline('$')[0]
   call setbufline(bufnr, '$', current .. a:data[0])
   call appendbufline(bufnr, '$', a:data[1:])
 endfunction
@@ -944,7 +945,7 @@ function! s:job_system.on_out(data) abort
   if candidates->empty()
     call add(candidates, a:data[0])
   else
-    let candidates[-1] .= a:data[0]
+    let candidates[-1] ..= a:data[0]
   endif
   let candidates += a:data[1:]
 endfunction
@@ -964,7 +965,7 @@ function! dein#install#_status() abort
   return s:job_system.status
 endfunction
 function! s:system_cd(command, path) abort
-  let cwd = getcwd()
+  const cwd = getcwd()
   try
     call dein#install#_cd(a:path)
     return dein#install#_system(a:command)
@@ -987,7 +988,7 @@ function! s:job_execute.on_out(data) abort
   if candidates->empty()
     call add(candidates, a:data[0])
   else
-    let candidates[-1] .= a:data[0]
+    let candidates[-1] ..= a:data[0]
   endif
   let candidates += a:data[1:]
 endfunction
@@ -1055,7 +1056,7 @@ function! dein#install#_copy_directories(srcs, dest) abort
     let srcs = a:srcs->copy()
           \ ->filter({ _, val -> len(glob(val .. '/*', v:true, v:true)) })
           \ ->map({ _, val -> shellescape(val .. '/') })
-    let is_rsync = 'rsync'->executable()
+    const is_rsync = 'rsync'->executable()
     if is_rsync
       let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
             \ srcs->join(), a:dest->shellescape())
@@ -1102,7 +1103,7 @@ EOF
   return get(g:, 'dein#_python_version_check', 0)
 endfunction
 function! dein#install#_copy_directories_vim(srcs, dest) abort
-  let dest = dein#util#_substitute_path(a:dest)
+  const dest = dein#util#_substitute_path(a:dest)
 
   for src in a:srcs
     let src = dein#util#_substitute_path(src)
@@ -1136,8 +1137,7 @@ function! dein#install#_copy_file_vim(src, dest) abort
       call v:lua.vim.loop.fs_symlink(a:src, a:dest)
     endif
   else
-    let raw = a:src->readfile('b')
-    call writefile(raw, a:dest, 'b')
+    call writefile(a:src->readfile('b'), a:dest, 'b')
 
     " NOTE: setfperm() is needed.  The file permission may be checked.
     call setfperm(a:dest, getfperm(a:src))
@@ -1345,7 +1345,7 @@ function! s:done(context) abort
   endif
 endfunction
 function! s:call_done_update_hooks(plugins) abort
-  let cwd = getcwd()
+  const cwd = getcwd()
   try
     call dein#source(a:plugins)
 
@@ -1361,8 +1361,8 @@ endfunction
 function! s:sync(plugin, context) abort
   let a:context.number += 1
 
-  let num = a:context.number
-  let max = a:context.max_plugins
+  const num = a:context.number
+  const max = a:context.max_plugins
 
   if a:plugin.path->isdirectory() && a:plugin->get('frozen', 0)
     " Skip frozen plugin
@@ -1370,7 +1370,7 @@ function! s:sync(plugin, context) abort
     return
   endif
 
-  let [cmd, message] = s:get_sync_command(
+  const [cmd, message] = s:get_sync_command(
         \   a:plugin, a:context.update_type,
         \   a:context.number, a:context.max_plugins)
 
@@ -1403,9 +1403,9 @@ endfunction
 function! s:init_process(plugin, context, cmd) abort
   let process = {}
 
-  let cwd = getcwd()
-  let lang_save = $LANG
-  let prompt_save = $GIT_TERMINAL_PROMPT
+  const cwd = getcwd()
+  const lang_save = $LANG
+  const prompt_save = $GIT_TERMINAL_PROMPT
   try
     let $LANG = 'C'
     " Disable git prompt (git version >= 2.3.0)
@@ -1413,7 +1413,7 @@ function! s:init_process(plugin, context, cmd) abort
 
     call dein#install#_cd(a:plugin.path)
 
-    let rev = s:get_revision_number(a:plugin)
+    const rev = s:get_revision_number(a:plugin)
 
     let process = #{
           \   number: a:context.number,
@@ -1426,7 +1426,7 @@ function! s:init_process(plugin, context, cmd) abort
           \   installed: a:plugin.path->isdirectory(),
           \ }
 
-    let rev_save = a:plugin->get('rev', '')
+    const rev_save = a:plugin->get('rev', '')
     if a:plugin.path->isdirectory()
           \ && !(a:plugin->get('local', 0))
           \ && rev_save !=# ''
@@ -1468,7 +1468,7 @@ function! s:init_job(process, context, cmd) abort
     if candidates->empty()
       call add(candidates, a:data[0])
     else
-      let candidates[-1] .= a:data[0]
+      let candidates[-1] ..= a:data[0]
     endif
 
     call s:print_progress_message(candidates[-1])
@@ -1535,15 +1535,15 @@ function! s:check_output(context, process) abort
     return
   endif
 
-  let num = a:process.number
-  let max = a:context.max_plugins
+  const num = a:process.number
+  const max = a:context.max_plugins
   let plugin = a:process.plugin
 
   if plugin.path->isdirectory()
        \ && plugin->get('rev', '') !=# ''
        \ && !(plugin->get('local', 0))
     " Restore revision.
-    let cwd = getcwd()
+    const cwd = getcwd()
     try
       call dein#install#_cd(plugin.path)
 
@@ -1553,7 +1553,7 @@ function! s:check_output(context, process) abort
     endtry
   endif
 
-  let new_rev = s:get_revision_number(plugin)
+  const new_rev = s:get_revision_number(plugin)
 
   if is_timeout || status
     call s:log(s:get_plugin_message(plugin, num, max, 'Error'))
@@ -1579,7 +1579,7 @@ function! s:check_output(context, process) abort
   else
     call s:log(s:get_plugin_message(plugin, num, max, 'Updated'))
 
-    let log_message = s:get_updated_log_message(
+    const log_message = s:get_updated_log_message(
           \ plugin, new_rev, a:process.rev)
     let log_messages = log_message->split('\r\?\n')
     let plugin.commit_count = log_messages->len()
@@ -1596,7 +1596,7 @@ function! s:check_output(context, process) abort
       call dein#call_hook('post_update', plugin)
     endif
 
-    let type = dein#util#_get_type(plugin.type)
+    const type = dein#util#_get_type(plugin.type)
     let plugin.uri = type->has_key('get_uri') ?
           \ type.get_uri(plugin.repo, plugin) : ''
 
@@ -1635,7 +1635,7 @@ function! s:iconv(expr, from, to) abort
   endif
 endfunction
 function! s:print_progress_message(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
+  const msg = dein#util#_convert2list(a:msg)
         \ ->map({ _, val -> val->substitute('\r', '\n', 'g') })
   let context = s:global_context
   if msg->empty() || context->empty()
@@ -1644,7 +1644,7 @@ function! s:print_progress_message(msg) abort
 
   redraw
 
-  let progress_type = context.progress_type
+  const progress_type = context.progress_type
   let lines = msg->join("\n")
   if progress_type ==# 'tabline'
     set showtabline=2
@@ -1673,13 +1673,13 @@ function! s:print_progress_message(msg) abort
   let s:progress = lines
 endfunction
 function! s:new_progress_window() abort
-  let winrow = 0
-  let wincol = &columns / 4
-  let winwidth = 80
-  let winheight = 20
+  const winrow = 0
+  const wincol = &columns / 4
+  const winwidth = 80
+  const winheight = 20
 
   if has('nvim')
-    let winid = nvim_open_win(nvim_create_buf(v:false, v:true), v:true, #{
+    const winid = nvim_open_win(nvim_create_buf(v:false, v:true), v:true, #{
           \   relative: 'editor',
           \   row: winrow,
           \   col: wincol,
@@ -1690,7 +1690,7 @@ function! s:new_progress_window() abort
           \   height: winheight,
           \})
   else
-    let winid = popup_create([], #{
+    const winid = popup_create([], #{
           \   pos: 'topleft',
           \   line: winrow + 1,
           \   col: wincol + 1,
@@ -1703,7 +1703,7 @@ function! s:new_progress_window() abort
   return winid
 endfunction
 function! s:error(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
+  const msg = dein#util#_convert2list(a:msg)
   if msg->empty()
     return
   endif
@@ -1713,7 +1713,7 @@ function! s:error(msg) abort
   call s:updates_log(msg)
 endfunction
 function! s:notify(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
+  const msg = dein#util#_convert2list(a:msg)
   let context = s:global_context
   if msg->empty()
     return
@@ -1731,23 +1731,23 @@ function! s:notify(msg) abort
   endif
 endfunction
 function! s:updates_log(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
+  const msg = dein#util#_convert2list(a:msg)
 
   let s:updates_log += msg
   call s:log(msg)
 endfunction
 function! s:log(msg) abort
-  let msg = dein#util#_convert2list(a:msg)
+  const msg = dein#util#_convert2list(a:msg)
   let s:log += msg
   call s:append_log_file(msg)
 endfunction
 function! s:append_log_file(msg) abort
-  let logfile = dein#util#_expand(g:dein#install_log_filename)
+  const logfile = dein#util#_expand(g:dein#install_log_filename)
   if logfile ==# ''
     return
   endif
 
-  let msg = a:msg
+  const msg = a:msg
   " Appends to log file.
   if logfile->filereadable()
     let msg = logfile->readfile() + msg
@@ -1758,22 +1758,22 @@ endfunction
 
 
 function! s:echo(expr, mode) abort
-  let msg = dein#util#_convert2list(a:expr)
+  const msg = dein#util#_convert2list(a:expr)
         \ ->filter({ _, val -> val !=# '' })
         \ ->map({ _, val -> '[dein] ' ..  val })
   if msg->empty()
     return
   endif
 
-  let more_save = &more
-  let showcmd_save = &showcmd
-  let ruler_save = &ruler
+  const more_save = &more
+  const showcmd_save = &showcmd
+  const ruler_save = &ruler
   try
     set nomore
     set noshowcmd
     set noruler
 
-    let height = [1, &cmdheight]->max()
+    const height = [1, &cmdheight]->max()
     echo ''
     for i in range(0, msg->len() - 1, height)
       redraw
@@ -1807,12 +1807,12 @@ function! s:echo_mode(m, mode) abort
 endfunction
 
 function! s:truncate_skipping(str, max, footer_width, separator) abort
-  let width = a:str->strwidth()
+  const width = a:str->strwidth()
   if width <= a:max
-    let ret = a:str
+    const ret = a:str
   else
-    let header_width = a:max - a:separator->strwidth() - a:footer_width
-    let ret = s:strwidthpart(a:str, header_width) .. a:separator
+    const header_width = a:max - a:separator->strwidth() - a:footer_width
+    const ret = s:strwidthpart(a:str, header_width) .. a:separator
           \ .. s:strwidthpart_reverse(a:str, a:footer_width)
   endif
 
