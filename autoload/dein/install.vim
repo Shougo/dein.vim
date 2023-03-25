@@ -1747,7 +1747,7 @@ function! s:append_log_file(msg) abort
     return
   endif
 
-  const msg = a:msg
+  let msg = a:msg
   " Appends to log file.
   if logfile->filereadable()
     let msg = logfile->readfile() + msg
