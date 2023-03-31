@@ -429,13 +429,13 @@ function! s:helptags() abort
     return ''
   endif
 
+  let plugins = dein#get()->values()
+
   try
-    const tags = dein#util#_get_runtime_path() .. '/doc'
-    call dein#util#_safe_mkdir(tags)
-    call s:copy_files(dein#get()->values()
-          \ ->filter({ _, val -> !val.merged &&
-          \      !(val->get('local', v:false)) }), 'doc')
-    silent execute 'helptags' tags->fnameescape()
+    const doc_dir = dein#util#_get_runtime_path() .. '/doc'
+    call dein#util#_safe_mkdir(doc_dir)
+    call s:copy_files(plugins->filter({ _, val -> !val.merged }), 'doc')
+    silent execute 'helptags' doc_dir->fnameescape()
   catch /^Vim(helptags):E151:/
     " Ignore an error that occurs when there is no help file
   catch
@@ -443,6 +443,23 @@ function! s:helptags() abort
     call s:error(v:exception)
     call s:error(v:throwpoint)
   endtry
+
+  let tagfile = dein#util#_get_runtime_path() .. '/doc/tags'
+  for plugin in plugins
+    if (plugin.rtp .. '/doc')->isdirectory()
+      continue
+    endif
+
+    for readme in ['README.md', 'README.mkd']
+      let path = plugin.rtp .. '/' .. readme
+      if path->filereadable()
+        " Add the filename to tags
+        call writefile([
+              \ printf("%s\t%s\t/# %s", plugin.name, path, plugin.name)
+              \ ], tagfile, 'a')
+      endif
+    endfor
+  endfor
 endfunction
 function! s:copy_files(plugins, directory) abort
   const directory = (a:directory ==# '' ? '' : '/' .. a:directory)
