@@ -378,6 +378,11 @@ function! dein#util#_begin(path, vimrcs) abort
     call dein#min#_init()
   endif
 
+  if !has('nvim-0.8') && v:version < 802
+    call dein#util#_error('dein.vim requires Vim 8.2+ or NeoVim 0.8+.')
+    return 1
+  endif
+
   if a:path ==# '' || g:dein#_block_level != 0
     call dein#util#_error('Invalid begin/end block usage.')
     return 1
