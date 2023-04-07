@@ -41,6 +41,11 @@ function! dein#parse#_add(repo, options, overwrite) abort
       call s:parse_lazy(plugin)
     endif
 
+    let hooks_file = get(plugin, 'hooks_file', '')
+    if hooks_file->filereadable()
+      call extend(plugin, dein#parse#_hooks_file(hooks_file))
+    endif
+
     " Convert lua_xxx keys
     for [key, val] in plugin->items()->filter({ _, v -> v[0] =~# '^lua_' })
       let hook_key = key->substitute('^lua_', 'hook_', '')
@@ -449,4 +454,35 @@ endfunction
 function! dein#parse#_name_conversion(path) abort
   return a:path->split(':')->get(-1, '')
         \ ->fnamemodify(':s?/$??:t:s?\c\.git\s*$??')
+endfunction
+
+function! dein#parse#_hooks_file(filename) abort
+  let start_marker = &l:foldmarker->split(',')[0]
+  let end_marker = &l:foldmarker->split(',')[1]
+  let hook_name = ''
+  let options = {}
+
+  for line in a:filename->readfile()
+    if hook_name ==# ''
+      let marker_pos = strridx(line, start_marker)
+      if strridx(line, start_marker) >= 0
+        " Get hook_name
+        let hook_name = line[: marker_pos]->matchstr('\s\+\zs\w\+\ze\s*')
+      endif
+    else
+      if strridx(line, end_marker) >= 0
+        let hook_name = ''
+        continue
+      endif
+
+      " Concat
+      if options->has_key(hook_name)
+        let options[hook_name] ..= "\n" .. line
+      else
+        let options[hook_name] = line
+      endif
+    endif
+  endfor
+
+  return options
 endfunction

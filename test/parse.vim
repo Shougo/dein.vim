@@ -237,3 +237,20 @@ function! s:suite.trusted() abort
 
   let g:dein#_is_sudo = sudo
 endfunction
+
+function! s:suite.hooks_file() abort
+  let tempname = tempname()
+  call writefile([
+        \   '" hook_add {{{',
+        \   'hoge',
+        \   '}}}',
+        \   '" hook_source {{{',
+        \   'piyo',
+        \   '}}}',
+        \ ], tempname)
+
+  call s:assert.equals(dein#parse#_hooks_file(tempname), #{
+        \   hook_add : 'hoge',
+        \   hook_source : 'piyo',
+        \ })
+endfunction
