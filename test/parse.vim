@@ -240,6 +240,7 @@ endfunction
 
 function! s:suite.hooks_file() abort
   let tempname = tempname()
+
   call writefile([
         \   '" hook_add {{{',
         \   'hoge',
@@ -253,4 +254,43 @@ function! s:suite.hooks_file() abort
         \   hook_add : 'hoge',
         \   hook_source : 'piyo',
         \ })
+
+  call writefile([
+        \   '" c {{{',
+        \   'hogera',
+        \   '}}}',
+        \   '" hook_source {{{',
+        \   'piyo',
+        \   '}}}',
+        \ ], tempname)
+
+  call s:assert.equals(dein#parse#_hooks_file(tempname), #{
+        \   hook_source : 'piyo',
+        \   ftplugin: #{ c: 'hogera' },
+        \ })
+
+  " Invalid line
+  call writefile([
+        \   '" {{{',
+        \   'hogera',
+        \   '}}}',
+        \   '" hook_source {{{',
+        \   'piyo',
+        \   '}}}',
+        \ ], tempname)
+
+  call s:assert.equals(dein#parse#_hooks_file(tempname), {})
+
+  call writefile([
+        \   '-- lua_source {{{',
+        \   'piyo',
+        \   '-- }}}',
+        \ ], tempname)
+
+  call dein#begin(s:path)
+  call dein#add('Shougo/ddc.vim', #{ hooks_file: tempname })
+  call dein#end()
+
+  call s:assert.equals(dein#get('ddc.vim').hook_source,
+        \ "lua <<EOF\npiyo\nEOF\n")
 endfunction

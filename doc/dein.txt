@@ -1063,6 +1063,30 @@ HOOKS							*dein-hooks*
 		\     echo 'hello ' .. 'shougo' .. ', how are you?'\n",
 		\ })
 <
+						*dein-options-hooks_file*
+hooks_file	(String)
+		Hooks file path.  It must be valid path.
+		It is useful to define long hooks.
+
+		The file format is:
+
+		{hook_name} {start_marker}
+		...
+		{end_marker}
+
+		{start_marker} and {end_marker} are from 'foldmarker'.
+		{hook_name} is "hook_xxx" or "lua_xxx" or
+		|dein-options-ftplugin| filetype.
+
+		Example:
+>
+		" hook_source {{{
+		let g:foo = 'bar'
+		" }}}
+		" cpp {{{
+		let g:bar = 'baz'
+		" }}}
+<
 						*dein-options-hook_add*
 hook_add	(String) or (Function)
 		It is executed after the line is parsed.

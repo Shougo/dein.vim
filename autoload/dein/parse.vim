@@ -41,7 +41,7 @@ function! dein#parse#_add(repo, options, overwrite) abort
       call s:parse_lazy(plugin)
     endif
 
-    let hooks_file = get(plugin, 'hooks_file', '')
+    let hooks_file = dein#util#_expand(get(plugin, 'hooks_file', ''))
     if hooks_file->filereadable()
       call extend(plugin, dein#parse#_hooks_file(hooks_file))
     endif
@@ -465,9 +465,25 @@ function! dein#parse#_hooks_file(filename) abort
   for line in a:filename->readfile()
     if hook_name ==# ''
       let marker_pos = strridx(line, start_marker)
-      if strridx(line, start_marker) >= 0
-        " Get hook_name
-        let hook_name = line[: marker_pos]->matchstr('\s\+\zs\w\+\ze\s*')
+      if strridx(line, start_marker) < 0
+        continue
+      endif
+
+      " Get hook_name
+      let hook_name = line[: marker_pos]->matchstr(
+            \ '\s\+\zs[[:alnum:]_-]\+\ze\s*')
+      if hook_name == ''
+        call dein#util#_error(
+              \ printf('Invalid hook name %s: %s', a:filename, line))
+        return {}
+      endif
+      if hook_name->stridx('hook_') == 0 || hook_name->stridx('lua_') == 0
+        let dest = options
+      else
+        if !(options->has_key('ftplugin'))
+          let options['ftplugin'] = {}
+        endif
+        let dest = options['ftplugin']
       endif
     else
       if strridx(line, end_marker) >= 0
@@ -476,10 +492,10 @@ function! dein#parse#_hooks_file(filename) abort
       endif
 
       " Concat
-      if options->has_key(hook_name)
-        let options[hook_name] ..= "\n" .. line
+      if dest->has_key(hook_name)
+        let dest[hook_name] ..= "\n" .. line
       else
-        let options[hook_name] = line
+        let dest[hook_name] = line
       endif
     endif
   endfor
