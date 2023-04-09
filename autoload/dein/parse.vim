@@ -41,11 +41,6 @@ function! dein#parse#_add(repo, options, overwrite) abort
       call s:parse_lazy(plugin)
     endif
 
-    let hooks_file = dein#util#_expand(get(plugin, 'hooks_file', ''))
-    if hooks_file->filereadable()
-      call extend(plugin, dein#parse#_hooks_file(hooks_file))
-    endif
-
     " Convert lua_xxx keys
     for [key, val] in plugin->items()->filter({ _, v -> v[0] =~# '^lua_' })
       let hook_key = key->substitute('^lua_', 'hook_', '')
@@ -164,6 +159,11 @@ function! dein#parse#_dict(plugin) abort
           \ && !(plugin->has_key('if'))
           \ && !(plugin->has_key('hook_post_update'))
           \ && plugin.rtp->stridx(dein#util#_get_base_path()) == 0
+  endif
+
+  const hooks_file = dein#util#_expand(get(plugin, 'hooks_file', ''))
+  if hooks_file->filereadable()
+    call extend(plugin, dein#parse#_hooks_file(hooks_file))
   endif
 
   " Hooks
