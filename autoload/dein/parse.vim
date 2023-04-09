@@ -500,5 +500,8 @@ function! dein#parse#_hooks_file(filename) abort
     endif
   endfor
 
+  " Add to g:dein#_vimrcs
+  call add(g:dein#_vimrcs, a:filename)
+
   return options
 endfunction
