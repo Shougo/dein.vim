@@ -266,6 +266,8 @@ function! dein#util#_save_state(is_starting) abort
   endif
 
   let g:dein#_vimrcs = dein#util#_uniq(g:dein#_vimrcs)
+  call map(g:dein#_vimrcs, { _, val -> dein#util#_expand(val) })
+
   let &runtimepath = dein#util#_join_rtp(dein#util#_uniq(
         \ dein#util#_split_rtp(&runtimepath)), &runtimepath, '')
 
@@ -322,10 +324,13 @@ function! dein#util#_save_state(is_starting) abort
   endfor
 
   " Add inline vimrcs
-  for vimrc in g:->get('dein#inline_vimrcs', [])
-    let lines += vimrc->readfile()
-          \ ->filter({ _, val -> val !=# '' && val !~# '^\s*"' })
-  endfor
+  if 'g:dein#inline_vimrcs'->exists()
+    call map(g:dein#inline_vimrcs, { _, val -> dein#util#_expand(val) })
+    for vimrc in g:dein#inline_vimrcs
+      let lines += vimrc->readfile()
+            \ ->filter({ _, val -> val !=# '' && val !~# '^\s*"' })
+    endfor
+  endif
 
   " Add hooks
   if !(g:dein#_hook_add->empty())
@@ -399,6 +404,7 @@ function! dein#util#_begin(path, vimrcs) abort
   if 'g:dein#inline_vimrcs'->exists()
     let g:dein#_vimrcs += g:dein#inline_vimrcs
   endif
+  call map(g:dein#_vimrcs, { _, val -> dein#util#_expand(val) })
   let g:dein#_hook_add = ''
 
   if has('vim_starting')
