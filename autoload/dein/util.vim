@@ -452,7 +452,8 @@ function! dein#util#_begin(path, vimrcs) abort
         \ &runtimepath, g:dein#_runtime_path)
 
   for vimrc in g:->get('dein#inline_vimrcs', [])
-    execute 'source' vimrc->fnameescape()
+    execute (vimrc->fnamemodify(':e') ==# 'lua' ? 'luafile' : 'source')
+          \ vimrc->fnameescape()
   endfor
 endfunction
 function! dein#util#_end() abort
