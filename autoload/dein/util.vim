@@ -327,8 +327,16 @@ function! dein#util#_save_state(is_starting) abort
   if 'g:dein#inline_vimrcs'->exists()
     call map(g:dein#inline_vimrcs, { _, val -> dein#util#_expand(val) })
     for vimrc in g:dein#inline_vimrcs
-      let lines += vimrc->readfile()
-            \ ->filter({ _, val -> val !=# '' && val !~# '^\s*"' })
+      if vimrc->fnamemodify(':e') ==# 'lua'
+        let lines +=
+              \   ['lua <<EOF']
+              \ + vimrc->readfile()
+              \   ->filter({ _, val -> val !=# '' && val !~# '^\s*--' })
+              \ + ['EOF']
+      else
+        let lines += vimrc->readfile()
+              \ ->filter({ _, val -> val !=# '' && val !~# '^\s*"' })
+      endif
     endfor
   endif
 

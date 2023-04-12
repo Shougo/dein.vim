@@ -581,6 +581,7 @@ g:dein#inline_vimrcs
 		Note: It must be set before |dein#begin()|.
 		Note: The files must not be included "<<" pattern(here
 		document).  It breaks the parser.
+		Note: It also supports ".lua" file for neovim.
 
 		Defaults: []
 
