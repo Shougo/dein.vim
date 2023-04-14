@@ -424,6 +424,28 @@ function! s:clear_runtimepath() abort
     call dein#util#_safe_mkdir(runtimepath)
   endif
 endfunction
+" args:
+"   - path: string
+" return: [{ title: string, pattern: string }]
+function! s:detect_tags_in_markdown(path) abort
+  let l:tags = []
+  const l:lines = a:path->readfile()
+  for l:line in l:lines
+    " Match to markdown's (# title) or html's (<h1>title</h1>) pattern.
+    let l:matches = l:line->matchlist('\v(^#+\s*(.+)\s*$|\<h[1-6][^>]+\>\s*(.+)\s*\</h[1-6]\>)')
+    if l:matches->len() > 3
+      " matches[2]: markdown subpattern
+      " matches[3]: html subpattern
+      let l:title = l:matches[2] !=# '' ? l:matches[2] : l:matches[3]
+      let l:pattern = l:matches[1]
+      call add(l:tags, #{
+            \ title: l:title->substitute('\s\+', '-', 'g'),
+            \ pattern: '/' .. l:pattern->substitute('\s\+', '\\s\\+', 'g')->substitute('\/', '\\/', 'g')->substitute('\.', '\\.', 'g') }
+            \)
+    endif
+  endfor
+  return l:tags
+endfunction
 function! s:helptags() abort
   if g:dein#_runtime_path ==# ''
     return ''
@@ -454,9 +476,18 @@ function! s:helptags() abort
       let path = plugin.rtp .. '/' .. readme
       if path->filereadable()
         " Add the filename to tags
-        call writefile([
-              \ printf("%s\t%s\t/# %s", plugin.name, path, plugin.name)
-              \ ], tagfile, 'a')
+        let l:taglines = []
+        for l:tag in s:detect_tags_in_markdown(path)
+          " If tag name equals to plugin name, use plugin name for tag name
+          if plugin.name ==? l:tag.title
+            call add(l:taglines, printf("%s\t%s\t%s", plugin.name, path, l:tag.pattern))
+          else
+            call add(l:taglines, printf("%s\t%s\t%s", printf("%s-%s", plugin.name, l:tag.title), path, l:tag.pattern))
+          endif
+        endfor
+        if l:taglines->len() > 0
+          call writefile(l:taglines, tagfile, 'a')
+        endif
       endif
     endfor
   endfor
