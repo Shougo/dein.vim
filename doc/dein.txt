@@ -522,15 +522,6 @@ g:dein#default_options
 
 		Default: {}
 
-						*g:dein#detect_help_filetype*
-g:dein#detect_help_filetype
-		|dein| detects markdown headers of README.md as help tags
-		when a plugin contains no files like `doc/*.txt`.
-		If this option is enabled, |'filetype'| will be set to
-		`markdown` on |BufWinEnter| fired.
-
-		Default: v:false
-
 						*g:dein#download_command*
 g:dein#download_command
 		The default download command.

@@ -1,9 +1,7 @@
 function! s:DetectHelpFileType() abort
-  if !get(g:, 'dein#detect_help_filetype', v:false)
-    return
-  endif
-
-  if expand('<afile>')->fnamemodify(':e') ==# 'md'
+  " NOTE ':help' command sets "help" filetype automatically
+  const ext = expand('<afile>')->fnamemodify(':e')
+  if ext ==# 'md' || ext ==# 'mkd'
     autocmd dein BufWinEnter <buffer> ++once setfiletype markdown
   endif
 endfunction
