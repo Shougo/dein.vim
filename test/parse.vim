@@ -74,6 +74,7 @@ function! s:suite.load_toml() abort
         \ '',
         \ '[ftplugin]',
         \ 'c = "let g:bar = 0"',
+        \ 'lua_d = "foo = 0"',
         \ '',
         \ '[[plugins]]',
         \ '# repository name is required.',
@@ -98,6 +99,7 @@ function! s:suite.load_toml() abort
         \ "'''",
         \ '[plugins.ftplugin]',
         \ 'c = "let g:bar = 0"',
+        \ 'lua_cpp = "bar = 0"',
         \ '[[multiple_plugins]]',
         \ "plugins = ['foo', 'bar']",
         \ "hook_add = 'foo'",
@@ -109,8 +111,11 @@ function! s:suite.load_toml() abort
   call s:assert.equals(dein#load_toml(toml), 0)
   call s:assert.equals(g:dein#_hook_add,
         \ "\nlua <<EOF\nfoo\nEOF\nlet g:foo = 0")
-  call s:assert.equals(g:dein#ftplugin,
-        \ #{ c: "let g:bar = 0\nlet g:bar = 0" })
+  call s:assert.equals(g:dein#ftplugin, #{
+        \   c: "let g:bar = 0\nlet g:bar = 0",
+        \   cpp: "lua <<EOF\nbar = 0\nEOF",
+        \   d: "lua <<EOF\nfoo = 0\nEOF",
+        \ })
   call s:assert.equals(g:dein#_multiple_plugins, [
         \   #{ plugins: ['foo', 'bar'], hook_add: 'foo' },
         \ ])

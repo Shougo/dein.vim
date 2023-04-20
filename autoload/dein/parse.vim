@@ -172,6 +172,8 @@ function! dein#parse#_dict(plugin) abort
         \ 'hook_post_source', 'hook_post_update',
         \ ]->filter({ _, val -> plugin->has_key(val)
         \                && plugin[val]->type() == v:t_string })
+    " NOTE: line continuation must be converted.
+    " execute() does not support it.
     let plugin[hook] = plugin[hook]->substitute('\n\s*\\', '', 'g')
   endfor
 
@@ -192,9 +194,7 @@ function! dein#parse#_load_toml(filename, default) abort
 
   " Parse.
   if toml->has_key('lua_add')
-    let g:dein#_hook_add ..= printf("\nlua <<EOF\n%s\nEOF",
-          \   toml.lua_add->substitute('\n\s*\\', '', 'g'),
-          \ )
+    let g:dein#_hook_add ..= printf("\nlua <<EOF\n%s\nEOF", toml.lua_add)
   endif
   if toml->has_key('hook_add')
     let g:dein#_hook_add ..= printf("\n%s",
@@ -411,6 +411,12 @@ endfunction
 function! s:merge_ftplugin(ftplugin) abort
   const pattern = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
   for [ft, val] in a:ftplugin->items()
+    if ft->stridx('lua_') == 0
+      " Convert lua_xxx keys
+      let ft = ft->substitute('^lua_', '', '')
+      let val = "lua <<EOF\n" .. val .. "\nEOF"
+    endif
+
     if !(g:dein#ftplugin->has_key(ft))
       let g:dein#ftplugin[ft] = val
     else

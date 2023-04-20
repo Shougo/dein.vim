@@ -562,6 +562,7 @@ g:dein#enable_notification
 g:dein#ftplugin
 		"_" key is executed after all ftplugin.
 		"{filetype}" key is executed {filetype} ftplugin.
+		"lua_{filetype}" key is executed {filetype} ftplugin as Lua.
 		You can define multiple filetypes by "{filetype1}_{filetype2}"
 		key.  "b:undo_ftplugin" is defined automatically.
 		Note: You need to call |dein#recache_runtimepath()| or enable
@@ -792,6 +793,7 @@ frozen		(Bool)
 ftplugin	(Dictionary)
 		"_" key is executed after all ftplugin.
 		"{filetype}" key is executed {filetype} ftplugin.
+		"lua_{filetype}" key is executed {filetype} ftplugin as Lua.
 		Note: You need to call |dein#recache_runtimepath()| or enable
 		|g:dein#auto_recache| after vimrc is changed.
 
