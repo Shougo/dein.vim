@@ -32,9 +32,9 @@ function! dein#min#_init() abort
   augroup dein
     autocmd!
     autocmd FuncUndefined *
-          \ if '<afile>'->expand()->stridx('remote#') != 0 |
-          \   call dein#autoload#_on_func('<afile>'->expand()) |
-          \ endif
+          \ : if '<afile>'->expand()->stridx('remote#') != 0
+          \ |   call dein#autoload#_on_func('<afile>'->expand())
+          \ | endif
     autocmd BufRead *? call dein#autoload#_on_default_event('BufRead')
     autocmd BufNew,BufNewFile *? call dein#autoload#_on_default_event('BufNew')
     autocmd VimEnter *? call dein#autoload#_on_default_event('VimEnter')
