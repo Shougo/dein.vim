@@ -575,6 +575,12 @@ g:dein#ftplugin
 <
 		Default: {}
 
+					*g:dein#hooks_file_marker*
+g:dein#hooks_file_marker
+		The marker is used in |dein-options-hooks_file|.
+
+		Defaults: 'foldmarker'
+
 						*g:dein#inline_vimrcs*
 g:dein#inline_vimrcs
 		The vimrcs are sourced in |dein#begin()| or
@@ -1077,7 +1083,8 @@ hooks_file	(String)
 		...
 		{end_marker}
 
-		{start_marker} and {end_marker} are from 'foldmarker'.
+		{start_marker} and {end_marker} are from
+		|g:dein#hooks_file_marker|.
 		{hook_name} is "hook_xxx" or "lua_xxx" or
 		|dein-options-ftplugin| filetype.
 

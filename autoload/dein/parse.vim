@@ -3,6 +3,8 @@ let g:dein#enable_name_conversion =
       \ g:->get('dein#enable_name_conversion', v:false)
 let g:dein#default_options =
       \ g:->get('dein#default_options', {})
+let g:dein#hooks_file_marker =
+      \ g:->get('dein#hooks_file_marker', &foldmarker)
 
 
 let s:git = dein#types#git#define()
@@ -463,8 +465,8 @@ function! dein#parse#_name_conversion(path) abort
 endfunction
 
 function! dein#parse#_hooks_file(filename) abort
-  let start_marker = &l:foldmarker->split(',')[0]
-  let end_marker = &l:foldmarker->split(',')[1]
+  let start_marker = g:dein#hooks_file_marker->split(',')[0]
+  let end_marker = g:dein#hooks_file_marker->split(',')[1]
   let hook_name = ''
   let options = {}
 
