@@ -16,20 +16,14 @@ function! dein#toml#syntax() abort
   unlet! b:current_syntax
   syntax include @tomlVim syntax/vim.vim
   syntax region tomlVim matchgroup=tomlString
-        \ start=+\<hook_\w*\s*=\s*'''+
-        \ end=+'''+ contains=@tomlVim keepend
-  syntax region tomlVim matchgroup=tomlString
-        \ start=+\<hook_\w*\s*=\s*"""+
-        \ end=+"""+ contains=@tomlVim keepend
+        \ start=+\<[[:alnum:]_][[:alnum:]_-]*\s*=\s*\z('''\|"""\)+
+        \ end=+\z1+ contains=@tomlVim keepend
 
   unlet! b:current_syntax
   syntax include @tomlLua syntax/lua.vim
   syntax region tomlLua matchgroup=tomlString
-        \ start=+\<lua_\w*\s*=\s*'''+
-        \ end=+'''+ contains=@tomlLua keepend
-  syntax region tomlLua matchgroup=tomlString
-        \ start=+\<lua_\w*\s*=\s*"""+
-        \ end=+"""+ contains=@tomlLua keepend
+        \ start=+\<lua_\w*\s*=\s*\z('''\|"""\)+
+        \ end=+\z1+ contains=@tomlLua keepend
 endfunction
 
 function! dein#toml#parse(text) abort
