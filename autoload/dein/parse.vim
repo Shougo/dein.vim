@@ -198,7 +198,7 @@ function! dein#parse#_load_toml(filename, default) abort
   " Parse.
   if toml->has_key('hooks_file')
     for hooks_file in dein#util#_convert2list(toml.hooks_file)
-      call extend(plugin, dein#parse#_hooks_file(hooks_file))
+      call extend(toml, dein#parse#_hooks_file(hooks_file))
     endfor
   endif
   if toml->has_key('lua_add')
@@ -483,7 +483,7 @@ function! dein#parse#_hooks_file(filename) abort
   let hook_name = ''
   let options = {}
 
-  for line in a:filename->readfile()
+  for line in path->readfile()
     if hook_name ==# ''
       let marker_pos = strridx(line, start_marker)
       if strridx(line, start_marker) < 0
