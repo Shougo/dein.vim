@@ -163,9 +163,8 @@ function! dein#parse#_dict(plugin) abort
           \ && plugin.rtp->stridx(dein#util#_get_base_path()) == 0
   endif
 
-  const hooks_file = dein#util#_expand(get(plugin, 'hooks_file', ''))
-  if hooks_file->filereadable()
-    call extend(plugin, dein#parse#_hooks_file(hooks_file))
+  if plugin->has_key('hooks_file')
+    call extend(plugin, dein#parse#_hooks_file(plugin.hooks_file))
   endif
 
   " Hooks
@@ -195,9 +194,8 @@ function! dein#parse#_load_toml(filename, default) abort
   endif
 
   " Parse.
-  const hooks_file = dein#util#_expand(get(toml, 'hooks_file', ''))
-  if hooks_file->filereadable()
-    call extend(toml, dein#parse#_hooks_file(hooks_file))
+  if toml->has_key('hooks_file')
+    call extend(toml, dein#parse#_hooks_file(toml->hooks_file))
   endif
   if toml->has_key('lua_add')
     let g:dein#_hook_add ..= printf("\nlua <<EOF\n%s\nEOF", toml.lua_add)
@@ -469,6 +467,13 @@ function! dein#parse#_name_conversion(path) abort
 endfunction
 
 function! dein#parse#_hooks_file(filename) abort
+  let path = dein#util#_expand(a:filename)
+  if !path->filereadable()
+    call dein#util#_error(printf(
+          \ 'hooks_file "%s" is not readable defined.', a:filename))
+    return {}
+  endif
+
   let start_marker = g:dein#hooks_file_marker->split(',')[0]
   let end_marker = g:dein#hooks_file_marker->split(',')[1]
   let hook_name = ''
