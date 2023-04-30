@@ -402,7 +402,9 @@ dein#options({options})
 							*dein#toml#syntax()*
 dein#toml#syntax()
 		Enable dein specific toml syntax.
-		Note: It is experimental feature.
+		It highlights multiline string as "vim" or "lua" syntax.
+		If you use neovim, you should use treesitter highlight
+		instead.
 
 							*dein#update()*
 dein#update([{plugins}])
