@@ -1075,7 +1075,7 @@ HOOKS							*dein-hooks*
 		\ })
 <
 						*dein-options-hooks_file*
-hooks_file	(String)
+hooks_file	(String) or (List)
 		Hooks file path.  It must be valid path.
 		It is useful to define long hooks.
 
@@ -1194,7 +1194,7 @@ TOML							*dein-toml*
 		It is executed in |dein#end()|.
 
 							*dein-toml-hooks_file*
-		hooks_file	(String)
+		hooks_file	(String) or (List)
 		It is the global |dein-options-hooks_file|.
 
 							*dein-toml-lua_add*

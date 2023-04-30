@@ -164,7 +164,9 @@ function! dein#parse#_dict(plugin) abort
   endif
 
   if plugin->has_key('hooks_file')
-    call extend(plugin, dein#parse#_hooks_file(plugin.hooks_file))
+    for hooks_file in dein#util#_convert2list(plugin.hooks_file)
+      call extend(plugin, dein#parse#_hooks_file(hooks_file))
+    endfor
   endif
 
   " Hooks
@@ -195,7 +197,9 @@ function! dein#parse#_load_toml(filename, default) abort
 
   " Parse.
   if toml->has_key('hooks_file')
-    call extend(toml, dein#parse#_hooks_file(toml->hooks_file))
+    for hooks_file in dein#util#_convert2list(toml.hooks_file)
+      call extend(plugin, dein#parse#_hooks_file(hooks_file))
+    endfor
   endif
   if toml->has_key('lua_add')
     let g:dein#_hook_add ..= printf("\nlua <<EOF\n%s\nEOF", toml.lua_add)
