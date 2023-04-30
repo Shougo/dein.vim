@@ -350,7 +350,12 @@ function! dein#util#_save_state(is_starting) abort
         \   (!(val->has_key('if')) || val.if->eval())
         \ })
     if plugin->has_key('hook_add') && plugin.hook_add->type() == v:t_string
-      let lines += s:skipempty(plugin.hook_add)
+      let cmds = plugin.hook_add->split('\n')
+      if !(cmds->empty()) && cmds[0] =~# '^\s*vim9script' && exists(':vim9')
+        call add(lines, $'vim9 call execute({string(cmds[1 : ])}, "")')
+      else
+        let lines += s:skipempty(plugin.hook_add)
+      endif
     endif
 
     " Invalid hooks detection

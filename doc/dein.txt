@@ -1065,8 +1065,8 @@ HOOKS							*dein-hooks*
 		Note: The string is executed as Ex commands.
 
 		You can use |Vim9| script for hooks.  But you cannot use
-		|Vim9| script in |dein-options-hook_add|.  Because it may be
-		merged for optimize.
+		|Vim9| script in global |dein-options-hook_add|.  Because it
+		may be merged for optimize.
 
 		To use |Vim9| script, you need to use |:vim9script|. >
 
@@ -1099,6 +1099,11 @@ hooks_file	(String) or (List)
 		" }}}
 		" cpp {{{
 		let g:bar = 'baz'
+		" }}}
+		" Use vim9script
+		" hook_update {{{
+		vim9script
+		g:bar = 'baz'
 		" }}}
 <
 						*dein-options-hook_add*
