@@ -195,6 +195,10 @@ function! dein#parse#_load_toml(filename, default) abort
   endif
 
   " Parse.
+  const hooks_file = dein#util#_expand(get(toml, 'hooks_file', ''))
+  if hooks_file->filereadable()
+    call extend(toml, dein#parse#_hooks_file(hooks_file))
+  endif
   if toml->has_key('lua_add')
     let g:dein#_hook_add ..= printf("\nlua <<EOF\n%s\nEOF", toml.lua_add)
   endif

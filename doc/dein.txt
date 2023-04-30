@@ -1193,6 +1193,10 @@ TOML							*dein-toml*
 		It is the global |dein-options-hook_add|.
 		It is executed in |dein#end()|.
 
+							*dein-toml-hooks_file*
+		hooks_file	(String)
+		It is the global |dein-options-hooks_file|.
+
 							*dein-toml-lua_add*
 		lua_add	(String)
 		It is the global |dein-options-hook_add| in Lua language.
