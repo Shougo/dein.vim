@@ -5,7 +5,7 @@ Author:  Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
 ==============================================================================
-CONTENTS 						*dein-contents*
+CONTENTS						*dein-contents*
 
 Introduction		|dein-introduction|
 Usage			|dein-usage|
@@ -71,7 +71,7 @@ INSTALL							*dein-install*
 Requirements:
 * Vim 8.2+ or NeoVim 0.8+.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
-* "xcopy" installed or |if_python3| interface (on Windows)
+* "xcopy" installed or |python3| interface (on Windows)
 
 First of all, git clone the repository.
 
@@ -564,7 +564,8 @@ g:dein#enable_notification
 g:dein#ftplugin
 		"_" key is executed after all ftplugin.
 		"{filetype}" key is executed {filetype} ftplugin.
-		"lua_{filetype}" key is executed {filetype} ftplugin as |:lua|.
+		"lua_{filetype}" key is executed {filetype} ftplugin as
+		|:lua|.
 		You can define multiple filetypes by "{filetype1}_{filetype2}"
 		key.  "b:undo_ftplugin" is defined automatically.
 		Note: You need to call |dein#recache_runtimepath()| or enable
@@ -801,7 +802,8 @@ frozen		(Bool)
 ftplugin	(Dictionary)
 		"_" key is executed after all ftplugin.
 		"{filetype}" key is executed {filetype} ftplugin.
-		"lua_{filetype}" key is executed {filetype} ftplugin as |:lua|.
+		"lua_{filetype}" key is executed {filetype} ftplugin as
+		|:lua|.
 		Note: You need to call |dein#recache_runtimepath()| or enable
 		|g:dein#auto_recache| after vimrc is changed.
 
@@ -1181,7 +1183,8 @@ TOML							*dein-toml*
 		ftplugin	(Dictionary)
 		"_" key is executed after all ftplugin.
 		"{filetype}" key is executed {filetype} ftplugin.
-		"lua_{filetype}" key is executed {filetype} ftplugin as |:lua|.
+		"lua_{filetype}" key is executed {filetype} ftplugin as
+		|:lua|.
 		You can define multiple filetypes by "{filetype1}_{filetype2}"
 		key.  "b:undo_ftplugin" is defined automatically.
 		Note: It changes |g:dein#ftplugin|.
@@ -1342,7 +1345,7 @@ dein.get_log()
 dein.get_progress()
 		Same as |dein#get_progress()|.
 
-				    		*dein.get_updates_log()*
+						*dein.get_updates_log()*
 dein.get_updates_log()
 		Same as |dein#get_updates_log()|.
 
