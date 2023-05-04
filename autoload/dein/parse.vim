@@ -498,7 +498,11 @@ function! dein#parse#_hooks_file(filename) abort
               \ printf('Invalid hook name %s: %s', a:filename, line))
         return {}
       endif
-      if hook_name->stridx('hook_') == 0 || hook_name->stridx('lua_') == 0
+      if hook_name->stridx('hook_') == 0
+            \ || hook_name->stridx('lua_add') == 0
+            \ || hook_name->stridx('lua_source') == 0
+            \ || hook_name->stridx('lua_done_') == 0
+            \ || hook_name->stridx('lua_post_') == 0
         let dest = options
       else
         if !(options->has_key('ftplugin'))
