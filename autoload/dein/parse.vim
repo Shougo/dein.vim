@@ -499,8 +499,8 @@ function! dein#parse#_hooks_file(filename) abort
         return {}
       endif
       if hook_name->stridx('hook_') == 0
-            \ || hook_name->stridx('lua_add') == 0
-            \ || hook_name->stridx('lua_source') == 0
+            \ || hook_name ==# 'lua_add'
+            \ || hook_name ==# 'lua_source'
             \ || hook_name->stridx('lua_done_') == 0
             \ || hook_name->stridx('lua_post_') == 0
         let dest = options
