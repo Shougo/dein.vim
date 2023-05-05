@@ -1094,13 +1094,6 @@ function! dein#install#_copy_directories(srcs, dest) abort
     return dein#install#_copy_directories_vim(a:srcs, a:dest)
   endif
 
-  if dein#util#_is_windows() && has('python3')
-        \ && dein#install#_python_version_check()
-    " In Windows, copy directory is too slow!
-    " NOTE: Python 3.8.0 is needed
-    return dein#install#_copy_directories_py(a:srcs, a:dest)
-  endif
-
   let status = 0
 
   if dein#util#_is_windows()
@@ -1135,27 +1128,6 @@ function! dein#install#_copy_directories(srcs, dest) abort
   endif
 
   return status
-endfunction
-function! dein#install#_copy_directories_py(srcs, dest) abort
-  py3 << EOF
-import shutil
-import vim
-for src in vim.eval('a:srcs'):
-  shutil.copytree(src, vim.eval('a:dest'),
-                  dirs_exist_ok=True,
-                  ignore=shutil.ignore_patterns('.git'))
-EOF
-endfunction
-function! dein#install#_python_version_check() abort
-  python3 << EOF
-import vim
-import sys
-vim.vars['dein#_python_version_check'] = (
-    sys.version_info.major,
-    sys.version_info.minor,
-    sys.version_info.micro) >= (3, 8, 0)
-EOF
-  return get(g:, 'dein#_python_version_check', 0)
 endfunction
 function! dein#install#_copy_directories_vim(srcs, dest) abort
   const dest = dein#util#_substitute_path(a:dest)

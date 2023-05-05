@@ -55,7 +55,6 @@ To learn more details, visit [here](doc/dein.txt).
 
 - **Vim** (v8.2 or higher) or **NeoVim** (v0.8.0 or higher)
 - **Git** should be installed (v2.4.11 or higher)
-- **xcopy** installed or **Python3** interface (on Windows)
 
 
 ### Basic installation

@@ -71,7 +71,6 @@ INSTALL							*dein-install*
 Requirements:
 * Vim 8.2+ or NeoVim 0.8+.
 * "git" command in $PATH (if you want to install github or vim.org plugins)
-* "xcopy" installed or |python3| interface (on Windows)
 
 First of all, git clone the repository.
 
