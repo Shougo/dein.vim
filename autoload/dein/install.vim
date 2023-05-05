@@ -1191,6 +1191,8 @@ function! dein#install#_copy_file_vim(src, dest) abort
     else
       call v:lua.vim.loop.fs_symlink(a:src, a:dest)
     endif
+  elseif '*filecopy'->exists()
+    call filecopy(a:src, a:dest)
   else
     call writefile(a:src->readfile('b'), a:dest, 'b')
 
