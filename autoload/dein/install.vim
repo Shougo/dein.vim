@@ -1100,31 +1100,32 @@ function! dein#install#_copy_directories(srcs, dest) abort
     call dein#util#_error('robocopy copy is not supported.')
     call dein#util#_error('Please enable "g:dein#install_copy_vim".')
     return 1
-  else " Not Windows
-    let srcs = a:srcs->copy()
-          \ ->filter({ _, val -> len(glob(val .. '/*', v:true, v:true)) })
-          \ ->map({ _, val -> shellescape(val .. '/') })
-    const is_rsync = 'rsync'->executable()
-    if is_rsync
-      let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
-            \ srcs->join(), a:dest->shellescape())
+  endif
+
+  let srcs = a:srcs->copy()
+        \ ->filter({ _, val -> len(glob(val .. '/*', v:true, v:true)) })
+        \ ->map({ _, val -> shellescape(val .. '/') })
+
+  if 'rsync'->executable()
+    let cmdline = printf("rsync -a -q --exclude '/.git/' %s %s",
+          \ srcs->join(), a:dest->shellescape())
+    let result = dein#install#_system(cmdline)
+    let status = dein#install#_status()
+  else
+    for src in srcs
+      let cmdline = printf('cp -Ra %s* %s', src, a:dest->shellescape())
       let result = dein#install#_system(cmdline)
       let status = dein#install#_status()
-    else
-      for src in srcs
-        let cmdline = printf('cp -Ra %s* %s', src, a:dest->shellescape())
-        let result = dein#install#_system(cmdline)
-        let status = dein#install#_status()
-        if status
-          break
-        endif
-      endfor
-    endif
-    if status
-      call dein#util#_error('copy command failed.')
-      call dein#util#_error(result)
-      call dein#util#_error('cmdline: ' .. cmdline)
-    endif
+      if status
+        break
+      endif
+    endfor
+  endif
+
+  if status
+    call dein#util#_error('copy command failed.')
+    call dein#util#_error(result)
+    call dein#util#_error('cmdline: ' .. cmdline)
   endif
 
   return status
