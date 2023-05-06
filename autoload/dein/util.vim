@@ -213,8 +213,8 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
     for hook in [
           \ 'hook_add', 'hook_source',
           \ 'hook_post_source', 'hook_post_update', 'hook_done_update',
-          \ ]->filter({ _, val -> plugin->has_key(val)
-          \      && plugin[val]->type() == v:t_func })
+          \ ]->filter({ _, val ->
+          \    plugin->has_key(val) && plugin[val]->type() == v:t_func })
       let name = plugin[hook]->get('name')
       if name =~# '^<lambda>'
         call remove(plugin, hook)
@@ -233,7 +233,7 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
   call dein#util#_safe_writefile(
         \ has('nvim') ? [src->json_encode()] : [src->js_encode()],
         \ g:->get('dein#cache_directory', g:dein#_base_path)
-        \ .'/cache_' .. g:dein#_progname)
+        \ .. '/cache_' .. g:dein#_progname)
 endfunction
 function! dein#util#_check_vimrcs() abort
   const time = dein#util#_get_runtime_path()->getftime()
@@ -294,16 +294,16 @@ function! dein#util#_save_state(is_starting) abort
         \ ]
 
   if g:->get('dein#enable_hook_function_cache', v:false)
-    let lines += [
-          \ 'call map(g:dein#_plugins, {' ..
-          \ 'k,v -> empty(map(filter(["hook_add", "hook_source",' ..
-          \ '"hook_post_source", "hook_post_update", "hook_done_source"],' ..
-          \ '{ _, h -> v->has_key(h)}),' ..
-          \ '{ _, h -> v[h]->type() == v:t_dict ? ' ..
-          \ ' execute("let v[h] = function(''".get(v[h], "name")' ..
-          \ ' .."'',"..string(get(v[h], "args"))..")") : v:null' ..
-          \ '})) ? v : v })'
-          \ ]
+    let hook_functions =<< trim END
+      call map(g:dein#_plugins, {
+            \ k,v -> empty(map(filter(['hook_add', 'hook_source',
+            \ 'hook_post_source', 'hook_post_update', 'hook_done_source'],
+            \ { _, h -> v->has_key(h)}),
+            \ { _, h -> v[h]->type() == v:t_dict ?
+            \ execute("let v[h] = function(''".get(v[h], "name")
+            \ .."'',"..string(get(v[h], "args"))..")") : v:null})) ? v : v })
+    END
+    let lines += hook_functions
   endif
 
   if g:dein#_off1 !=# ''
