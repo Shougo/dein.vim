@@ -583,43 +583,46 @@ function! s:check_rollback(plugin) abort
 endfunction
 
 function! dein#install#_get_default_ftplugin() abort
-  return [
-        \ 'if exists("g:did_load_after_ftplugin")',
-        \ '  finish',
-        \ 'endif',
-        \ 'let g:did_load_after_ftplugin = 1',
-        \ '',
-        \ 'augroup filetypeplugin',
-        \ '  autocmd!',
-        \ '  autocmd FileType * call s:ftplugin()',
-        \ 'augroup END',
-        \ '',
-        \ 'function! s:ftplugin()',
-        \ '  if "b:undo_ftplugin"->exists()',
-        \ '    silent! execute b:undo_ftplugin',
-        \ '    unlet! b:undo_ftplugin b:did_ftplugin',
-        \ '  endif',
-        \ '',
-        \ '  let filetype = "<amatch>"->expand()',
-        \ '  if filetype !=# ""',
-        \ '    if &cpoptions =~# "S" && "b:did_ftplugin"->exists()',
-        \ '      unlet b:did_ftplugin',
-        \ '    endif',
-        \ '    for ft in filetype->split(''\.'')',
-        \ '      execute "runtime! ftplugin/" .. ft .. ".vim"',
-        \ '      \ "ftplugin/" .. ft .. "_*.vim"',
-        \ '      \ "ftplugin/" .. ft .. "/*.vim"',
-        \ '      if has("nvim")',
-        \ '        execute "runtime! ftplugin/" .. ft .. ".lua"',
-        \ '        \ "ftplugin/" .. ft .. "_*.lua"',
-        \ '        \ "ftplugin/" .. ft .. "/*.lua"',
-        \ '      endif',
-        \ '    endfor',
-        \ '  endif',
-        \ '  call s:after_ftplugin()',
-        \ 'endfunction',
-        \ '',
-        \]
+  let default_ftplugin =<< trim END
+    if exists('g:did_load_after_ftplugin')
+      finish
+    endif
+    let g:did_load_after_ftplugin = 1
+
+    augroup filetypeplugin
+      autocmd!
+      autocmd FileType * call s:ftplugin()
+    augroup END
+
+    function! s:ftplugin()
+      if 'b:undo_ftplugin'->exists()
+        silent! execute b:undo_ftplugin
+        unlet! b:undo_ftplugin b:did_ftplugin
+      endif
+
+      let filetype = '<amatch>'->expand()
+      if filetype !=# ''
+        if &cpoptions =~# 'S' && 'b:did_ftplugin'->exists()
+          unlet b:did_ftplugin
+        endif
+        for ft in filetype->split('\.')
+          execute 'runtime!'
+          \ 'ftplugin/' .. ft .. '.vim'
+          \ 'ftplugin/' .. ft .. '_*.vim'
+          \ 'ftplugin/' .. ft .. '/*.vim'
+          if has('nvim')
+            execute 'runtime!'
+            \ 'ftplugin/' .. ft .. '.lua'
+            \ 'ftplugin/' .. ft .. '_*.lua'
+            \ 'ftplugin/' .. ft .. '/*.lua'
+          endif
+        endfor
+      endif
+      call s:after_ftplugin()
+    endfunction
+
+  END
+  return default_ftplugin
 endfunction
 function! s:generate_ftplugin() abort
   if g:dein#ftplugin->empty()
@@ -635,30 +638,34 @@ function! s:generate_ftplugin() abort
   for [key, string] in g:dein#ftplugin->items()
     for ft in (key ==# '_' ? ['_'] : key->split('_'))
       if !(ftplugin->has_key(ft))
-        let ftplugin[ft] = (ft ==# '_') ? [] : [
-              \ "if 'b:undo_ftplugin'->exists()",
-              \ "  let b:undo_ftplugin ..= '|'",
-              \ 'else',
-              \ "  let b:undo_ftplugin = ''",
-              \ 'endif',
-              \ ]
+        if ft ==# '_'
+          let ftplugin[ft] = []
+        else
+          let ftplugin[ft] =<< trim END
+            if 'b:undo_ftplugin'->exists()
+              let b:undo_ftplugin ..= '|'
+            else
+              let b:undo_ftplugin = ''
+            endif
+          END
+        endif
       endif
       let ftplugin[ft] += string->split('\n')
     endfor
   endfor
 
   " Generate ftplugin.vim
-  call dein#util#_safe_writefile(
-        \ dein#install#_get_default_ftplugin() + [
-        \ 'function! s:after_ftplugin()',
-        \ ] + ftplugin->get('_', []) + ['endfunction'],
+  let ftplugin_generated = dein#install#_get_default_ftplugin()
+  let ftplugin_generated += ['function! s:after_ftplugin()']
+  let ftplugin_generated += ftplugin->get('_', [])
+  let ftplugin_generated += ['endfunction']
+  call dein#util#_safe_writefile(ftplugin_generated,
         \ dein#util#_get_runtime_path() .. '/after/ftplugin.vim')
 
   " Generate after/ftplugin
   for [filetype, list] in ftplugin->items()
         \ ->filter({ _, val -> val[0] !=# '_' })
-    call dein#util#_safe_writefile(
-          \ list, printf('%s/%s.vim', after, filetype))
+    call dein#util#_safe_writefile(list, printf('%s/%s.vim', after, filetype))
   endfor
 endfunction
 

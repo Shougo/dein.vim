@@ -158,6 +158,7 @@ This is where Dein future plans or TODOS are listed:
 
 - Other types support (zip, svn, hg, ...)
 - Metadata repository support
+- Require neovim 0.10+ or Vim 9.0+(to use interpolated-string)
 
 
 ## License
