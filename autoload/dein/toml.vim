@@ -95,7 +95,7 @@ function! s:_error(input) abort
   endwhile
 
   throw printf("Text.TOML: Illegal toml format at L%d:`%s':%d.",
-      \ a:input.text[: a:input.p]->split("\n", 1)->len(),
+      \ a:input.text[: a:input.p]->split('\n', 1)->len(),
       \ buf->join(''), a:input.p)
 endfunction
 

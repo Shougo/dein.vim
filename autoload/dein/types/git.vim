@@ -196,14 +196,14 @@ function! s:type.get_revision_lock_command(plugin) abort
     const output = dein#install#_system(
           \ [self.command, 'tag', rev,
           \  '--list', '--sort', '-version:refname'])
-    let rev = output->split("\n")->get(0, '')
+    let rev = output->split('\n')->get(0, '')
   endif
   if rev ==# ''
     " Fix detach HEAD.
     " Use symbolic-ref feature (git 1.8.7 or above required)
     const output = dein#install#_system(
           \ [self.command, 'symbolic-ref', '--short', 'HEAD'])
-    let rev = output->split("\n")->get(0, '')
+    let rev = output->split('\n')->get(0, '')
     if rev =~# 'fatal: '
       " Fix "fatal: ref HEAD is not a symbolic ref" error
       " NOTE: Should specify the default branch?

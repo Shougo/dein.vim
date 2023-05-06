@@ -65,50 +65,51 @@ function! s:suite.name_conversion() abort
 endfunction
 
 function! s:suite.load_toml() abort
-  const toml = tempname()
-  call writefile([
-        \ '# TOML sample',
-        \ 'lua_add = "foo"',
-        \ '',
-        \ 'hook_add = "let g:foo = 0"',
-        \ '',
-        \ '[ftplugin]',
-        \ 'c = "let g:bar = 0"',
-        \ 'lua_d = "foo = 0"',
-        \ '',
-        \ '[[plugins]]',
-        \ '# repository name is required.',
-        \ "repo = 'Shougo/denite.nvim'",
-        \ "on_map = '<Plug>'",
-        \ '[[plugins]]',
-        \ "repo = 'Shougo/neosnippet.vim'",
-        \ "on_ft = 'snippet'",
-        \ "hook_add = '''",
-        \ '"echo',
-        \ '"comment',
-        \ "echo",
-        \ "'''",
-        \ "hook_source = '''",
-        \ "echo",
-        \ '\',
-        \ "echo",
-        \ "'''",
-        \ "lua_source = '''",
-        \ "foo",
-        \ "bar",
-        \ "'''",
-        \ '[plugins.ftplugin]',
-        \ 'c = "let g:bar = 0"',
-        \ 'lua_cpp = "bar = 0"',
-        \ '[[multiple_plugins]]',
-        \ "plugins = ['foo', 'bar']",
-        \ "hook_add = 'foo'",
-        \ ], toml)
+  const filename = tempname()
+  let toml =<< trim END
+    # TOML sample
+    lua_add = "foo"
+
+    hook_add = "let g:foo = 0"
+    [ftplugin]
+    c = "let g:bar = 0"
+    lua_d = "foo = 0"
+
+    [[plugins]]
+    # repository name is required.
+    repo = 'Shougo/denite.nvim'
+    on_map = '<Plug>'
+    [[plugins]]
+    repo = 'Shougo/neosnippet.vim'
+    on_ft = 'snippet'
+    hook_add = '''
+    echo
+    "comment
+    echo
+    '''
+    hook_source = '''
+    echo
+          \
+    echo
+    '''
+    lua_source = '''
+    foo
+    bar
+    '''
+    [plugins.ftplugin]
+    c = "let g:bar = 0"
+    lua_cpp = "bar = 0"
+    [[multiple_plugins]]
+    plugins = ['foo', 'bar']
+    hook_add = 'foo'
+  END
+
+  call writefile(toml, filename)
 
   call dein#begin(s:path)
   call s:assert.equals(g:dein#_hook_add, '')
   call s:assert.equals(g:dein#ftplugin, {})
-  call s:assert.equals(dein#load_toml(toml), 0)
+  call s:assert.equals(dein#load_toml(filename), 0)
   call s:assert.equals(g:dein#_hook_add,
         \ "\nlua <<EOF\nfoo\nEOF\nlet g:foo = 0")
   call s:assert.equals(g:dein#ftplugin, #{
@@ -122,24 +123,26 @@ function! s:suite.load_toml() abort
   call dein#end()
 
   call s:assert.equals(dein#get('neosnippet.vim').hook_add,
-        \ "\"echo\n\"comment\necho\n")
+        \ "echo\n\"comment\necho\n")
   call s:assert.equals(dein#get('neosnippet.vim').hook_source,
         \ "lua <<EOF\nfoo\nbar\n\nEOF\necho\necho\n")
 endfunction
 
 function! s:suite.error_toml() abort
-  const toml = tempname()
-  call writefile([
-        \ '# TOML sample',
-        \ '[[plugins]]',
-        \ '# repository name is required.',
-        \ "on_map = '<Plug>'",
-        \ '[[plugins]]',
-        \ "on_ft = 'snippet'",
-        \ ], toml)
+  const filename = tempname()
+  let toml =<< trim END
+    # TOML sample
+    [[plugins]]
+    # repository name is required.
+    on_map = '<Plug>'
+    [[plugins]]
+    on_ft = 'snippet'
+  END
+
+  call writefile(toml, filename)
 
   call dein#begin(s:path)
-  call s:assert.equals(dein#load_toml(toml), 1)
+  call s:assert.equals(dein#load_toml(filename), 1)
   call dein#end()
 endfunction
 
@@ -244,56 +247,61 @@ function! s:suite.trusted() abort
 endfunction
 
 function! s:suite.hooks_file() abort
-  let tempname = tempname()
+  const filename = tempname()
+  let hooks_file =<< trim END
+    " hook_add {{{
+    hoge
+    }}}
+    " hook_source {{{
+    piyo
+    }}}
+  END
 
-  call writefile([
-        \   '" hook_add {{{',
-        \   'hoge',
-        \   '}}}',
-        \   '" hook_source {{{',
-        \   'piyo',
-        \   '}}}',
-        \ ], tempname)
+  call writefile(hooks_file, filename)
 
-  call s:assert.equals(dein#parse#_hooks_file(tempname), #{
+  call s:assert.equals(dein#parse#_hooks_file(filename), #{
         \   hook_add : 'hoge',
         \   hook_source : 'piyo',
         \ })
 
-  call writefile([
-        \   '" c {{{',
-        \   'hogera',
-        \   '}}}',
-        \   '" hook_source {{{',
-        \   'piyo',
-        \   '}}}',
-        \ ], tempname)
+  let hooks_file =<< trim END
+    " c {{{
+    hogera
+    }}}
+    " hook_source {{{
+    piyo
+    }}}
+  END
 
-  call s:assert.equals(dein#parse#_hooks_file(tempname), #{
+  call writefile(hooks_file, filename)
+
+  call s:assert.equals(dein#parse#_hooks_file(filename), #{
         \   hook_source : 'piyo',
         \   ftplugin: #{ c: 'hogera' },
         \ })
 
   " Invalid line
-  call writefile([
-        \   '" {{{',
-        \   'hogera',
-        \   '}}}',
-        \   '" hook_source {{{',
-        \   'piyo',
-        \   '}}}',
-        \ ], tempname)
+  let hooks_file =<< trim END
+    " {{{
+    hogera
+    }}}
+    " hook_source {{{
+    piyo
+    }}}
+END
+  call writefile(hooks_file, filename)
 
-  call s:assert.equals(dein#parse#_hooks_file(tempname), {})
+  call s:assert.equals(dein#parse#_hooks_file(filename), {})
 
-  call writefile([
-        \   '-- lua_source {{{',
-        \   'piyo',
-        \   '-- }}}',
-        \ ], tempname)
+  let hooks_file =<< trim END
+    -- lua_source {{{
+    piyo
+    -- }}}
+  END
+  call writefile(hooks_file, filename)
 
   call dein#begin(s:path)
-  call dein#add('Shougo/ddc.vim', #{ hooks_file: tempname })
+  call dein#add('Shougo/ddc.vim', #{ hooks_file: filename })
   call dein#end()
 
   call s:assert.equals(dein#get('ddc.vim').hook_source,
