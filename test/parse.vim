@@ -72,8 +72,12 @@ function! s:suite.load_toml() abort
 
     hook_add = "let g:foo = 0"
     [ftplugin]
-    c = "let g:bar = 0"
-    lua_d = "foo = 0"
+    c = """
+    let g:bar = 0
+    " Comment line"""
+    lua_d = """
+    foo = 0
+    -- Comment line"""
 
     [[plugins]]
     # repository name is required.
