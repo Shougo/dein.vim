@@ -408,7 +408,9 @@ function! s:generate_dummy_mappings(plugin) abort
       for mode in modes
         let raw_map = mode.'noremap <unique><silent> '.mapping
               \ .. (mode ==# 'c' ? " \<C-r>=" :
-              \    mode ==# 'i' ? " \<C-o>:call " : " :\<C-u>call ")
+              \     mode ==# 'i' ? " \<C-o>:call " :
+              \     mode ==# 't' ? " \<C-\>\<C-n>:call " :
+              \     " :\<C-u>call ")
               \ .. prefix .. mode->string() .. ')<CR>'
         call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
         silent! execute raw_map

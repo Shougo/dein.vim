@@ -1113,7 +1113,7 @@ hook_add	(String) or (Function)
 >
 		call dein#add('Shougo/defx.nvim', #{
 		\   hook_add: 'nnoremap <silent>   <Space>v
-		\              :<C-u>Defx<CR>',
+		\              <Cmd>Defx<CR>',
 		\ })
 		call dein#add('kana/vim-niceblock', #{
 		\   hook_add: join(['xmap I  <Plug>(niceblock-I)',
@@ -1157,7 +1157,7 @@ hook_source	(String) or (Function)
 		\                 setlocal omnifunc=javacomplete#Complete',
 		\ })
 		function! Func() abort
-		  autocmd FileType qf nnoremap <buffer> r :<C-u>Qfreplace<CR>
+		  autocmd FileType qf nnoremap <buffer> r <Cmd>Qfreplace<CR>
 		endfunction
 		call dein#add('thinca/vim-qfreplace',
 		\ #{ hook_source: function('Func') })

@@ -275,6 +275,10 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
     call feedkeys(mapping .. input, 'm')
   endif
 
+  if a:mode ==# 't'
+    startinsert
+  endif
+
   return ''
 endfunction
 
