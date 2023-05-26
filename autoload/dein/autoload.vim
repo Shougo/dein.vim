@@ -272,11 +272,11 @@ function! dein#autoload#_on_map(mapping, name, mode) abort
       execute 'let mapping = mapping->substitute(
             \ "<' .. ctrl .. '>", "\<' .. ctrl .. '>", "")'
     endwhile
-    call feedkeys(mapping .. input, 'm')
-  endif
 
-  if a:mode ==# 't'
-    startinsert
+    if a:mode ==# 't'
+      call feedkeys('i', 'n')
+    endif
+    call feedkeys(mapping .. input, 'm')
   endif
 
   return ''
