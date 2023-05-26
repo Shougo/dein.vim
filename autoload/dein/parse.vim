@@ -406,10 +406,11 @@ function! s:generate_dummy_mappings(plugin) abort
             \ mapping->substitute('<', '<lt>', 'g')->string(),
             \ a:plugin.name->string())
       for mode in modes
+        let escape = has('nvim') ? "\<C-\>\<C-n>" : "\<C-l>N"
         let raw_map = mode.'noremap <unique><silent> '.mapping
               \ .. (mode ==# 'c' ? " \<C-r>=" :
               \     mode ==# 'i' ? " \<C-o>:call " :
-              \     mode ==# 't' ? " \<C-\>\<C-n>:call " :
+              \     mode ==# 't' ? " " .. escape .. ":call " :
               \     " :\<C-u>call ")
               \ .. prefix .. mode->string() .. ')<CR>'
         call add(a:plugin.dummy_mappings, [mode, mapping, raw_map])
