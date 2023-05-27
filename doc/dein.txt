@@ -952,8 +952,10 @@ on_map		(Dictionary) or (List) or (String)
 		call dein#add('osyo-manga/vim-anzu',
 		\ #{ on_map: '<Plug>(anzu-' }
 		" Not working!!
-		nmap n <Plug>(anzu-jump-n)<Plug>(anzu-echo-search-status)zv
-		nmap N <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
+		nnoremap n
+		\ <Plug>(anzu-jump-n)<Plug>(anzu-echo-search-status)zv
+		nnoremap N
+		\ <Plug>(anzu-jump-N)<Plug>(anzu-echo-search-status)zv
 <
 							*dein-options-on_path*
 on_path		(List) or (String)
@@ -1116,8 +1118,10 @@ hook_add	(String) or (Function)
 		\              <Cmd>Defx<CR>',
 		\ })
 		call dein#add('kana/vim-niceblock', #{
-		\   hook_add: join(['xmap I  <Plug>(niceblock-I)',
-		                    'xmap A  <Plug>(niceblock-A)'], "\n"),
+		\   hook_add: join([
+		\       'xnoremap I  <Plug>(niceblock-I)',
+		\       'xnoremap A  <Plug>(niceblock-A)',
+		\   ], "\n"),
 		\ })
 		call dein#add('godlygeek/csapprox', #{
 		\ hook_add: "
@@ -1245,8 +1249,8 @@ TOML							*dein-toml*
 		repo = 'rhysd/accelerated-jk'
 		on_map = '<Plug>'
 		hook_add = '''
-		  nmap <silent>j <Plug>(accelerated_jk_gj)
-		  nmap <silent>k <Plug>(accelerated_jk_gk)
+		  nnoremap <silent>j <Plug>(accelerated_jk_gj)
+		  nnoremap <silent>k <Plug>(accelerated_jk_gk)
 		'''
 		[plugins.ftplugin]
 		python = '''
