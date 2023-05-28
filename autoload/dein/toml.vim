@@ -1,7 +1,7 @@
 " Based on @kamichidu code
 
 "
-" public api
+" Public api
 "
 function! dein#toml#syntax() abort
   if has('nvim') && ':TSBufDisable'->exists()
@@ -24,14 +24,21 @@ function! dein#toml#syntax() abort
   syntax region tomlLua matchgroup=tomlString
         \ start=+\<lua_\w*\s*=\s*\z('''\|"""\)+
         \ end=+\z1+ contains=@tomlLua keepend
+
+  unlet! b:current_syntax
+  syntax include @tomlFtplugin syntax/lua.vim
+  syntax region tomlFtplugin matchgroup=tomlString
+        \ start=+\<\[\%(plugins\.\)\?ftplugin\]\n
+        \[[:alnum:]_-]*\s*=\s*\z('''\|"""\)+
+        \ end=+\z1+ contains=@tomlFtplugin keepend
 endfunction
 
 function! dein#toml#parse(text) abort
   let input = #{
-  \  text: a:text,
-  \  p: 0,
-  \  length: a:text->strlen(),
-  \}
+        \   text: a:text,
+        \   p: 0,
+        \   length: a:text->strlen(),
+        \ }
   return s:_parse(input)
 endfunction
 
