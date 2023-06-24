@@ -1210,7 +1210,6 @@ function! dein#install#_post_sync(plugins) abort
 
   " Execute done_update hooks
   let done_update_plugins = dein#util#_get_plugins(a:plugins)
-        \ ->filter({ _, val -> val->has_key('hook_done_update') })
   if !(done_update_plugins->empty())
     if has('vim_starting')
       let s:done_updated_plugins = done_update_plugins
@@ -1381,14 +1380,27 @@ function! s:done(context) abort
     unlet s:timer
   endif
 endfunction
-function! s:call_done_update_hooks(plugins) abort
+function! s:call_done_update_hooks(updated_plugins) abort
   const cwd = getcwd()
   try
-    call dein#source(a:plugins)
-
-    for plugin in a:plugins
+    for plugin in a:updated_plugins->copy()->filter({
+          \   _, val -> val->has_key('hook_done_update')
+          \ })
       call dein#install#_cd(plugin.path)
+      call dein#source(plugin)
       call dein#call_hook('done_update', plugin)
+    endfor
+
+    for plugin in dein#get()->values()->filter({ _, val ->
+          \   !(val->get('depends', [])->empty())
+          \   && val->has_key('hook_depends_update')
+          \   && a:updated_plugins->copy()->filter({ _, updated ->
+          \        val.depends->index(updated.name) >= 0
+          \      })->len() >= 0
+          \ })
+      call dein#install#_cd(plugin.path)
+      call dein#source(plugin)
+      call dein#call_hook('depends_update', plugin)
     endfor
   finally
     call dein#install#_cd(cwd)

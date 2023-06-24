@@ -28,6 +28,9 @@ function! s:suite.before_each() abort
   let g:temp = tempname()
   let g:dein#install_progress_type = 'echo'
   let g:dein#enable_notification = v:false
+  let g:foo = 0
+  let g:foobar = 0
+  let g:foobaz = 0
 endfunction
 
 " NOTE: It must be checked in the first
@@ -582,22 +585,46 @@ function! s:suite.build() abort
 
   call dein#add('Shougo/vimproc.vim', #{
         \   build: 'make',
-        \   hook_post_update: 'let g:foobar = 4',
         \ })
 
   call dein#end()
-
-  call s:assert.not_equals(g:foobar, 4)
 
   call s:assert.true(dein#check_install())
   call s:assert.true(dein#check_install(['vimproc.vim']))
 
   call s:assert.equals(s:dein_install(), 0)
 
-  call s:assert.equals(g:foobar, 4)
-
   call vimproc#version()
   call s:assert.true(filereadable(g:vimproc#dll_path))
+endfunction
+
+function! s:suite.hook_update() abort
+  call dein#begin(tempname())
+
+  call dein#add('Shougo/ddu.vim', #{
+        \   hook_post_update: 'let g:foobar = 4',
+        \   hook_done_update: 'let g:foo = 1',
+        \ })
+
+  call dein#add('Shougo/ddc.vim', #{
+        \   depends: 'ddu.vim',
+        \   hook_depends_update: 'let g:foobaz = 3',
+        \ })
+
+  call dein#end()
+
+  call s:assert.not_equals(g:foo, 1)
+  call s:assert.not_equals(g:foobar, 4)
+  call s:assert.not_equals(g:foobaz, 3)
+
+  call s:assert.true(dein#check_install())
+  call s:assert.true(dein#check_install(['ddu.vim']))
+
+  call s:assert.equals(s:dein_install(), 0)
+
+  call s:assert.equals(g:foo, 1)
+  call s:assert.equals(g:foobar, 4)
+  call s:assert.equals(g:foobaz, 3)
 endfunction
 
 function! s:suite.rollback() abort

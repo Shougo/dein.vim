@@ -1130,9 +1130,14 @@ hook_add	(String) or (Function)
 		\     #{ bold: 'bold', italic: '', sp: '' }\n",
 		\ })
 <
+					*dein-options-hook_depends_update*
+hook_depends_update (String) or (Function)
+		It is executed after |dein-options-depends| plugins are
+		updated.
+
 					*dein-options-hook_done_update*
 hook_done_update (String) or (Function)
-		It is executed after plugins are sourced and updated.
+		It is executed after plugins are updated.
 
 					*dein-options-hook_post_source*
 hook_post_source (String) or (Function)
