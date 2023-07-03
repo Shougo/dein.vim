@@ -1544,6 +1544,111 @@ The following plugins will not be merged to prevent merge problems
 ==============================================================================
 FAQ							*dein-faq*
 
+FAQ 1:							|dein-faq-1|
+	How to donate money to you?
+
+FAQ 2:							|dein-faq-2|
+	Where is ":NeoBundleFetch" in dein features?
+
+FAQ 3:							|dein-faq-3|
+	vimproc does not work when manually build it.
+
+FAQ 4:							|dein-faq-4|
+	Where is ":NeoBundleCheck" in dein features?
+
+FAQ 5:							|dein-faq-5|
+	I want to disable plugins loading dynamically.
+
+FAQ 6:							|dein-faq-6|
+	Cannot load colorscheme when reloading .vimrc.
+
+FAQ 7:							|dein-faq-7|
+	There is the conflict between "jedi-vim" and "vim-pyenv"
+	"initialize.py" file.
+
+FAQ 8:							|dein-faq-8|
+	How to remove the disabled plugins?
+
+FAQ 9:							|dein-faq-9|
+	How to use the script functions for hooks feature?
+
+FAQ 10:							|dein-faq-10|
+	I don't want to call |dein#recache_runtimepath()| manually.
+
+FAQ 11:							|dein-faq-11|
+	I need the wrapper commands for dein.vim.
+
+FAQ 12:							|dein-faq-12|
+	Why the install script does not use "curl | bash" ?
+
+FAQ 13:							|dein-faq-13|
+	I want to use "git" or "http" protocol instead of "https".
+
+FAQ 14:							|dein-faq-14|
+	Why dein.vim only accepts "https" or "ssh"?
+
+FAQ 15:							|dein-faq-15|
+	YouCompleteMe installation is failed.
+
+FAQ 16:							|dein-faq-16|
+	YouCompleteMe does not work.  I have built YouCompleteMe manually.
+
+FAQ 17:							|dein-faq-17|
+	I have got "Invalid range error" when plugin updating.
+
+FAQ 18:							|dein-faq-18|
+	I have got prompted for my github username and I have to kill the
+	editor...
+
+FAQ 19:							|dein-faq-19|
+	Why dein.vim merges the plugins directories automatically?
+
+FAQ 20:							|dein-faq-20|
+	I want to update from shell.
+
+FAQ 21:							|dein-faq-21|
+	I want to change the environment variable when build.
+
+FAQ 22:							|dein-faq-22|
+	dein.vim does not load plugin in sudo session.
+
+FAQ 23:							|dein-faq-23|
+	I want to uninstall dein.vim.
+
+FAQ 24:							|dein-faq-24|
+	I want to update dein.vim from shell command line.
+
+FAQ 25:							|dein-faq-25|
+	I want to set build conditions.
+
+FAQ 26:							|dein-faq-26|
+	Why I need to call |dein#recache_runtimepath()| manually after
+	removing plugins?
+
+FAQ 27:							|dein-faq-27|
+	I want to load plugins lazily on requiring lua modules.
+
+FAQ 28:							|dein-faq-28|
+	deoplete does not work when I use |dein#load_state()|.
+
+FAQ 29:							|dein-faq-29|
+	I want to enable default merged config in Windows.
+
+FAQ 30:							|dein-faq-30|
+	I want to use "dein.vim" in init.lua.
+
+FAQ 31:							|dein-faq-31|
+	My `autocmd FileType` is overwritten by default ftplugins.
+
+FAQ 32:							|dein-faq-32|
+	"nvim-treesitter" automatic installation is failed.
+
+FAQ 33:							|dein-faq-33|
+	"hook_source" is not called in non lazy plugins.
+
+
+------------------------------------------------------------------------------
+							*ddc-faq-1*
 Q: How to donate money to you?
 
 A: I have started github sponsorship to spend more time for Vim/neovim
@@ -1551,6 +1656,7 @@ plugins.  You can donate money to help me!
 
 https://github.com/sponsors/Shougo
 
+							*ddc-faq-2*
 Q: Where is ":NeoBundleFetch" in dein features?
 
 A: You can use |dein-options-rtp|.
@@ -1559,6 +1665,7 @@ A: You can use |dein-options-rtp|.
 <
 	Note: It does not generate |:helptags| file.
 
+							*ddc-faq-3*
 Q: vimproc does not work when manually build it.
 https://github.com/Shougo/dein.vim/issues/11
 
@@ -1566,6 +1673,7 @@ A: You should not build it manually.  Please use |dein-options-build| feature.
 >
 	call dein#add('Shougo/vimproc.vim', #{ build: 'make' })
 <
+							*ddc-faq-4*
 Q: Where is ":NeoBundleCheck" in dein features?
 
 A: You can use |dein#check_install()|.
@@ -1574,10 +1682,12 @@ A: You can use |dein#check_install()|.
 	  call dein#install()
 	endif
 <
+							*ddc-faq-5*
 Q: I want to disable plugins loading dynamically.
 
 A: Please use |dein-options-if|.
 
+							*ddc-faq-6*
 Q: Cannot load colorscheme when reloading .vimrc.
 
 A: You must write |:colorscheme| lines after |dein#end()|.
@@ -1594,12 +1704,14 @@ Or you can use |dein#source()| for it.
 	call dein#source('molokai')
 	colorscheme molokai
 <
+							*ddc-faq-7*
 Q: There is the conflict between "jedi-vim" and "vim-pyenv" "initialize.py"
 file.
 
 A: All plugins should avoid file name collisions.  dein.vim can load them
 by setting |dein-options-merged|.  See |dein-merge| for details.
 
+							*ddc-faq-8*
 Q: How to remove the disabled plugins?
 
 A: You can remove them like below.
@@ -1608,6 +1720,7 @@ Note: You must call |dein#recache_runtimepath()| after the remove.
 	call map(dein#check_clean(), { _, val -> delete(val, 'rf') })
 	call dein#recache_runtimepath()
 <
+							*ddc-faq-9*
 Q: How to use the script functions for hooks feature?
 
 A: You can use them like this.
@@ -1633,31 +1746,37 @@ Or you can execute the autocmd manually.
 <
 But you must define the autocmd.
 
+							*ddc-faq-10*
 Q: I don't want to call |dein#recache_runtimepath()| manually.
 A: Please specify your vimrc path to |dein#begin()| 2nd argument.
 It detects the vimrc changes.
 >
 	call dein#begin(path, ['<sfile>'->expand()])
 <
+							*ddc-faq-11*
 Q: I need the wrapper commands for dein.vim.
 
 A: You can use it.
 https://github.com/haya14busa/dein-command.vim
 
+							*ddc-faq-12*
 Q: Why the install script does not use "curl | bash" ?
 https://github.com/Shougo/neobundle.vim/pull/515
 
 A:
 https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/
 
+							*ddc-faq-13*
 Q: I want to use "git" or "http" protocol instead of "https".
 
 A: No, you cannot.
 
+							*ddc-faq-14*
 Q: Why dein.vim only accepts "https" or "ssh"?
 
 A: https://glyph.twistedmatrix.com/2015/11/editor-malware.html
 
+							*ddc-faq-15*
 Q: YouCompleteMe installation is failed.
 https://github.com/Shougo/dein.vim/issues/144
 
@@ -1665,6 +1784,7 @@ A: Please check |:messages| result.
 If you have found "Process timeout" error, you should increase
 |g:dein#install_process_timeout| value.
 
+							*ddc-faq-16*
 Q: YouCompleteMe does not work.  I have built YouCompleteMe manually.
 
 A: dein.vim has |dein-merge| feature.  It copies the plugin files into the
@@ -1675,7 +1795,8 @@ You can disable the |dein-options-merged|. >
 
 or >
 	call dein#add('Valloric/YouCompleteMe', #{ build: './install.py' })
-
+<
+							*ddc-faq-17*
 Q: I have got "Invalid range error" when plugin updating.
 
 A: It is Vim/neovim |delete()| implementation bug.
@@ -1686,30 +1807,33 @@ https://github.com/lervag/vimtex/issues/237
 
 You can disable the |dein-merge| feature to prevent the error. >
 	call dein#add('lervag/vimtex', #{ merged: 0 })
-
-
+<
+							*ddc-faq-18*
 Q: I have got prompted for my github username and I have to kill the editor...
 
 A: You have specified wrong/removed repository name.  You should check the
 repository.
 
+							*ddc-faq-19*
 Q: Why dein.vim merges the plugins directories automatically?
 
 A: |dein-merge| merge improves performance by avoiding long 'runtimepath'.
 See also the |dein-merge|.
 
+							*ddc-faq-20*
 Q: I want to update from shell.
 
 A: >
 	$ vim -c "try | call dein#update() | finally | qall! | endtry" \
 	-N -u $VIMRC -U NONE -i NONE -V1 -e -s
-
+<
+							*ddc-faq-21*
 Q: I want to change the environment variable when build.
 A: >
 	call dein#add('nixprime/cpsm',
 	\ #{ build: 'sh -c "PY3=ON ./install.sh"' })
-
-
+<
+							*ddc-faq-22*
 Q: dein.vim does not load plugin in sudo session.
 https://github.com/SpaceVim/SpaceVim/issues/1660
 https://github.com/Shougo/dein.vim/issues/274
@@ -1720,6 +1844,7 @@ In sudo session, installed plugin can do anything in root permission.
 It is very dangerous.
 But you can load trusted plugins using |dein-options-trusted|.
 
+							*ddc-faq-23*
 Q: I want to uninstall dein.vim.
 
 A: Please remove |dein#begin()|'s argument directory.
@@ -1727,12 +1852,14 @@ For example, if you use below configuration: >
 	call dein#begin('~/.cache/dein')
 Please remove "~/.cache/dein" directory.
 
+							*ddc-faq-24*
 Q: I want to update dein.vim from shell command line.
 
 A: Please execute the command line like this. >
 	vim -N -u ~/.vim/init.vim -c \
 	"try | call dein#update() | finally | qall! | endtry" -V1 -es
-
+<
+							*ddc-faq-25*
 Q: I want to set build conditions.
 
 A: Please use |dein-options-hook_post_update|. >
@@ -1747,7 +1874,8 @@ A: Please use |dein-options-hook_post_update|. >
 	    call system('bash install.sh')
 	endif
 	'''
-
+<
+							*ddc-faq-26*
 Q: Why I need to call |dein#recache_runtimepath()| manually after removing
 plugins?
 https://github.com/Shougo/dein.vim/issues/357
@@ -1757,10 +1885,12 @@ Dein.vim has |dein-merge| feature.  It copies the plugins into the
 merge directory.  You can disable the feature by setting
 |dein-options-merged|.  See also the |dein-merge|.
 
-Q: I want to load plugins lazily on requiring lua modules
+							*ddc-faq-27*
+Q: I want to load plugins lazily on requiring lua modules.
 A: >
 	call dein#add('neovim/nvim-lsp', #{ on_lua: 'nvim_lsp' })
-
+<
+							*ddc-faq-28*
 Q: deoplete does not work when I use |dein#load_state()|.
 
 A: Please read |dein#load_state()| documentation.  "The block is skipped if
@@ -1776,18 +1906,21 @@ dein's state is loaded." >
 
 	" You must set variables or execute functions outside the block
 	let g:deoplete#enable_at_startup = v:true
-
+<
+							*ddc-faq-29*
 Q: I want to enable default merged config in Windows.
 
 A: >
 	let g:dein#default_options = #{ merged: v:true }
-
+<
+							*ddc-faq-30*
 Q: I want to use "dein.vim" in init.lua.
 
 A: You can use "dein-snip.lua".
 
 https://github.com/ryota2357/dein-snip.lua
 
+							*ddc-faq-31*
 Q: My `autocmd FileType` is overwritten by default ftplugins.
 https://github.com/Shougo/dein.vim/issues/460
 
@@ -1795,12 +1928,14 @@ A: It is the feature of dein to load ftplugins lazily.
 You should not use `autocmd Filetype` to overwrite ftplugin configuration.
 You need to use "after/ftplugin" instead.
 
+							*ddc-faq-32*
 Q: "nvim-treesitter" automatic installation is failed.
 https://github.com/Shougo/dein.vim/issues/484
 
 A: "nvim-treesitter" requires "filetype plugin indent on".  But it is disabled
 in "dein.vim" by performance reason.  So you need to execute it manually.
 
+							*ddc-faq-33*
 Q: "hook_source" is not called in non lazy plugins
 
 A: "hook_source" is not called automatically for performance reason.  If it is
@@ -1810,6 +1945,7 @@ needed, you need to call it manually. >
 	...
 	call dein#end()
 	call dein#call_hook('source')
+
 
 ==============================================================================
 COMPATIBILITY						*dein-compatibility*
