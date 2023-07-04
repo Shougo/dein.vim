@@ -1,11 +1,19 @@
 import {
+  ActionArguments,
+  ActionFlags,
   BaseSource,
+  DduItem,
   Item,
-} from "https://deno.land/x/ddu_vim@v2.8.3/types.ts";
-import { Denops } from "https://deno.land/x/ddu_vim@v2.8.3/deps.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.4.0/file.ts";
+} from "https://deno.land/x/ddu_vim@v3.3.3/types.ts";
+import { Denops } from "https://deno.land/x/ddu_vim@v3.3.3/deps.ts";
+import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.5.2/file.ts";
 
 type Params = Record<string, never>;
+
+type Action = {
+  path: string;
+  __name: string;
+};
 
 type Dein = {
   name: string;
@@ -29,7 +37,8 @@ export class Source extends BaseSource<Params> {
             word: dein.name,
             action: {
               path: dein.path,
-            },
+              __name: dein.name,
+            } as Action,
           };
         });
 
@@ -39,6 +48,18 @@ export class Source extends BaseSource<Params> {
       },
     });
   }
+
+  override actions: Record<
+    string,
+    (args: ActionArguments<Params>) => Promise<ActionFlags>
+  > = {
+    update: async (args: { denops: Denops; items: DduItem[] }) => {
+      const plugins = args.items.map((item) => (item.action as Action).__name);
+      await args.denops.call("dein#update", plugins);
+
+      return Promise.resolve(ActionFlags.None);
+    },
+  };
 
   override params(): Params {
     return {};

@@ -4,7 +4,6 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Shougo/dein.vim?color=mediumaquamarine)
 [![GitHub issues](https://img.shields.io/github/issues/shougo/dein.vim?color=mediumaquamarine)](https://github.com/Shougo/dein.vim/issues)
 
-
 **Dein.vim** is a dark powered Vim/Neovim plugin manager.
 
 To learn more details, visit [here](doc/dein.txt).
@@ -23,7 +22,7 @@ To learn more details, visit [here](doc/dein.txt).
     - [Command line installation](#command-line-installation)
     - [Config example](#config-example)
   - [Q\&A](#qa)
-      - [Dein has an user interface like vim-plug?](#dein-has-an-user-interface-like-vim-plug)
+    - [Dein has an user interface like vim-plug?](#dein-has-an-user-interface-like-vim-plug)
   - [Feedback](#feedback)
   - [Tasks](#tasks)
   - [License](#license)
@@ -32,7 +31,6 @@ To learn more details, visit [here](doc/dein.txt).
 
 <br/>
 </details>
-
 
 ## Features
 
@@ -47,15 +45,12 @@ To learn more details, visit [here](doc/dein.txt).
 - **Practical** - Automatically merge plugins directories to avoid long
   **runtimepath**
 
-
 ## Getting started
-
 
 ### Prerequisites
 
 - **Vim** (v8.2 or higher) or **NeoVim** (v0.8.0 or higher)
 - **Git** should be installed (v2.4.11 or higher)
-
 
 ### Basic installation
 
@@ -79,11 +74,9 @@ if &runtimepath !~# '/dein.vim'
 endif
 ```
 
-
 ### Command line installation
 
 Please use [dein-installer.vim](https://github.com/Shougo/dein-installer.vim).
-
 
 ### Config example
 
@@ -134,23 +127,20 @@ endif
 " call dein#install()
 "endif
 ```
+
 </details>
 
-
 ## Q&A
-
 
 #### Dein has an user interface like vim-plug?
 
 - Built-in Dein **does not** have one, but if you want one, we recommend using
   [github.com/wsdjeg/dein-ui.vim](https://github.com/wsdjeg/dein-ui.vim)
 
-
 ## Feedback
 
 - [Chat with the community](https://gitter.im/Shougo/dein.vim)
 - [Create an issue](https://github.com/Shougo/dein.vim/issues)
-
 
 ## Tasks
 
@@ -159,7 +149,6 @@ This is where Dein future plans or TODOS are listed:
 - Other types support (zip, svn, hg, ...)
 - Metadata repository support
 - Require neovim 0.10+ or Vim 9.0+(to use interpolated-string)
-
 
 ## License
 

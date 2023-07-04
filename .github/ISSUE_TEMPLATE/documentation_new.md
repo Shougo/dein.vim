@@ -11,13 +11,14 @@ assignees: ''
 
 A clear and concise description of the documentation that will be changed.
 
-- Section: 
+- Section:
 
 ## About New Content
 
 ### Category
- 
-What kind of content category is this page (tutorial, how-to, explanation, reference)?
+
+What kind of content category is this page (tutorial, how-to, explanation,
+reference)?
 
 ### Audience
 
