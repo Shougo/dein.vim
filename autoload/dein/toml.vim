@@ -26,18 +26,18 @@ function! dein#toml#syntax() abort
         \ end=+\z1+ contains=@tomlLua keepend
 
   unlet! b:current_syntax
-  silent! syntax include @tomlVimFtplugin syntax/vim.vim
-  syntax region tomlVimFtplugin matchgroup=tomlString
-        \ start=+\<\[\%(plugins\.\)\?ftplugin\]\n
-        \[[:alnum:]_-]*\s*=\s*\z('''\|"""\)+
-        \ end=+\z1+ contains=@tomlVimFtplugin keepend
-
-  unlet! b:current_syntax
   silent! syntax include @tomlLuaFtplugin syntax/lua.vim
   syntax region tomlLuaFtplugin matchgroup=tomlString
         \ start=+\<\[\%(plugins\.\)\?ftplugin\]\n
         \\<lua_\w*\s*=\s*\z('''\|"""\)+
         \ end=+\z1+ contains=@tomlLuaFtplugin keepend
+
+  unlet! b:current_syntax
+  silent! syntax include @tomlVimFtplugin syntax/vim.vim
+  syntax region tomlVimFtplugin matchgroup=tomlString
+        \ start=+\<\[\%(plugins\.\)\?ftplugin\]\n
+        \[[:alnum:]_-]*\s*=\s*\z('''\|"""\)+
+        \ end=+\z1+ contains=@tomlVimFtplugin keepend
 endfunction
 
 function! dein#toml#parse(text) abort
