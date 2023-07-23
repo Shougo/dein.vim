@@ -14,23 +14,30 @@ function! dein#toml#syntax() abort
   runtime! syntax/toml.vim
 
   unlet! b:current_syntax
-  syntax include @tomlVim syntax/vim.vim
+  silent! syntax include @tomlVim syntax/vim.vim
   syntax region tomlVim matchgroup=tomlString
         \ start=+\<[[:alnum:]_][[:alnum:]_-]*\s*=\s*\z('''\|"""\)+
         \ end=+\z1+ contains=@tomlVim keepend
 
   unlet! b:current_syntax
-  syntax include @tomlLua syntax/lua.vim
+  silent! syntax include @tomlLua syntax/lua.vim
   syntax region tomlLua matchgroup=tomlString
         \ start=+\<lua_\w*\s*=\s*\z('''\|"""\)+
         \ end=+\z1+ contains=@tomlLua keepend
 
   unlet! b:current_syntax
-  syntax include @tomlFtplugin syntax/lua.vim
-  syntax region tomlFtplugin matchgroup=tomlString
+  silent! syntax include @tomlVimFtplugin syntax/vim.vim
+  syntax region tomlVimFtplugin matchgroup=tomlString
         \ start=+\<\[\%(plugins\.\)\?ftplugin\]\n
         \[[:alnum:]_-]*\s*=\s*\z('''\|"""\)+
-        \ end=+\z1+ contains=@tomlFtplugin keepend
+        \ end=+\z1+ contains=@tomlVimFtplugin keepend
+
+  unlet! b:current_syntax
+  silent! syntax include @tomlLuaFtplugin syntax/lua.vim
+  syntax region tomlLuaFtplugin matchgroup=tomlString
+        \ start=+\<\[\%(plugins\.\)\?ftplugin\]\n
+        \\<lua_\w*\s*=\s*\z('''\|"""\)+
+        \ end=+\z1+ contains=@tomlLuaFtplugin keepend
 endfunction
 
 function! dein#toml#parse(text) abort

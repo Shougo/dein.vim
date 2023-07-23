@@ -1261,12 +1261,13 @@ TOML                                                               *dein-toml*
 		python = '''
 		let b:undo_ftplugin ..= 'setlocal foldmethod<'
 		setlocal foldmethod=indent
+		'''
 
 		# "hook_add" is only executed when both "foo" and "bar" are
 		# available.
 		[[multiple_plugins]]
 		plugins = ['foo', 'bar']
-		hook_add = ''
+		hook_add = '''
 		'''
 
 ------------------------------------------------------------------------------
