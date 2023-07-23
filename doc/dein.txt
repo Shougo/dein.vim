@@ -1270,7 +1270,7 @@ TOML                                                               *dein-toml*
 		'''
 
 ------------------------------------------------------------------------------
-LUA FUNCTIONS						*dein-lua-functions*
+LUA FUNCTIONS                                             *dein-lua-functions*
 
                                                                   *dein.add()*
 dein.add({repo}[, {options}])
@@ -1462,14 +1462,14 @@ dein.tap({plugin-name})
 		dein.end_()
 <
 ==============================================================================
-DDU SOURCES						*dein-ddu-sources*
+DDU SOURCES                                                 *dein-ddu-sources*
 
                                                         *dein-ddu-source-dein*
 dein
 		Nominates dein plugins as items.
 
 ==============================================================================
-DENITE SOURCES						*dein-denite-sources*
+DENITE SOURCES                                           *dein-denite-sources*
 
 Here let me explain about a source for denite plugin provided in dein.
 
