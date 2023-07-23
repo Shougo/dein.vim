@@ -524,7 +524,7 @@ function! dein#util#_end() abort
   endfor
 
   if g:dein#_hook_add !=# ''
-    call dein#util#_execute_hook({}, g:dein#_hook_add)
+    call dein#util#_execute_hook({}, 'hook_add', g:dein#_hook_add)
   endif
 
   for [event, plugins] in g:dein#_event_plugins->items()
@@ -569,10 +569,10 @@ function! dein#util#_call_hook(hook_name, plugins = []) abort
         \    && (!(val->has_key('if')) || val.if->eval())
         \ })
   for plugin in plugins
-    call dein#util#_execute_hook(plugin, plugin[hook])
+    call dein#util#_execute_hook(plugin, hook, plugin[hook])
   endfor
 endfunction
-function! dein#util#_execute_hook(plugin, hook) abort
+function! dein#util#_execute_hook(plugin, hook_name, hook) abort
   " Skip twice call
   if !(a:plugin->has_key('called'))
     let a:plugin.called = {}
@@ -598,8 +598,9 @@ function! dein#util#_execute_hook(plugin, hook) abort
     let a:plugin.called[string(a:hook)] = v:true
   catch
     call dein#util#_error(
-          \ 'Error occurred while executing hook: '
-          \ .. a:plugin->get('name', ''))
+          \ printf('Error occurred while executing %s: %s',
+          \        a:hook_name,
+          \        a:plugin->get('name', 'g:dein#_hook_add')))
     call dein#util#_error(v:exception)
   endtry
 endfunction
