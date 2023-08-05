@@ -714,6 +714,8 @@ g:dein#types#git#clone_depth
 		The default history depth for "git clone".
 		If it is 1, dein will use shallow clone feature.
 		See |dein-options-type__depth|.
+		NOTE: If it is set, |dein-options-rev| does not work.  Because
+		the history is not downloaded.
 
 		Default: 0
 
