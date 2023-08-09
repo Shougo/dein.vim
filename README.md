@@ -58,19 +58,19 @@ You can install dein.vim by your vimrc/init.vim.
 
 ```vim
 let $CACHE = expand('~/.cache')
-if !isdirectory($CACHE)
+if !($CACHE->isdirectory())
   call mkdir($CACHE, 'p')
 endif
 if &runtimepath !~# '/dein.vim'
-  let s:dein_dir = fnamemodify('dein.vim', ':p')
-  if !isdirectory(s:dein_dir)
-    let s:dein_dir = $CACHE .. '/dein/repos/github.com/Shougo/dein.vim'
-    if !isdirectory(s:dein_dir)
-      execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
+  let s:dir = 'dein.vim'->fnamemodify(':p')
+  if !(s:dir->isdirectory())
+    let s:dir = $CACHE .. '/dein/repos/github.com/Shougo/dein.vim'
+    if !(s:dir->isdirectory())
+      execute '!git clone https://github.com/Shougo/dein.vim' s:dir
     endif
   endif
-  execute 'set runtimepath^=' .. substitute(
-        \ fnamemodify(s:dein_dir, ':p') , '[/\\]$', '', '')
+  execute 'set runtimepath^=' .. s:dir->fnamemodify(':p')->
+      \ substitute('[/\\]$', '', '')
 endif
 ```
 
