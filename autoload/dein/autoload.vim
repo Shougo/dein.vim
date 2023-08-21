@@ -292,7 +292,7 @@ function! dein#autoload#_dummy_complete(arglead, cmdline, cursorpos) abort
   " Load plugins
   call dein#autoload#_on_pre_cmd(tolower(command))
 
-  return [a:arglead]
+  return a:arglead
 endfunction
 
 function! s:source_plugin(rtps, index, plugin, sourced) abort
