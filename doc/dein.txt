@@ -1193,10 +1193,35 @@ hook_source	(String) or (Function)
 		call dein#end()
 		call dein#call_hook('source')
 <
-                                                        *dein-options-lua_xxx*
-lua_xxx		(String)
+                                                        *dein-options-lua_add*
+lua_add		(String)
 		Lua language string hook instead of Vim script.
-		It is converted to "hook_xxx" key.
+		It is converted to |dein-options-hook_add| key.
+
+                                             *dein-options-lua_depends_update*
+lua_depends_update (String)
+		Lua language string hook instead of Vim script.
+		It is converted to |dein-options-lua_depends_update| key.
+
+                                                *dein-options-lua_done_update*
+lua_done_update	(String)
+		Lua language string hook instead of Vim script.
+		It is converted to |dein-options-lua_done_update| key.
+
+                                                *dein-options-lua_post_source*
+lua_post_sources (String)
+		Lua language string hook instead of Vim script.
+		It is converted to |dein-options-lua_post_source| key.
+
+                                                *dein-options-lua_post_update*
+lua_post_update	(String)
+		Lua language string hook instead of Vim script.
+		It is converted to |dein-options-lua_post_update| key.
+
+                                                     *dein-options-lua_source*
+lua_sources	(String)
+		Lua language string hook instead of Vim script.
+		It is converted to |dein-options-lua_source| key.
 
 ------------------------------------------------------------------------------
 TOML                                                               *dein-toml*
