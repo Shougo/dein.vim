@@ -422,8 +422,7 @@ function! dein#util#_begin(path, vimrcs) abort
 
   if has('vim_starting')
     " Filetype off
-    if (!has('nvim') && g:->get('did_load_filetypes', v:false))
-          \ || (has('nvim') && !(g:->get('do_filetype_lua', v:false)))
+    if g:->get('did_load_filetypes', v:false)
       let g:dein#_off1 = 'filetype off'
       execute g:dein#_off1
     endif
