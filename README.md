@@ -6,6 +6,11 @@
 
 **Dein.vim** is a dark powered Vim/Neovim plugin manager.
 
+**Note**: Active developement on dein.vim has stopped. The only future changes
+will be bug fixes.
+
+Please see [Dpp.vim](https://github.com/Shougo/dpp.vim)
+
 To learn more details, visit [here](doc/dein.txt).
 
 <details>
