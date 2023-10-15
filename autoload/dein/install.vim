@@ -459,6 +459,9 @@ function! s:helptags() abort
 
   let plugins = dein#get()->values()
 
+  const tagfile = dein#util#_get_runtime_path() .. '/doc/tags'
+  call writefile([], tagfile)
+
   try
     const doc_dir = dein#util#_get_runtime_path() .. '/doc'
     call dein#util#_safe_mkdir(doc_dir)
@@ -472,7 +475,7 @@ function! s:helptags() abort
     call s:error(v:throwpoint)
   endtry
 
-  let tagfile = dein#util#_get_runtime_path() .. '/doc/tags'
+  let taglines = []
   for plugin in plugins
     if (plugin.rtp .. '/doc')->isdirectory()
       continue
@@ -485,7 +488,6 @@ function! s:helptags() abort
       endif
 
       " Add the filename to tags
-      let taglines = []
       for tag in s:detect_tags_in_markdown(path)
         " If tag name equals to plugin name, use plugin name for tag name
         let title = plugin.name ==? tag.title
@@ -493,11 +495,12 @@ function! s:helptags() abort
               \ : printf("%s-%s", plugin.name, tag.title)
         call add(taglines, printf("%s\t%s\t%s", title, path, tag.pattern))
       endfor
-      if !(taglines->empty())
-        call writefile(sort(taglines), tagfile, 'a')
-      endif
     endfor
   endfor
+  if !(taglines->empty())
+    " NOTE: tagfile must be sorted
+    call writefile(sort(readfile(tagfile) + taglines), tagfile)
+  endif
 endfunction
 function! s:copy_files(plugins, directory) abort
   const directory = (a:directory ==# '' ? '' : '/' .. a:directory)
