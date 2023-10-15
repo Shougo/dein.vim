@@ -494,7 +494,7 @@ function! s:helptags() abort
         call add(taglines, printf("%s\t%s\t%s", title, path, tag.pattern))
       endfor
       if !(taglines->empty())
-        call writefile(taglines, tagfile, 'a')
+        call writefile(sort(taglines), tagfile, 'a')
       endif
     endfor
   endfor
