@@ -477,16 +477,10 @@ function! s:helptags() abort
 
   let taglines = []
   for plugin in plugins
-    if (plugin.rtp .. '/doc')->isdirectory()
-      continue
-    endif
-
-    for readme in ['README.md', 'README.mkd']
-      let path = plugin.rtp .. '/' .. readme
-      if !(path->filereadable())
-        continue
-      endif
-
+        \ ->filter({ _, val -> !((val.rtp .. '/doc')->isdirectory()) })
+    for path in ['README.md', 'README.mkd']
+          \ ->map({ _, val -> plugin.rtp .. '/' .. val })
+          \ ->filter({ _, val -> val->filereadable() })
       " Add the filename to tags
       for tag in s:detect_tags_in_markdown(path)
         " If tag name equals to plugin name, use plugin name for tag name
