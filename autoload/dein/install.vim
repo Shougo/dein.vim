@@ -457,13 +457,16 @@ function! s:helptags() abort
     return ''
   endif
 
-  let plugins = dein#get()->values()
-
-  const tagfile = dein#util#_get_runtime_path() .. '/doc/tags'
+  const doc_dir = dein#util#_get_runtime_path() .. '/doc'
+  const tagfile = doc_dir .. '/tags'
+  if !(doc_dir->isdirectory())
+    call mkdir(doc_dir, 'p')
+  endif
   call writefile([], tagfile)
 
+  let plugins = dein#get()->values()
+
   try
-    const doc_dir = dein#util#_get_runtime_path() .. '/doc'
     call dein#util#_safe_mkdir(doc_dir)
     call s:copy_files(plugins->filter({ _, val -> !val.merged }), 'doc')
     silent execute 'helptags' doc_dir->fnameescape()
