@@ -4,9 +4,9 @@ import {
   BaseSource,
   DduItem,
   Item,
-} from "https://deno.land/x/ddu_vim@v3.3.3/types.ts";
-import { Denops } from "https://deno.land/x/ddu_vim@v3.3.3/deps.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.5.2/file.ts";
+} from "https://deno.land/x/ddu_vim@v3.6.0/types.ts";
+import { Denops } from "https://deno.land/x/ddu_vim@v3.6.0/deps.ts";
+import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.7.1/file.ts";
 
 type Params = Record<string, never>;
 
