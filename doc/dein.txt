@@ -1209,7 +1209,7 @@ lua_done_update	(String)
 		It is converted to |dein-options-lua_done_update| key.
 
                                                 *dein-options-lua_post_source*
-lua_post_sources (String)
+lua_post_source (String)
 		Lua language string hook instead of Vim script.
 		It is converted to |dein-options-lua_post_source| key.
 
@@ -1219,7 +1219,7 @@ lua_post_update	(String)
 		It is converted to |dein-options-lua_post_update| key.
 
                                                      *dein-options-lua_source*
-lua_sources	(String)
+lua_source	(String)
 		Lua language string hook instead of Vim script.
 		It is converted to |dein-options-lua_source| key.
 
