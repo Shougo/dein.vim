@@ -1064,20 +1064,6 @@ function! s:job_execute.execute(cmd) abort
   return job.wait(g:dein#install_process_timeout * 1000)
 endfunction
 
-function! dein#install#_system_bg(command) abort
-  let job = s:get_job().start(
-        \ s:convert_args(a:command),
-        \ #{
-        \   on_stdout {
-        \     v -> v->copy()->map({ _, val -> s:log(val) })
-        \   },
-        \   on_stderr: {
-        \     v -> v->copy()->map({ _, val -> dein#util#_error(val) })
-        \   },
-        \ })
-  return job
-endfunction
-
 function! dein#install#_rm(path) abort
   if !(a:path->isdirectory()) && !(a:path->filereadable())
     return
