@@ -148,12 +148,12 @@ function! dein#install#_get_updated_plugins(plugins, async) abort
     endfor
 
     let commands = [
-         \ g:dein#install_curl_command, '-H', 'Authorization: bearer '
-          \ .. g:dein#install_github_api_token,
-         \ '-X', 'POST', '-d',
-         \ '{ "query": "query {' .. query .. '}" }',
-         \ 'https://api.github.com/graphql'
-         \ ]
+          \   g:dein#install_curl_command, '-H', 'Authorization: bearer '
+          \   .. g:dein#install_github_api_token,
+          \   '-X', 'POST', '-d',
+          \   '{ "query": "query {' .. query .. '}" }',
+          \   'https://api.github.com/graphql',
+          \ ]
 
     let process = #{ candidates: [] }
     function! process.on_out(data) abort
