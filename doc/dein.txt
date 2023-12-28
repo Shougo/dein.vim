@@ -882,6 +882,7 @@ on_func		(List) or (String)
 		NOTE: It does not work when Vim initialized.
 		NOTE: It does not work for Vim9 script. It is |FuncUndefined|
 		limitation.
+		NOTE: It does not work for |autoload-functions|.
 
                                                           *dein-options-on_ft*
 on_ft		(List) or (String)

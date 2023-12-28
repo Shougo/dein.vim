@@ -1141,7 +1141,7 @@ function! dein#install#_copy_directories_vim(srcs, dest) abort
 
       if srcpath->isdirectory()
         call mkdir(destpath, 'p')
-      elseif srcpath !~# 'tags\%(-\w*\)\?$'
+      elseif srcpath !~# 'doc/tags\%(-\w*\)\?$'
         " Ignore tags
         call dein#install#_copy_file_vim(srcpath, destpath)
       endif
