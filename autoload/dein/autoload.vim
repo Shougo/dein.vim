@@ -1,4 +1,5 @@
 function! dein#autoload#_source(plugins) abort
+  let s:sep = has('win32') ? '\' : '/'
   let plugins = dein#util#_convert2list(a:plugins)
   if plugins->empty()
     return []
