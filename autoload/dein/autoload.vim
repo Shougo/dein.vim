@@ -74,7 +74,19 @@ function! dein#autoload#_source(plugins) abort
 
           if denops#server#status() ==# 'running'
             " NOTE: denops#plugin#register() may be failed
-            silent! call denops#plugin#register(name, #{ mode: 'skip' })
+            try
+              call denops#plugin#load(
+                    \  name,
+                    \  [plugin.rtp, 'denops', name, 'main.ts']->join(s:sep),
+                    \)
+            catch /^Vim\%((\a\+)\)\=:E117:/
+              " Fallback to `register` for backward compatibility
+              silent! call denops#plugin#register(
+                    \  name,
+                    \  [plugin.rtp, 'denops', name, 'main.ts']->join(s:sep),
+                    \  #{ mode: 'skip' },
+                    \)
+            endtry
           endif
 
           if plugin->get('denops_wait', v:true)
