@@ -73,7 +73,6 @@ function! dein#autoload#_source(plugins) abort
               \ ->filter({ _, val -> !denops#plugin#is_loaded(val) })
 
           if denops#server#status() ==# 'running'
-            " NOTE: denops#plugin#register() may be failed
             try
               call denops#plugin#load(
                     \  name,
