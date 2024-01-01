@@ -1,3 +1,4 @@
+const s:sep = has('win32') ? '\' : '/'
 function! dein#autoload#_source(plugins) abort
   let plugins = dein#util#_convert2list(a:plugins)
   if plugins->empty()
@@ -67,7 +68,6 @@ function! dein#autoload#_source(plugins) abort
 
       " Register for lazy loaded denops plugin
       if (plugin.rtp .. '/denops')->isdirectory()
-        const sep = has('win32') ? '\' : '/'
         for name in 'denops/*/main.ts'
               \ ->globpath(plugin.rtp, v:true, v:true)
               \ ->map({ _, val -> val->fnamemodify(':h:t')})
@@ -77,13 +77,13 @@ function! dein#autoload#_source(plugins) abort
             try
               call denops#plugin#load(
                     \  name,
-                    \  [plugin.rtp, 'denops', name, 'main.ts']->join(sep),
+                    \  [plugin.rtp, 'denops', name, 'main.ts']->join(s:sep),
                     \)
             catch /^Vim\%((\a\+)\)\=:E117:/
               " Fallback to `register` for backward compatibility
               silent! call denops#plugin#register(
                     \  name,
-                    \  [plugin.rtp, 'denops', name, 'main.ts']->join(sep),
+                    \  [plugin.rtp, 'denops', name, 'main.ts']->join(s:sep),
                     \  #{ mode: 'skip' },
                     \)
             endtry
