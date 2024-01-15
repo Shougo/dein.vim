@@ -430,6 +430,7 @@ function! dein#util#_begin(path, vimrcs) abort
       let g:dein#_off2 = 'filetype plugin indent off'
       execute g:dein#_off2
     endif
+    echomsg 'b:did_indent'->exists() || 'b:did_ftplugin'->exists()
   else
     execute 'set rtp-=' .. g:dein#_runtime_path->fnameescape()
     execute 'set rtp-=' .. (g:dein#_runtime_path .. '/after')->fnameescape()
