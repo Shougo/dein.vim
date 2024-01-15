@@ -420,16 +420,11 @@ function! s:generate_dummy_mappings(plugin) abort
   endfor
 endfunction
 function! s:merge_ftplugin(ftplugin) abort
-  const pattern_vim = '\n\s*\\\|\%(^\|\n\)\s*"[^\n]*'
-  const pattern_lua = '\n\s*\\\|\%(^\|\n\)\s*--[^\n]*'
   for [ft, val] in a:ftplugin->items()
     if ft->stridx('lua_') == 0
-      let val = val->substitute(pattern_lua, '', 'g')
       " Convert lua_xxx keys
       let ft = ft->substitute('^lua_', '', '')
       let val = "lua <<EOF\n" .. val .. "\nEOF"
-    else
-      let val = val->substitute(pattern_vim, '', 'g')
     endif
 
     if !(g:dein#ftplugin->has_key(ft))
