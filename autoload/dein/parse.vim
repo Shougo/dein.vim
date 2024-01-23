@@ -44,11 +44,13 @@ function! dein#parse#_add(repo, options, overwrite) abort
     endif
 
     " Convert lua_xxx keys
-    for [key, val] in plugin->items()->filter({ _, v -> v[0] =~# '^lua_' })
-      let hook_key = key->substitute('^lua_', 'hook_', '')
-      let plugin[hook_key] = printf(
-            \ "lua <<EOF\n%s\nEOF\n%s", val, plugin->get(hook_key, ''))
-    endfor
+    if has('nvim') || has('lua')
+      for [key, val] in plugin->items()->filter({ _, v -> v[0] =~# '^lua_' })
+        let hook_key = key->substitute('^lua_', 'hook_', '')
+        let plugin[hook_key] = printf(
+              \ "lua <<EOF\n%s\nEOF\n%s", val, plugin->get(hook_key, ''))
+      endfor
+    endif
 
     if plugin->has_key('hook_add')
       call dein#util#_call_hook('add', plugin)
@@ -201,7 +203,7 @@ function! dein#parse#_load_toml(filename, default) abort
       call extend(toml, dein#parse#_hooks_file(hooks_file))
     endfor
   endif
-  if toml->has_key('lua_add')
+  if toml->has_key('lua_add') && (has('nvim') || has('lua'))
     let g:dein#_hook_add ..= printf("\nlua <<EOF\n%s\nEOF", toml.lua_add)
   endif
   if toml->has_key('hook_add')
@@ -422,6 +424,10 @@ endfunction
 function! s:merge_ftplugin(ftplugin) abort
   for [ft, val] in a:ftplugin->items()
     if ft->stridx('lua_') == 0
+      if !has('nvim') && !has('lua')
+        continue
+      endif
+
       " Convert lua_xxx keys
       let ft = ft->substitute('^lua_', '', '')
       let val = "lua <<EOF\n" .. val .. "\nEOF"
