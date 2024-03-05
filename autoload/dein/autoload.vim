@@ -317,7 +317,7 @@ function! s:source_plugin(rtps, index, plugin, sourced) abort
 
   let index = a:index
 
-  " NOTE: on_source must sourced after depends
+  " NOTE: on_source must be sourced before depends
   for on_source in dein#util#_get_lazy_plugins()
         \ ->filter({ _, val ->
         \          val->get('on_source', []) ->index(a:plugin.name) >= 0
