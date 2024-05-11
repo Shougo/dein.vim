@@ -487,48 +487,53 @@ function! dein#parse#_hooks_file(filename) abort
 
   let start_marker = g:dein#hooks_file_marker->split(',')[0]
   let end_marker = g:dein#hooks_file_marker->split(',')[1]
-  let hook_name = ''
   let options = {}
 
-  for line in path->readfile()
-    if hook_name ==# ''
-      let marker_pos = strridx(line, start_marker)
-      if strridx(line, start_marker) < 0
-        continue
-      endif
+  let stack = []
+  let line_number_pairs = []
+  let lines = path->readfile()
 
-      " Get hook_name
-      let hook_name = line[: marker_pos]->matchstr(
+  for idx in range(len(lines))
+    let line = lines[idx]
+
+    let start_marker_pos = stridx(line, start_marker)
+    if start_marker_pos >= 0
+      let hook_name = line[: start_marker_pos]->matchstr(
             \ '\s\+\zs[[:alnum:]_-]\+\ze\s*')
-      if hook_name == ''
-        call dein#util#_error(
-              \ printf('Invalid hook name %s: %s', a:filename, line))
-        return {}
-      endif
-      if hook_name->stridx('hook_') == 0
-            \ || hook_name ==# 'lua_add'
-            \ || hook_name ==# 'lua_source'
-            \ || hook_name->stridx('lua_done_') == 0
-            \ || hook_name->stridx('lua_post_') == 0
-        let dest = options
-      else
-        if !(options->has_key('ftplugin'))
-          let options['ftplugin'] = {}
-        endif
-        let dest = options['ftplugin']
-      endif
-    else
-      if strridx(line, end_marker) >= 0
-        let hook_name = ''
+
+      call add(stack, [idx, hook_name])
+      continue
+    endif
+
+    let end_marker_pos = strridx(line, end_marker)
+    if end_marker_pos >= 0
+      if len(stack) == 0
         continue
       endif
 
-      " Concat
-      if dest->has_key(hook_name)
-        let dest[hook_name] ..= "\n" .. line
-      else
-        let dest[hook_name] = line
+      let [start_idx, name] = remove(stack, -1)
+      " Ignore nested lines
+      if len(stack) == 0
+        call add(line_number_pairs, [name, start_idx, idx])
       endif
+    endif
+  endfor
+
+  for [hook_name, start_idx, end_idx] in line_number_pairs
+    let cur_lines = lines[start_idx + 1: end_idx - 1]
+
+    if hook_name->stridx('hook_') == 0
+          \ || hook_name ==# 'lua_add'
+          \ || hook_name ==# 'lua_source'
+          \ || hook_name->stridx('lua_done_') == 0
+          \ || hook_name->stridx('lua_post_') == 0
+
+      let options[hook_name] = cur_lines->join("\n")
+    else
+      if !(options->has_key('ftplugin'))
+        let options['ftplugin'] = {}
+      endif
+      let options['ftplugin'][hook_name] = cur_lines->join("\n")
     endif
   endfor
 
