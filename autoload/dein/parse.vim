@@ -530,9 +530,14 @@ function! dein#parse#_hooks_file(filename) abort
 
       let options[hook_name] = cur_lines->join("\n")
     else
+      if hook_name == ''
+        continue
+      endif
+
       if !(options->has_key('ftplugin'))
         let options['ftplugin'] = {}
       endif
+
       let options['ftplugin'][hook_name] = cur_lines->join("\n")
     endif
   endfor
