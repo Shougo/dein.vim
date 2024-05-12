@@ -528,7 +528,11 @@ function! dein#parse#_hooks_file(filename) abort
           \ || hook_name->stridx('lua_done_') == 0
           \ || hook_name->stridx('lua_post_') == 0
 
-      let options[hook_name] = cur_lines->join("\n")
+      if !options->has_key(hook_name)
+        let options[hook_name] = ""
+      endif
+
+      let options[hook_name] ..= cur_lines->join("\n")
     else
       if hook_name == ''
         continue
@@ -538,7 +542,11 @@ function! dein#parse#_hooks_file(filename) abort
         let options['ftplugin'] = {}
       endif
 
-      let options['ftplugin'][hook_name] = cur_lines->join("\n")
+      if !(options.ftplugin->has_key(hook_name))
+        let options.ftplugin[hook_name] = ""
+      endif
+
+      let options['ftplugin'][hook_name] ..= cur_lines->join("\n")
     endif
   endfor
 
