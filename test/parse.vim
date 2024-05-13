@@ -292,10 +292,28 @@ function! s:suite.hooks_file() abort
     " hook_source {{{
     piyo
     }}}
-END
+  END
+
   call writefile(hooks_file, filename)
 
-  call s:assert.equals(dein#parse#_hooks_file(filename), {})
+  call s:assert.equals(dein#parse#_hooks_file(filename), #{
+        \   hook_source: 'piyo',
+        \ })
+
+  let hooks_file =<< trim END
+    " hook_source {{{
+    piyo
+    " {{{
+    hogera
+    " }}}
+    " }}}
+  END
+
+  call writefile(hooks_file, filename)
+
+  call s:assert.equals(dein#parse#_hooks_file(filename), #{
+        \   hook_source: "piyo\n" . '" {{{' . "\n" . 'hogera' . "\n" . '" }}}',
+        \ })
 
   let hooks_file =<< trim END
     -- lua_source {{{
