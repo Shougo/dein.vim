@@ -526,12 +526,12 @@ function! s:merge_files(plugins, directory) abort
   endfor
 
   if !(vimfiles->empty())
-    call dein#util#_cache_writefile(vimfiles,
-          \ printf('.dein/%s/%s.vim', a:directory, a:directory))
+    call dein#util#_safe_writefile(vimfiles,
+          \ dein#util#_get_runtime_path() . printf('/%s/%s.vim', a:directory, a:directory))
   endif
   if !(luafiles->empty())
-    call dein#util#_cache_writefile(luafiles,
-          \ printf('.dein/%s/%s.lua', a:directory, a:directory))
+    call dein#util#_safe_writefile(luafiles,
+          \ dein#util#_get_runtime_path() . printf('/%s/%s.lua', a:directory, a:directory))
   endif
 endfunction
 function! dein#install#_save_rollback(rollbackfile, plugins) abort
