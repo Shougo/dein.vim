@@ -27,7 +27,9 @@ function! dein#util#_get_runtime_path() abort
     return g:dein#_runtime_path
   endif
 
-  let g:dein#_runtime_path = dein#util#_get_cache_path() .. '/.dein'
+  let g:dein#_runtime_path = dein#util#_substitute_path(
+        \ g:->get('dein#runtime_directory', dein#util#_get_cache_path()
+        \ .. '/.dein/'))
   call dein#util#_safe_mkdir(g:dein#_runtime_path)
   return g:dein#_runtime_path
 endfunction
@@ -40,8 +42,8 @@ function! dein#util#_get_cache_path() abort
         \ $NVIM_APPNAME :
         \ dein#util#_get_myvimrc()->fnamemodify(':t')
   let g:dein#_cache_path = dein#util#_substitute_path(
-        \ g:->get('dein#cache_directory', g:dein#_base_path)
-        \ .. '/.cache/' .. vimrc_path)
+        \ g:->get('dein#cache_directory', g:dein#_base_path
+        \ .. '/.cache/' .. vimrc_path))
   call dein#util#_safe_mkdir(g:dein#_cache_path)
   return g:dein#_cache_path
 endfunction
@@ -163,14 +165,6 @@ function! dein#util#_check_clean() abort
         \ })
 endfunction
 
-function! dein#util#_cache_writefile(list, path) abort
-  if !(dein#util#_get_cache_path()->filewritable())
-    return 1
-  endif
-
-  const path = dein#util#_get_cache_path() .. '/' .. a:path
-  return dein#util#_safe_writefile(a:list, path)
-endfunction
 function! dein#util#_safe_writefile(list, path, flags = '') abort
   if g:dein#_is_sudo
     return 1
@@ -232,8 +226,8 @@ function! dein#util#_save_cache(vimrcs, is_state, is_starting) abort
   const src = [plugins, g:dein#ftplugin]
   call dein#util#_safe_writefile(
         \ has('nvim') ? [src->json_encode()] : [src->js_encode()],
-        \ g:->get('dein#cache_directory', g:dein#_base_path)
-        \ .. '/cache_' .. g:dein#_progname)
+        \ dein#util#_get_cache_path()
+        \ .. '/cache_' .. g:dein#_progname .. '.json')
 endfunction
 function! dein#util#_check_vimrcs() abort
   const time = dein#util#_get_runtime_path()->getftime()
@@ -379,12 +373,12 @@ function! dein#util#_save_state(is_starting) abort
           \ event, plugins->string()))
   endfor
 
-  const state = g:->get('dein#cache_directory', g:dein#_base_path)
+  const state = dein#util#_get_cache_path()
         \ .. '/state_' .. g:dein#_progname .. '.vim'
   call dein#util#_safe_writefile(lines, state)
 endfunction
 function! dein#util#_clear_state() abort
-  const base = g:->get('dein#cache_directory', g:dein#_base_path)
+  const base = dein#util#_get_cache_path()
   for cache in (base .. '/state_*.vim')->glob(v:true, v:true)
         \ + (base .. '/cache_*')->glob(v:true, v:true)
     call delete(cache)

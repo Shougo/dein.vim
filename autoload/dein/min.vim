@@ -68,8 +68,8 @@ END
 endfunction
 function! dein#min#_load_cache_raw(vimrcs) abort
   let g:dein#_vimrcs = a:vimrcs
-  const cache = g:->get('dein#cache_directory', g:dein#_base_path)
-        \ .. '/cache_' .. g:dein#_progname
+  const cache = dein#util#_get_cache_path()
+        \ .. '/cache_' .. g:dein#_progname .. '.json'
   const time = cache->getftime()
   if !(g:dein#_vimrcs->copy()
         \ ->map({ _, val -> getftime(expand(val)) })
@@ -86,7 +86,7 @@ function! dein#min#load_state(path) abort
   if g:dein#_is_sudo | return 1 | endif
   let g:dein#_base_path = a:path->expand()
 
-  const state = g:->get('dein#cache_directory', g:dein#_base_path)
+  const state = dein#util#_get_cache_path()
         \ .. '/state_' .. g:dein#_progname .. '.vim'
   if !(state->filereadable()) | return 1 | endif
   try
