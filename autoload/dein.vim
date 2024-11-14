@@ -61,8 +61,7 @@ function! dein#direct_install(repo, options = {}) abort
   call dein#install#_direct_install(a:repo, a:options)
 endfunction
 function! dein#get_direct_plugins_path() abort
-  return dein#util#_get_cache_path()
-        \ .'/direct_install.vim'
+  return dein#util#_get_cache_path() .. '/direct_install.vim'
 endfunction
 function! dein#reinstall(plugins) abort
   call dein#install#_reinstall(a:plugins)

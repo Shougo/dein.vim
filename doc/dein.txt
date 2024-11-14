@@ -517,12 +517,12 @@ g:dein#cache_directory
 		Default: Under the base directory you have already specified
 		by |dein#begin()|.
 
-                                                      *g:dein#runtime_directory*
+                                                    *g:dein#runtime_directory*
 g:dein#runtime_directory
-		The runtime directory to use. Contains all merged files.
+		The runtime directory to use. It contains all merged files.
 		See |dein-merge| notes.
 
-		Default: |g:dein#cache_directory| . '/.dein'
+		Default: |g:dein#cache_directory| .. '/.dein'
 
                                                       *g:dein#default_options*
 g:dein#default_options
