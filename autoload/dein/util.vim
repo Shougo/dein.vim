@@ -29,7 +29,7 @@ function! dein#util#_get_runtime_path() abort
 
   let g:dein#_runtime_path = dein#util#_substitute_path(
         \ g:->get('dein#runtime_directory', dein#util#_get_cache_path()
-        \ .. '/.dein/'))
+        \ .. '/.dein'))
   call dein#util#_safe_mkdir(g:dein#_runtime_path)
   return g:dein#_runtime_path
 endfunction
