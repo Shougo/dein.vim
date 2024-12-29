@@ -49,7 +49,7 @@ function! s:type.init(repo, options) abort
   endif
 
   const directory = uri->substitute('\.git$', '', '')
-        \ ->substitute('^https:/\+\|^git@', '', '')
+        \ ->substitute('https:/\+\|^git@', '', '')
         \ ->substitute(':', '/', 'g')
 
   return #{
