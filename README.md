@@ -137,11 +137,6 @@ endif
 
 ## Q&A
 
-#### Dein has an user interface like vim-plug?
-
-- Built-in Dein **does not** have one, but if you want one, we recommend using
-  [github.com/wsdjeg/dein-ui.vim](https://github.com/wsdjeg/dein-ui.vim)
-
 ## Feedback
 
 - [Chat with the community](https://gitter.im/Shougo/dein.vim)
