@@ -89,7 +89,8 @@ function! dein#autoload#_source(plugins) abort
             endtry
           endif
 
-          if plugin->get('denops_wait', v:true)
+          if denops#server#status() !=# 'stopped'
+                \ && plugin->get('denops_wait', v:true)
             call denops#plugin#wait(name)
             redraw
           endif
