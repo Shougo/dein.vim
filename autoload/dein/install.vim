@@ -392,6 +392,10 @@ function! dein#install#_recache_runtimepath() abort
   call s:merge_files(merge_ftdetect_plugins, 'ftdetect')
   call s:merge_files(merge_ftdetect_plugins, 'after/ftdetect')
 
+  " Remove deno.json and deno.jsonc files.
+  call dein#install#_rm(runtime .. '/deno.json')
+  call dein#install#_rm(runtime .. '/deno.jsonc')
+
   if g:->get('dein#auto_remote_plugins', v:true)
     silent call dein#remote_plugins()
   endif
