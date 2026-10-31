@@ -2,6 +2,9 @@ name: Lint & Test
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Neovim (${{ matrix.build }})
@@ -16,6 +19,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6.1.0
+        with:
+          persist-credentials: false
       - name: Initialize Neovim
         uses: rhysd/action-setup-vim@v1.6.1
         id: vim
@@ -25,6 +30,7 @@ jobs:
       - name: Clone vim-themis
         uses: actions/checkout@v2.8.0
         with:
+          persist-credentials: false
           repository: thinca/vim-themis
           path: vim-themis
       - name: Run Test
