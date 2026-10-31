@@ -18,7 +18,7 @@ jobs:
           - stable
 
     steps:
-      - uses: actions/checkout@v6.1.0
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: Initialize Neovim
@@ -28,7 +28,7 @@ jobs:
           neovim: true
           version: ${{ matrix.build }}
       - name: Clone vim-themis
-        uses: actions/checkout@v2.8.0
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           repository: thinca/vim-themis
